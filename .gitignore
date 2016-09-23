@@ -1,0 +1,12 @@
+**/*.*~
+**/*.~
+
+**/*.min.js
+
+node
+node_modules
+npm-debug.log
+
+jsdoc/
+
+Gruntfile-local.js
