@@ -65,7 +65,7 @@ function InfoBox (props) {
           <div>
             {
               periods.map(p => (
-                <a key={p.id} onClick={() => updateInfobox(id, {period:p.id})} style={{marginLeft:5}}>{(p.id===period)?(<u>{_t({id: p.title})}</u>):(_t({id: p.title}))}</a>
+                <a key={p.id} onClick={() => updateInfobox(id, {period:p.id, time:p.time})} style={{marginLeft:5}}>{(p.id===period)?(<u>{_t({id: p.title})}</u>):(_t({id: p.title}))}</a>
                 ))
             }
           </div>

@@ -146,7 +146,7 @@ const transformInfoboxData = function (infobox, devices, intl) {
       device = getDeviceKeysByType(devices, deviceType);
       //time = getTimeByPeriod(period);
       
-      periods = deviceType === 'AMPHIRO' ? devPeriods : meterPeriods;
+      periods = deviceType === 'AMPHIRO' ? devPeriods : meterPeriods.map(period => Object.assign({}, period, {time: getTimeByPeriod(period)}));
       displays = STATBOX_DISPLAYS;
 
       reduced = data ? reduceMetric(devices, data, metric) : 0;
