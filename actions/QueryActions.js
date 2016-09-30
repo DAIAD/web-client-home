@@ -43,13 +43,14 @@ const queryDeviceSessionsCache = function(options) {
   return function(dispatch, getState) {
     
     const { length, deviceKey } = options;
+    //if item found in cache return it
     if (getState().query.cache[getCacheKey('AMPHIRO', length)]) {
       
       dispatch(cacheItemRequested('AMPHIRO', length));
       return Promise.resolve(filterDataByDeviceKeys(getState().query.cache[getCacheKey('AMPHIRO', length)].data, deviceKey));
     }
-    
-    //fetch all items to save in cache
+
+    //else fetch all items to save in cache
     const newOptions = Object.assign({}, options, {deviceKey:getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO')});
     
     return dispatch(queryDeviceSessions(newOptions))
@@ -82,7 +83,7 @@ const queryDeviceSessions = function(options) {
     
     const { length, type, deviceKey } = options;
     
-    if (!deviceKey) throw new Error(`Not sufficient data provided for device sessions query: deviceKey:${deviceKey}`);
+    if (!deviceKey || !length) throw new Error(`Not sufficient data provided for device sessions query: deviceKey:${deviceKey}`);
     
     dispatch(requestedQuery());
 
@@ -148,9 +149,16 @@ const fetchDeviceSession = function(id, deviceKey) {
  * @return {Promise} Resolve returns Object containing last session data for all devices provided (last session between devices is computed using timestamp), reject returns possible errors
  * 
  */
-const fetchLastDeviceSession = function(deviceKey) {
+const fetchLastDeviceSession = function(options) {
   return function(dispatch, getState) {
-    return dispatch(queryDeviceSessions(deviceKey, {type: 'SLIDING', length: 10}))
+    const { deviceKey, cache } = options;
+    if (cache) {
+      var querySessions = queryDeviceSessionsCache;
+    }
+    else {
+      var querySessions = queryDeviceSessions;
+    }
+    return dispatch(querySessions(Object.assign({}, options, {type: 'SLIDING', length: 10})))
     .then(sessions => {
       
       const reduced = reduceSessions(getState().user.profile.devices, sessions);        
@@ -335,7 +343,7 @@ const fetchInfoboxData = function(options) {
     }
     else if (deviceType === 'AMPHIRO') {
       if (type === "last") {
-        return dispatch(fetchLastDeviceSession(deviceKey))
+        return dispatch(fetchLastDeviceSession(Object.assign({}, options.query)))
         .then(response => ({data: response.data, index: response.index, device: response.device, showerId: response.id, time: response.timestamp}));
       }
       else {
