@@ -6,7 +6,7 @@ var LocaleAPI = {
     const { locale } = data;
     delete data.locale;
     if (!LOCALES.includes(locale)) throw new Error(`locale ${locale} not supported`);
-    return callAPI(`/assets/js/build/home/i18n/${locale}.js`, data, "GET");
+    return callAPI(`/assets/js/build/home/i18n/${locale}.json`, data, "GET");
   } 
 };
 
