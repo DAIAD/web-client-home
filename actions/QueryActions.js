@@ -137,8 +137,8 @@ const fetchDeviceSession = function(id, deviceKey) {
         return response.session;
       })
       .catch((errors) => {
-        dispatch(receivedQuery(false, error));
-        throw error;
+        dispatch(receivedQuery(false, errors));
+        throw errors;
       });
   };
 };
@@ -250,6 +250,7 @@ const queryMeterHistory = function(options) {
  * @return {Promise} Resolve returns Object containing meter sessions data in form {data: sessionsData}, reject returns possible errors
  * 
  */    
+/*
 const queryMeterStatus = function(deviceKey) {
   return function(dispatch, getState) {
 
@@ -274,7 +275,7 @@ const queryMeterStatus = function(deviceKey) {
       });
   };
 };
-
+*/
 /**
  * Fetch data based on provided options and handle query response before returning
  * 
@@ -410,7 +411,7 @@ module.exports = {
   fetchLastDeviceSession,
   queryMeterHistoryCache,
   queryMeterHistory,
-  queryMeterStatus,
+  //queryMeterStatus,
   fetchInfoboxData,
   dismissError
 };
