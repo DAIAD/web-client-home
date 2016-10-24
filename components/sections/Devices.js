@@ -51,15 +51,13 @@ function DevicesForm (props) {
     <form id="form-devices" style={{width: '100%', margin: '40px auto'}} >
       <bs.Accordion className="col-xs-10">
         {
-          devices.map(function(device, i){
-            return (
-              <bs.Panel key={device.deviceKey}
-                header={device.name || device.deviceKey}
-                eventKey={i}>
-                <Device {...device} intl={intl}/>
-              </bs.Panel>
-              );
-          }.bind(this))
+          devices.map((device, i) => 
+            <bs.Panel key={device.deviceKey}
+              header={device.name || device.deviceKey}
+              eventKey={i}>
+              <Device {...device} intl={intl}/>
+            </bs.Panel>
+            )
         }
         <bs.ButtonInput style={{marginTop: "20px"}} type="submit" value={_t({id:"forms.submit"})} onClick={(e) => { e.preventDefault(); }} />
       </bs.Accordion>
