@@ -109,8 +109,7 @@ const refreshProfile = function() {
       dispatch(receivedLogin(success, errors.length?errors[0].code:null, profile));
 
       if (success) {
-        dispatch(InitActions.initHome(profile));
-        return Promise.resolve({success:true, profile});
+        return dispatch(InitActions.initHome(profile));
       } 
 
       return Promise.reject(response);
