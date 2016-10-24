@@ -1,15 +1,13 @@
 var React = require('react');
-var PortalMixin = require('./PortalMixin');
 var echarts = require('echarts');
 var moment = require('moment');
 
 var Chart = React.createClass({
 
-  mixins: [PortalMixin],
-  
   render: function() {
     return (
-      <div 
+      <div
+        ref={node => this.node = node} 
         className='chart'
         style={{
           width: this.props.width,
@@ -18,7 +16,6 @@ var Chart = React.createClass({
         />
     );
   },
-  
   getDefaultProps: function() { 
     return {
       height: '350px',
@@ -44,10 +41,14 @@ var Chart = React.createClass({
       y2Margin: 50
     };
   },
+  
+  shouldComponentUpdate : function() {
+    return false;
+  },
 
   componentDidMount: function() {
-    this._chart = echarts.init(document.getElementById(this.getId())); 
-    //if(this.props.options) {
+    this._chart = echarts.init(this.node); 
+    
     if (this.props.clickable) {
       this._chart.on('CLICK', (p => { 
         this.props.onPointClick(p.seriesIndex, p.dataIndex);
@@ -57,10 +58,10 @@ var Chart = React.createClass({
         //console.log('DATA ZOOM!', p);
         //this.props.onPointClick(p.seriesIndex, p.dataIndex);
       }));
-
     }
+
+    window.addEventListener('resize', this.onResize);
     this._updateOptions(this.props);
-      //}
   },
   
   componentWillReceiveProps : function(nextProps) {
@@ -73,6 +74,7 @@ var Chart = React.createClass({
   componentWillUnmount : function() {
     this._chart.dispose();
     this._chart = null;
+    window.removeEventListener('resize', this.onResize);
   },
 
   _updateOptions: function(options) {
