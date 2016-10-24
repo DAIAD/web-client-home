@@ -1,7 +1,3 @@
-var { getTimeByPeriod, getLastShowerTime, getPreviousPeriodSoFar } = require('../utils/time');
-var { getDeviceKeysByType } = require('../utils/device');
-var { lastNFilterToLength } =  require('../utils/general');
-
 /*
 /**
  * Dashboard Actions module.
@@ -11,17 +7,20 @@ var { lastNFilterToLength } =  require('../utils/general');
  */
 
 var types = require('../constants/ActionTypes');
-
+var { getTimeByPeriod, getPreviousPeriodSoFar } = require('../utils/time');
+var { getDeviceKeysByType } = require('../utils/device');
+var { lastNFilterToLength } =  require('../utils/general');
 var QueryActions = require('./QueryActions');
-var HistoryActions = require('./HistoryActions');
 
-
+//TODO: commented out unused action
+/*
 const setLastSession = function(session) {
   return {
     type: types.DASHBOARD_SET_LAST_SESSION,
     session
   };
 };
+*/
 
 const createInfobox = function(data) {
   return {
@@ -265,7 +264,7 @@ const fetchAllInfoboxesData = function() {
     return getState().section.dashboard.infobox.map(infobox => {
       return updateInfobox(infobox.id, {});
     })
-    .reduce((prev, curr, i, arr) => prev.then(() => dispatch(curr)), Promise.resolve());
+    .reduce((prev, curr) => prev.then(() => dispatch(curr)), Promise.resolve());
   };
 };
 

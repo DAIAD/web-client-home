@@ -74,7 +74,8 @@ const setMessages = function (response) {
     messages
   };
 };
-
+//TODO: commented out unused function
+/*
 const appendMessages = function (type, messages) {
   if (!type || !messages) throw new Error('Not sufficient data provided for append messages', type, messages);
   if (!Array.isArray(messages)) throw new Error('Messages in append messages action must be of type array: ', messages);
@@ -85,7 +86,7 @@ const appendMessages = function (type, messages) {
     messages
   };
 };
-
+*/
 
 /**
  * Updates all message options provided and switches to message section

@@ -28,7 +28,7 @@ const addZero = function(input) {
 
 const getFriendlyDuration = function(seconds) {
   if (!seconds) { return null; }
-  const mu = getFriendlyDurationMu(seconds); 
+  //const mu = getFriendlyDurationMu(seconds); 
   if (seconds>3600) {
     return  (addZero(Math.floor(seconds/3600))) + ":" +
             addZero(Math.floor((seconds % 3600)/60)) + ":" +
@@ -43,7 +43,7 @@ const getFriendlyDuration = function(seconds) {
   }
 };
 
-
+/*
 const getFriendlyDurationMu = function(seconds) {
   if (!seconds) { return null; }
   
@@ -57,6 +57,7 @@ const getFriendlyDurationMu = function(seconds) {
     return 'sec';
   }
 };
+*/
 
 const getEnergyClass = function(energy) {
   let scale;

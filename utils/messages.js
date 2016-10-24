@@ -1,4 +1,4 @@
-const { thisYear, last24Hours } = require('./time');
+const { last24Hours } = require('./time');
 
 //TODO: type label already present in messages
 //remove extra maps

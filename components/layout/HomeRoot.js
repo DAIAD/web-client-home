@@ -1,25 +1,13 @@
-// Dependencies
 var React = require('react');
-var ReactDOM = require('react-dom');
 var { IntlProvider, FormattedMessage } = require('react-intl');
-var { bindActionCreators } = require('redux');
-var { connect } = require('react-redux');
 var { Link } = require('react-router');
 
-//Constants
-var { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
-
-// Components
 var Header = require('./Header');
-var MainSection = require('./MainSection');
 var Footer = require('./Footer');
 var LoginPage = require('../sections/Login');
 
-// Actions
-var { login, logout } = require('../../actions/UserActions');
-var { setLocale } = require('../../actions/LocaleActions');
+var { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
 
-var { getDeviceCount } = require('../../utils/device');
 
 function MainSidebar (props) {
   const { menuItems } = props;
@@ -52,7 +40,7 @@ function MainSidebar (props) {
   );
 } 
 
-function Loader (props) {
+function Loader () {
   return (
     <div>
       <img className="preloader" src={`${PNG_IMAGES}/preloader-counterclock.png`} />

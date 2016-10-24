@@ -1,15 +1,9 @@
 var React = require('react');
-
 var bs = require('react-bootstrap');
-//var link = require('react-router').link;
-var { FormattedMessage, FormattedTime, FormattedDate, FormattedRelative } = require('react-intl');
+var { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl');
 
 var Chart = require('./helpers/Chart');
-
 var { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../constants/HomeConstants'); 
-var { SidebarLeft } = require('./layout/Sidebars');
-var timeUtil = require('../utils/time');
-
 
 function SessionInfoItem (props) {
   const _t = props.intl.formatMessage;
@@ -62,10 +56,10 @@ function SessionInfo (props) {
 }
 
 function Session (props) {
-  const { intl, filter, data, chartData, date, chartFormatter, setSessionFilter, firstname, activeDeviceType } = props;
+  const { intl, data, chartData, chartFormatter, setSessionFilter, firstname, activeDeviceType } = props;
   if (!data) return <div/>;
-  const { hasChartData, history, id } = data;
-  const _t = intl.formatMessage;
+  const { history, id } = data;
+  //const _t = intl.formatMessage;
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
   const arrowClass = better===null ? '':(better?"fa fa-arrow-down green":"fa fa-arrow-up red");
@@ -152,13 +146,13 @@ var SessionModal = React.createClass({
     this.props.setActiveSession(device, id, timestamp);
   },
   render: function() {
-    const { data, intl, filter, setSessionFilter } = this.props;
+    const { data } = this.props;
     if (!data) return (<div/>);
     const { next, prev } = data;
     const disabledNext = Array.isArray(next)?false:true;
     const disabledPrevious = Array.isArray(prev)?false:true;
-
-    const _t = intl.formatMessage;
+    //const _t = intl.formatMessage;
+    
     return (
       <bs.Modal animation={false} show={this.props.showModal} onHide={this.onClose} bsSize="large">
         <bs.Modal.Header closeButton>

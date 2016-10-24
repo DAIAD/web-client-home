@@ -1,25 +1,14 @@
 var React = require('react');
 var bs = require('react-bootstrap');
-var classNames = require('classnames');
-
-var intl = require('react-intl');
-var { injectIntl, FormattedMessage, FormattedRelative } = require('react-intl');
-
+var { FormattedMessage, FormattedRelative } = require('react-intl');
 var { Responsive, WidthProvider } = require('react-grid-layout');
 var ResponsiveGridLayout = WidthProvider(Responsive);
-//const { reduxForm } = require('redux-form');
 var { Link } = require('react-router');
 
-var PureRenderMixin = require('react-addons-pure-render-mixin');
-
 var MainSection = require('../layout/MainSection');
-
 var ChartBox = require('../helpers/ChartBox');
-
 const { IMAGES } = require('../../constants/HomeConstants');
 
-
-var timeUtil = require('../../utils/time');
 
 function ErrorDisplay (props) {
   return props.errors ? 
@@ -41,8 +30,8 @@ function SayHello (props) {
 }
 
 function InfoBox (props) {
-  const { mode, infobox, updateInfobox, removeInfobox, intl, linkToHistory, } = props;
-  const { id, error, period, type, display, periods, displays, time } = infobox;
+  const { infobox, updateInfobox, removeInfobox, intl, linkToHistory, } = props;
+  const { id, error, period, type, display, periods, time } = infobox;
 
   const _t = intl.formatMessage;
   return (
@@ -115,15 +104,17 @@ function InfoBox (props) {
 }
 
 function StatBox (props) {
-  const { id, title, type, deviceType, improved, data, highlight, metric, measurements, period, device, deviceDetails, index, time, better, comparePercentage, mu } = props.infobox;
+  const { deviceType, highlight, period, better, comparePercentage, mu } = props.infobox;
+  /*
   let improvedDiv = <div/>;
   if (improved === true) {
     improvedDiv = (<img src={`${IMAGES}/success.svg`}/>);
   }
   else if (improved === false) {
     improvedDiv = (<img src={`${IMAGES}/warning.svg`}/>);
-  }
-  const duration = data?(Array.isArray(data)?null:data.duration):null;
+    }
+    */
+  //const duration = data?(Array.isArray(data)?null:data.duration):null;
   const arrowClass = better?"fa-arrow-down green":"fa-arrow-up red";
   const bow = (better==null || comparePercentage == null) ? false : true;
   return (
@@ -147,7 +138,7 @@ function StatBox (props) {
 }
 
 function TipBox (props) {
-  const { title, type, highlight } = props.infobox;
+  const { highlight } = props.infobox;
   return (
     <div >
       <p>{highlight}</p>
@@ -156,7 +147,7 @@ function TipBox (props) {
 }
 
 function InfoPanel (props) {
-  const { mode, layout, infoboxes, updateLayout, switchMode,  updateInfobox, removeInfobox, chartFormatter, intl, periods, displays, linkToHistory } = props;
+  const { mode, layout, infoboxes, updateLayout, updateInfobox, removeInfobox, chartFormatter, intl, periods, displays, linkToHistory } = props;
   return (
       <ResponsiveGridLayout 
         className='layout'
@@ -168,13 +159,11 @@ function InfoPanel (props) {
         draggableHandle='.infobox-header'
         resizable={true}
         draggable={true}
-        onLayoutChange={(l, allLayouts) => {
-        }}
-        onResizeStop={(layout, oldItem, newItem, placeholder) => { 
+        onResizeStop={(layout) => { 
           updateLayout(layout);  
           //updateLayout(layout);  
         }}
-        onDragStop={(layout, oldItem, newItem, placeholder) => {
+        onDragStop={(layout) => {
           updateLayout(layout); 
         }}
        >
@@ -192,7 +181,7 @@ function InfoPanel (props) {
 }
 
 function ButtonToolbar (props) {
-  const { switchMode, setDirty, resetDirty, saveToProfile, mode, dirty } = props;
+  const { switchMode, resetDirty, saveToProfile, dirty } = props;
   return (
       <div className='dashboard-button-toolbar'>
         <a className='btn dashboard-add-btn' onClick={()=> switchMode("add")} active={false}>Add Widget</a>
@@ -214,7 +203,7 @@ function ButtonToolbar (props) {
 }
 
 function AddInfoboxForm (props) {
-  const {infoboxToAdd, metrics, types, deviceTypes, setForm } = props;
+  const { infoboxToAdd, types, deviceTypes, setForm } = props;
   const setInfoboxToAdd = (data) => setForm('infoboxToAdd', data);
   const { deviceType, title, type } = infoboxToAdd;
   return (
@@ -295,7 +284,7 @@ var Dashboard = React.createClass({
   //mixins: [ PureRenderMixin ],
 
   componentWillMount: function() {
-    const { fetchAllInfoboxesData, switchMode } = this.props;
+    //const { fetchAllInfoboxesData, switchMode } = this.props;
     //switchMode("normal");
     //fetchAllInfoboxesData();
 
@@ -316,11 +305,8 @@ var Dashboard = React.createClass({
    
   },
   */
-  componentWillReceiveProps: function(nextProps) {
-    
-  },
   render: function() {
-    const { firstname, mode, dirty, switchMode, addInfobox, saveToProfile, setDirty, resetDirty, deviceCount, meterCount, metrics , types, infoboxes, deviceTypes, infoboxToAdd, setForm, layout, updateInfobox, removeInfobox, linkToHistory, intl, updateLayout } = this.props;
+    const { firstname, mode, dirty, switchMode, addInfobox, saveToProfile, setDirty, resetDirty, deviceCount, meterCount, metrics , types, deviceTypes, infoboxToAdd, setForm } = this.props;
     return (
       <MainSection id="section.dashboard">
         <div className='dashboard'>

@@ -1,17 +1,13 @@
 var React = require('react');
 var Route = require('react-router').Route;
 var IndexRoute = require('react-router').IndexRoute;
-var Redirect = require('react-router').Redirect;
 
 var HomeApp = require('../containers/HomeApp');
-var Dashboard = require('../components/sections/Dashboard');
 var DashboardData = require('../containers/DashboardData');
-var History = require('../components/sections/History');
 var HistoryData = require('../containers/HistoryData');
 var Commons = require('../components/sections/Commons');
 var Messages = require('../containers/MessageData');
 var Profile = require('../components/sections/Profile');
-var Settings = require('../components/sections/Settings');
 var Devices = require('../components/sections/Devices');
 
 module.exports = 

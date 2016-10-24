@@ -11,7 +11,7 @@ var Login = React.createClass({
     this.props.login(this.refs.username.value, this.refs.password.value);
   },
   render: function() {
-    const { intl, isAuthenticated, action } = this.props;
+    const { intl, isAuthenticated } = this.props;
     const _t = intl.formatMessage;
     return isAuthenticated ? (
       <div/>

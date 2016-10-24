@@ -1,12 +1,9 @@
-var React = require('react');
-var bs = require('react-bootstrap');
 var { injectIntl } = require('react-intl');
 var { bindActionCreators } = require('redux');
 var { connect } = require('react-redux');
-var { push } = require('react-router-redux');
 //const { getValues } = require('redux-form');
 
-var { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT, WIDGET_TYPES  } = require('../constants/HomeConstants');
+var { WIDGET_TYPES  } = require('../constants/HomeConstants');
 
 var Dashboard = require('../components/sections/Dashboard');
 
@@ -15,16 +12,11 @@ var { linkToHistory } = require('../actions/HistoryActions');
 var { saveToProfile } = require('../actions/UserActions');
 var { setForm } = require('../actions/FormActions');
 
-var timeUtil = require('../utils/time');
-
-var { getDeviceByKey, getDeviceNameByKey, getDeviceKeysByType, getDeviceTypeByKey, getAvailableDevices, getAvailableDeviceKeys, getAvailableMeters, getDefaultDevice, getDeviceCount, getMeterCount } = require('../utils/device');
-var { getLastSession, reduceMetric, reduceSessions, getDataSessions, getDataMeasurements, getShowersCount, transformInfoboxData } = require('../utils/transformations');
-
-var { getEnergyClass, getMetricMu } = require('../utils/general');
-var { getChartTimeDataByFilter, getChartDataByFilter, getChartMeterCategories, getChartAmphiroCategories } = require('../utils/chart');
+var { getDeviceCount, getMeterCount } = require('../utils/device');
+var { transformInfoboxData } = require('../utils/transformations');
 
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     firstname: state.user.profile.firstname,
     devices: state.user.profile.devices,

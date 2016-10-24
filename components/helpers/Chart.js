@@ -1,5 +1,4 @@
 var React = require('react');
-var ReactDOM = require('react-dom');
 var PortalMixin = require('./PortalMixin');
 var echarts = require('echarts');
 var moment = require('moment');
@@ -49,14 +48,13 @@ var Chart = React.createClass({
   componentDidMount: function() {
     this._chart = echarts.init(document.getElementById(this.getId())); 
     //if(this.props.options) {
-    const { setActiveSession, devices } = this.props;
     if (this.props.clickable) {
       this._chart.on('CLICK', (p => { 
         this.props.onPointClick(p.seriesIndex, p.dataIndex);
       }));
       
       this._chart.on('DATA_ZOOM', (p => { 
-        console.log('DATA ZOOM!', p);
+        //console.log('DATA ZOOM!', p);
         //this.props.onPointClick(p.seriesIndex, p.dataIndex);
       }));
 
@@ -92,10 +90,10 @@ var Chart = React.createClass({
   getChart: function() {
     return this._chart;
   },
-  
+
   onResize: function() {
-	  this._chart.resize();
-	},
+    this._chart.resize();
+  },
   
   // sanity check function from
   // https://github.com/DAIAD/react-echarts/blob/master/src/js/components/line.js#L304

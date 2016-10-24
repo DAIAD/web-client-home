@@ -1,7 +1,8 @@
 var moment = require('moment');
 var { convertGranularityToPeriod, getLowerGranularityPeriod, timeToBuckets } = require('./time');
-//var { getPeriodFromTimestamp, timeToBuckets } = require('./time');
 
+//TODO: commented out unused functions
+/*
 const getCount = function (metrics) {
   return metrics.count?metrics.count:1;
 };
@@ -9,6 +10,8 @@ const getCount = function (metrics) {
 const getTimestampIndex = function (points, timestamp) {
     return points.findIndex((x) => (x[0]===timestamp));
 };
+*/
+
 
 //TODO: complete this±
 /*
@@ -162,7 +165,7 @@ const getChartMeterData = function(sessions, xAxisData, metric, time) {
 
 const getChartMetadata = function (sessions, xAxisData, timeBased=true) {
   if (timeBased) {
-    return xAxisData.map((v, i) => {
+    return xAxisData.map((v) => {
       const index = sessions.findIndex(x => moment(x.timestamp).startOf('hour').valueOf() === v);
       return index > -1 ? [sessions[index].id, sessions[index].timestamp] : [];
     });

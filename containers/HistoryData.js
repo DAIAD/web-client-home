@@ -1,4 +1,3 @@
-var React = require('react');
 var { bindActionCreators } = require('redux');
 var { connect } = require('react-redux');
 var injectIntl = require('react-intl').injectIntl;
@@ -7,16 +6,16 @@ var History = require('../components/sections/History');
 
 var HistoryActions = require('../actions/HistoryActions');
 
-var { getDeviceByKey, getDeviceNameByKey, getAvailableDevices, getDeviceTypeByKey, getDefaultDevice, getDeviceCount, getMeterCount } = require('../utils/device');
+var { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
 var { reduceSessions, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/transformations');
 
 var timeUtil = require('../utils/time');
-var { getFriendlyDuration, getEnergyClass, getMetricMu } = require('../utils/general');
+var { getMetricMu } = require('../utils/general');
 var { getTimeLabelByGranularity } = require('../utils/chart');
 
 var { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
 
   return {
     firstname: state.user.profile.firstname,

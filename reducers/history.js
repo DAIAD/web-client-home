@@ -37,11 +37,12 @@ var history = function (state, action) {
         comparisonData: action.sessions
       });
 
-    case types.HISTORY_SET_SESSION:
+    case types.HISTORY_SET_SESSION: {
       const updated = updateOrAppendToSession(state.data, action.session, action.session.id);
       return Object.assign({}, state, {
         data: updated
       });
+    }
 
     case types.HISTORY_SET_DATA_SYNCED:
       return Object.assign({}, state, {

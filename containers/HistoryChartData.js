@@ -1,4 +1,3 @@
-var React = require('react');
 var { connect } = require('react-redux');
 var { bindActionCreators } = require('redux');
 var { injectIntl } = require('react-intl');
@@ -8,16 +7,16 @@ var Chart = require('../components/helpers/Chart');
 var HistoryActions = require('../actions/HistoryActions');
 
 
-var { selectTimeFormatter, timeToBuckets, getLowerGranularityPeriod, convertGranularityToPeriod, getBucketLabels, addPeriodToSessions } = require('../utils/time');
+var { addPeriodToSessions } = require('../utils/time');
 
 var { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartMetadata } = require('../utils/chart');
 
-var { getDeviceTypeByKey, getDeviceKeyByName, getDeviceNameByKey } = require('../utils/device');
+var { getDeviceNameByKey } = require('../utils/device');
 var { getDataSessions } = require('../utils/transformations');
-var { getMetricMu, getFriendlyDuration } = require('../utils/general');
+var { getMetricMu } = require('../utils/general');
 
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   if(!state.user.isAuthenticated) {
     return {};
   }

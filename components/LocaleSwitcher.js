@@ -1,16 +1,7 @@
-// Dependencies
 var React = require('react');
-var { injectIntl } = require('react-intl');
-
-// Actions
-var LocaleActions = require('../actions/LocaleActions');
-
-const LOCALES = require('../constants/HomeConstants').LOCALES;
-
-// Components
 var bs = require('react-bootstrap');
-var Link = require('react-router').Link;
 
+const { LOCALES } = require('../constants/HomeConstants');
 
 function LocaleSwitcher (props) {
   const { locale, intl } = props;

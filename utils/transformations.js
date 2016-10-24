@@ -1,6 +1,6 @@
 var moment = require('moment');
 
-var { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
+var { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_PERIODS, METER_PERIODS } = require('../constants/HomeConstants');
 
 var { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
 var { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartTimeData } = require('./chart');
@@ -8,7 +8,7 @@ var { getTimeByPeriod, getLowerGranularityPeriod } = require('./time');
 var { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
 
 const getSessionsCount = function (devices, data) {
-  return reduceSessions(devices, data).map(s => 1).reduce((p, c) => p + c, 0);
+  return reduceSessions(devices, data).map(() => 1).reduce((p, c) => p + c, 0);
   //return data.map(d=>getDataSessions(devices, data).length).reduce((c, p)=> c+p, 0);
 };
 
@@ -79,7 +79,7 @@ const updateOrAppendToSession = function (devices, data) {
 };
 
 const transformInfoboxData = function (infobox, devices, intl) {
-    const { id, title, type, period, index, deviceType, subtype, data, previous, metric, showerId } = infobox;
+    const { type, period, index, deviceType, data, previous, metric } = infobox;
 
     const meterPeriods = METER_PERIODS.filter(x => x.id !== 'custom');
     const devPeriods = DEV_PERIODS;

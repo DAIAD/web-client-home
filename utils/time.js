@@ -165,7 +165,7 @@ const getGranularityByDiff = function(start, end) {
   const years = diff.years(); 
   const months = diff.months();
   const days = diff.days();
-  const milliseconds = diff.milliseconds();
+  //const milliseconds = diff.milliseconds();
 
   if (years > 0 || months > 6) return 4;
   else if (months > 0) return 3;

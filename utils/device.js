@@ -1,4 +1,3 @@
-var { getFriendlyDuration, getEnergyClass } = require('./general');
 
 const getDefaultDevice = function(devices) {
   const amphiroDevices = getAvailableDevices(devices);

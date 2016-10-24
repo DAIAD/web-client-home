@@ -1,5 +1,4 @@
 var React = require('react');
-var assign = require('object-assign');
 var bs = require('react-bootstrap');
 var { bindActionCreators } = require('redux');
 var { connect } = require('react-redux');

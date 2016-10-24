@@ -1,6 +1,6 @@
 const develop = (process.env.NODE_ENV !== 'production');
 
-var { createStore, compose, applyMiddleware } = require('redux');
+var { createStore, applyMiddleware } = require('redux');
 var { routerMiddleware } = require('react-router-redux');
 
 var thunkMiddleware = require('redux-thunk');

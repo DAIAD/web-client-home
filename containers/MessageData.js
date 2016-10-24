@@ -1,4 +1,3 @@
-var React = require('react');
 var { injectIntl } = require('react-intl');
 var { bindActionCreators } = require('redux');
 var { connect } = require('react-redux');
@@ -11,7 +10,7 @@ var MessageActions = require('../actions/MessageActions');
 var { transformInfoboxData } = require('../utils/transformations');
 var { stripTags } = require('../utils/messages');
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     devices: state.user.profile.devices,
     activeTab: state.messages.activeTab,
@@ -47,7 +46,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     {id: 'tips', title: 'notifications.tips', unread: stateProps.tips.reduce(((prev, curr) =>  !curr.acknowledgedOn ? prev+1 : prev), 0)}, 
   ];
 
-  const unread = categories.reduce(((prev, curr) => curr.unread+prev), 0); 
+  //const unread = categories.reduce(((prev, curr) => curr.unread+prev), 0); 
 
   const activeMessageIndex = stateProps.activeMessageId ? messages.findIndex(x => x.id === stateProps.activeMessageId) : null;
   const activeMessage = activeMessageIndex != null ? messages[activeMessageIndex] : null;

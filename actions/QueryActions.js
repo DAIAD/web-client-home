@@ -13,9 +13,9 @@ const { CACHE_SIZE } = require('../constants/HomeConstants');
 var deviceAPI = require('../api/device');
 var meterAPI = require('../api/meter');
 
-var { reduceSessions, getLastSession, getDeviceTypeByKey, updateOrAppendToSession } = require('../utils/transformations');
+var { reduceSessions, updateOrAppendToSession } = require('../utils/transformations');
 var { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
-var { lastNFilterToLength, getCacheKey } =  require('../utils/general');
+var { getCacheKey } =  require('../utils/general');
 //var { getTimeByPeriod, getLastShowerTime, getPreviousPeriodSoFar } = require('../utils/time');
 
 
@@ -81,7 +81,7 @@ const queryDeviceSessionsCache = function(options) {
 const queryDeviceSessions = function(options) {
   return function(dispatch, getState) {
     
-    const { length, type, deviceKey } = options;
+    const { length, deviceKey } = options;
     
     if (!deviceKey || !length) throw new Error(`Not sufficient data provided for device sessions query: deviceKey:${deviceKey}`);
     
@@ -151,12 +151,13 @@ const fetchDeviceSession = function(id, deviceKey) {
  */
 const fetchLastDeviceSession = function(options) {
   return function(dispatch, getState) {
-    const { deviceKey, cache } = options;
+    const { cache } = options;
+    let querySessions = null;
     if (cache) {
-      var querySessions = queryDeviceSessionsCache;
+      querySessions = queryDeviceSessionsCache;
     }
     else {
-      var querySessions = queryDeviceSessions;
+      querySessions = queryDeviceSessions;
     }
     return dispatch(querySessions(Object.assign({}, options, {type: 'SLIDING', length: 10})))
     .then(sessions => {

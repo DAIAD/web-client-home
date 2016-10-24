@@ -13,10 +13,6 @@ var { syncHistoryWithStore } = require('react-router-redux');
 var history = require('./routing/history');
 history = syncHistoryWithStore(history, store);
 
-//Actions
-var LocaleActions = require('./actions/LocaleActions');
-var UserActions = require('./actions/UserActions');
-
 var ReactIntl = require('react-intl');
 
 ReactIntl.addLocaleData(require('react-intl/locale-data/en'));

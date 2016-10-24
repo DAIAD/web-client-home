@@ -1,18 +1,16 @@
-var React = require('react');
 var { bindActionCreators } = require('redux');
 var { connect } = require('react-redux');
 //var { injectIntl } = require('react-intl');
 var injectIntl = require('react-intl').injectIntl;
 
 var { getChartTimeData } = require('../utils/chart');
-var { getDataSessions } = require('../utils/transformations');
 
 var SessionModal = require('../components/Session');
 
 var HistoryActions = require('../actions/HistoryActions');
 var moment = require('moment');
 
-function mapStateToProps(state, ownProps) {
+function mapStateToProps(state) {
   return {
     activeDeviceType: state.section.history.activeDeviceType,
     data: state.section.history.data,

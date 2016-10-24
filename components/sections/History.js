@@ -1,8 +1,6 @@
 var React = require('react');
-var { Link } = require('react-router');
-var { FormattedMessage, FormattedDate } = require('react-intl');
+var { FormattedDate } = require('react-intl');
 var bs = require('react-bootstrap');
-var Select = require('react-select');
 var CheckboxGroup = require('react-checkbox-group');
 var DatetimeInput = require('react-datetime');
 
@@ -82,7 +80,7 @@ function TimeNavigator(props) {
 var History = React.createClass({
 
   componentWillMount: function() {
-    const { synced, setActiveDeviceType, activeDeviceType } = this.props;
+    const { synced } = this.props;
 
     if (!synced) {
       //setActiveDeviceType(activeDeviceType, true);
@@ -91,9 +89,6 @@ var History = React.createClass({
   handleTypeSelect: function(key){
     this.props.setMetricFilter(key); 
   },
-  handleLastXSelect: function(key) {
-
-  }, 
   handlePeriodSelect: function(key){
     let time = null;
     if (key==="always"){
@@ -117,18 +112,6 @@ var History = React.createClass({
     }
     else if (key==="custom"){
       //time = timeUtil.today();
-    }
-    else if (key === "ten") {
-
-    }
-    else if (key === "twenty") {
-
-    }
-    else if (key === "fifty") {
-
-    }
-    else if (key === "customSliding") {
-
     }
     else{
       throw new Error('oops, shouldn\'t be here');
@@ -181,7 +164,7 @@ var History = React.createClass({
   },
   */
   render: function() {
-    const { intl, devices, amphiros, activeDevice, activeDeviceType, device, devType, timeFilter, time, metrics, periods, comparisons, deviceTypes } = this.props;
+    const { intl, amphiros, activeDevice, activeDeviceType, timeFilter, time, metrics, periods, comparisons, deviceTypes } = this.props;
     const _t = intl.formatMessage;
     return (
         <MainSection id="section.history">
@@ -214,7 +197,7 @@ var History = React.createClass({
             <bs.Tabs position='left' tabWidth={20} activeKey={this.props.activeDeviceType} onSelect={this.handleDeviceTypeSelect}>
               {
                deviceTypes 
-                .map((devType, i) => ( 
+                .map((devType) => ( 
                     <bs.Tab key={devType.id} eventKey={devType.id} title={devType.title} />
                  
                     ))
@@ -226,7 +209,7 @@ var History = React.createClass({
                 Checkbox => (
                   <div>
                     {
-                      amphiros.map((device, i) => 
+                      amphiros.map((device) => 
                       <label key={device.deviceKey}>
                         <Checkbox value={device.deviceKey} /> {device.name || device.macAddress || device.serial}
                       </label>
@@ -247,7 +230,7 @@ var History = React.createClass({
             {
               <bs.Tabs position='left' tabWidth={20} activeKey={this.props.comparison} onSelect={this.handleComparisonSelect}>
                 {
-                  comparisons.map((comparison, i) => (
+                  comparisons.map((comparison) => (
                     <bs.Tab key={comparison.id} eventKey={comparison.id} title={comparison.title} />
                              ))
                 }

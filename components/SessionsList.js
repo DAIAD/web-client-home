@@ -1,8 +1,6 @@
 var React = require('react');
-var Link = require('react-router').Link;
 var bs = require('react-bootstrap');
-var { injectIntl } = require('react-intl');
-var { FormattedMessage, FormattedRelative } = require('react-intl');
+var { FormattedRelative } = require('react-intl');
 var { IMAGES } = require('../constants/HomeConstants');
 
 function SessionListHeader (props) {
@@ -38,8 +36,8 @@ function SessionListHeader (props) {
 }
 
 function SessionListItem (props) {
-  const { firstname, time: {granularity}, intl } = props;
-  const { id, index, device, devType, devName, volume, difference, energyClass, timestamp, duration, friendlyDuration, percentDiff, temperature, history, measurements, date } = props.data;
+  const { firstname } = props;
+  const { id, device, devType, devName, volume, difference, energyClass, timestamp, friendlyDuration, percentDiff, temperature, history, date } = props.data;
   const highlight = devType === 'METER' ? difference : volume;
   const better = percentDiff != null ? percentDiff < 0 : null;
   const arrowClass = better===null ? 'dash':(better?"fa fa-arrow-down green":"fa fa-arrow-up red");

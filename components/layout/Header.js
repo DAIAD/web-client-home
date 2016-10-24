@@ -8,7 +8,7 @@ var LocaleSwitcher = require('../LocaleSwitcher');
 
 var { Logout } = require('../LoginForm');
 
-const { IMAGES, NOTIFICATION_TITLE_LENGTH } = require('../../constants/HomeConstants'); 
+const { IMAGES } = require('../../constants/HomeConstants'); 
 
 /* DAIAD Logo */
 function MainLogo() {
@@ -22,6 +22,8 @@ function MainLogo() {
 
 
 /* Main Menu */
+//TODO: commented out unused components
+/*
 function MenuItem(props) {
   return (
     <li>
@@ -31,8 +33,9 @@ function MenuItem(props) {
       </Link>
     </li>
   );
-}
-
+  }
+  */
+/*
 function MainMenu(props) {   
   return (
     <div className="main-menu">
@@ -50,7 +53,7 @@ function MainMenu(props) {
     </div>
   );
 }
-
+*/
 
 /* User options */
 
@@ -144,7 +147,7 @@ var NotificationMenuItem = React.createClass({
 });
 
 function NotificationList(props){
-  const maxLength = NOTIFICATION_TITLE_LENGTH;
+  //const maxLength = NOTIFICATION_TITLE_LENGTH;
   return (
     <div className="notification-list">
     <ul className="list-unstyled">
@@ -199,7 +202,7 @@ function NotificationArea (props) {
 }
 
 function ErrorDisplay (props) {
-  const { intl, errors, dismissError } = props;
+  const { errors, dismissError } = props;
   return errors ? 
     <div className='error-display'>
       <a onClick={() => dismissError()} className='error-display-x'>x</a>

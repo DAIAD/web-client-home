@@ -7,8 +7,8 @@
 
 var types = require('../constants/ActionTypes');
 var { push } = require('react-router-redux');
-var { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
-var { getTimeByPeriod, getPreviousPeriod, convertGranularityToPeriod, getGranularityByDiff  } = require('../utils/time');
+var { getDeviceKeysByType } = require('../utils/device');
+var { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff  } = require('../utils/time');
 var { getSessionById } = require('../utils/transformations');
 var { lastNFilterToLength } = require('../utils/general');
 
@@ -114,7 +114,6 @@ const fetchDeviceSession = function (id, deviceKey) {
     const found = getSessionById(sessions, id); 
     
     if (found && found.measurements){
-      console.log('found session in memory');
       //return new Promise((resolve, reject) => resolve());
       return Promise.resolve();
     }

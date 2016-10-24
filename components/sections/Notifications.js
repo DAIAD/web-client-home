@@ -1,14 +1,12 @@
 var React = require('react');
 
-var { Link } = require('react-router');
 var bs = require('react-bootstrap');
 var classNames = require('classnames');
-var { FormattedMessage, FormattedRelative } = require('react-intl');
+var { FormattedRelative } = require('react-intl');
 
-const { IMAGES, NOTIFICATION_TITLE_LENGTH } = require('../../constants/HomeConstants'); 
+const { IMAGES } = require('../../constants/HomeConstants'); 
 
 var Topbar = require('../layout/Topbar');
-var { SidebarLeft } = require('../layout/Sidebars');
 var MainSection = require('../layout/MainSection');
 var ChartBox = require('../helpers/ChartBox');
 
@@ -72,7 +70,7 @@ function NotificationMessage (props) {
 }
 
 function NotificationList(props){
-  const maxLength = NOTIFICATION_TITLE_LENGTH;
+  //const maxLength = NOTIFICATION_TITLE_LENGTH;
   return (
     <div className="notification-list">
     <ul className="list-unstyled">

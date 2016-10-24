@@ -1,5 +1,4 @@
 var types = require('../constants/ActionTypes');
-var timeUtil = require ('../utils/time');
 
 const initialState = {
   mode: "normal",
