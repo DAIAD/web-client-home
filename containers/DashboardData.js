@@ -77,7 +77,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const types = WIDGET_TYPES
   .filter(x => (deviceType ? stateProps.infoboxToAdd.deviceType === x.devType : null));
 
-  console.log('stateProps.infoboxes', stateProps.infoboxes);
   return {
     ...stateProps,
     ...dispatchProps,

@@ -1,52 +1,6 @@
 const moment = require('moment');
 const { convertGranularityToPeriod, getLowerGranularityPeriod, timeToBuckets } = require('./time');
 
-// TODO: commented out unused functions
-/*
-const getCount = function (metrics) {
-  return metrics.count?metrics.count:1;
-};
-
-const getTimestampIndex = function (points, timestamp) {
-    return points.findIndex((x) => (x[0]===timestamp));
-};
-*/
-
-
-// TODO: complete this±
-/*
-const getChartMeterCategories = function (time) {
-  if (period === 'year') {
-    return Array.from({length: 12}, (v, i) => i);
-  } else if (period === 'month') {
-    return Array.from({length: 4}, (v, i) => i);
-  } else if (period === 'week') {
-    return Array.from({length: 7}, (v, i) => i);
-  } else if (period === 'day') {
-    return Array.from({length: 24}, (v, i) => i);
-  }
-  return [];
-};
-*/
-/*
-   
-const getChartMeterCategories = function (period, intl) {
-  if (period === 'year') {
-    //    return Array.from({length: 12}, (v, i) => i);
-    return Array.from({length: 12}, (v, i) => intl.formatMessage({id:`months.${i}`}));
-  } else if (period === 'month') {
-    //    return Array.from({length: 4}, (v, i) => i);
-     return Array.from({length: 4}, (v, i) => `Week ${i+1}`);
-  } else if (period === 'week') {
-    //    return Array.from({length: 7}, (v, i) => i);
-    return Array.from({length: 7}, (v, i) => intl.formatMessage({id: `weekdays.${i}`}));
-  } else if (period === 'day') {
-    //    return Array.from({length: 24}, (v, i) => i);
-    return Array.from({length: 24}, (v, i) => `${i}:00`);
-  }
-  return [];
-};
-*/
 
 const getTimeLabelByGranularity = function (timestamp, granularity, intl) {
   if (granularity === 4) {
@@ -92,11 +46,11 @@ const getChartMeterCategoryLabels = function (xData, time, intl) {
 
 const getChartAmphiroCategories = function (period) {
   if (period === 'ten') {
-    return Array.from({ length: 10 }, (v, i) => `#${10 - i}`);
+    return Array.from({ length: 10 }, (v, i) => `#${i + 1}`);
   } else if (period === 'twenty') {
-    return Array.from({ length: 20 }, (v, i) => `#${20 - i}`);
+    return Array.from({ length: 20 }, (v, i) => `#${i + 1}`);
   } else if (period === 'fifty') {
-    return Array.from({ length: 50 }, (v, i) => `#${50 - i}`);
+    return Array.from({ length: 50 }, (v, i) => `#${i + 1}`);
   } 
   return [];
 };
@@ -111,11 +65,13 @@ const getChartTimeData = function (sessions, metric) {
 // for amphiro, ascending timestamps for meters
 
 const getChartAmphiroData = function (sessions, xAxisData, metric) {
+  if (!Array.isArray(sessions) 
+      || !Array.isArray(xAxisData)) {
+    //|| sessions.length !== xAxisData.length) {
+    throw new Error('Cant\'t create chart. Check provided data and category', sessions, xAxisData);
+  }
   return xAxisData.map((v, i, arr) => 
-   (i >= (arr.length - sessions.length)) 
-   && sessions[i - (arr.length - sessions.length)] ? 
-     sessions[i - (arr.length - sessions.length)][metric] 
-     : null,
+   sessions[i] ? sessions[i][metric] : null
    );
 };
 
@@ -156,10 +112,8 @@ const getChartMetadata = function (sessions, xAxisData, timeBased = true) {
     });
   }
   return xAxisData.map((v, i, arr) => 
-    (i >= (arr.length - sessions.length)) 
-    && sessions[i - (arr.length - sessions.length)] ? 
-    [sessions[i - (arr.length - sessions.length)].id, 
-      sessions[i - (arr.length - sessions.length)].timestamp] 
+     sessions[i] ? 
+       [sessions[i].id, sessions[i].timestamp]
       : [null, null],
   );
 };
