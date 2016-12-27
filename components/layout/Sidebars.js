@@ -1,16 +1,22 @@
-var React = require('react');
+const React = require('react');
 
-function SidebarLeft (props) {
+function SidebarLeft(props) {
   return (
-    <div className="sidebar-left" style={props.width?{width:props.width}:{}}>
+    <div 
+      className="sidebar-left" 
+      style={{ width: props.width }}
+    >
       { props.children }
     </div>
   );
 }
 
-function SidebarRight (props) {
+function SidebarRight(props) {
   return (
-    <div className="sidebar-right" style={props.width?{width:props.width}:{}}>
+    <div 
+      className="sidebar-right" 
+      style={{ width: props.width }}
+    >
       { props.children }
     </div>
   );

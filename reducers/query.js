@@ -1,4 +1,4 @@
-var types = require('../constants/ActionTypes');
+const types = require('../constants/ActionTypes');
 
 const initialState = {
   isLoading: false,
@@ -7,12 +7,7 @@ const initialState = {
   cache: {}
 };
 
-var query = function (state, action) {
-  //initial state
-  if (state === undefined) {
-    state = initialState;
-  }
-   
+const query = function (state = initialState, action) {
   switch (action.type) {
     case types.QUERY_REQUEST_START:
     case types.MESSAGES_REQUEST_START:
@@ -38,8 +33,10 @@ var query = function (state, action) {
             success: false,
             errors: action.errors
           });
-        }
-        break;
+        
+        default:
+          return state;
+      }
 
     case types.QUERY_DISMISS_ERROR:
       return Object.assign({}, state, {
@@ -49,7 +46,6 @@ var query = function (state, action) {
     case types.USER_RECEIVED_LOGOUT:
       return Object.assign({}, initialState);
 
-
     case types.QUERY_SET_CACHE: {
       return Object.assign({}, state, {
         cache: action.cache
@@ -57,19 +53,22 @@ var query = function (state, action) {
     }
 
     case types.QUERY_SAVE_TO_CACHE: {
-      let newCache = Object.assign({}, state.cache);
+      const newCache = { ...state.cache };
       newCache[action.key] = {
         data: action.data,
-        counter: 1
+        counter: 1,
       };
       return Object.assign({}, state, {
-        cache:  newCache
+        cache: newCache
       });
     }
 
     case types.QUERY_CACHE_ITEM_REQUESTED: {
-      let newCache = Object.assign({}, state.cache);
-      newCache[action.key] = Object.assign({}, newCache[action.key], {counter: newCache[action.key].counter+1});
+      const newCache = { ...state.cache };
+      newCache[action.key] = { 
+        ...newCache[action.key], 
+        counter: newCache[action.key].counter + 1,
+      };
       return Object.assign({}, state, {
         cache: newCache
       });

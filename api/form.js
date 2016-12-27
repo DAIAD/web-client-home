@@ -1,16 +1,16 @@
-var fetch = require('isomorphic-fetch');
+const fetch = require('isomorphic-fetch');
 require('es6-promise').polyfill();
 
-var formAPI = function(url, data, method="POST") {
-  
+
+const formAPI = function (url, data = {}, method = 'POST') {
   const { formData, csrf } = data; 
 
-  let fetchObj = {
-    method: method,
+  const fetchObj = {
+    method,
     credentials: 'same-origin',
     headers: {
-      'Accept': "application/json",
-      'X-Requested-With':'XMLHttpRequest',
+      'Accept': 'application/json',
+      'X-Requested-With': 'XMLHttpRequest',
       'X-CSRF-TOKEN': csrf
     },
     body: formData 
@@ -18,9 +18,8 @@ var formAPI = function(url, data, method="POST") {
 
   return fetch(url, fetchObj) 
   .then(response => response.json()
-                    .then(json => Object.assign({}, json, {csrf:response.headers.get('X-CSRF-TOKEN')})))
-  .catch(error => { throw new Error('response parsing failed', error); });
-  
+        .then(json => ({ ...json, csrf: response.headers.get('X-CSRF-TOKEN') })))
+  .catch((error) => { throw new Error('response parsing failed', error); });
 };
 
 module.exports = formAPI;

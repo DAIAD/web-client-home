@@ -1,6 +1,6 @@
-var React = require('react');
+const React = require('react');
 
-function Topbar (props) {
+function Topbar(props) {
   return (
     <div className="top-bar">
       { props.children }

@@ -5,43 +5,25 @@
  * @module LocaleActions
  */
 
-var localeAPI = require('../api/locales');
-var types = require('../constants/ActionTypes');
+const localeAPI = require('../api/locales');
+const types = require('../constants/ActionTypes');
 
-var { flattenMessages } = require('../utils/general');
+const { flattenMessages } = require('../utils/general');
 
-const receivedMessages = function(success, errors, locale, messages) {
+const receivedMessages = function (success, errors, locale, messages) {
   return {
     type: types.LOCALE_RECEIVED_MESSAGES,
-    success: success,
-    errors: errors,
-    locale: locale,
-    messages: messages
+    success,
+    errors,
+    locale,
+    messages,
   };
 };
 
-const requestedLocaleMessages = function(locale) {
+const requestedLocaleMessages = function (locale) {
   return {
     type: types.LOCALE_REQUEST_MESSAGES,
-    locale: locale
-  };
-};
-
-/**
- * Sets locale and fetches locale strings
- *
- * @param {String} locale - One of en, el, es, de, fr 
- * @return {Promise} Resolved or rejected promise with locale strings if resolved, errors if rejected
- */
-const setLocale = function(locale) {
-  return function(dispatch, getState) {
-    if (getState().locale.locale === locale){
-      return Promise.resolve(true);
-    }
-    //dispatch request messages to update state
-    dispatch(requestedLocaleMessages(locale));
-    //dispatch fetch messages to call API
-    return dispatch(fetchLocaleMessages(locale));
+    locale,
   };
 };
 
@@ -49,25 +31,43 @@ const setLocale = function(locale) {
  * Fetches locale strings
  *
  * @param {String} locale - One of en, el, es, de, fr
- * @return {Promise} Resolved or rejected promise with locale strings if resolved, errors if rejected
+ * @return {Promise} Resolved or rejected promise 
+ * with locale strings if resolved, errors if rejected
  */
-const fetchLocaleMessages = function(locale) {
-  return function(dispatch, getState) {
-    return localeAPI.fetchLocaleMessages({locale, csrf: getState().user.csrf})
+const fetchLocaleMessages = function (locale) {
+  return function (dispatch, getState) {
+    return localeAPI.fetchLocaleMessages({ locale })
     .then((messages) => {
-        dispatch(receivedMessages(true, null, locale, flattenMessages(messages)));
-        return messages;
+      dispatch(receivedMessages(true, null, locale, flattenMessages(messages)));
+      return messages;
     })
     .catch((errors) => {
-        dispatch(receivedMessages(false, errors, null, []));
-        return errors;
+      dispatch(receivedMessages(false, errors, null, []));
+      return errors;
     });
   };
 };
 
-
+/**
+ * Sets locale and fetches locale strings
+ *
+ * @param {String} locale - One of en, el, es, de, fr 
+ * @return {Promise} Resolved or rejected promise 
+ * with locale strings if resolved, errors if rejected
+ */
+const setLocale = function (locale) {
+  return function (dispatch, getState) {
+    if (getState().locale.locale === locale) {
+      return Promise.resolve(true);
+    }
+    // dispatch request messages to update state
+    dispatch(requestedLocaleMessages(locale));
+    // dispatch fetch messages to call API
+    return dispatch(fetchLocaleMessages(locale));
+  };
+};
 
 module.exports = {
   fetchLocaleMessages,
-  setLocale
+  setLocale,
 };

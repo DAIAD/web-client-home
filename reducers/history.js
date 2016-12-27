@@ -1,16 +1,16 @@
-var types = require('../constants/ActionTypes');
+const types = require('../constants/ActionTypes');
 
-var { updateOrAppendToSession } = require('../utils/transformations');
-var { thisYear } = require('../utils/time');
+const { updateOrAppendToSession } = require('../utils/transformations');
+const { thisYear } = require('../utils/time');
 
 const initialState = {
-  filter: "difference",
-  timeFilter: "year",
-  sortFilter: "timestamp",
-  sortOrder: "desc",
+  filter: 'difference',
+  timeFilter: 'year',
+  sortFilter: 'timestamp',
+  sortOrder: 'desc',
   activeDevice: [],
-  activeDeviceType: "METER",
-  activeSessionFilter: "volume",
+  activeDeviceType: 'METER',
+  activeSessionFilter: 'volume',
   activeSession: null,
   synced: false,
   comparison: null,
@@ -19,14 +19,8 @@ const initialState = {
   time: thisYear()
 };
  
-var history = function (state, action) {
-  //initial state
-  if (state === undefined) {
-    state = initialState;
-  }
-   
+const history = function (state = initialState, action) {
   switch (action.type) {
-    
     case types.HISTORY_SET_SESSIONS:
       return Object.assign({}, state, {
         data: action.sessions

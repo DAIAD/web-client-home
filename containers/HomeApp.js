@@ -1,71 +1,80 @@
-// Dependencies
-var { bindActionCreators } = require('redux');
-var { connect } = require('react-redux');
+const { bindActionCreators } = require('redux');
+const { connect } = require('react-redux');
 
-// Components
-var HomeRoot = require('../components/layout/HomeRoot');
+const HomeRoot = require('../components/layout/HomeRoot');
 
-// Actions
-var { login, logout, refreshProfile, letTheRightOneIn } = require('../actions/UserActions');
-var { setReady } = require('../actions/InitActions');
-var { setLocale } = require('../actions/LocaleActions');
-var { linkToMessage:linkToNotification } = require('../actions/MessageActions');
-var { dismissError } = require('../actions/QueryActions');
+const { login, logout, refreshProfile, letTheRightOneIn } = require('../actions/UserActions');
+const { setReady } = require('../actions/InitActions');
+const { setLocale } = require('../actions/LocaleActions');
+const { linkToMessage: linkToNotification } = require('../actions/MessageActions');
+const { dismissError } = require('../actions/QueryActions');
 
-var { combineMessages } = require('../utils/messages');
+const { combineMessages } = require('../utils/messages');
 
 function mapStateToProps(state) {
-    return {
-      user: state.user,
-      ready: state.user.ready,
-      locale: state.locale,
-      errors: state.query.errors,
-      loading: state.user.status.isLoading || state.locale.status.isLoading || state.query.isLoading,
-      messages: combineMessages([
-        {name: 'alerts', values: state.messages.alerts}, 
-        {name: 'announcements', values: state.messages.announcements}, 
-        {name:'recommendations', values: state.messages.recommendations}, 
-        {name: 'tips', values: state.messages.tips}
-      ]),
-    };
+  return {
+    user: state.user,
+    ready: state.user.ready,
+    locale: state.locale,
+    errors: state.query.errors,
+    loading: state.user.status.isLoading 
+      || state.locale.status.isLoading 
+      || state.query.isLoading,
+    messages: state.messages,
+  };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(Object.assign({}, {login, logout, refreshProfile, letTheRightOneIn, setLocale, linkToNotification, dismissError, setReady }), dispatch);
+  return bindActionCreators({ 
+    login, 
+    logout, 
+    refreshProfile, 
+    letTheRightOneIn, 
+    setLocale, 
+    linkToNotification, 
+    dismissError, 
+    setReady, 
+  }, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  return Object.assign({}, 
-                       ownProps, 
-                       dispatchProps,
-                       stateProps,
-                       { 
-                         init: () => {
-                           //init locale
-                           dispatchProps.setLocale(properties.locale)
-                           .then(() => {
-                             //refresh profile if session exists
-                             if (properties.reload) {
-                               dispatchProps.refreshProfile()
-                                 .then(res => { 
-                                   if (res.success) { 
-                                     dispatchProps.setReady(); 
-                                     dispatchProps.letTheRightOneIn();
-                                   }
-                                 }); 
-                             }
-                             else {
-                               dispatchProps.setReady();
-                             }
-                           });
-                         },
-                         login: (user, pass) => dispatchProps.login(user, pass)
-                                                .then(res => res.success ? dispatchProps.letTheRightOneIn() : null), 
-                         unreadNotifications: stateProps.messages.reduce(((prev, curr) => !curr.acknowledgedOn ? prev+1 : prev), 0)
-                       }
-                      );
+  const messageArray = combineMessages([
+      { name: 'alerts', values: stateProps.messages.alerts },
+      { name: 'announcements', values: stateProps.messages.announcements },
+      { name: 'recommendations', values: stateProps.messages.recommendations },
+      { name: 'tips', values: stateProps.messages.tips },
+  ]);
+
+  return { 
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps, 
+    init: () => {
+      // init locale
+      dispatchProps.setLocale(properties.locale)
+      .then(() => {
+        // refresh profile if session exists
+        if (properties.reload) {
+          dispatchProps.refreshProfile()
+          .then((res) => {
+            if (res.success) {
+              dispatchProps.setReady();
+              dispatchProps.letTheRightOneIn();
+            }
+          });
+        } else {
+          dispatchProps.setReady();
+        }
+      });
+    },
+    login: (user, pass) => dispatchProps.login(user, pass)
+      .then(res => (res.success ? dispatchProps.letTheRightOneIn() : null)),
+    unreadNotifications: messageArray
+      .reduce((prev, curr) => (!curr.acknowledgedOn ? prev + 1 : prev), 0),
+    messages: messageArray,
+  };
 }
 
 
-var HomeApp = connect(mapStateToProps, mapDispatchToProps, mergeProps)(HomeRoot);
-module.exports = HomeApp; 
+const HomeApp = connect(mapStateToProps, mapDispatchToProps, mergeProps)(HomeRoot);
+module.exports = HomeApp;

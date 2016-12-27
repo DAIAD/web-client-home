@@ -1,22 +1,21 @@
-var types = require('../constants/ActionTypes');
-var locales = function (state, action) {
-  if (state === undefined) {
-    state = {
-      status: {
-        success: false,
-        errors: null,
-        isLoading: false
-      },
-      messages: null,
-      locale: null
-    };
-  }
- 
+const types = require('../constants/ActionTypes');
+
+const initialState = {
+  status: {
+    success: false,
+    errors: null,
+    isLoading: false,
+  },
+  messages: null,
+  locale: null,
+};
+
+const locales = function (state = initialState, action) {
   switch (action.type) {
     case types.LOCALE_REQUEST_MESSAGES:
       return Object.assign({}, state, {
         status: {
-          isLoading: true
+          isLoading: true,
         }
       });
 
@@ -27,7 +26,7 @@ var locales = function (state, action) {
             status: {
               success: true,
               errors: null,
-              isLoading: false
+              isLoading: false,
             },
             messages: action.messages,
             locale: action.locale
@@ -41,8 +40,10 @@ var locales = function (state, action) {
               isLoading: false,
             },
           });
+        
+        default:
+          return state;
       }
-      break;
 
     default:
       return state;

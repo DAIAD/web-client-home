@@ -1,10 +1,10 @@
-var callAPI = require('./base');
+const callAPI = require('./base');
 
-var DeviceAPI = {
-  querySessions: function(data) {
+const DeviceAPI = {
+  querySessions: function (data) {
     return callAPI('/action/device/index/session/query', data);
   },
-  getSession: function(data) {
+  getSession: function (data) {
     return callAPI('/action/device/index/session', data);
   }
 };

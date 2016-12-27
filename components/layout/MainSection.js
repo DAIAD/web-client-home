@@ -1,12 +1,12 @@
-var React = require('react');
+const React = require('react');
 
-function MainSection (props) {
+function MainSection(props) {
   return (
     <section className="main-section" >
       <div className={props.id}>
         {props.children}
-        </div>
-      </section>
+      </div>
+    </section>
   );
 }
 

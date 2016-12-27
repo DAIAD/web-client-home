@@ -1,16 +1,15 @@
-var React = require('react');
+const React = require('react');
 
+const MainSection = require('../layout/MainSection');
 
-var Settings = React.createClass({
-  render: function() {
-    return (
-      <div>
-        {
-          this.props.children
-        }
-      </div>
-    );
-  }
-});
+const Settings = function (props) {
+  return (
+    <MainSection id="section.settings"> 
+      {
+        React.cloneElement(props.children, { ...props })
+      }
+    </MainSection>
+  );
+};
 
 module.exports = Settings;

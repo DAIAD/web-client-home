@@ -1,18 +1,18 @@
-var types = require('../constants/ActionTypes');
+const types = require('../constants/ActionTypes');
 
-var user = function (state, action) {
-  if (state === undefined) {
-    state = {
-      status: {
-        isLoading: false
-      },
-      ready: false,
-      isAuthenticated: false,
-      csrf: null,
-      profile: {}
-    };
+const initialState = {
+  status: {
+    isLoading: false
+  },
+  ready: false,
+  isAuthenticated: false,
+  csrf: null,
+  profile: {
+    devices: []
   }
- 
+};
+
+const user = function (state = initialState, action) { 
   switch (action.type) {
     case types.HOME_IS_READY:
       return Object.assign({}, state, {
@@ -46,8 +46,10 @@ var user = function (state, action) {
               errors: action.errors
             }
           });
+        
+        default: 
+          return state;
       }
-      return state;
 
     case types.USER_LET_IN:
       return Object.assign({}, state, {
@@ -72,6 +74,7 @@ var user = function (state, action) {
             },
             isAuthenticated: false,
             profile: {},
+            csrf: null,
           });
         
         case false:
@@ -82,8 +85,10 @@ var user = function (state, action) {
               errors: action.errors
             }
           });
-        }
-        return state;
+        
+        default: 
+          return state;
+      }
 
     case types.USER_SESSION_SET_CSRF:
       return Object.assign({}, state, {

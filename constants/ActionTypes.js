@@ -1,9 +1,9 @@
-var keyMirror = require('keymirror');
+const keyMirror = require('keymirror');
 
 module.exports = keyMirror({
   HOME_IS_READY: null,
 
-  LOCALE_CHANGE : null,
+  LOCALE_CHANGE: null,
   LOCALE_REQUEST_MESSAGES: null,
   LOCALE_RECEIVED_MESSAGES: null,
   
@@ -11,7 +11,7 @@ module.exports = keyMirror({
   USER_RECEIVED_LOGIN: null,
   USER_REQUESTED_LOGOUT: null,
   USER_RECEIVED_LOGOUT: null,
-  USER_PROFILE_REFRESH : null,
+  USER_PROFILE_REFRESH: null,
   USER_PROFILE_UPDATE: null,
   USER_SESSION_SET_CSRF: null,
   USER_LET_IN: null,
@@ -49,9 +49,9 @@ module.exports = keyMirror({
   HISTORY_SET_SORT_FILTER: null,
   HISTORY_SET_SORT_ORDER: null,
 
-  DASHBOARD_SWITCH_MODE:null,
-  DASHBOARD_SET_DIRTY:null,
-  DASHBOARD_RESET_DIRTY:null,
+  DASHBOARD_SWITCH_MODE: null,
+  DASHBOARD_SET_DIRTY: null,
+  DASHBOARD_RESET_DIRTY: null,
   DASHBOARD_SET_LAST_SESSION: null,
   DASHBOARD_SET_INFOBOXES: null,
   DASHBOARD_ADD_INFOBOX: null,
@@ -75,7 +75,7 @@ module.exports = keyMirror({
   MESSAGE_SET_EXTRA: null,
 
   FORM_SET: null,
-  FORM_RESET: null
+  FORM_RESET: null,
 
 });
 

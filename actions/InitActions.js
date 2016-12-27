@@ -5,15 +5,26 @@
  * @module UserActions
  */
 
-var types = require('../constants/ActionTypes');
-var LocaleActions = require('./LocaleActions');
-var DashboardActions = require('./DashboardActions');
-var HistoryActions = require('./HistoryActions');
-var FormActions = require('./FormActions');
-
-const { fetchAll:fetchAllMessages } = require('./MessageActions');
-
+const types = require('../constants/ActionTypes');
+const LocaleActions = require('./LocaleActions');
+const DashboardActions = require('./DashboardActions');
+const HistoryActions = require('./HistoryActions');
+const FormActions = require('./FormActions');
+const { letTheRightOneIn } = require('./UserActions');
+const { fetchAll: fetchAllMessages } = require('./MessageActions');
 const { getMeterCount } = require('../utils/device');
+
+/**
+ * Action dispatched when application has been initialized 
+ * (used for loading locale messages & reload if active session
+ *
+ */
+
+const setReady = function () {
+  return {
+    type: types.HOME_IS_READY,
+  };
+};
 
 /**
  * Call all necessary actions to initialize app with profile data 
@@ -21,55 +32,65 @@ const { getMeterCount } = require('../utils/device');
  * @param {Object} profile - profile object as returned from server
  */
 const initHome = function (profile) {
-  return function(dispatch, getState) {
-
+  return function (dispatch, getState) {
     dispatch(fetchAllMessages());
 
     if (profile.configuration) {
-        const configuration = JSON.parse(profile.configuration);
-        if (configuration.infoboxes) dispatch(DashboardActions.setInfoboxes(configuration.infoboxes));
-        if (configuration.layout) dispatch(DashboardActions.updateLayout(configuration.layout, false));
-
+      const configuration = JSON.parse(profile.configuration);
+      if (configuration.infoboxes) {
+        dispatch(DashboardActions.setInfoboxes(configuration.infoboxes));
+      }
+      if (configuration.layout) {
+        dispatch(DashboardActions.updateLayout(configuration.layout, false));
+      }
     }
 
     if (getMeterCount(getState().user.profile.devices) === 0) {
       dispatch(HistoryActions.setActiveDeviceType('AMPHIRO', true));
       
-      dispatch(FormActions.setForm('infoboxToAdd',{
+      dispatch(FormActions.setForm('infoboxToAdd', {
         deviceType: 'AMPHIRO',
         type: 'totalVolumeStat',
-        title : 'Shower volume',
+        title: 'Shower volume',
       }));
-    }
-    else {
+    } else {
       dispatch(HistoryActions.setActiveDeviceType('METER', true));
-      }
+    }
+ 
+    const { 
+      firstname, 
+      lastname, 
+      email, 
+      username, 
+      locale, 
+      address, 
+      zip, 
+      country, 
+      timezone, 
+    } = profile;
 
-    const { firstname, lastname, email, username, locale, address, zip, country, timezone } = profile;
-    const profileData = { firstname, lastname, email, username, locale, address, zip, country, timezone };
+    const profileData = { 
+      firstname, 
+      lastname, 
+      email, 
+      username, 
+      locale,
+      address, 
+      zip, 
+      country, 
+      timezone, 
+    };
     dispatch(FormActions.setForm('profileForm', profileData));
     
     return dispatch(DashboardActions.fetchAllInfoboxesData())
     .then(() => {
       dispatch(LocaleActions.setLocale(profile.locale));
-      return Promise.resolve({success:true, profile});
+      return Promise.resolve({ success: true, profile });
     });
-
-  };
-};
-
-/**
- * Action dispatched when application has been initialized 
- * (used for loading locale messages & reload if active session
- *
- */
-const setReady = function() {
-  return {
-    type: types.HOME_IS_READY
   };
 };
 
 module.exports = {
   initHome,
-  setReady
+  setReady,
 };

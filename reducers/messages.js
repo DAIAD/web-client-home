@@ -1,4 +1,4 @@
-var types = require('../constants/ActionTypes');
+const types = require('../constants/ActionTypes');
 
 const initialState = {
   activeTab: 'alerts',
@@ -6,23 +6,21 @@ const initialState = {
   alerts: [],
   recommendations: [],
   tips: [],
-  announcements: []
+  announcements: [],
 };
 
-var messages = function (state, action) {
-  //initial state
-  if (state === undefined) {
-    state = initialState;
-  }
-   
+const messages = function (state = initialState, action) {
   switch (action.type) {
     case types.MESSAGES_SET:
       return Object.assign({}, state, action.messages);
 
     case types.MESSAGES_APPEND: {
-      let messages = state[action.category].slice().concat(action.messages);
-      let newState = Object.assign({}, state);
-      newState[action.category] = messages;
+      const newMessages = state[action.category]
+      .slice()
+      .concat(action.messages);
+
+      const newState = { ...state };
+      newState[action.category] = newMessages;
 
       return newState;
     }
@@ -39,17 +37,21 @@ var messages = function (state, action) {
       });
 
     case types.MESSAGE_SET_READ: {
-      let messages = state[action.category].map(m => m.id === action.id ? Object.assign({}, m, {acknowledgedOn: action.timestamp}) : m);
-      let newState = Object.assign({}, state);
-      newState[action.category] = messages;
+      const newMessages = state[action.category]
+      .map(m => m.id === action.id ? ({ ...m, acknowledgedOn: action.timestamp }) : m);
+
+      const newState = { ...state };
+      newState[action.category] = newMessages;
       
       return newState;
     }
   
     case types.MESSAGE_SET_EXTRA: {
-      let messages = state[action.category].map(m => m.id === action.id ? Object.assign({}, m, action.extra) : m);
-      let newState = Object.assign({}, state);
-      newState[action.category] = messages;
+      const newMessages = state[action.category]
+      .map(m => m.id === action.id ? ({ ...m, ...action.extra }) : m);
+
+      const newState = { ...state };
+      newState[action.category] = newMessages;
       
       return newState;
     }

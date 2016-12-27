@@ -6,7 +6,7 @@
  * @module FormActions
  */
 
-var types = require('../constants/ActionTypes');
+const types = require('../constants/ActionTypes');
 
 /**
  * Sets form data
@@ -14,11 +14,11 @@ var types = require('../constants/ActionTypes');
  * @param {Object} formData - The data to set 
  * 
  */
-const setForm = function(form, formData) {
+const setForm = function (form, formData) {
   return {
     type: types.FORM_SET,
     form,
-    formData
+    formData,
   };
 };
 
@@ -27,7 +27,7 @@ const setForm = function(form, formData) {
  * @param {String} form - The id of the form
  * 
  */
-const resetForm = function(form) {
+const resetForm = function (form) {
   return {
     type: types.FORM_RESET,
     form,
@@ -36,6 +36,6 @@ const resetForm = function(form) {
 
 module.exports = {
   setForm,
-  resetForm
+  resetForm,
 };
 

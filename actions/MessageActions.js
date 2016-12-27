@@ -5,37 +5,39 @@
  * @module MessageActions
  */
 
-var { push } = require('react-router-redux');
+const { push } = require('react-router-redux');
 
-const { MESSAGE_TYPES } = require('../constants/HomeConstants');
-var types = require('../constants/ActionTypes');
-var messageAPI = require('../api/message');
+const QueryActions = require('./QueryActions');
 
-var QueryActions = require('./QueryActions');
+const messageAPI = require('../api/message');
 
 const { getTypeByCategory, getInfoboxByAlertType } = require('../utils/messages');
 
-const requestedMessages = function() {
+const { MESSAGE_TYPES } = require('../constants/HomeConstants');
+const types = require('../constants/ActionTypes');
+
+
+const requestedMessages = function () {
   return {
     type: types.MESSAGES_REQUEST_START,
   };
 };
 
-const receivedMessages = function(success, errors) {
+const receivedMessages = function (success, errors) {
   return {
     type: types.MESSAGES_REQUEST_END,
     success,
-    errors
+    errors,
   };
 };
 
-const requestedMessageAck = function() {
+const requestedMessageAck = function () {
   return {
     type: types.MESSAGES_ACK_REQUEST_START,
   };
 };
 
-const receivedMessageAck = function(success, errors) {
+const receivedMessageAck = function (success, errors) {
   return {
     type: types.MESSAGES_ACK_REQUEST_END,
     success,
@@ -48,7 +50,7 @@ const setMessageExtra = function (id, category, extra) {
     type: types.MESSAGE_SET_EXTRA,
     id,
     category,
-    extra
+    extra,
   };
 };
 
@@ -57,12 +59,12 @@ const setMessageRead = function (id, category, timestamp) {
     type: types.MESSAGE_SET_READ,
     id,
     category,
-    timestamp
+    timestamp,
   };
 };
 
 const setMessages = function (response) {
-  let messages = {};
+  const messages = {};
   const { alerts, recommendations, tips, announcements } = response;
   if (alerts.length > 0) messages.alerts = alerts;
   if (announcements.length > 0) messages.announcements = announcements;
@@ -71,22 +73,114 @@ const setMessages = function (response) {
 
   return {
     type: types.MESSAGES_SET,
-    messages
+    messages,
   };
 };
-//TODO: commented out unused function
-/*
-const appendMessages = function (type, messages) {
-  if (!type || !messages) throw new Error('Not sufficient data provided for append messages', type, messages);
-  if (!Array.isArray(messages)) throw new Error('Messages in append messages action must be of type array: ', messages);
-  if (!(type === 'alerts' || type === 'announcements' || type === 'recommendations' || type === 'tips')) throw new Error('Append messages failed because type is not supported: ', type);
+
+/**
+ * Acknowledge message
+ *
+ * @param {Number} id - Message id 
+ * @param {String} category - The message category, a friendlier name for type 
+ *                                One of alerts, tips, recommendations, announcements for  
+ *                                        ALERT, RECOMMENDATION_STATIC, 
+ *                                        RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
+ * @param {Number} timestamp - The timestamp of the time of acknowledgement
+ */
+const acknowledge = function (id, category, timestamp) {
+  return function (dispatch, getState) {
+    if (!id || !category || !timestamp) {
+      throw new Error(`Not sufficient data provided for message acknowledgement. (id, type, timestamp): ${id}, ${category}, ${timestamp}`);
+    }
+
+    const message = getState().messages[category].find(x => x.id === id);
+    
+    if (message && message.acknowledgedOn != null) {
+      return Promise.resolve();
+    }
+    dispatch(requestedMessageAck());
+
+    const type = getTypeByCategory(category);
+    const data = {
+      messages: [{ id, type, timestamp }], 
+      csrf: getState().user.csrf,
+    };
+
+    return messageAPI.acknowledge(data)
+    .then((response) => {
+      if (!response.success) {
+        console.error(response.errors && response.errors.length > 0 ? response.errors[0] : 'unknown');
+      }
+      
+      dispatch(receivedMessageAck(response.success, response.errors));
+      dispatch(setMessageRead(id, category, timestamp));
+      
+      return response;
+    })
+    .catch((error) => {
+      dispatch(receivedMessageAck(false, error));
+      throw error;
+    });
+  };
+};
+
+/**
+ * Set active message category 
+ *
+ * @param {String} category - The message category, a friendlier name for type 
+ *                                One of alerts, tips, recommendations, announcements for  
+ *                                        ALERT, RECOMMENDATION_STATIC, 
+ *                                        RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
+ */
+const setActiveTab = function (category) {
+  if (!(category === 'alerts' 
+        || category === 'announcements' 
+        || category === 'recommendations' 
+        || category === 'tips')) {
+    throw new Error('Tab needs to be one of alerts, announcements, recommendations, tips. Provided: ', category);
+  }
+
   return {
-    type: types.MESSAGES_APPEND,
-    category: type,
-    messages
+    type: types.MESSAGES_SET_ACTIVE_TAB,
+    category,
   };
 };
-*/
+
+/**
+ * Set active message id and acknowledge
+ * Important! the message category must have been set otherwise
+ *
+ * @param {Number} id - The message id
+ */
+const setActiveMessageId = function (id) {
+  return function (dispatch, getState) {
+    if (!id) throw new Error('Not sufficient data provided for selecting message, missing id');
+
+    dispatch({
+      type: types.MESSAGES_SET_ACTIVE,
+      id,
+    });
+
+    const category = getState().messages.activeTab;
+    const activeMessageIndex = getState().messages[category].findIndex(x => x.id === id);
+    const activeMessage = activeMessageIndex != null ? 
+      getState().messages[category][activeMessageIndex] 
+      : {};
+
+    dispatch(acknowledge(id, category, new Date().getTime()));
+
+    if (category === 'alerts') {
+      const infobox = getInfoboxByAlertType(activeMessage.alert, activeMessage.createdOn);
+      if (!infobox) return;
+
+      dispatch(QueryActions.fetchInfoboxData(infobox)) 
+      .then(data => dispatch(setMessageExtra(id, category, { extra: { ...infobox, ...data } })))
+      .catch((error) => {
+        console.error('Oops, sth went wrong in setting message extra data', error);
+      });
+    }
+  };
+};
 
 /**
  * Updates all message options provided and switches to message section
@@ -96,7 +190,7 @@ const appendMessages = function (type, messages) {
  * @param {Array} options.category - Message category to set active 
  */
 const linkToMessage = function (options) {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const { id, category } = options;
 
     if (category) dispatch(setActiveTab(category));
@@ -111,32 +205,35 @@ const linkToMessage = function (options) {
  *
  * @param {Object[]} options - Fetch messages options array of objects
  * @param {String} options.type - The message type to fetch. 
- *                                One of ALERT, RECOMMENDATION_STATIC, RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
+ *                                One of ALERT, RECOMMENDATION_STATIC, 
+ *                                RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
  */
 const fetch = function (options) {
-  return function(dispatch, getState) {
-
+  return function (dispatch, getState) {
     if (!Array.isArray(options)) throw new Error('Fetch requires array of options:', options);
 
     dispatch(requestedMessages());
 
-    const data = Object.assign({}, {pagination: options}, {csrf: getState().user.csrf});
-
+    const data = {
+      pagination: options,
+      csrf: getState().user.csrf,
+    };
     return messageAPI.fetch(data)
-    .then(response => {
-      
+    .then((response) => {
       if (!response || !response.success) {
-        throw new Error (response && response.errors && response.errors.length > 0 ? response.errors[0].code : 'unknownError');
-        }
-
+        const errorCode = response && response.errors && response.errors.length > 0 ? 
+                        response.errors[0].code 
+                          : 'unknownError';
+        throw new Error(errorCode);
+      }
       dispatch(receivedMessages(response.success, null));
 
       return response;
-      })
-      .catch((error) => {
-        console.error('Caught error in messages fetch:', error); 
-        dispatch(receivedMessages(false, error));
-      });
+    })
+    .catch((error) => {
+      console.error('Caught error in messages fetch:', error); 
+      dispatch(receivedMessages(false, error));
+    });
   };
 };
 
@@ -144,108 +241,12 @@ const fetch = function (options) {
  * Fetch all messages in descending order (most recent first)
  */
 const fetchAll = function () {
-  return function(dispatch, getState) {
-    dispatch(fetch(MESSAGE_TYPES.map(x => Object.assign({}, x, {ascending: false}))))
-    .then(response => response && response.success ? dispatch(setMessages(response)) : response);
-  };
-};
-
-/**
- * Acknowledge message
- *
- * @param {Number} id - Message id 
- * @param {String} category - The message category, a friendlier name for type 
- *                                One of alerts, tips, recommendations, announcements for  
- *                                        ALERT, RECOMMENDATION_STATIC, RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
- *                                respectively
- * @param {Number} timestamp - The timestamp of the time of acknowledgement
- */
-const acknowledge = function (id, category, timestamp) {
-  return function(dispatch, getState) {
-    if (!id || !category || !timestamp) throw new Error(`Not sufficient data provided for message acknowledgement. (id, type, timestamp): ${id}, ${category}, ${timestamp}`);
-
-    const message = getState().messages[category].find(x => x.id === id);
-    
-    if (message && message.acknowledgedOn != null) {
-      return Promise.resolve();
-    }
-    dispatch(requestedMessageAck());
-
-    const type = getTypeByCategory(category);
-    const data = Object.assign({}, {messages: [{id, type, timestamp}]}, {csrf: getState().user.csrf});
-
-    return messageAPI.acknowledge(data)
-    .then(response => {
-
-      if (!response.success) {
-        console.error(response.errors && response.errors.length > 0 ? response.errors[0] : 'unknown');
-      }
-      
-      dispatch(receivedMessageAck(response.success, response.errors));
-      dispatch(setMessageRead(id, category, timestamp));
-      
-      return response;
-      })
-      .catch((error) => {
-        dispatch(receivedMessageAck(false, error));
-        throw error;
-      });
-  };
-};
-
-/**
- * Set active message category 
- *
- * @param {String} category - The message category, a friendlier name for type 
- *                                One of alerts, tips, recommendations, announcements for  
- *                                        ALERT, RECOMMENDATION_STATIC, RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
- *                                respectively
- */
-const setActiveTab = function (category) {
-  if (!(category === 'alerts' || category === 'announcements' || category === 'recommendations' || category === 'tips')) {
-    throw new Error ('Tab needs to be one of alerts, announcements, recommendations, tips. Provided: ', category);
-  }
-
-  return {
-    type: types.MESSAGES_SET_ACTIVE_TAB,
-    category
-  };
-};
-
-/**
- * Set active message id and acknowledge
- * Important! the message category must have been set otherwise
- *
- * @param {Number} id - The message id
- */
-const setActiveMessageId = function (id) {
-  return function(dispatch, getState) {
-    if (!id) throw new Error('Not sufficient data provided for selecting message, missing id');
-
-    dispatch({
-      type: types.MESSAGES_SET_ACTIVE,
-      id
-    });
-
-    const category = getState().messages.activeTab;
-    const activeMessageIndex = getState().messages[category].findIndex(x => x.id === id);
-    const activeMessage = activeMessageIndex != null ? getState().messages[category][activeMessageIndex] : null;
-
-    dispatch(acknowledge(id, category, new Date().getTime()));
-  
-
-    if (category === 'alerts') {
-
-      const infobox = getInfoboxByAlertType(activeMessage ? activeMessage.alert : null, activeMessage ? activeMessage.createdOn : null);
-      if (!infobox) return;
-
-      dispatch(QueryActions.fetchInfoboxData(infobox)) 
-      .then(data => dispatch(setMessageExtra(id, category, {extra: Object.assign({}, infobox, data)})))
-      .catch(error => {
-        console.error('Oops, sth went wrong in setting message extra data', error);
-      });
-    }
-
+  return function (dispatch, getState) {
+    dispatch(fetch(MESSAGE_TYPES.map(x => ({ ...x, ascending: false }))))
+    .then(response => (response && response.success ? 
+          dispatch(setMessages(response)) 
+          : response),
+         );
   };
 };
 
@@ -255,5 +256,5 @@ module.exports = {
   fetchAll,
   acknowledge,
   setActiveTab,
-  setActiveMessageId
+  setActiveMessageId,
 };

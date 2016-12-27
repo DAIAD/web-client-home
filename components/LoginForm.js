@@ -1,75 +1,70 @@
-// Dependencies
-var React = require('react');
-var FormattedMessage = require('react-intl').FormattedMessage;
+const React = require('react');
+const { FormattedMessage } = require('react-intl');
 const { IMAGES } = require('../constants/HomeConstants');
-var classNames = require('classnames');
 
 
-var Login = React.createClass({
-  onLogin: function(e) {
-    e.preventDefault();
-    this.props.login(this.refs.username.value, this.refs.password.value);
+const Login = React.createClass({
+  componentDidMount: function () {
+    this.username = null;
+    this.password = null;
   },
-  render: function() {
+  onLogin: function (e) {
+    e.preventDefault();
+    this.props.login(this.username, this.password);
+  }, 
+  render: function () {
     const { intl, isAuthenticated } = this.props;
     const _t = intl.formatMessage;
-    return isAuthenticated ? (
-      <div/>
-    ) : (
-    <div className="form-login-container">
-      <h3><FormattedMessage id="section.login" /></h3>
-      <form key="login" className="form-login" action={this.props.action}>
-        <div className="form-group">
-          <input id="username" name="username" type="text" ref="username"
-            placeholder={_t({ id: 'loginForm.placehoder.username'})} className="form-control" />
-        </div>
-        <div className="form-group" >
-          <input id="password" name="password" type="password" ref="password"
-            placeholder={_t({ id: 'loginForm.placehoder.password'})} className="form-control" />
-        </div>
-        <button type="submit"
+    return isAuthenticated ? 
+      <div />
+      : ( 
+      <div className="form-login-container">
+        <h3><FormattedMessage id="section.login" /></h3>
+        <form key="login" className="form-login" action={this.props.action}>
+          <div className="form-group">
+            <input 
+              id="username" 
+              name="username" 
+              type="text" 
+              onChange={(e) => { this.username = e.target.value; }}
+              placeholder={_t({ id: 'loginForm.placehoder.username' })} 
+              className="form-control" 
+            />
+          </div>
+          <div className="form-group" >
+            <input 
+              id="password" 
+              name="password" 
+              type="password" 
+              onChange={(e) => { this.password = e.target.value; }}
+              placeholder={_t({ id: 'loginForm.placehoder.password' })} 
+              className="form-control" 
+            />
+          </div>
+          <button 
+            type="submit"
             className="btn btn-primary action-login"
-            onClick={this.onLogin} >
-          <FormattedMessage id="loginForm.button.signin" />
-        </button> 
-      </form>
-      
-      <div className="login-errors">
+            onClick={this.onLogin} 
+          >
+            <FormattedMessage id="loginForm.button.signin" />
+          </button> 
+        </form>
+        <div className="login-errors">
           {
-            this.props.errors?<span><img src={`${IMAGES}/warning.svg`}/><FormattedMessage id={`errors.${this.props.errors}`} /></span>:<div/>
-        }
+            this.props.errors ?
+              <span>
+                <img src={`${IMAGES}/warning.svg`} alt="error" />
+                <FormattedMessage id={`errors.${this.props.errors}`} />
+              </span>
+              :
+              <div />
+          }
+        </div>
       </div>
-  </div>
-    );
+      );
   }
 
 });
 
 
-var Logout = React.createClass({
-  
-  onLogout: function(e) {
-    e.preventDefault();
-    this.props.logout();
-  },
-  render: function() {
-    var _t = this.props.intl.formatMessage;
-    if(!this.props.isAuthenticated) {
-      return (<div/>);
-    }
-    return (
-      <a id="logout"
-        className="logout"
-        title={_t({id: "loginForm.button.signout"})}
-        onClick={this.onLogout}
-        type="submit">
-          <i className={classNames("fa", "fa-md", "fa-sign-out", "navy")}/>
-        </a>
-      );
-    } 
-});
-
-module.exports = {
-  Login,
-  Logout
-};
+module.exports = Login;

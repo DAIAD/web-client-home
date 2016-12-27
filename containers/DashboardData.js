@@ -1,19 +1,18 @@
-var { injectIntl } = require('react-intl');
-var { bindActionCreators } = require('redux');
-var { connect } = require('react-redux');
-//const { getValues } = require('redux-form');
+const { injectIntl } = require('react-intl');
+const { bindActionCreators } = require('redux');
+const { connect } = require('react-redux');
 
-var { WIDGET_TYPES  } = require('../constants/HomeConstants');
+const DashboardActions = require('../actions/DashboardActions');
+const { linkToHistory } = require('../actions/HistoryActions');
+const { saveToProfile } = require('../actions/UserActions');
+const { setForm } = require('../actions/FormActions');
 
-var Dashboard = require('../components/sections/Dashboard');
+const Dashboard = require('../components/sections/Dashboard');
 
-var DashboardActions = require('../actions/DashboardActions');
-var { linkToHistory } = require('../actions/HistoryActions');
-var { saveToProfile } = require('../actions/UserActions');
-var { setForm } = require('../actions/FormActions');
+const { getDeviceCount, getMeterCount } = require('../utils/device');
+const { transformInfoboxData } = require('../utils/transformations');
 
-var { getDeviceCount, getMeterCount } = require('../utils/device');
-var { transformInfoboxData } = require('../utils/transformations');
+const { WIDGET_TYPES } = require('../constants/HomeConstants');
 
 
 function mapStateToProps(state) {
@@ -25,20 +24,31 @@ function mapStateToProps(state) {
     dirty: state.section.dashboard.dirty,
     infoboxes: state.section.dashboard.infobox,
     infoboxToAdd: state.forms.infoboxToAdd,
-    //infoboxToAdd: state.section.dashboard.infoboxToAdd,
-    //infoboxToAdd: getValues(state.form.addInfobox)
   };
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(Object.assign({}, DashboardActions, {linkToHistory, saveToProfile, setForm}), dispatch);
+  return bindActionCreators({ 
+    ...DashboardActions, 
+    linkToHistory, 
+    saveToProfile, 
+    setForm, 
+  }, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  
-  let deviceType = (stateProps.infoboxToAdd && stateProps.infoboxToAdd.deviceType) ? stateProps.infoboxToAdd.deviceType : null;
+  const deviceType = (stateProps.infoboxToAdd && stateProps.infoboxToAdd.deviceType) ? 
+    stateProps.infoboxToAdd.deviceType 
+    : 
+    null;
 
-  let deviceTypes = [{id: 'AMPHIRO', title: 'Shower'}, {id: 'METER', title: 'Smart Water Meter'}];
+  let deviceTypes = [{
+    id: 'AMPHIRO', 
+    title: 'Shower',
+  }, {
+    id: 'METER', 
+    title: 'Smart Water Meter',
+  }];
   
   const meterCount = getMeterCount(stateProps.devices);
   const deviceCount = getDeviceCount(stateProps.devices);
@@ -51,31 +61,50 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     deviceTypes = deviceTypes.filter(x => x.id !== 'AMPHIRO');
   }
 
-  const saveData = {infoboxes: stateProps.infoboxes.map(x => Object.assign({}, {id:x.id, deviceType:x.deviceType, display:x.display, metric:x.metric, period:x.period, title:x.title, type:x.type})), layout: stateProps.layout};
+  const saveData = {
+    infoboxes: stateProps.infoboxes.map(x => ({ 
+      id: x.id, 
+      deviceType: x.deviceType, 
+      display: x.display, 
+      metric: x.metric, 
+      period: x.period, 
+      title: x.title, 
+      type: x.type,
+    })), 
+    layout: stateProps.layout,
+  };
 
-  const types = WIDGET_TYPES.filter(x => deviceType ? stateProps.infoboxToAdd.deviceType === x.devType: null);
+  const types = WIDGET_TYPES
+  .filter(x => (deviceType ? stateProps.infoboxToAdd.deviceType === x.devType : null));
 
-  return Object.assign({}, ownProps,
-               dispatchProps,
-               stateProps,
-               {
-                 infoboxes: stateProps.infoboxes.map(infobox => 
-                   transformInfoboxData(infobox, stateProps.devices, ownProps.intl)),
-                 addInfobox: () => {
-                   
-                   const type = types.find(x => x.id === stateProps.infoboxToAdd.type);
-                   // ?  types.find(x => x.id === stateProps.infoboxToAdd.type).data : {}
-                   return dispatchProps.addInfobox(Object.assign({}, {data: [], period: (deviceType === 'AMPHIRO' ? 'ten' : 'month')}, stateProps.infoboxToAdd, {title: stateProps.infoboxToAdd.title ? stateProps.infoboxToAdd.title : (type ? type.title : null)}, type ? type.data : {} ));
-                 },
-                 deviceCount: getDeviceCount(stateProps.devices),
-                 meterCount: getMeterCount(stateProps.devices),
-                 saveToProfile: () => dispatchProps.saveToProfile({configuration: JSON.stringify(saveData)}),
-                 deviceTypes,
-                 types,
-               });
+  console.log('stateProps.infoboxes', stateProps.infoboxes);
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    infoboxes: stateProps.infoboxes.map(infobox => 
+      transformInfoboxData(infobox, stateProps.devices, ownProps.intl)),
+    addInfobox: () => {
+      const type = types.find(x => x.id === stateProps.infoboxToAdd.type);
+      // ?  types.find(x => x.id === stateProps.infoboxToAdd.type).data : {}
+      return dispatchProps.addInfobox({
+        data: [], 
+        period: deviceType === 'AMPHIRO' ? 'ten' : 'month', 
+        ...stateProps.infoboxToAdd, 
+        title: stateProps.infoboxToAdd.title || (type ? type.title : null), 
+        ...(type ? type.data : {}),
+      });
+    },
+    deviceCount: getDeviceCount(stateProps.devices),
+    meterCount: getMeterCount(stateProps.devices),
+    saveToProfile: () => dispatchProps.saveToProfile({ configuration: JSON.stringify(saveData) }),
+    deviceTypes,
+    types,
+  };
 }
 
-
-var DashboardData = connect(mapStateToProps, mapDispatchToProps, mergeProps)(Dashboard);
-DashboardData = injectIntl(DashboardData);
+const DashboardData = injectIntl(connect(mapStateToProps, 
+                                         mapDispatchToProps, 
+                                         mergeProps,
+                                        )(Dashboard));
 module.exports = DashboardData;

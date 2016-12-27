@@ -1,22 +1,20 @@
-var { bindActionCreators } = require('redux');
-var { connect } = require('react-redux');
-var injectIntl = require('react-intl').injectIntl;
+const { bindActionCreators } = require('redux');
+const { connect } = require('react-redux');
+const { injectIntl } = require('react-intl');
 
-var History = require('../components/sections/History');
+const HistoryActions = require('../actions/HistoryActions');
 
-var HistoryActions = require('../actions/HistoryActions');
+const History = require('../components/sections/History');
 
-var { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-var { reduceSessions, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/transformations');
+const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
+const { reduceSessions, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/transformations');
+const timeUtil = require('../utils/time');
+const { getMetricMu } = require('../utils/general');
+const { getTimeLabelByGranularity } = require('../utils/chart');
 
-var timeUtil = require('../utils/time');
-var { getMetricMu } = require('../utils/general');
-var { getTimeLabelByGranularity } = require('../utils/chart');
-
-var { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
+const { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
-
   return {
     firstname: state.user.profile.firstname,
     time: state.section.history.time,
@@ -26,10 +24,10 @@ function mapStateToProps(state) {
     timeFilter: state.section.history.timeFilter,
     sortFilter: state.section.history.sortFilter,
     sortOrder: state.section.history.sortOrder,
-    devices: state.user.profile.devices?state.user.profile.devices:[],
+    devices: state.user.profile.devices,
     synced: state.section.history.synced,
     data: state.section.history.data,
-    comparison: state.section.history.comparison
+    comparison: state.section.history.comparison,
   };
 }
 
@@ -39,15 +37,29 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const devType = stateProps.activeDeviceType;  
-  const sessions = sortSessions(reduceSessions(stateProps.devices, stateProps.data), stateProps.sortFilter, stateProps.sortOrder)
-  .map(s => Object.assign({}, s, {date: getTimeLabelByGranularity(s.timestamp, stateProps.time.granularity, ownProps.intl)}));
+  const sessions = sortSessions(reduceSessions(stateProps.devices, stateProps.data), 
+                                stateProps.sortFilter, 
+                                stateProps.sortOrder,
+                               )
+  .map(s => ({ 
+    ...s, 
+    date: getTimeLabelByGranularity(s.timestamp, stateProps.time.granularity, ownProps.intl),
+  }));
 
-  
+  const csvData = stateProps.activeDeviceType === 'METER' ? 
+    meterSessionsToCSV(sessions) 
+    : 
+    deviceSessionsToCSV(sessions);
 
-  const csvData = stateProps.activeDeviceType === 'METER' ? meterSessionsToCSV(sessions) : deviceSessionsToCSV(sessions);
-
-  let deviceTypes = [{id:'METER', title: 'Water meter', image: 'water-meter.svg'}, {id:'AMPHIRO', title:'Shower devices', image: 'amphiro_small.svg'}];
-
+  let deviceTypes = [{
+    id: 'METER', 
+    title: 'Water meter', 
+    image: 'water-meter.svg',
+  }, {
+    id: 'AMPHIRO', 
+    title: 'Shower devices', 
+    image: 'amphiro_small.svg',
+  }];
 
   const amphiros = getAvailableDevices(stateProps.devices); 
   const meterCount = getMeterCount(stateProps.devices);
@@ -67,34 +79,40 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   
   const sortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
 
-  const comparisons = stateProps.timeFilter !== 'custom' ?
-    (devType === 'AMPHIRO' ? [] : 
-     [{id: 'last', title: timeUtil.getComparisonPeriod(stateProps.time.startDate, stateProps.time.granularity, ownProps.intl)}]
-    ) 
-      : [];
+  const comparisons = stateProps.timeFilter !== 'custom' && devType !== 'AMPHIRO' ?
+  [{
+    id: 'last', 
+    title: timeUtil.getComparisonPeriod(stateProps.time.startDate, 
+                                        stateProps.time.granularity, 
+                                        ownProps.intl,
+                                       ),
+  }]
+  : [];
 
-
-  return Object.assign(
-    {}, 
-    ownProps, 
-    dispatchProps,
-    Object.assign({}, 
-                  stateProps, 
-                  { 
-                    nextPeriod: stateProps.time?timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.startDate):{}, 
-                    previousPeriod: stateProps.time?timeUtil.getPreviousPeriod(stateProps.timeFilter, stateProps.time.endDate):{},
-                    amphiros,
-                    periods,
-                    metrics,
-                    comparisons,
-                    sortOptions,
-                    sessions,
-                    deviceTypes,
-                    csvData,
-                    reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.metricFilter)} ${getMetricMu(stateProps.metricFilter)}`,
-                  }));
+  return {
+    ...stateProps,
+    ...dispatchProps,
+    ...ownProps,
+    nextPeriod: stateProps.time ? timeUtil.getNextPeriod(stateProps.timeFilter, 
+                                                         stateProps.time.startDate,
+                                                        ) : {}, 
+    previousPeriod: stateProps.time ? timeUtil.getPreviousPeriod(stateProps.timeFilter, 
+                                                                 stateProps.time.endDate,
+                                                                ) : {},
+    amphiros,
+    periods,
+    metrics,
+    comparisons,
+    sortOptions,
+    sessions,
+    deviceTypes,
+    csvData,
+    reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.metricFilter)} ${getMetricMu(stateProps.metricFilter)}`,
+  };
 }
 
-var HistoryData = connect(mapStateToProps, mapDispatchToProps, mergeProps)(History);
-HistoryData = injectIntl(HistoryData);
+const HistoryData = injectIntl(connect(mapStateToProps, 
+                                       mapDispatchToProps, 
+                                       mergeProps,
+                                      )(History));
 module.exports = HistoryData;

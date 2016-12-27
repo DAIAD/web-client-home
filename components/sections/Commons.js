@@ -1,17 +1,14 @@
-var React = require('react');
-var { injectIntl } = require('react-intl');
+const React = require('react');
+//const { injectIntl } = require('react-intl');
 
-var MainSection = require('../layout/MainSection');
+const MainSection = require('../layout/MainSection');
 
-var Commons = React.createClass({
-  render: function() {
+function Commons(props) {
+//render: function () {
     //const _t = this.props.intl.formatMessage;
-    return (
-      <MainSection id="section.commons">
-      </MainSection>
-    );
-  }
-});
+  return (
+    <MainSection id="section.commons" />
+  );
+}
 
-Commons = injectIntl(Commons);
 module.exports = Commons;

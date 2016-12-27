@@ -1,19 +1,14 @@
-var React = require('react');
-var { injectIntl } = require('react-intl');
+const React = require('react');
+const MainSection = require('../layout/MainSection');
+const { injectIntl } = require('react-intl');
+const Login = require('../LoginForm');
 
-var MainSection = require('../layout/MainSection');
-var { Login } = require('../LoginForm');
+function LoginPage(props) {
+  return (
+    <MainSection id="section.login">
+      <Login {...props} />
+    </MainSection>        
+  );
+}
 
-
-var LoginPage = React.createClass({
-  render: function() {
-    return (
-      <MainSection id="section.login">
-        <Login {...this.props} />
-      </MainSection>        
-    );
-  }
-});
-
-LoginPage = injectIntl(LoginPage);
-module.exports = LoginPage;
+module.exports = injectIntl(LoginPage);
