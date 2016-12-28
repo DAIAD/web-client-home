@@ -5,6 +5,7 @@ const { Link } = require('react-router');
 const Header = require('./Header');
 const Footer = require('./Footer');
 const LoginPage = require('../sections/Login');
+const { debounce } = require('../../utils/general');
 
 const { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
 
@@ -79,6 +80,19 @@ const HomeRoot = React.createClass({
   componentWillMount: function () {
     const { init, ready } = this.props;
     init();
+  },
+  componentDidMount: function () {
+    this.viewportListener = debounce(this.setViewport, 100, { maxWait: 1000 });
+    window.addEventListener('resize', this.viewportListener);
+  },
+  componentWillUnmount: function () {
+    window.removeEventListener('resize', this.viewportListener);
+  },
+  setViewport: function () {
+    this.props.resize(
+      document.documentElement.clientWidth, 
+      document.documentElement.clientHeight
+    );
   },
   render: function () {
     const { ready, locale, loading, user, deviceCount, messages, 

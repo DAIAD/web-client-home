@@ -77,5 +77,7 @@ module.exports = keyMirror({
   FORM_SET: null,
   FORM_RESET: null,
 
+  VIEWPORT_SET_SIZE: null,
+
 });
 

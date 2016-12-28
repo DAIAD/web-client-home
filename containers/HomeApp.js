@@ -8,7 +8,7 @@ const { setReady } = require('../actions/InitActions');
 const { setLocale } = require('../actions/LocaleActions');
 const { linkToMessage: linkToNotification } = require('../actions/MessageActions');
 const { dismissError } = require('../actions/QueryActions');
-
+const { resize } = require('../actions/ViewportActions');
 const { combineMessages } = require('../utils/messages');
 
 function mapStateToProps(state) {
@@ -34,6 +34,7 @@ function mapDispatchToProps(dispatch) {
     linkToNotification, 
     dismissError, 
     setReady, 
+    resize,
   }, dispatch);
 }
 
