@@ -318,7 +318,7 @@ module.exports = {
         type: 'last', 
         metric: 'volume', 
         display: 'chart',
-      },
+      }, 
     },
     {
       id: 'efficiencyEnergy', 
@@ -351,6 +351,7 @@ module.exports = {
         type: 'forecast', 
         metric: 'difference', 
         display: 'chart',
+        period: 'year',
       },
     },
     {

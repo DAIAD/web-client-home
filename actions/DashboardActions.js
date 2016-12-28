@@ -219,8 +219,8 @@ const addInfobox = function (options) {
     const infobox = getState().section.dashboard.infobox;
 
     // find last id and increase by one
-    const lastId = infobox.length ? Math.max(...infobox.map(info => parseInt(info.id, -1))) : 0;
-    if (lastId === -1) {
+    const lastId = infobox.length ? Math.max(...infobox.map(info => parseInt(info.id, NaN))) : 0;
+    if (isNaN(lastId)) {
       throw new Error('last id NaN');
     }
     const id = (lastId + 1).toString();
@@ -230,6 +230,7 @@ const addInfobox = function (options) {
     dispatch(createInfobox({ ...options, id }));
     dispatch(appendLayout(id, display, type));
 
+    dispatch(setDirty()); 
     dispatch(updateInfobox(id, {}));
     return id;
   };
