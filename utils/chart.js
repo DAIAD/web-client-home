@@ -67,12 +67,10 @@ const getChartTimeData = function (sessions, metric) {
 const getChartAmphiroData = function (sessions, xAxisData, metric) {
   if (!Array.isArray(sessions) 
       || !Array.isArray(xAxisData)) {
-    //|| sessions.length !== xAxisData.length) {
     throw new Error('Cant\'t create chart. Check provided data and category', sessions, xAxisData);
   }
-  return xAxisData.map((v, i, arr) => 
-   sessions[i] ? sessions[i][metric] : null
-   );
+  if (sessions.length === 0) return [sessions[0]];
+  return xAxisData.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
 };
 
 const getChartMeterData = function (sessions, xAxisData, metric, time) {
