@@ -24,6 +24,7 @@ function mapStateToProps(state) {
     dirty: state.section.dashboard.dirty,
     infoboxes: state.section.dashboard.infobox,
     infoboxToAdd: state.forms.infoboxToAdd,
+    width: state.viewport.width,
   };
 }
 

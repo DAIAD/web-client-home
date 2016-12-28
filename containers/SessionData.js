@@ -2,7 +2,7 @@ const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
 
-const { getChartTimeData } = require('../utils/chart');
+//const { getChartTimeData } = require('../utils/chart');
 
 const SessionModal = require('../components/Session');
 
@@ -15,6 +15,7 @@ function mapStateToProps(state) {
     data: state.section.history.data,
     activeSessionFilter: state.section.history.activeSessionFilter,
     activeSession: state.section.history.activeSession,
+    width: state.viewport.width,
   };
 }
 function mapDispatchToProps(dispatch) {
@@ -37,7 +38,10 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...ownProps,
     data,
     chartFormatter,
-    chartData: getChartTimeData(measurements, stateProps.activeSessionFilter, null),
+    chartCategories: measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss')),
+    chartData: measurements.map(measurement => measurement ? 
+                                measurement[stateProps.activeSessionFilter]
+                                : null),
     showModal: stateProps.activeSession != null,
   };
 }

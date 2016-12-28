@@ -4,10 +4,10 @@ const { injectIntl } = require('react-intl');
 
 const HistoryActions = require('../actions/HistoryActions');
 
-const Chart = require('../components/helpers/Chart');
+const HistoryChart = require('../components/sections/HistoryChart');
 
 const { addPeriodToSessions } = require('../utils/time');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartMetadata } = require('../utils/chart');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 const { getDeviceNameByKey } = require('../utils/device');
 const { getDataSessions } = require('../utils/transformations');
 const { getMetricMu } = require('../utils/general');
@@ -25,6 +25,7 @@ function mapStateToProps(state) {
     timeFilter: state.section.history.timeFilter,
     data: state.section.history.data,
     comparisonData: state.section.history.comparisonData,
+    width: state.viewport.width,
   };
 }
 
@@ -33,10 +34,11 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const xData = stateProps.activeDeviceType === 'METER' ? 
+  const xCategories = stateProps.activeDeviceType === 'METER' ? 
     getChartMeterCategories(stateProps.time) : 
       getChartAmphiroCategories(stateProps.timeFilter);
 
+      
   const chartData = stateProps.data.map((devData) => {
     const sessions = getDataSessions(stateProps.devices, devData)
     .map(session => ({
@@ -44,22 +46,25 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       duration: Math.round(100 * (session.duration / 60)) / 100,
       energy: Math.round(session.energy / 10) / 100,
     }));
+  
+    const xData = stateProps.activeDeviceType === 'METER' ? 
+      getChartMeterData(sessions, xCategories, stateProps.time) 
+      : 
+      getChartAmphiroData(sessions, xCategories);
+
     return ({
-      title: getDeviceNameByKey(stateProps.devices, devData.deviceKey), 
-      data: stateProps.activeDeviceType === 'METER' ? 
-        getChartMeterData(sessions, xData, stateProps.filter, stateProps.time) 
-         : 
-        getChartAmphiroData(sessions, xData, stateProps.filter),
+      name: getDeviceNameByKey(stateProps.devices, devData.deviceKey), 
+      data: xData.map(x => x ? x[stateProps.filter] : null),
       metadata: {
         device: devData.deviceKey,
-        ids: getChartMetadata(sessions, xData, stateProps.activeDeviceType === 'METER'),
+        ids: xData.map(val => val ? [val.id, val.timestamp] : [null, null])
       }
     });
   });
 
-  const xDataLabels = stateProps.activeDeviceType === 'METER' ?
-    getChartMeterCategoryLabels(xData, stateProps.time, ownProps.intl)
-     : xData;
+  const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
+    getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
+     : xCategories;
 
   const comparison = stateProps.comparisonData.map((devData) => {
     const sessions = getDataSessions(stateProps.devices, devData)
@@ -68,17 +73,18 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       duration: Math.round(100 * (session.duration / 60)) / 100,
       energy: Math.round(session.energy / 10) / 100,
     }));
-    return ({
-      title: `${getDeviceNameByKey(stateProps.devices, devData.deviceKey)}` +
-         `(previous ${stateProps.timeFilter})`,
-      data: stateProps.activeDeviceType === 'METER' ? 
+    const xData = stateProps.activeDeviceType === 'METER' ? 
         getChartMeterData(addPeriodToSessions(sessions, stateProps.timeFilter), 
-                          xData, 
-                          stateProps.filter, 
+                          xCategories, 
                           stateProps.time
                          ) 
-         : 
-         getChartAmphiroData(sessions, xData, stateProps.filter),
+       : 
+       getChartAmphiroData(sessions, xCategories);
+
+    return ({
+      name: `${getDeviceNameByKey(stateProps.devices, devData.deviceKey)}` +
+         ` (previous ${stateProps.timeFilter})`,
+      data: xData.map(x => x ? x[stateProps.filter] : null),
     });
   });
 
@@ -86,12 +92,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
-    data: chartData.concat(comparison),
-    xAxis: 'category',
-    xAxisData: xDataLabels,
-    type: 'line',
-    mu: getMetricMu(stateProps.filter),
-    clickable: true,
+    xCategoryLabels,
+    mu: getMetricMu(stateProps.filter), 
+    chartData: [
+      ...chartData,
+      ...comparison,
+    ],
+    //chart width = viewport width - main menu - sidebar left - sidebar right - padding
+    width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),
     onPointClick: (series, index) => {
       const device = chartData[series] ? 
         chartData[series].metadata.device 
@@ -101,18 +109,13 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
        && chartData[series].metadata.ids ? 
          chartData[series].metadata.ids[index] 
          : [null, null];
-         
       dispatchProps.setActiveSession(device, id, timestamp);
     },
-    dataZoom: true,
-    fontSize: 13,
-    y2Margin: 70,
-    height: 380,
   };
 }
 
-const HistoryChart = injectIntl(connect(mapStateToProps, 
-                                        mapDispatchToProps, 
-                                        mergeProps,
-                                       )(Chart));
-module.exports = HistoryChart;
+const HistoryChartData = injectIntl(connect(mapStateToProps, 
+                                            mapDispatchToProps, 
+                                            mergeProps,
+                                           )(HistoryChart));
+module.exports = HistoryChartData;

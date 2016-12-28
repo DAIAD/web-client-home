@@ -36,86 +36,100 @@ function SayHello(props) {
   );
 }
 
-function InfoBox(props) {
-  const { infobox, updateInfobox, removeInfobox, intl, linkToHistory } = props;
-  const { id, error, period, type, display, periods, time } = infobox;
+const InfoBox = React.createClass({
+  getInitialState: function () {
+    return {
+      el: null 
+    };
+  },
+  render: function () {
+    const { infobox, updateInfobox, removeInfobox, intl, linkToHistory, width } = this.props;
+    const { id, error, period, type, display, periods, time } = infobox;
 
-  const _t = intl.formatMessage;
-  return (
-    <div className="infobox">
-      <div className="infobox-header">
-        <div className="header-left">
-          <h4>{infobox.title}</h4>
-        </div>
+    const _t = intl.formatMessage;
+    return (
+      <div 
+        className="infobox"
+        ref={(el) => { if (!this.state.el) { this.setState({ el }); } }}
+      >
+        <div className="infobox-header">
+          <div className="header-left">
+            <h4>{infobox.title}</h4>
+          </div>
 
-        <div className="header-right">
-          <div>
+          <div className="header-right">
+            <div>
+              {
+                periods.map(p => (
+                  <a 
+                    key={p.id} 
+                    onClick={() => updateInfobox(id, { period: p.id, time: p.time })} 
+                    style={{ marginLeft: 5 }}
+                  >
+                    {
+                      p.id === period ? 
+                        <u>{_t({ id: p.title })}</u>
+                        :
+                         _t({ id: p.title })
+                    }
+                  </a>
+                  ))
+              }
+            </div>
             {
-              periods.map(p => (
-                <a 
-                  key={p.id} 
-                  onClick={() => updateInfobox(id, { period: p.id, time: p.time })} 
-                  style={{ marginLeft: 5 }}
-                >
-                  {
-                    p.id === period ? 
-                      <u>{_t({ id: p.title })}</u>
-                      :
-                       _t({ id: p.title })
-                  }
-                </a>
-                ))
+              type === 'last' && time ? 
+                <FormattedRelative value={time} /> 
+                  : 
+                  <span />
+            }
+            {
+              // TODO: disable delete infobox until add is created
+              <a 
+                className="infobox-x" 
+                style={{ float: 'right', marginLeft: 5, marginRight: 5 }} 
+                onClick={() => removeInfobox(infobox.id)}
+              >
+                <i className="fa fa-times" />
+              </a>
             }
           </div>
+        </div>
+        
+        <div className="infobox-body">
           {
-            type === 'last' && time ? 
-              <FormattedRelative value={time} /> 
-                : 
-                <span />
-          }
-          {
-            // TODO: disable delete infobox until add is created
-            <a 
-              className="infobox-x" 
-              style={{ float: 'right', marginLeft: 5, marginRight: 5 }} 
-              onClick={() => removeInfobox(infobox.id)}
-            >
-              <i className="fa fa-times" />
-            </a>
-          }
+            (() => {
+              if (error) {
+                return (<ErrorDisplay errors={error} />);
+              } 
+              if (display === 'stat') {
+                return (
+                  <StatBox {...this.props} /> 
+                );
+              } else if (display === 'chart') {
+                return (
+                  <ChartBox 
+                    {...infobox} 
+                    width={this.state.el ? this.state.el.clientWidth : '100%'}
+                    height={this.state.el ? this.state.el.clientHeight - 90 : null}
+                  /> 
+                );
+              } else if (display === 'tip') {
+                return (
+                  <TipBox {...this.props} />
+                );
+              }
+              return <div />;
+            }
+            )()
+           }
+        </div>
+        <div className="infobox-footer">
+          <a onClick={() => linkToHistory(infobox)}>See more</a>
         </div>
       </div>
-      
-      <div className="infobox-body">
-        {
-          (() => {
-            if (error) {
-              return (<ErrorDisplay errors={error} />);
-            } 
-            if (display === 'stat') {
-              return (
-                <StatBox {...props} /> 
-              );
-            } else if (display === 'chart') {
-              return (
-                <ChartBox {...infobox} /> 
-              );
-            } else if (display === 'tip') {
-              return (
-                <TipBox {...props} />
-              );
-            }
-            return <div />;
-          }
-          )()
-         }
-      </div>
-      <div className="infobox-footer">
-        <a onClick={() => linkToHistory(infobox)}>See more</a>
-      </div>
-    </div>
-  );
-}
+    );
+  }
+});
 
 function StatBox(props) {
   const { deviceType, highlight, period, better, comparePercentage, mu } = props.infobox;
@@ -125,7 +139,7 @@ function StatBox(props) {
   const bow = !(better == null || comparePercentage == null);
   const str = better ? 'better' : 'worse';
   return (
-    <div>
+    <div style={{ padding: 10 }}>
       <div style={{ float: 'left', width: '50%' }}>
         <h2>
           <span>{highlight}</span>
@@ -169,7 +183,7 @@ function TipBox(props) {
 
 function InfoPanel(props) {
   const { mode, layout, infoboxes, updateLayout, updateInfobox, removeInfobox, 
-    chartFormatter, intl, periods, displays, linkToHistory } = props;
+    chartFormatter, intl, periods, displays, linkToHistory, width } = props;
   return (
     <ResponsiveGridLayout 
       className="layout"
@@ -187,6 +201,10 @@ function InfoPanel(props) {
       onDragStop={(newLayout) => {
         updateLayout(newLayout); 
       }} 
+      onLayoutChange={(newLayout) => {
+      }}
+      onBreakpointChange={(newBreakpoint) => {
+      }}
     >
       {
        infoboxes.map(infobox => (
@@ -202,6 +220,7 @@ function InfoPanel(props) {
                removeInfobox, 
                intl, 
                linkToHistory,
+               width,
              }} 
            /> 
          </div>
@@ -368,7 +387,6 @@ const Dashboard = React.createClass({
     const { firstname, mode, dirty, switchMode, addInfobox, saveToProfile, 
       setDirty, resetDirty, deviceCount, meterCount, metrics, types, 
       deviceTypes, infoboxToAdd, setForm } = this.props;
-
     return (
       <MainSection id="section.dashboard">
         <div className="dashboard">
@@ -386,7 +404,9 @@ const Dashboard = React.createClass({
                 setForm 
               }} 
             />
+
             <InfoPanel {...this.props} />
+
           </div>
           <div className="dashboard-right">
             <div className="dashboard-device-info">

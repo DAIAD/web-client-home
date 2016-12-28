@@ -2,7 +2,9 @@ const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl');
 
-const Chart = require('./helpers/Chart');
+const { LineChart } = require('react-echarts');
+const theme = require('./chart/themes/line');
+
 const { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../constants/HomeConstants'); 
 
 function SessionInfoItem(props) {
@@ -103,12 +105,13 @@ function SessionInfo(props) {
 }
 
 function Session(props) {
-  const { intl, data, chartData, chartFormatter, setSessionFilter, 
-    firstname, activeDeviceType } = props;
+  const { intl, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
+    firstname, activeDeviceType, width } = props;
     
+    console.log('session width', width);
   if (!data) return <div />;
   const { history, id } = data;
-  //const _t = intl.formatMessage;
+  const _t = x => intl.formatMessage({ id: x });
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
   const betterStr = better ? 'better' : 'worse';
@@ -125,22 +128,28 @@ function Session(props) {
     ` ${Math.abs(data.percentDiff)}%` 
     : '';
 
-  //title = _t({id: `history.${filter}`})
   if (!history) {
     return (
       <div className="shower-container">
         <div className="shower-chart-area">
-          <Chart 
+          <LineChart
             height={300}
-            width="100%"
-            type="line"
-            title=""
-            mu="lt"
-            xMargin={60}
-            x2Margin={60}
-            formatter={chartFormatter}
-            xAxis="time"
-            data={[{ title: `#${id}`, data: chartData }]}
+            width={width} 
+            theme={theme}
+            xAxis={{
+              data: chartCategories,
+              boundaryGap: true,
+            }}
+            yAxis={{
+              formatter: y => `${y} lt`,
+            }}
+            grid={{
+              x: 50,
+              x2: 50,
+              y: -30,
+              y2: 30,
+            }}
+            series={[{ name: `${_t('section.shower')} #${id}`, data: chartData, fill: 0.55 }]}
           />
         </div>
           
@@ -251,9 +260,9 @@ const SessionModal = React.createClass({
           </bs.Modal.Title>
         </bs.Modal.Header>
         <bs.Modal.Body>
-
-          <Session {...this.props} />
-
+          <div ref={(el) => { this.el = el; }}>
+            <Session {...this.props} width={this.el ? this.el.clientWidth : '100%'} />
+          </div>
         </bs.Modal.Body>
         <bs.Modal.Footer>
           { disabledPrevious ? <span /> : <a className="pull-left" onClick={this.onPrevious}>Previous</a> }

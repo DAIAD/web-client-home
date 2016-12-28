@@ -1,9 +1,13 @@
 const React = require('react');
 const Chart = require('./Chart');
+const { LineChart, BarChart } = require('react-echarts');
+const lineTheme = require('../chart/themes/line');
+const horizontalBarTheme = require('../chart/themes/horizontal-bar');
+const verticalBarTheme = require('../chart/themes/vertical-bar');
 
 function ChartBox(props) {
   const { type, chartData, chartCategories, chartFormatter, chartColors, 
-    chartXAxis, mu, invertAxis } = props;
+    chartXAxis, mu, invertAxis, width, height } = props;
 
   if (!(chartData && chartData.length > 0)) {
     return <div />;
@@ -14,8 +18,8 @@ function ChartBox(props) {
       <div> 
         <div style={{ float: 'left', width: '50%' }} >
           <Chart
-            height={70}
-            width="100%"
+            height={height || 70}
+            width={width}
             type="pie"
             title={chartData[0].title}
             subtitle=""
@@ -33,43 +37,47 @@ function ChartBox(props) {
     );
   } else if (type === 'breakdown' || type === 'forecast' || type === 'comparison') {
     return (
-      <Chart
-        height={200}
-        width="100%"  
-        title=""
-        type="bar"
-        subtitle=""
-        xMargin={0}
-        y2Margin={0}  
-        yMargin={0}
-        x2Margin={0}
-        fontSize={12}
-        mu={mu}
-        invertAxis={invertAxis}
-        xAxis={chartXAxis}
-        xAxisData={chartCategories}
-        colors={chartColors}
-        data={chartData}
+      <BarChart
+        height={height || 240}
+        width={width}
+        theme={invertAxis ? horizontalBarTheme : verticalBarTheme}
+        horizontal={invertAxis}
+        xAxis={{
+          data: chartCategories,
+          boundaryGap: true,
+        }}
+        yAxis={{
+          formatter: y => `${y} ${mu}`,
+        }}
+        series={chartData.map(s => ({ 
+          ...s, 
+          color: (name, data, idx) => chartColors.find((c, i, arr) => (idx % arr.length) === i),
+          label: { 
+            position: invertAxis ? 'right' : 'top',
+          } 
+        }))}
       />
     );
   } else if (type === 'total' || type === 'last') {
     return (
-      <Chart
-        height={200}
-        width="100%"  
+      <LineChart
+        height={height || 240}
+        width={width} 
+        theme={lineTheme}
         title=""
-        subtitle=""
-        type="line"
-        yMargin={10}
-        y2Margin={40}
-        fontSize={12}
-        mu={mu}
-        formatter={chartFormatter}
-        invertAxis={invertAxis}
-        xAxis={chartXAxis}
-        xAxisData={chartCategories}
+        subtitle="" 
+        xAxis={{
+          data: chartCategories,
+          boundaryGap: true,
+        }}
+        yAxis={{
+          formatter: y => `${y} ${mu}`,
+        }}
         colors={chartColors}
-        data={chartData}
+        series={chartData.map(s => ({
+          ...s,
+          fill: 0.55,
+        }))}
       />
     );
   }

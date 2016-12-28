@@ -33,9 +33,9 @@ const appendLayout = function (id, display, type) {
   let layout = { x: 0, y: 0, w: 1, h: 1, static: false, i: id };
   
   if (display === 'stat' || (display === 'chart' && type === 'budget')) {
-    layout = { w: 2, h: 1, minW: 2, minH: 1, maxH: 1 };
+    layout = { ...layout, w: 2, minW: 2, minH: 1, maxH: 1 };
   } else if (display === 'chart') {
-    layout = { w: 2, h: 2, minW: 2, minH: 2, maxH: 2 };
+    layout = { ...layout, w: 2, h: 2, minW: 2, minH: 2 };
   }
   return {
     type: types.DASHBOARD_APPEND_LAYOUT,

@@ -3,7 +3,7 @@ const moment = require('moment');
 const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_PERIODS, METER_PERIODS } = require('../constants/HomeConstants');
 
 const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartTimeData } = require('./chart');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
 const { getTimeByPeriod, getLowerGranularityPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
 
@@ -147,6 +147,7 @@ const transformInfoboxData = function (infobox, devices, intl) {
   let mu;
   let periods = [];
   let displays = []; 
+  //let chartProps = {};
 
   const time = infobox.time ? infobox.time : getTimeByPeriod(period);
 
@@ -173,16 +174,16 @@ const transformInfoboxData = function (infobox, devices, intl) {
   if (type === 'tip') {
     highlight = STATIC_RECOMMENDATIONS[Math.floor(Math.random() * 3)].description;
   } else if (type === 'last') {
+    // LAST SHOWER
     device = infobox.device;
     
     const last = data ? data.find(d => d.deviceKey === device) : null;
     const lastShowerMeasurements = getDataMeasurements(devices, last, index);
 
-    chartCategories = null;
-
-    chartXAxis = 'time'; 
+    chartLabels = lastShowerMeasurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss'));
+    chartXAxis = 'category'; 
     chartFormatter = t => moment(t).format('hh:mm');
-
+    
     reduced = lastShowerMeasurements
     .map(s => s[metric])
     .reduce((p, c) => p + c, 0);
@@ -191,10 +192,14 @@ const transformInfoboxData = function (infobox, devices, intl) {
     mu = getMetricMu(metric);
 
     chartData = [{
-      title: getDeviceNameByKey(devices, device), 
-      data: getChartTimeData(lastShowerMeasurements, infobox.metric),
+      name: getDeviceNameByKey(devices, device), 
+      //data: getChartTimeData(lastShowerMeasurements, infobox.metric),
+      data: lastShowerMeasurements.map(measurement => measurement ? 
+                                       measurement[infobox.metric] 
+                                       : null),
     }];
   } else if (type === 'total') {
+    // TOTAL
     device = getDeviceKeysByType(devices, deviceType);
     
     periods = deviceType === 'AMPHIRO' ? 
@@ -234,18 +239,19 @@ const transformInfoboxData = function (infobox, devices, intl) {
       }));
       
       return {
-        title: getDeviceNameByKey(devices, devData.deviceKey), 
+        name: getDeviceNameByKey(devices, devData.deviceKey), 
         data: deviceType === 'METER' ? 
           getChartMeterData(sessions, 
                             chartCategories, 
-                            infobox.metric, 
                             time,
-                           )
+                           ).map(x => x ? x[infobox.metric] : null)
           : 
-          getChartAmphiroData(sessions, chartCategories, infobox.metric),
+            getChartAmphiroData(sessions, chartCategories)
+            .map(x => x ? x[infobox.metric] : null),
       };
     }) : []; 
   } else if (type === 'efficiency') {
+    // EFFICIENCY
     device = getDeviceKeysByType(devices, deviceType);
     reduced = data ? reduceMetric(devices, data, metric) : 0;
 
@@ -274,31 +280,30 @@ const transformInfoboxData = function (infobox, devices, intl) {
     }
     
     chartData = data ? data.map(devData => ({ 
-      title: getDeviceNameByKey(devices, devData.deviceKey), 
+      name: getDeviceNameByKey(devices, devData.deviceKey), 
       data: deviceType === 'METER' ? 
         getChartMeterData(getDataSessions(devices, devData), 
                           chartCategories, 
-                          infobox.metric, 
                           getLowerGranularityPeriod(period),
-                         ) 
+                         ).map(x => x ? x[infobox.metric] : null)
        : 
        getChartAmphiroData(getDataSessions(devices, devData), 
                            chartCategories, 
-                           infobox.metric,
-                          ),
+                          ).map(x => x ? x[infobox.metric] : null)
     })) : [];
   } else if (type === 'forecast') {
+    // FORECASTING
     chartType = 'bar';
     
     device = getDeviceKeysByType(devices, deviceType);
-    reduced = data ? reduceMetric(devices, data, metric) : 0;
+    reduced = data ? reduceMetric(devices, data, infobox.metric) : 0;
 
     // TODO: static
     // dummy data
     chartLabels = [2014, 2015, 2016];
     chartData = [{
-      title: 'Consumption', 
-      data: [reduced, reduced * 1.5, reduced * 0.8],
+      name: 'Consumption', 
+      data: [Math.round(reduced), Math.round(reduced * 1.5), Math.round(reduced * 0.8)],
     }];
     mu = getMetricMu(metric);
   } else if (type === 'breakdown') {
@@ -310,7 +315,7 @@ const transformInfoboxData = function (infobox, devices, intl) {
     // TODO: static
     // dummy data
     chartData = [{
-      title: 'Consumption', 
+      name: 'Consumption', 
       data: [
         Math.floor(reduced / 4), 
         Math.floor(reduced / 4), 
@@ -332,7 +337,7 @@ const transformInfoboxData = function (infobox, devices, intl) {
     // TODO: static
     // dummy data based on real user data
     chartData = [{ 
-      title: 'Comparison', 
+      name: 'Comparison', 
       data: [
         reduced - (0.2 * reduced), 
         reduced + (0.5 * reduced), 
@@ -361,7 +366,7 @@ const transformInfoboxData = function (infobox, devices, intl) {
     percent = isNaN(percent) ? '' : `${percent}%`;
 
     chartData = [{
-      title: percent, 
+      name: percent, 
       data: [{
         value: consumed, 
         name: 'consumed', 
@@ -417,7 +422,6 @@ const calculateIndexes = function (sessions) {
   }));
 };
 
-// TODO: fix sort
 const sortSessions = function (sessions, by = 'timestamp', order = 'desc') {
   const sorted = order === 'asc' ? 
     sessions.sort((a, b) => a[by] - b[by]) 

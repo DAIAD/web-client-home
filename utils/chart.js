@@ -55,27 +55,21 @@ const getChartAmphiroCategories = function (period) {
   return [];
 };
 
-
-const getChartTimeData = function (sessions, metric) {
-  return sessions.map(session => session[metric] == null ? [] :
-                    [new Date(session.timestamp), session[metric]]);
-};
-
 // TODO: have to make sure data is ALWAYS fetched in order of ascending ids 
 // for amphiro, ascending timestamps for meters
 
-const getChartAmphiroData = function (sessions, xAxisData, metric) {
+const getChartAmphiroData = function (sessions, categories) {
   if (!Array.isArray(sessions) 
-      || !Array.isArray(xAxisData)) {
-    throw new Error('Cant\'t create chart. Check provided data and category', sessions, xAxisData);
+      || !Array.isArray(categories)) {
+    throw new Error('Cant\'t create chart. Check provided data and category', sessions, categories);
   }
   if (sessions.length === 0) return [sessions[0]];
-  return xAxisData.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
+  return categories.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
 };
 
-const getChartMeterData = function (sessions, xAxisData, metric, time) {
+const getChartMeterData = function (sessions, categories, time) {
   const period = getLowerGranularityPeriod(convertGranularityToPeriod(time.granularity));
-  return xAxisData.map((t) => {
+  return categories.map((t) => {
     const bucketSession = sessions.find((session) => {
       let tt;
       if (period === 'hour') {
@@ -94,36 +88,16 @@ const getChartMeterData = function (sessions, xAxisData, metric, time) {
       return tt === t;
     });
 
-    return (bucketSession && bucketSession[metric] != null) ? 
-      bucketSession[metric] 
-      : null;
+    return bucketSession;
   });
 };
 
-const getChartMetadata = function (sessions, xAxisData, timeBased = true) {
-  if (timeBased) {
-    return xAxisData.map((v) => {
-      const index = sessions.findIndex(x => moment(x.timestamp).startOf('hour').valueOf() === v);
-      return index > -1 ? 
-        [sessions[index].id, sessions[index].timestamp] 
-        : [];
-    });
-  }
-  return xAxisData.map((v, i, arr) => 
-     sessions[i] ? 
-       [sessions[i].id, sessions[i].timestamp]
-      : [null, null],
-  );
-};
-
 module.exports = {
-  getChartMeterData,
   getChartAmphiroData,
-  getChartTimeData,
+  getChartMeterData,
   getChartMeterCategories,
   getChartMeterCategoryLabels,
   getChartAmphiroCategories,
-  getChartMetadata,
   getTimeLabelByGranularity,
   getTimeLabelByGranularityShort,
 };
