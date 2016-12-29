@@ -108,7 +108,6 @@ function Session(props) {
   const { intl, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
     firstname, activeDeviceType, width } = props;
     
-    console.log('session width', width);
   if (!data) return <div />;
   const { history, id } = data;
   const _t = x => intl.formatMessage({ id: x });
@@ -220,7 +219,6 @@ function Session(props) {
 }
 
 const SessionModal = React.createClass({
-  
   onClose: function () {
     this.props.resetActiveSession();
   },
@@ -239,7 +237,6 @@ const SessionModal = React.createClass({
     const disabledNext = !Array.isArray(next);
     const disabledPrevious = !Array.isArray(prev);
     //const _t = intl.formatMessage;
-    
     return (
       <bs.Modal 
         animation={false} 
@@ -252,7 +249,9 @@ const SessionModal = React.createClass({
             {
               data.id ?
                 <span>
-                  <FormattedMessage id="section.shower" /><span>{` #${data.id}`}</span>
+                  <span>{` ${data.devName}  `}</span>
+                  <FormattedMessage id="section.shower" />
+                  <span>{` #${data.id}`}</span>
                 </span>
                 :
                 <FormattedMessage id="section.shower-aggregated" />
