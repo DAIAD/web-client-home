@@ -7,7 +7,7 @@ const DatetimeInput = require('react-datetime');
 const MainSection = require('../layout/MainSection');
 const Topbar = require('../layout/Topbar');
 const { SidebarLeft, SidebarRight } = require('../layout/Sidebars');
-const HistoryList = require('../SessionsList');
+const Table = require('../helpers/Table');
 
 //sub-containers
 const SessionData = require('../../containers/SessionData');
@@ -81,6 +81,83 @@ function TimeNavigator(props) {
   );
 }
 
+function SessionsList(props) {
+  const { sortOptions, sortFilter, sortOrder, handleSortSelect, activeDeviceType, 
+    csvData, time, sessionFields, sessions, setActiveSession } = props;
+    
+  const onSessionClick = session => 
+    setActiveSession(session.device, session.id, session.timestamp);
+  return (
+    <div className="history-list-area">
+      <div className="history-list-header">
+        <h3 style={{ float: 'left' }}>In detail</h3>
+
+        { 
+          csvData ?  
+            <a 
+              style={{ float: 'left', marginLeft: 10 }} 
+              className="btn" 
+              href={`data:application/csv;charset=utf-8, ${csvData}`}
+              download="Data.csv"
+            >
+              Download
+            </a>
+           :
+           <span />
+        }
+        <div style={{ float: 'right' }}> 
+          <h5 style={{ float: 'left', marginTop: 5 }}>Sort by:</h5>
+          <div 
+            className="sort-options" 
+            style={{ float: 'right', marginLeft: 10, textAlign: 'right' }}
+          >
+            <bs.DropdownButton
+              title={sortOptions.find(sort => sort.id === sortFilter) ? 
+                sortOptions.find(sort => sort.id === sortFilter).title
+                : 'Volume'}
+              id="sort-by"
+              defaultValue={sortFilter}
+              onSelect={handleSortSelect}
+            >
+              {
+                sortOptions.map(sort => 
+                  <bs.MenuItem 
+                    key={sort.id} 
+                    eventKey={sort.id} 
+                    value={sort.id}
+                  >
+                    {sort.title}
+                  </bs.MenuItem>
+                )
+              } 
+            </bs.DropdownButton>
+
+            <div style={{ float: 'right', marginLeft: 10 }}>
+              {
+                sortOrder === 'asc' ? 
+                  <a onClick={() => this.props.setSortOrder('desc')}>
+                    <i className="fa fa-arrow-down" />
+                  </a>
+                 :
+                 <a onClick={() => this.props.setSortOrder('asc')}>
+                   <i className="fa fa-arrow-up" />
+                 </a>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <Table
+        className="session-list"
+        rowClassName="session-list-item"
+        fields={sessionFields}
+        data={sessions}
+        onRowClick={onSessionClick}
+      />
+    </div>
+  );
+}
 
 const History = React.createClass({
 
@@ -302,7 +379,8 @@ const History = React.createClass({
               </div>
               
             </div>        
-            <HistoryList 
+
+            <SessionsList 
               handleSortSelect={this.handleSortSelect}
               activeDeviceType={activeDeviceType}
               {...this.props} 

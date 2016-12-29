@@ -12,6 +12,8 @@ const timeUtil = require('../utils/time');
 const { getMetricMu } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
 
+const { meter: meterSessionSchema, amphiro: amphiroSessionSchema } = require('../schemas/history');
+
 const { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
@@ -40,12 +42,20 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const sessions = sortSessions(reduceSessions(stateProps.devices, stateProps.data), 
                                 stateProps.sortFilter, 
                                 stateProps.sortOrder,
-                               )
-  .map(s => ({ 
-    ...s, 
-    date: getTimeLabelByGranularity(s.timestamp, stateProps.time.granularity, ownProps.intl),
+                               ).map(s => ({ 
+                                 ...s, 
+                                 user: stateProps.firstname,
+                                 date: getTimeLabelByGranularity(s.timestamp, 
+                                                                 stateProps.time.granularity, 
+                                                                 ownProps.intl
+                                                                ),
   }));
 
+  const sessionFields = stateProps.activeDeviceType === 'METER' ? 
+    meterSessionSchema
+      :
+    amphiroSessionSchema;
+    
   const csvData = stateProps.activeDeviceType === 'METER' ? 
     meterSessionsToCSV(sessions) 
     : 
@@ -105,6 +115,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     comparisons,
     sortOptions,
     sessions,
+    sessionFields,
     deviceTypes,
     csvData,
     reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.metricFilter)} ${getMetricMu(stateProps.metricFilter)}`,
