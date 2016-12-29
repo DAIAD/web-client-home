@@ -35,7 +35,10 @@ const meter = [
   },
   {
     id: 'showMore',
-    name: ''
+    name: '',
+    value: () => 
+      <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
+
   }
 ];
 
@@ -107,8 +110,8 @@ const amphiro = [
   {
     id: 'showMore',
     name: '',
-    value: (field, row) => 
-    <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />,
+    value: () => 
+      <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
   }
 ];
 
