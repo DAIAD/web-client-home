@@ -1,7 +1,7 @@
 const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 
-const HomeRoot = require('../components/layout/HomeRoot');
+const HomeRoot = require('../components/sections/HomeRoot');
 
 const { login, logout, refreshProfile, letTheRightOneIn } = require('../actions/UserActions');
 const { setReady } = require('../actions/InitActions');

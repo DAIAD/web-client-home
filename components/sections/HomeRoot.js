@@ -2,9 +2,9 @@ const React = require('react');
 const { IntlProvider, FormattedMessage } = require('react-intl');
 const { Link } = require('react-router');
 
-const Header = require('./Header');
-const Footer = require('./Footer');
-const LoginPage = require('../sections/Login');
+const Header = require('../layout/Header');
+const Footer = require('../layout/Footer');
+const LoginPage = require('./Login');
 const { debounce } = require('../../utils/general');
 
 const { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
