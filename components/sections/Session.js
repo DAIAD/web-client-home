@@ -3,9 +3,9 @@ const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl');
 
 const { LineChart } = require('react-echarts');
-const theme = require('./chart/themes/line');
+const theme = require('../chart/themes/line');
 
-const { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../constants/HomeConstants'); 
+const { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../../constants/HomeConstants'); 
 
 function SessionInfoItem(props) {
   const _t = props.intl.formatMessage;
@@ -127,7 +127,7 @@ function Session(props) {
     ` ${Math.abs(data.percentDiff)}%` 
     : '';
 
-  if (!history) {
+  if (history === false) {
     return (
       <div className="shower-container">
         <div className="shower-chart-area">
@@ -161,7 +161,7 @@ function Session(props) {
         /> 
       </div>
     );
-  } else if (history) {
+  } else if (history === true) {
     return (
       <div className="shower-container">
         <div className="shower-chart-area">

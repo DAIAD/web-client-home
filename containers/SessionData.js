@@ -4,7 +4,7 @@ const { injectIntl } = require('react-intl');
 
 //const { getChartTimeData } = require('../utils/chart');
 
-const SessionModal = require('../components/Session');
+const SessionModal = require('../components/sections/Session');
 
 const HistoryActions = require('../actions/HistoryActions');
 const moment = require('moment');
