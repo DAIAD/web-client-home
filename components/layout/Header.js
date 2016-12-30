@@ -31,6 +31,16 @@ function UserInfo(props) {
       <div title={_t({ id: 'section.profile' })}>
         <Link to="settings/profile">
           <span><b>{props.firstname}</b></span>
+          { 
+            props.photo ? 
+              <img 
+                className="profile-header-photo"
+                src={`data:image/png;base64,${props.photo}`} 
+                alt="profile" 
+              />
+              :
+                <span />
+           }
         </Link>
       </div>
     </div>
@@ -165,7 +175,7 @@ function ErrorDisplay(props) {
 }
 
 function Header(props) {   
-  const { intl, firstname, isAuthenticated, notifications, linkToNotification, 
+  const { intl, firstname, photo, isAuthenticated, notifications, linkToNotification, 
     unreadNotifications, logout, deviceCount, setLocale, locale, 
     errors, dismissError } = props;
   return (
@@ -189,6 +199,7 @@ function Header(props) {
               />
               <UserInfo
                 intl={intl}
+                photo={photo}
                 firstname={firstname}
               />
               <Logout

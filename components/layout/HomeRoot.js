@@ -113,6 +113,7 @@ const HomeRoot = React.createClass({
           }
           <Header
             firstname={user.profile.firstname}
+            photo={user.profile.photo}
             deviceCount={deviceCount}
             isAuthenticated={user.isAuthenticated}
             notifications={messages}
