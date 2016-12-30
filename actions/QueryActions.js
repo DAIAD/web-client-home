@@ -264,6 +264,7 @@ const queryMeterHistory = function (options) {
     const data = {
       ...time,
       ...options,
+      csrf: getState().user.csrf,
     };
     return meterAPI.getHistory(data)
       .then((response) => {
@@ -351,7 +352,6 @@ const queryMeterHistoryCache = function (options) {
     return dispatch(queryMeterHistory(newOptions))
     .then((series) => {
       dispatch(saveToCache('METER', time, series));
-      
       // return only the meters requested  
       return filterDataByDeviceKeys(series, deviceKey);
     });
