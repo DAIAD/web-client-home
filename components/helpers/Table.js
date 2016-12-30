@@ -47,7 +47,10 @@ function TableBody(props) {
         data.map((row, idx) => (
           <TableRow 
             key={idx}
-            className={rowClassName}
+            className={typeof rowClassName === 'function' ? 
+              rowClassName(row) 
+                : rowClassName
+            }
             onRowClick={onRowClick}
             fields={fields}
             row={row} 
