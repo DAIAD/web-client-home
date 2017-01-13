@@ -36,6 +36,15 @@ module.exports = {
     image: 'notifications-menu.svg',
     route: '/notifications',
   },
+  // TODO: add to menu when connected to backend
+  /*
+  {
+    name: 'commons',
+    title: 'section.commons',
+    image: 'commons-menu.svg',
+    route: '/commons',
+    },
+    */
   {
     name: 'settings',
     title: 'section.settings',
@@ -220,6 +229,20 @@ module.exports = {
     {
       id: 'duration', 
       title: 'Duration',
+    },
+  ],
+  COMMONS_USER_SORT: [
+    {
+      id: 'ranking',
+      title: 'Ranking',
+    },
+    {
+      id: 'consumption',
+      title: 'Consumption',
+    },
+    {
+      id: 'memberSince',
+      title: 'Date joined',
     },
   ],
   STATBOX_DISPLAYS: [

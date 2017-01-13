@@ -9,6 +9,7 @@ const dashboard = require('./dashboard');
 const messages = require('./messages');
 const forms = require('./forms');
 const viewport = require('./viewport');
+const commons = require('./commons');
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -21,6 +22,7 @@ const rootReducer = combineReducers({
     history,
     dashboard,
     messages,
+    commons,
   }),
 });
 

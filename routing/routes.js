@@ -4,6 +4,7 @@ const { Route, IndexRoute } = require('react-router');
 const HomeApp = require('../containers/HomeApp');
 const Dashboard = require('../containers/DashboardData');
 const History = require('../containers/HistoryData');
+const Commons = require('../containers/CommonsData');
 const Messages = require('../containers/MessageData');
 const Settings = require('../containers/SettingsData');
 const Profile = require('../components/sections/settings/Profile');
@@ -15,6 +16,7 @@ const routes = () => (
     <Route path="dashboard" component={Dashboard} />  
     <Route path="history" component={History} />
     <Route path="notifications" component={Messages} />
+    <Route path="commons" component={Commons} />
     <Route path="settings" component={Settings}>
       <IndexRoute default="profile" component={Profile} />
       <Route path="profile" component={Profile} />
