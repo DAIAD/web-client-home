@@ -3,6 +3,10 @@ const defaultStyle = require('./default');
 module.exports = {
   ...defaultStyle,
 
+  legend: {
+    show: false,
+  },
+
   line: {
     itemStyle: {
       normal: {
@@ -22,7 +26,7 @@ module.exports = {
         borderWidth: 1,
       }
     },
-    smooth: false,
+    smooth: true,
     symbol: 'emptyCircle',
     showAllSymbol: true,
     symbolSize: 7,

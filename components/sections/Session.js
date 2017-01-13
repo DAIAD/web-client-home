@@ -3,7 +3,7 @@ const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl');
 
 const { LineChart } = require('react-echarts');
-const theme = require('../chart/themes/line');
+const theme = require('../chart/themes/session');
 
 const { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../../constants/HomeConstants'); 
 

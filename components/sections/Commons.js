@@ -11,7 +11,7 @@ const Table = require('../helpers/Table');
 const { TimeNavigator, CustomTimeNavigator } = require('../helpers/Navigators');
 const { SidebarRight } = require('../layout/Sidebars');
 
-const theme = require('../chart/themes/history-bar');
+const theme = require('../chart/themes/history');
 
 const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSchema } = require('../../schemas/commons');
 const timeUtil = require('../../utils/time');

@@ -1,7 +1,7 @@
 const React = require('react');
 const Chart = require('./Chart');
 const { LineChart, BarChart } = require('react-echarts');
-const lineTheme = require('../chart/themes/line');
+const lineTheme = require('../chart/themes/default');
 const horizontalBarTheme = require('../chart/themes/horizontal-bar');
 const verticalBarTheme = require('../chart/themes/vertical-bar');
 

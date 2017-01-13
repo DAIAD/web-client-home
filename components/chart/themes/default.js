@@ -1,7 +1,10 @@
 module.exports = {
-  color: [
-    '#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'
+    color: [
+    '#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E', '#EBB7B1',
   ],
+  //color: ['#42f465', 'red', 'blue', '#2D3580', '#CD4D3E', 'yellow', 'green'],
+  
+  backgroundColor: '#fff',
 
   title: {
     textStyle: {
@@ -20,7 +23,7 @@ module.exports = {
   },
   
   legend: {
-    show: false,
+    show: true,
     padding: 12,
     itemHeight: 10,
     itemGap: 6,
@@ -30,8 +33,8 @@ module.exports = {
     borderWidth: 0,
     textStyle: {
       fontSize: 11,
-      fontFamily: 
-        'sans-serif',
+      //fontFamily: 
+        //'sans-serif',
         //'monospace', // needed only for vertical alignment
     },
     x: 'center',
@@ -133,16 +136,16 @@ module.exports = {
     itemStyle: {
       normal: {
         lineStyle: {
-          width: 2,
+          width: 18,
           type: 'solid',
         },
       },
       emphasis: {
       }
     },
-    smooth: false,
+    smooth: true,
     symbol: 'emptyCircle',
-    symbolSize: 4,
+    symbolSize: 6,
   },
 
   timeline: {
