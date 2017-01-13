@@ -3,6 +3,7 @@ module.exports = {
   PNG_IMAGES: '/assets/images/home/png',
   NOTIFICATION_TITLE_LENGTH: 50,
   CACHE_SIZE: 20,
+  SUCCESS_SHOW_TIMEOUT: 2000,
   LOCALES: ['en', 'el', 'de', 'es'],
   COUNTRIES: ['United Kingdom', 'Spain', 'Greece'],
   TIMEZONES: [

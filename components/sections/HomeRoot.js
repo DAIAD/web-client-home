@@ -76,6 +76,16 @@ function Loader() {
   );
 }
 
+function QuerySuccess() {
+  return (
+    <div className="query-success">
+      <i 
+        className="fa fa-check green " 
+      />
+    </div>
+  );
+}
+
 const HomeRoot = React.createClass({
   componentWillMount: function () {
     const { init, ready } = this.props;
@@ -95,7 +105,7 @@ const HomeRoot = React.createClass({
     );
   },
   render: function () {
-    const { ready, locale, loading, user, deviceCount, messages, 
+    const { ready, locale, loading, user, deviceCount, messages, success,
       unreadNotifications, linkToNotification, login, logout, 
       setLocale, errors, dismissError, children } = this.props;
 
@@ -110,6 +120,9 @@ const HomeRoot = React.createClass({
         <div className="site-container">
           {
             loading ? <Loader /> : <div /> 
+          }
+          {
+            success ? <QuerySuccess /> : <div />
           }
           <Header
             firstname={user.profile.firstname}

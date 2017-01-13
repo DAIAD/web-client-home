@@ -9,6 +9,8 @@ const userAPI = require('../api/user');
 const types = require('../constants/ActionTypes');
 
 const InitActions = require('./InitActions');
+const { resetSuccess } = require('./QueryActions');
+const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
 
 const requestedLogin = function () {
   return {
@@ -202,7 +204,8 @@ const saveToProfile = function (profile) {
     return userAPI.saveToProfile(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-       
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
       if (!response || !response.success) {
         const errorCode = response && response.errors && response.errors.length > 0 ? 
           response.errors[0].code 
@@ -210,7 +213,7 @@ const saveToProfile = function (profile) {
         throw new Error(errorCode);
       }
       return response;
-    })
+    }) 
     .catch((errors) => {
       console.error('Error caught on saveToProfile:', errors);
       dispatch(receivedQuery(false, errors));

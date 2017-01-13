@@ -8,7 +8,7 @@
  */
 
 const types = require('../constants/ActionTypes');
-const { CACHE_SIZE } = require('../constants/HomeConstants');
+const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
 
 const deviceAPI = require('../api/device');
 const meterAPI = require('../api/meter');
@@ -29,6 +29,19 @@ const receivedQuery = function (success, errors) {
     type: types.QUERY_REQUEST_END,
     success,
     errors,
+  };
+};
+
+const resetSuccess = function () {
+  return {
+    type: types.QUERY_RESET_SUCCESS,
+  };
+};
+
+const setError = function (error) {
+  return {
+    type: types.QUERY_SET_ERROR,
+    error,
   };
 };
 
@@ -106,6 +119,8 @@ const queryDeviceSessions = function (options) {
     return deviceAPI.querySessions(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors, response.devices));
+      dispatch(resetSuccess());
+
 
       if (!response || !response.success) {
         const errorCode = response && response.errors && response.errors.length > 0 ? 
@@ -182,6 +197,7 @@ const fetchDeviceSession = function (id, deviceKey) {
     return deviceAPI.getSession(data)
       .then((response) => {
         dispatch(receivedQuery(response.success, response.errors, response.session));
+        dispatch(resetSuccess());
         
         if (!response || !response.success) {
           const errorCode = response && response.errors && response.errors.length > 0 ? 
@@ -256,7 +272,7 @@ const queryMeterHistory = function (options) {
   return function (dispatch, getState) {
     const { deviceKey, time } = options;
     if (!deviceKey || !time || !time.startDate || !time.endDate) {
-      throw new Error(`Not sufficient data provided for meter history query: deviceKey:${deviceKey}, time: ${time}`);
+      throw new Error(`Not sufficient data provided for meter history query: deviceKey:${deviceKey}, time: ${time.startDate}, ${time.endDate}`);
     }
 
     dispatch(requestedQuery());
@@ -269,6 +285,7 @@ const queryMeterHistory = function (options) {
     return meterAPI.getHistory(data)
       .then((response) => {
         dispatch(receivedQuery(response.success, response.errors, response.session));
+        dispatch(resetSuccess());
         
         if (!response || !response.success) {
           const codeError = response && response.errors && response.errors.length > 0 ? 
@@ -455,4 +472,6 @@ module.exports = {
   queryMeterHistory,
   fetchInfoboxData,
   dismissError,
+  resetSuccess,
+  setError,
 };

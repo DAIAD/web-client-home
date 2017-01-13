@@ -38,6 +38,16 @@ const query = function (state = initialState, action) {
           return state;
       }
 
+    case types.QUERY_RESET_SUCCESS: 
+      return Object.assign({}, state, {
+        success: null,
+      });
+    
+    case types.QUERY_SET_ERROR:
+      return Object.assign({}, state, {
+        errors: action.error,
+      });
+
     case types.QUERY_DISMISS_ERROR:
       return Object.assign({}, state, {
         errors: null

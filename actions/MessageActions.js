@@ -113,6 +113,8 @@ const acknowledge = function (id, category, timestamp) {
       }
       
       dispatch(receivedMessageAck(response.success, response.errors));
+      dispatch(QueryActions.resetSuccess());
+
       dispatch(setMessageRead(id, category, timestamp));
       
       return response;
@@ -227,6 +229,7 @@ const fetch = function (options) {
         throw new Error(errorCode);
       }
       dispatch(receivedMessages(response.success, null));
+      dispatch(QueryActions.resetSuccess());
 
       return response;
     })
