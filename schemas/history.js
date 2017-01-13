@@ -98,14 +98,14 @@ const amphiro = [
     id: 'realtime',
     name: 'Real',
     value: (value, field, row) => row.history ? 
-      <i className="fa fa-times" />
+      <i />
       :
       <i className="fa fa-check" />,
   },
   {
     id: 'id',
     name: 'Id',
-    value: (value, field, row) => `#${value}`,
+    //value: (value, field, row) => `${value}`,
   },
   {
     id: 'showMore',

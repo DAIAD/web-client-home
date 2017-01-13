@@ -148,7 +148,7 @@ function Session(props) {
               y: -30,
               y2: 30,
             }}
-            series={[{ name: `${_t('section.shower')} #${id}`, data: chartData, fill: 0.55 }]}
+            series={[{ name: `${_t('section.shower')} ${id}`, data: chartData, fill: 0.55 }]}
           />
         </div>
           
@@ -251,7 +251,7 @@ const SessionModal = React.createClass({
                 <span>
                   <span>{` ${data.devName}  `}</span>
                   <FormattedMessage id="section.shower" />
-                  <span>{` #${data.id}`}</span>
+                  <span>{` ${data.id}`}</span>
                 </span>
                 :
                 <FormattedMessage id="section.shower-aggregated" />
