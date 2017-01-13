@@ -6,8 +6,15 @@ const initialState = {
     type: 'totalDifferenceStat',
     title: 'Total volume Stat',
   },
-  profileForm: {
-  }
+  profileForm: {},
+  commonForm: {
+    id: null,
+    name: '',
+    description: '',
+    members: [],
+    owners: [],
+  },
+
 };
 
 const form = function (state = initialState, action) {

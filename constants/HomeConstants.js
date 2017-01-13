@@ -61,6 +61,31 @@ module.exports = {
         title: 'Devices',
         route: 'settings/devices',
       },
+      // TODO: add to menu when connected to backend
+      /*
+      {
+        name: 'commons',
+        title: 'Commons',
+        route: 'settings/commons',
+        children: [
+          {
+            name: 'edit',
+            title: 'Manage',
+            route: 'settings/commons/edit',
+          }, 
+          {
+            name: 'create',
+            title: 'Create',
+            route: 'settings/commons/create',
+          },
+          {
+            name: 'join',
+            title: 'Join',
+            route: 'settings/commons/join',
+          },
+        ],
+        }
+        */
     ],
   }],
   METER_AGG_METRICS: [
