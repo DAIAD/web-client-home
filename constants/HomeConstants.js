@@ -31,7 +31,7 @@ module.exports = {
     route: '/history',
   },
   {
-    name: 'messages',
+    name: 'notifications',
     title: 'section.notifications',
     image: 'notifications-menu.svg',
     route: '/notifications',
@@ -41,8 +41,19 @@ module.exports = {
     title: 'section.settings',
     image: 'settings-menu.svg',
     route: '/settings',
-  },
-  ],
+    children: [
+      {
+        name: 'profile',
+        title: 'Profile',
+        route: 'settings/profile',
+      },
+      {
+        name: 'devices',
+        title: 'Devices',
+        route: 'settings/devices',
+      },
+    ],
+  }],
   METER_AGG_METRICS: [
     {
       id: 'devName',  

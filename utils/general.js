@@ -159,6 +159,10 @@ const debounce = function (func, wait, immediate) {
   };
 }; 
 
+const getActiveLinks = function (routes) {
+  return routes.map(route => route.path || route.default);
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -169,4 +173,5 @@ module.exports = {
   getCacheKey,
   debounce,
   uploadFile,
+  getActiveLinks,
 };

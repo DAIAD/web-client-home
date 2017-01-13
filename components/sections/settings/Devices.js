@@ -2,7 +2,7 @@ const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
 
-const MainSection = require('../layout/MainSection');
+const MainSection = require('../../layout/MainSection');
 
 function Device(props) {
   const _t = props.intl.formatMessage;
@@ -61,6 +61,13 @@ function Device(props) {
           );
         })
       }
+      
+      <bs.ButtonInput 
+        style={{ marginTop: 20, float: 'right' }} 
+        type="submit" 
+        value={_t({ id: 'forms.submit' })} 
+        onClick={(e) => { e.preventDefault(); }} 
+      />
     </div>
   );
 }
@@ -70,7 +77,7 @@ function DevicesForm(props) {
   const { intl, devices } = props;
   const _t = intl.formatMessage;
   return (
-    <form id="form-devices" style={{ width: '100%', margin: '40px auto' }} >
+    <form id="form-devices">
       <bs.Accordion className="col-xs-10">
         {
           devices.map((device, i) => ( 
@@ -82,13 +89,7 @@ function DevicesForm(props) {
               <Device {...device} intl={intl} />
             </bs.Panel>
             ))
-        }
-        <bs.ButtonInput 
-          style={{ marginTop: 20 }} 
-          type="submit" 
-          value={_t({ id: 'forms.submit' })} 
-          onClick={(e) => { e.preventDefault(); }} 
-        />
+        } 
       </bs.Accordion>
     </form>
   );
@@ -98,8 +99,9 @@ function DevicesForm(props) {
 function Devices(props) {
   return (
     <MainSection id="section.devices">
-      <br />
-      <DevicesForm {...props} /> 
+      <div style={{ margin: 20 }}>
+        <DevicesForm {...props} /> 
+      </div>
     </MainSection>
   );
 }

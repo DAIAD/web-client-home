@@ -5,19 +5,27 @@ const { Link } = require('react-router');
 const Header = require('../layout/Header');
 const Footer = require('../layout/Footer');
 const LoginPage = require('./Login');
-const { debounce } = require('../../utils/general');
+const { debounce, getActiveLinks } = require('../../utils/general');
 
 const { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
 
 
 function MainSidebar(props) {
-  const { menuItems } = props;
+  const { menuItems, routes = [] } = props;
+
+  const activeLinks = getActiveLinks(routes);
+  const activeKey = activeLinks.length > 1 ? activeLinks[1] : null;
   return (
     <aside className="main-sidebar">
       <ul className="main-menu-side">
         {
           menuItems.map(item =>  
-            <li key={item.name} className="menu-item">
+              <li 
+                key={item.name} 
+                className={item.name === activeKey ? 
+                  'menu-item active' 
+                    : 'menu-item'} 
+              >
               <Link to={item.route}>
                 {
                   item.image ? 
@@ -29,28 +37,6 @@ function MainSidebar(props) {
                 }
                 <FormattedMessage id={item.title} />
               </Link>
-              {
-                item.children && item.children.length ? 
-                  <ul className="menu-group">
-                    {
-                      item.children.map((child, idx) =>
-                        <li key={idx} className="menu-subitem">
-                          <Link key={child.name} to={child.route}>
-                            {
-                              child.image ? 
-                                <img src={`${IMAGES}/${child.image}`} alt={child.name} /> 
-                                  : 
-                                    null
-                            }
-                            <FormattedMessage id={child.title} />
-                          </Link>
-                        </li>
-                        ) 
-                    }
-                  </ul>
-                  : 
-                    null
-                }
             </li>
             )
         }
@@ -107,7 +93,7 @@ const HomeRoot = React.createClass({
   render: function () {
     const { ready, locale, loading, user, deviceCount, messages, success,
       unreadNotifications, linkToNotification, login, logout, 
-      setLocale, errors, dismissError, children } = this.props;
+      setLocale, errors, dismissError, children, routes } = this.props;
 
     if (!ready) {
       return <Loader />;
@@ -142,7 +128,7 @@ const HomeRoot = React.createClass({
           <div className="main-container">
             {
               user.isAuthenticated ? 
-                <MainSidebar menuItems={MAIN_MENU} />
+                <MainSidebar menuItems={MAIN_MENU} routes={routes} />
                 :
                 <MainSidebar menuItems={[]} />
             }
