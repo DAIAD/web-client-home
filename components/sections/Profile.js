@@ -5,30 +5,29 @@ const { FormattedMessage } = require('react-intl');
 const MainSection = require('../layout/MainSection');
 const LocaleSwitcher = require('../LocaleSwitcher');
 
+const { uploadFile } = require('../../utils/general');
+
 const { COUNTRIES, TIMEZONES } = require('../../constants/HomeConstants');
 
 
 function ProfileForm(props) {
-  const { intl, profile, setLocale, locale, setForm, saveToProfile, 
-    fetchProfile, status, setStatus } = props;
+  const { intl, profile, locale, errors, actions } = props;
+  const { saveToProfile, fetchProfile, setLocale, setForm } = actions;
   const setProfileForm = data => setForm('profileForm', data);
   const _t = intl.formatMessage;
   return (
-    <form id="form-profile" style={{ width: 400, padding: '30px 50px' }} >
-      <div className="form-group">
-        <label className="control-label" htmlFor="locale-selector">
-          <span><FormattedMessage id="profile.locale" /></span>
-        </label>
-        <LocaleSwitcher
-          id="locale-selector"
-          intl={intl}
-          setLocale={(val) => { 
-            setLocale(val); 
-            setProfileForm({ locale: val });
-          }}
-          locale={locale}
-        />
-      </div>    
+    <form 
+      id="form-profile" 
+      style={{ width: 400 }} 
+      onSubmit={(e) => { 
+        e.preventDefault();
+        saveToProfile(JSON.parse(JSON.stringify(profile)))
+        .then((p) => {
+          fetchProfile();
+        });
+      }}
+    >
+
       <bs.Input 
         type="text" 
         label={_t({ id: 'profile.username' })} 
@@ -125,60 +124,48 @@ function ProfileForm(props) {
         </bs.DropdownButton>
       </div>
       
+      <div className="form-group">
+        <label 
+          className="control-label col-md-3" 
+          style={{ paddingLeft: 0 }} 
+          htmlFor="locale-switcher"
+        >
+          <span><FormattedMessage id="profile.locale" /></span>
+        </label>
+        <LocaleSwitcher
+          id="locale-switcher"
+          intl={intl}
+          setLocale={(val) => { 
+            setLocale(val); 
+            setProfileForm({ locale: val });
+          }}
+          locale={locale}
+        />
+      </div>
+      
       <hr />
 
       <div className="pull-left">
         <bs.ButtonInput 
           type="submit" 
           value={_t({ id: 'forms.submit' })} 
-          onClick={(e) => {
-            e.preventDefault(); 
-            saveToProfile(JSON.parse(JSON.stringify(profile)))
-            .then((res) => {
-              setStatus(res.success != null ? res.success : null);
-              setTimeout(() => setStatus(null), 2000);
-              fetchProfile();
-            });
-          }} 
         />
       </div>
-      {
-        status ? 
-          <i 
-            className="fa fa-check" 
-            style={{ float: 'right', marginTop: 10, fontSize: '1.5em', color: '#7AD3AB' }} 
-          />
-          : 
-          <span />
-          
-      }
     </form>
 
   );
 }
-/*
-<i 
-  className="fa fa-times" 
-  style={{ float: 'right', marginTop: 10, fontSize: '1.5em', color: '#CD4D3E' }} 
-/>
-*/
-const Profile = React.createClass({
-  getInitialState: function () {
-    return {
-      status: false, 
-    };
-  },
-  render: function () {
-    return (
-      <MainSection id="section.profile">
+
+function Profile(props) {
+  return (
+    <MainSection id="section.profile">
+      <div style={{ margin: 20 }}>
         <ProfileForm 
-          status={this.state.status} 
-          setStatus={v => this.setState({ status: v })} 
-          {...this.props} 
+          {...props} 
         /> 
-      </MainSection>
-    );
-  }
-});
+      </div>
+    </MainSection>
+  );
+}
 
 module.exports = Profile;
