@@ -7,12 +7,12 @@ const LocaleSwitcher = require('../LocaleSwitcher');
 
 const { uploadFile } = require('../../utils/general');
 
-const { COUNTRIES, TIMEZONES } = require('../../constants/HomeConstants');
+const { IMAGES, COUNTRIES, TIMEZONES } = require('../../constants/HomeConstants');
 
 
 function ProfileForm(props) {
   const { intl, profile, locale, errors, actions } = props;
-  const { saveToProfile, fetchProfile, setLocale, setForm } = actions;
+  const { saveToProfile, fetchProfile, setLocale, setForm, setError, dismissError } = actions;
   const setProfileForm = data => setForm('profileForm', data);
   const _t = intl.formatMessage;
   return (
@@ -27,6 +27,48 @@ function ProfileForm(props) {
         });
       }}
     >
+      { 
+        profile.photo ? 
+          <img 
+            style={{ 
+              marginTop: -5, 
+              marginBottom: 20,
+              height: 100,
+              width: 100,
+              border: '2px #2D3580 solid',
+            }} 
+            src={`data:image/png;base64,${profile.photo}`} 
+            alt="profile" 
+          />
+          :
+          <img 
+            style={{ 
+              marginTop: -5, 
+              marginBottom: 20,
+              height: 100,
+              width: 100,
+              border: '2px #2D3580 solid',
+            }} 
+            src={`${IMAGES}/daiad-consumer.png`} 
+            alt="profile" 
+          />
+        }
+        <input 
+          id="file-uploader"
+          type="file"
+          onChange={(e) => { 
+            const file = e.target.files[0];
+            uploadFile(file, 
+                       (value) => { 
+                         if (errors) { dismissError(); } 
+                         setProfileForm({ photo: value }); 
+                       }, 
+                       (error) => { 
+                         setError(error); 
+                       }); 
+          }}
+        />
+        <hr />
 
       <bs.Input 
         type="text" 

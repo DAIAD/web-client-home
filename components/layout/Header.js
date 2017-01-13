@@ -39,7 +39,11 @@ function UserInfo(props) {
                 alt="profile" 
               />
               :
-                <span />
+              <img
+                className="profile-header-photo"
+                src={`${IMAGES}/daiad-consumer.png`} 
+                alt="profile"
+              />
            }
         </Link>
       </div>

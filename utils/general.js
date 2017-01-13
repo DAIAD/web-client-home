@@ -114,6 +114,31 @@ const getCacheKey = function (deviceType, timeOrLength) {
   throw new Error(`deviceType ${deviceType} not supported`);
 };
 
+const uploadFile = function (file, successCb, failureCb) {
+  if (!file) return;
+  if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
+    failureCb('fileWrongType');
+    return;
+  }
+  if (file.size > 2048000000) {
+    failureCb('fileExceedSize');
+    return;
+  }
+  const reader = new FileReader();
+
+  reader.onload = (upload) => {
+    const STR = 'base64,';
+    const index = upload.target.result.indexOf(STR);
+    successCb(upload.target.result.substring(index + STR.length));
+  };
+
+  reader.onerror = (error) => {
+    failureCb('fileUploadError');
+  };
+
+  reader.readAsDataURL(file);
+};
+
 // Returns a function, that, as long as it continues to be invoked, will not
 // be triggered. The function will be called after it stops being called for
 // N milliseconds. If `immediate` is passed, trigger the function on the
@@ -142,5 +167,6 @@ module.exports = {
   getMetricMu,
   lastNFilterToLength,
   getCacheKey,
-  debounce
+  debounce,
+  uploadFile,
 };

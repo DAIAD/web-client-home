@@ -60,6 +60,7 @@ const initHome = function (profile) {
     const { 
       firstname, 
       lastname, 
+      photo,
       email, 
       username, 
       locale, 
@@ -72,6 +73,7 @@ const initHome = function (profile) {
     const profileData = { 
       firstname, 
       lastname, 
+      photo,
       email, 
       username, 
       locale,
@@ -80,6 +82,7 @@ const initHome = function (profile) {
       country, 
       timezone, 
     };
+    
     dispatch(FormActions.setForm('profileForm', profileData));
     
     return dispatch(DashboardActions.fetchAllInfoboxesData())
