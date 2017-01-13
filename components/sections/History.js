@@ -8,6 +8,7 @@ const MainSection = require('../layout/MainSection');
 const Topbar = require('../layout/Topbar');
 const { SidebarLeft, SidebarRight } = require('../layout/Sidebars');
 const Table = require('../helpers/Table');
+const { TimeNavigator, CustomTimeNavigator } = require('../helpers/Navigators');
 
 //sub-containers
 const SessionData = require('../../containers/SessionData');
@@ -17,73 +18,9 @@ const HistoryChartData = require('../../containers/HistoryChartData');
 const timeUtil = require('../../utils/time');
 const { IMAGES } = require('../../constants/HomeConstants');
 
-
-function CustomTimeNavigator(props) {
-  const { time, updateTime } = props;
-  return (
-    <div className="time-navigator">
-      <div className="time-navigator-child"> 
-        <div style={{ float: 'left', marginRight: 5 }}>
-          <DatetimeInput
-            dateFormat="DD/MM/YYYY"
-            timeFormat="HH:mm"
-            inputProps={{ size: 18 }}
-            value={time.startDate} 
-            isValidDate={curr => curr.valueOf() <= time.endDate}
-            onChange={val => updateTime({ startDate: val.valueOf() })}
-          /> 
-        </div>
-        - 
-        <div style={{ float: 'right', marginLeft: 5 }}>
-          <DatetimeInput 
-            closeOnSelect
-            dateFormat="DD/MM/YYYY"
-            timeFormat="HH:mm"
-            inputProps={{ size: 18 }}
-            value={time.endDate} 
-            isValidDate={curr => curr.valueOf() >= time.startDate}
-            onChange={val => updateTime({ endDate: val.valueOf() })}
-          />
-        </div>
-      </div>
-    </div>
-  ); 
-}
-
-function TimeNavigator(props) {
-  const { time, handlePrevious, handleNext } = props;
-
-  if (!time.startDate || !time.endDate) return (<div />);
-  return (
-    <div className="time-navigator">
-      <a className="time-navigator-child pull-left" onClick={handlePrevious}>
-        <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
-      </a>
-      <div className="time-navigator-child">
-        <FormattedDate 
-          value={time.startDate} 
-          day="numeric" 
-          month="long" 
-          year="numeric"
-        />
-        - 
-        <FormattedDate 
-          value={time.endDate} 
-          day="numeric" 
-          month="long" 
-          year="numeric" 
-        />
-      </div>
-      <a className="time-navigator-child pull-right" onClick={handleNext}>
-        <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
-      </a>
-    </div>
-  );
-}
-
 function SessionsList(props) {
   const { sortOptions, sortFilter, sortOrder, handleSortSelect, activeDeviceType, 
-    csvData, time, sessionFields, sessions, setActiveSession } = props;
+    csvData, time, sessionFields, sessions, setActiveSession, setSortOrder, setSortFilter } = props;
     
   const onSessionClick = session => 
     setActiveSession(session.device, session.id, session.timestamp);
@@ -135,11 +72,11 @@ function SessionsList(props) {
             <div style={{ float: 'right', marginLeft: 10 }}>
               {
                 sortOrder === 'asc' ? 
-                  <a onClick={() => this.props.setSortOrder('desc')}>
+                  <a onClick={() => setSortOrder('desc')}>
                     <i className="fa fa-arrow-down" />
                   </a>
                  :
-                 <a onClick={() => this.props.setSortOrder('asc')}>
+                 <a onClick={() => setSortOrder('asc')}>
                    <i className="fa fa-arrow-up" />
                  </a>
               }
@@ -168,29 +105,10 @@ const History = React.createClass({
     this.props.setMetricFilter(key); 
   },
   handlePeriodSelect: function (key) {
-    let time = null;
-    if (key === 'always') {
-      time = {
-        startDate: new Date('2000-02-18').getTime(),
-        endDate: new Date('2016-12-31').getTime(),
-        granularity: 0,
-      };
-    } else if (key === 'year') {
-      time = timeUtil.thisYear();
-    } else if (key === 'month') {
-      time = timeUtil.thisMonth();
-    } else if (key === 'week') {
-      time = timeUtil.thisWeek();
-    } else if (key === 'day') {
-      time = timeUtil.today();
-    } else {
-      //throw new Error('oops, shouldn\'t be here');
-    }
-
     this.props.setTimeFilter(key);
 
-    if (time) this.props.setTime(time, false);
-    this.props.fetchData();
+    const time = timeUtil.getTimeByPeriod(key);
+    if (time) this.props.setTime(time, true);
   },
   handlePrevious: function () { 
     this.props.setTime(this.props.previousPeriod);
@@ -222,9 +140,6 @@ const History = React.createClass({
       time, metrics, periods, comparisons, deviceTypes } = this.props;
     const _t = intl.formatMessage;
 
-    if (this.props.lala) {
-      return <span>HISTORY IS GREAT</span>;
-    }
     return (
       <MainSection id="section.history">
         <Topbar> 
@@ -294,7 +209,7 @@ const History = React.createClass({
             >
               {
                 Checkbox => (
-                  <div>
+                  <div className="shower-devices">
                     {
                       amphiros.map(device => (
                         <label key={device.deviceKey} htmlFor={device.deviceKey}>
@@ -302,6 +217,7 @@ const History = React.createClass({
                             id={device.deviceKey} 
                             value={device.deviceKey} 
                           /> 
+                          <label htmlFor={device.deviceKey} />
                           {device.name || device.macAddress || device.serial}
                         </label>
                         ))
