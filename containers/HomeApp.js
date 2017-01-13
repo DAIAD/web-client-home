@@ -21,7 +21,12 @@ function mapStateToProps(state) {
     loading: state.user.status.isLoading 
       || state.locale.status.isLoading 
       || state.query.isLoading,
-    messages: state.messages,
+    alerts: state.section.messages.alerts,
+    announcements: state.section.messages.announcements,
+    recommendations: state.section.messages.recommendations,
+    tips: state.section.messages.tips,
+
+
   };
 }
 
@@ -41,10 +46,10 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const messageArray = combineMessages([
-      { name: 'alerts', values: stateProps.messages.alerts },
-      { name: 'announcements', values: stateProps.messages.announcements },
-      { name: 'recommendations', values: stateProps.messages.recommendations },
-      { name: 'tips', values: stateProps.messages.tips },
+      { name: 'alerts', values: stateProps.alerts },
+      { name: 'announcements', values: stateProps.announcements },
+      { name: 'recommendations', values: stateProps.recommendations },
+      { name: 'tips', values: stateProps.tips },
   ]);
 
   return { 

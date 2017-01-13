@@ -93,7 +93,7 @@ const acknowledge = function (id, category, timestamp) {
       throw new Error(`Not sufficient data provided for message acknowledgement. (id, type, timestamp): ${id}, ${category}, ${timestamp}`);
     }
 
-    const message = getState().messages[category].find(x => x.id === id);
+    const message = getState().section.messages[category].find(x => x.id === id);
     
     if (message && message.acknowledgedOn != null) {
       return Promise.resolve();
@@ -163,10 +163,10 @@ const setActiveMessageId = function (id) {
       id,
     });
 
-    const category = getState().messages.activeTab;
-    const activeMessageIndex = getState().messages[category].findIndex(x => x.id === id);
+    const category = getState().section.messages.activeTab;
+    const activeMessageIndex = getState().section.messages[category].findIndex(x => x.id === id);
     const activeMessage = activeMessageIndex != null ? 
-      getState().messages[category][activeMessageIndex] 
+      getState().section.messages[category][activeMessageIndex] 
       : {};
 
     dispatch(acknowledge(id, category, new Date().getTime()));

@@ -13,12 +13,12 @@ const { stripTags } = require('../utils/messages');
 function mapStateToProps(state) {
   return {
     devices: state.user.profile.devices,
-    activeTab: state.messages.activeTab,
-    activeMessageId: state.messages.activeMessageId,
-    alerts: state.messages.alerts,
-    announcements: state.messages.announcements,
-    recommendations: state.messages.recommendations,
-    tips: state.messages.tips,
+    activeTab: state.section.messages.activeTab,
+    activeMessageId: state.section.messages.activeMessageId,
+    alerts: state.section.messages.alerts,
+    announcements: state.section.messages.announcements,
+    recommendations: state.section.messages.recommendations,
+    tips: state.section.messages.tips,
   };
 }
 

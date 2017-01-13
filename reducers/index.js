@@ -20,8 +20,8 @@ const rootReducer = combineReducers({
   section: combineReducers({
     history,
     dashboard,
+    messages,
   }),
-  messages,
 });
 
 module.exports = rootReducer;
