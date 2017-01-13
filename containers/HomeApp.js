@@ -17,6 +17,7 @@ function mapStateToProps(state) {
     ready: state.user.ready,
     locale: state.locale,
     errors: state.query.errors,
+    success: state.query.success,
     loading: state.user.status.isLoading 
       || state.locale.status.isLoading 
       || state.query.isLoading,
