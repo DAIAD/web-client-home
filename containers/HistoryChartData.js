@@ -116,6 +116,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
 const HistoryChartData = injectIntl(connect(mapStateToProps, 
                                             mapDispatchToProps, 
-                                            mergeProps,
+                                            mergeProps
                                            )(HistoryChart));
 module.exports = HistoryChartData;

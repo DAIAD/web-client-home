@@ -116,7 +116,7 @@ const reduceMetric = function (devices, data, metric) {
   reducedMetric = data
   .map(d => getDataSessions(devices, d)
        .map(it => it[metric] ? it[metric] : 0)
-       .reduce(((p, c) => p + c), 0),
+       .reduce(((p, c) => p + c), 0)
   )
   .reduce(((p, c) => p + c), 0);
 
@@ -243,7 +243,7 @@ const transformInfoboxData = function (infobox, devices, intl) {
         data: deviceType === 'METER' ? 
           getChartMeterData(sessions, 
                             chartCategories, 
-                            time,
+                            time
                            ).map(x => x ? x[infobox.metric] : null)
           : 
             getChartAmphiroData(sessions, chartCategories)
@@ -284,11 +284,11 @@ const transformInfoboxData = function (infobox, devices, intl) {
       data: deviceType === 'METER' ? 
         getChartMeterData(getDataSessions(devices, devData), 
                           chartCategories, 
-                          getLowerGranularityPeriod(period),
+                          getLowerGranularityPeriod(period)
                          ).map(x => x ? x[infobox.metric] : null)
        : 
        getChartAmphiroData(getDataSessions(devices, devData), 
-                           chartCategories, 
+                           chartCategories
                           ).map(x => x ? x[infobox.metric] : null)
     })) : [];
   } else if (type === 'forecast') {

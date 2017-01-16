@@ -48,6 +48,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
 const SessionData = injectIntl(connect(mapStateToProps, 
                                        mapDispatchToProps, 
-                                       mergeProps,
+                                       mergeProps
                                       )(SessionModal));
 module.exports = SessionData;

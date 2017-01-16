@@ -58,6 +58,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
 const SettingsData = injectIntl(connect(mapStateToProps, 
                                         mapDispatchToProps,
-                                        mergeProps,
+                                        mergeProps
                                        )(Settings));
 module.exports = SettingsData;

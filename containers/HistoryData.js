@@ -41,7 +41,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const devType = stateProps.activeDeviceType;  
   const sessions = sortSessions(reduceSessions(stateProps.devices, stateProps.data), 
                                 stateProps.sortFilter, 
-                                stateProps.sortOrder,
+                                stateProps.sortOrder
                                ).map(s => ({ 
                                  ...s, 
                                  user: stateProps.firstname,
@@ -94,7 +94,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     id: 'last', 
     title: timeUtil.getComparisonPeriod(stateProps.time.startDate, 
                                         stateProps.time.granularity, 
-                                        ownProps.intl,
+                                        ownProps.intl
                                        ),
   }]
   : [];
@@ -104,10 +104,10 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...dispatchProps,
     ...ownProps,
     nextPeriod: stateProps.time ? timeUtil.getNextPeriod(stateProps.timeFilter, 
-                                                         stateProps.time.startDate,
+                                                         stateProps.time.startDate
                                                         ) : {}, 
     previousPeriod: stateProps.time ? timeUtil.getPreviousPeriod(stateProps.timeFilter, 
-                                                                 stateProps.time.endDate,
+                                                                 stateProps.time.endDate
                                                                 ) : {},
     amphiros,
     periods,
@@ -124,6 +124,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
 const HistoryData = injectIntl(connect(mapStateToProps, 
                                        mapDispatchToProps, 
-                                       mergeProps,
+                                       mergeProps
                                       )(History));
 module.exports = HistoryData;

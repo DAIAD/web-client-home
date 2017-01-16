@@ -93,7 +93,7 @@ const fetchData = function () {
         dispatch(QueryActions.queryMeterHistoryCache({
           deviceKey: getState().section.history.activeDevice, 
           time: getPreviousPeriod(getState().section.history.timeFilter, 
-                                  getState().section.history.time.startDate,
+                                  getState().section.history.time.startDate
                                  ), 
           csrf: getState().user.csrf,
         }))

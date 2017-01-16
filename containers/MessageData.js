@@ -69,7 +69,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const infobox = activeMessage && activeMessage.extra ? 
     transformInfoboxData(activeMessage.extra, 
                          stateProps.devices, 
-                         ownProps.intl,
+                         ownProps.intl
                         ) : {}; 
   return {
     ...stateProps,
@@ -90,6 +90,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
 const MessageData = injectIntl(connect(mapStateToProps, 
                                        mapDispatchToProps, 
-                                       mergeProps,
+                                       mergeProps
                                       )(Notifications));
 module.exports = MessageData;

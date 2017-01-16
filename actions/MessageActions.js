@@ -248,7 +248,7 @@ const fetchAll = function () {
     dispatch(fetch(MESSAGE_TYPES.map(x => ({ ...x, ascending: false }))))
     .then(response => (response && response.success ? 
           dispatch(setMessages(response)) 
-          : response),
+          : response)
          );
   };
 };

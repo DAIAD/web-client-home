@@ -25,5 +25,5 @@ ReactDOM.render(
       routes={routes()}
     />
   </ReduxProvider>,
-  document.getElementById('app'),
+  document.getElementById('app')
 );

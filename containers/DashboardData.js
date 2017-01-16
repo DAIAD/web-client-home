@@ -105,6 +105,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
 const DashboardData = injectIntl(connect(mapStateToProps, 
                                          mapDispatchToProps, 
-                                         mergeProps,
+                                         mergeProps
                                         )(Dashboard));
 module.exports = DashboardData;
