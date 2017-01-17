@@ -13,7 +13,7 @@ function EditCommons(props) {
     <bs.Accordion 
       className="col-md-10" 
       animation={false}
-      onSelect={(val) => { clearCommon(); setTimeout(() => updateCommon(myCommons.find(c => c.id === val)), 300); }}
+      onSelect={(val) => { updateCommon(myCommons.find(c => c.id === val)); }}
     >
       {
         myCommons.map(common => ( 

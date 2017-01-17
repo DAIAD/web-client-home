@@ -4,7 +4,7 @@ const { FormattedMessage, FormattedDate } = require('react-intl');
 
 const MainSection = require('../../layout/MainSection');
 const { fromDeviceForm, toDeviceForm } = require('../../../utils/device');
-const { HEATING_SYSTEMS } = require('../../../constants/HomeConstants');
+const { IMAGES, HEATING_SYSTEMS } = require('../../../constants/HomeConstants');
 
 
 function Device(props) {
@@ -215,15 +215,25 @@ function DevicesForm(props) {
       <bs.Accordion 
         className="col-xs-10"
         onSelect={(val) => { 
-          resetForm('deviceForm');
-          setTimeout(() => setForm('deviceForm', toDeviceForm(devices.find(d => d.deviceKey === val))), 300); 
+          setForm('deviceForm', toDeviceForm(devices.find(d => d.deviceKey === val)));
         }}
       >
         {
           devices.map(device => ( 
             <bs.Panel 
               key={device.deviceKey}
-              header={device.type === 'AMPHIRO' ? (device.name || device.deviceKey) : _t('devices.meter')}
+              header={
+                device.type === 'AMPHIRO' ? 
+                  <h3>
+                    <img style={{ marginRight: 5 }} src={`${IMAGES}/amphiro_small.svg`} alt="devices" />
+                    {(device.name || device.deviceKey)}
+                  </h3> 
+                  : 
+                  <h3>
+                    <img style={{ marginRight: 5 }} src={`${IMAGES}/water-meter.svg`} alt="meters" />
+                    {_t('devices.meter')}
+                  </h3>
+                  }
               eventKey={device.deviceKey}
             >
               <Device 
