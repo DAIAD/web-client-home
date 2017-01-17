@@ -5,7 +5,7 @@ const { push } = require('react-router-redux');
 
 const CommonsActions = require('../actions/CommonsActions');
 const { setLocale } = require('../actions/LocaleActions');
-const { saveToProfile, fetchProfile } = require('../actions/UserActions');
+const { saveToProfile, fetchProfile, updateDevice } = require('../actions/UserActions');
 const { setForm, resetForm } = require('../actions/FormActions');
 const { setError, dismissError } = require('../actions/QueryActions');
 
@@ -26,6 +26,7 @@ function mapStateToProps(state) {
     searchFilter: state.section.commons.searchFilter,
     confirmation: state.section.commons.confirm,
     commonForm: state.forms.commonForm,
+    deviceForm: state.forms.deviceForm,
   };
 }
 
@@ -41,6 +42,7 @@ function mapDispatchToProps(dispatch) {
       setError,
       dismissError,
       goTo: route => push(route),
+      updateDevice,
     }, dispatch),
   };
 }

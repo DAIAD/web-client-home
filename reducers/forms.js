@@ -14,6 +14,13 @@ const initialState = {
     members: [],
     owners: [],
   },
+  deviceForm: {
+    unit: 'METRIC',
+    key: null,
+    registeredOn: null,
+    name: '',
+    properties: [],
+  },
 
 };
 

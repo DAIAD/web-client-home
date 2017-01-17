@@ -438,5 +438,7 @@ module.exports = {
       },
     },
   ],
+  HEATING_SYSTEMS: ['electricity', 'oil', 'gas'],
+  SYSTEM_UNITS: ['metric', 'imperial'],
 };
 

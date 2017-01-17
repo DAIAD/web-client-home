@@ -6,7 +6,10 @@ const DeviceAPI = {
   },
   getSession: function (data) {
     return callAPI('/action/device/index/session', data);
-  }
+  },
+  updateDevice: function (data) {
+    return callAPI('/action/device/update', data);
+  },
 };
 
 module.exports = DeviceAPI;

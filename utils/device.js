@@ -74,6 +74,73 @@ const filterDataByDeviceKeys = function (data, deviceKeys) {
   return data.filter(x => deviceKeys.findIndex(k => k === x.deviceKey) > -1);
 };
 
+const getDeviceProperty = function (properties, key) {
+  if (!Array.isArray(properties)) {
+    throw new Error('Properties argument provided to getDeviceProperty needs to be array');
+  }
+  const property = properties.find(p => p.key === key);
+  if (!property) {
+    throw new Error(`Requested property ${key} does not exist in properties array`);
+  }
+  return property.value;
+};
+
+const toDeviceForm = function (device) {
+  const { name, type, deviceKey, unit, serial, macAddress, 
+    registeredOn, properties } = device;
+  return {
+    type,
+    key: deviceKey,
+    unit,
+    serial,
+    registeredOn,
+    macAddress,
+    ...(type === 'AMPHIRO' ? {
+        name,
+        heatingSystem: getDeviceProperty(properties, 'heating-system'),
+        heatingEfficiency: getDeviceProperty(properties, 'heating-efficiency'),
+        costEnergy: getDeviceProperty(properties, 'cost-energy'),
+        costWater: getDeviceProperty(properties, 'cost-water'),
+        shareOfSolar: getDeviceProperty(properties, 'share-of-solar'),
+      }
+      : {})
+  };
+};
+
+const fromDeviceForm = function (deviceForm) {
+  const { name, type, key, unit, heatingSystem, heatingEfficiency, costEnergy, 
+    costWater, shareOfSolar } = deviceForm;
+  return {
+    name,
+    type,
+    key,
+    unit,
+    properties: 
+      type === 'AMPHIRO' ? [
+      {
+        key: 'heating-system',
+        value: heatingSystem,
+      },
+      {
+        key: 'heating-efficiency',
+        value: heatingEfficiency,
+      },
+      {
+        key: 'cost-energy',
+        value: costEnergy,
+      },
+      {
+        key: 'cost-water',
+        value: costWater,
+      },
+      {
+        key: 'share-of-solar',
+        value: shareOfSolar,
+      },
+      ]
+      : [],
+  };
+};
 
 module.exports = {
   getDefaultDevice,
@@ -88,4 +155,6 @@ module.exports = {
   getDeviceKeyByName,
   getDeviceKeysByType,
   filterDataByDeviceKeys,
+  fromDeviceForm,
+  toDeviceForm,
 };

@@ -7,14 +7,14 @@ const LocaleSwitcher = require('../../LocaleSwitcher');
 
 const { uploadFile } = require('../../../utils/general');
 
-const { COUNTRIES, TIMEZONES } = require('../../../constants/HomeConstants');
+const { COUNTRIES, TIMEZONES, SYSTEM_UNITS } = require('../../../constants/HomeConstants');
 
 
 function ProfileForm(props) {
   const { intl, profile, locale, errors, actions } = props;
   const { saveToProfile, fetchProfile, setLocale, setForm, setError, dismissError } = actions;
   const setProfileForm = data => setForm('profileForm', data);
-  const _t = intl.formatMessage;
+  const _t = x => intl.formatMessage({ id: x });
   return (
     <form 
       id="form-profile" 
@@ -52,51 +52,51 @@ function ProfileForm(props) {
             src="http://daiad.eu/wp-content/themes/swag/assets/images/daiad-consumer.png"
             alt="profile" 
           />
-        }
-        <input 
-          id="file-uploader"
-          type="file"
-          onChange={(e) => { 
-            const file = e.target.files[0];
-            uploadFile(file, 
-                       (value) => { 
-                         if (errors) { dismissError(); } 
-                         setProfileForm({ photo: value }); 
-                       }, 
-                       (error) => { 
-                         setError(error); 
-                       }); 
-          }}
-        />
-        <hr />
-
+      }
+      <input
+        id="file-uploader"
+        type="file"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          uploadFile(file,
+                     (value) => {
+                       if (errors) { dismissError(); }
+                       setProfileForm({ photo: value });
+                     },
+                     (error) => {
+                       setError(error);
+                     });
+        }}
+      />
+      <hr />
+  
       <bs.Input 
         type="text" 
-        label={_t({ id: 'profile.username' })} 
+        label={_t('profile.username')} 
         defaultValue={profile.username} 
         readOnly 
       />
       <bs.Input 
         type="text" 
-        label={_t({ id: 'profile.firstname' })} 
+        label={_t('profile.firstname')} 
         value={profile.firstname} 
         onChange={e => setProfileForm({ firstname: e.target.value })} 
       />
       <bs.Input 
         type="text" 
-        label={_t({ id: 'profile.lastname' })} 
+        label={_t('profile.lastname')} 
         value={profile.lastname}  
         onChange={e => setProfileForm({ lastname: e.target.value })} 
       />
       <bs.Input 
         type="text" 
-        label={_t({ id: 'profile.address' })} 
+        label={_t('profile.address')} 
         value={profile.address} 
         onChange={e => setProfileForm({ address: e.target.value })} 
       />
       <bs.Input 
         type="text" 
-        label={_t({ id: 'profile.zip' })} 
+        label={_t('profile.zip')} 
         value={profile.zip}  
         onChange={e => setProfileForm({ zip: e.target.value })} 
       />
@@ -111,7 +111,7 @@ function ProfileForm(props) {
         </label>
         <bs.DropdownButton
           title={profile.country ? 
-            _t({ id: `countries.${profile.country}` }) 
+            _t(`countries.${profile.country}`) 
             : 
             'Select country'}
           id="country-switcher"
@@ -126,7 +126,7 @@ function ProfileForm(props) {
                 eventKey={country} 
                 value={country}
               >
-                { _t({ id: `countries.${country}` }) }
+                { _t(`countries.${country}`) }
               </bs.MenuItem>
               )
           }	
@@ -137,19 +137,50 @@ function ProfileForm(props) {
         <label 
           className="control-label col-md-3" 
           style={{ paddingLeft: 0 }} 
+          htmlFor="unit-switcher"
+        >
+          <span><FormattedMessage id="profile.unit.label" /></span>
+        </label>
+        <bs.DropdownButton
+          id="unit-switcher"
+          title={profile.unit != null ? 
+            _t(`profile.unit.${profile.unit.toLowerCase()}`) 
+            : 
+            _t('profile.unit.default')}
+          value={profile.unit}
+          onSelect={(e, val) => { 
+            setProfileForm({ unit: val });
+          }}
+        >
+          {
+            SYSTEM_UNITS.map(mu => 
+              <bs.MenuItem 
+                key={mu} 
+                eventKey={mu.toUpperCase()} 
+                value={mu}
+              >
+                { _t(`profile.unit.${mu}`) }
+              </bs.MenuItem>
+              )
+          }	
+        </bs.DropdownButton>
+      </div>
+      <div className="form-group">
+        <label 
+          className="control-label col-md-3" 
+          style={{ paddingLeft: 0 }} 
           htmlFor="timezone-switcher"
         >
           <span><FormattedMessage id="profile.timezone" /></span>
         </label>
         <bs.DropdownButton
           title={profile.timezone ? 
-            _t({ id: `timezones.${profile.timezone}` }) 
+            _t(`timezones.${profile.timezone}`) 
             : 
             'Select timezone'}
           id="timezone-switcher"
           onSelect={(e, val) => { 
             setProfileForm({ timezone: val });
-            //this.setState({timezone: val}); 
           }}
         >
           {
@@ -159,7 +190,7 @@ function ProfileForm(props) {
                 eventKey={timezone} 
                 value={timezone}
               >
-                { _t({ id: `timezones.${timezone}` }) }
+                { _t(`timezones.${timezone}`) }
               </bs.MenuItem>
             )
           }	
@@ -190,7 +221,7 @@ function ProfileForm(props) {
       <div className="pull-left">
         <bs.ButtonInput 
           type="submit" 
-          value={_t({ id: 'forms.submit' })} 
+          value={_t('forms.submit')} 
         />
       </div>
     </form>
