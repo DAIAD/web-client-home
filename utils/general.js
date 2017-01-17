@@ -163,6 +163,16 @@ const getActiveLinks = function (routes) {
   return routes.map(route => route.path || route.default);
 };
 
+const filterObj = function (obj, included) {
+  return Object.keys(obj)
+  .filter(k => included.includes(k))
+  .reduce((p, c) => {
+    const n = { ...p };
+    n[c] = obj[c];
+    return n;
+  }, {});
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -174,4 +184,5 @@ module.exports = {
   debounce,
   uploadFile,
   getActiveLinks,
+  filterObj,
 };

@@ -13,6 +13,7 @@ const FormActions = require('./FormActions');
 const { letTheRightOneIn } = require('./UserActions');
 const { fetchAll: fetchAllMessages } = require('./MessageActions');
 const { getMeterCount } = require('../utils/device');
+const { filterObj } = require('../utils/general');
 
 /**
  * Action dispatched when application has been initialized 
@@ -45,7 +46,7 @@ const initHome = function (profile) {
       }
     }
 
-    if (getMeterCount(getState().user.profile.devices) === 0) {
+    if (getMeterCount(profile.devices) === 0) {
       dispatch(HistoryActions.setActiveDeviceType('AMPHIRO', true));
       
       dispatch(FormActions.setForm('infoboxToAdd', {
@@ -56,35 +57,22 @@ const initHome = function (profile) {
     } else {
       dispatch(HistoryActions.setActiveDeviceType('METER', true));
     }
- 
-    const { 
-      firstname, 
-      lastname, 
-      photo,
-      email, 
-      username, 
-      locale, 
-      address, 
-      zip, 
-      country, 
-      timezone, 
-    } = profile;
 
-    const profileData = { 
-      firstname, 
-      lastname, 
-      photo,
-      email, 
-      username, 
-      locale,
-      address, 
-      zip, 
-      country, 
-      timezone, 
-    };
+    const profileForm = filterObj(profile, [
+      'firstname', 
+      'lastname', 
+      'photo',
+      'email', 
+      'username', 
+      'locale', 
+      'address', 
+      'zip', 
+      'country', 
+      'timezone', 
+      'unit',
+    ]);
     
-    dispatch(FormActions.setForm('profileForm', profileData));
-    
+    dispatch(FormActions.setForm('profileForm', profileForm));
     return dispatch(DashboardActions.fetchAllInfoboxesData())
     .then(() => {
       dispatch(LocaleActions.setLocale(profile.locale));
