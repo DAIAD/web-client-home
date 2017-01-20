@@ -36,15 +36,13 @@ module.exports = {
     image: 'notifications-menu.svg',
     route: '/notifications',
   },
-  // TODO: add to menu when connected to backend
-  /*
   {
     name: 'commons',
     title: 'section.commons',
     image: 'commons-menu.svg',
     route: '/commons',
-    },
-    */
+    hidden: true,
+  },
   {
     name: 'settings',
     title: 'section.settings',
@@ -61,12 +59,11 @@ module.exports = {
         title: 'Devices',
         route: 'settings/devices',
       },
-      // TODO: add to menu when connected to backend
-      /*
       {
         name: 'commons',
         title: 'Commons',
         route: 'settings/commons',
+        hidden: true,
         children: [
           {
             name: 'edit',
@@ -85,7 +82,6 @@ module.exports = {
           },
         ],
       }
-    */
     ],
   }],
   METER_AGG_METRICS: [
