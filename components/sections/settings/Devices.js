@@ -3,9 +3,60 @@ const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedDate } = require('react-intl');
 
 const MainSection = require('../../layout/MainSection');
-const { fromDeviceForm, toDeviceForm } = require('../../../utils/device');
-const { IMAGES, HEATING_SYSTEMS } = require('../../../constants/HomeConstants');
+const { deviceToDeviceForm, deviceFormToDevice } = require('../../../utils/device');
+const { IMAGES, HEATING_SYSTEMS, AMPHIRO_PROPERTIES } = require('../../../constants/HomeConstants');
 
+function DropdownProperty(props) {
+  const { _t, id, type, options, value, update } = props;
+  return (
+    <div className="form-group">
+      <label 
+        className="control-label col-md-3" 
+        style={{ paddingLeft: 0 }} 
+        htmlFor={`${id}-switcher`}
+      >
+        <span><FormattedMessage id={`devices.${id}.label`} /></span>
+      </label>
+      <bs.DropdownButton
+        title={value != null ? 
+          _t(`devices.${id}.${value}`) 
+          : 
+          _t(`devices.${id}.default`)} 
+        id={`${id}-switcher`}
+        value={value}
+        onSelect={(e, val) => { 
+          update(val);
+        }}
+      >
+        {
+          options.map(option => 
+            <bs.MenuItem 
+              key={option} 
+              eventKey={option} 
+              value={option}
+            >
+              { _t(`devices.${id}.${option}`) }
+            </bs.MenuItem>
+            )
+        }	
+      </bs.DropdownButton>
+    </div>
+  );
+}
+
+function InputProperty(props) {
+  const { _t, id, type, options, value, update } = props;
+  return (
+    <bs.Input 
+      value={value}
+      style={{ maxWidth: 200 }}
+      onChange={e => update(e.target.value)}
+      label={_t(`devices.${id}.label`)} 
+      help={_t(`devices.${id}.help`)} 
+      {...options}
+    />
+  );
+}
 
 function Device(props) {
   const { intl, updateDevice, updateForm, fetchProfile, deviceForm } = props;
@@ -21,7 +72,7 @@ function Device(props) {
         e.preventDefault();
         //Meter not supported
         if (type === 'METER') return;
-        updateDevice(fromDeviceForm(deviceForm))
+        updateDevice(deviceFormToDevice(deviceForm))
         .then((p) => {
           fetchProfile();
         });
@@ -81,9 +132,16 @@ function Device(props) {
       <hr />  
       { 
         type === 'AMPHIRO' ? 
-          <AmphiroProperties _t={_t} {...props} />
+          <AmphiroProperties 
+            _t={_t} 
+            updateForm={updateForm} 
+            deviceForm={deviceForm} 
+          />
         :
-          <MeterProperties _t={_t} {...props} />
+          <MeterProperties 
+            _t={_t} 
+            {...props} 
+          />
       }
       { 
         type === 'AMPHIRO' ?  
@@ -100,7 +158,41 @@ function Device(props) {
 
 function AmphiroProperties(props) {
   const { _t, updateForm, deviceForm } = props;
-  const { heatingSystem, heatingEfficiency, costEnergy, costWater, shareOfSolar } = deviceForm;
+  return (
+    <div>
+      {
+        AMPHIRO_PROPERTIES.map((property) => {
+          if (property.type === 'input') {
+            return (
+              <InputProperty
+                key={property.id}
+                _t={_t}
+                id={property.id}
+                value={deviceForm[property.id]}
+                update={(val) => { const d = {}; d[property.id] = val; updateForm(d); }}
+                options={property.options}
+              />
+              );
+          } else if (property.type === 'select') {
+            return (
+              <DropdownProperty
+                key={property.id}
+                _t={_t}
+                id={property.id}
+                value={deviceForm[property.id]}
+                update={(val) => { const d = {}; d[property.id] = val; updateForm(d); }}
+                options={property.options}
+              />
+              );
+          }
+          return <div />;
+        })
+      }
+    </div>
+  );
+}
+
+  /*
   return (
     <div>
       <div className="form-group">
@@ -195,8 +287,9 @@ function AmphiroProperties(props) {
     
 
     </div>
-  );
-}
+    );
+      */
+//}
 
 function MeterProperties(props) {
   const { _t, updateForm, deviceForm } = props;
@@ -215,7 +308,7 @@ function DevicesForm(props) {
       <bs.Accordion 
         className="col-xs-10"
         onSelect={(val) => { 
-          setForm('deviceForm', toDeviceForm(devices.find(d => d.deviceKey === val)));
+          setForm('deviceForm', deviceToDeviceForm(devices.find(d => d.deviceKey === val)));
         }}
       >
         {

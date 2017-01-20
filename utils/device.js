@@ -1,3 +1,5 @@
+const { AMPHIRO_PROPERTIES } = require('../constants/HomeConstants');
+
 const getAvailableDevices = function (devices) {
   if (!devices) return [];
   return devices.filter(device => device.type === 'AMPHIRO');
@@ -85,7 +87,7 @@ const getDeviceProperty = function (properties, key) {
   return property.value;
 };
 
-const toDeviceForm = function (device) {
+const deviceToDeviceForm = function (device) {
   const { name, type, deviceKey, unit, serial, macAddress, 
     registeredOn, properties } = device;
   return {
@@ -97,17 +99,19 @@ const toDeviceForm = function (device) {
     macAddress,
     ...(type === 'AMPHIRO' ? {
         name,
-        heatingSystem: getDeviceProperty(properties, 'heating-system'),
-        heatingEfficiency: getDeviceProperty(properties, 'heating-efficiency'),
-        costEnergy: getDeviceProperty(properties, 'cost-energy'),
-        costWater: getDeviceProperty(properties, 'cost-water'),
-        shareOfSolar: getDeviceProperty(properties, 'share-of-solar'),
+        ...AMPHIRO_PROPERTIES
+        .map(p => p.id)
+        .reduce((p, c) => {
+          const d = { ...p };
+          d[c] = getDeviceProperty(properties, c);
+          return d;
+        }, {})
       }
       : {})
   };
 };
 
-const fromDeviceForm = function (deviceForm) {
+const deviceFormToDevice = function (deviceForm) {
   const { name, type, key, unit, heatingSystem, heatingEfficiency, costEnergy, 
     costWater, shareOfSolar } = deviceForm;
   return {
@@ -115,30 +119,7 @@ const fromDeviceForm = function (deviceForm) {
     type,
     key,
     unit,
-    properties: 
-      type === 'AMPHIRO' ? [
-      {
-        key: 'heating-system',
-        value: heatingSystem,
-      },
-      {
-        key: 'heating-efficiency',
-        value: heatingEfficiency,
-      },
-      {
-        key: 'cost-energy',
-        value: costEnergy,
-      },
-      {
-        key: 'cost-water',
-        value: costWater,
-      },
-      {
-        key: 'share-of-solar',
-        value: shareOfSolar,
-      },
-      ]
-      : [],
+    properties: type === 'AMPHIRO' ? AMPHIRO_PROPERTIES.map(p => ({ key: p.id, value: deviceForm[p.id] })) : [],
   };
 };
 
@@ -155,6 +136,6 @@ module.exports = {
   getDeviceKeyByName,
   getDeviceKeysByType,
   filterDataByDeviceKeys,
-  fromDeviceForm,
-  toDeviceForm,
+  deviceToDeviceForm,
+  deviceFormToDevice,
 };

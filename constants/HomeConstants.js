@@ -84,8 +84,8 @@ module.exports = {
             route: 'settings/commons/join',
           },
         ],
-        }
-        */
+      }
+    */
     ],
   }],
   METER_AGG_METRICS: [
@@ -440,5 +440,53 @@ module.exports = {
   ],
   HEATING_SYSTEMS: ['electricity', 'oil', 'gas'],
   SYSTEM_UNITS: ['metric', 'imperial'],
+  AMPHIRO_PROPERTIES: [
+    {
+      id: 'heating-system',
+      type: 'select',
+      //options: ['electricity', 'oil', 'gas'],
+      options: [0, 1, 2],
+    },
+    {
+      id: 'heating-efficiency',
+      type: 'input',
+      options: {
+        type: 'number',
+        min: 0,
+        max: 100,
+        step: 1,
+      },
+    },
+    {
+      id: 'cost-energy',
+      type: 'input',
+      options: {
+        type: 'number',
+        min: 0,
+        max: 100,
+        step: 1,
+      },
+    },
+    {
+      id: 'cost-water',
+      type: 'input',
+      options: {
+        type: 'number',
+        min: 0,
+        max: 100,
+        step: 1,
+      },
+    },
+    {
+      id: 'share-of-solar',
+      type: 'input',
+      options: {
+        type: 'number',
+        min: 0,
+        max: 100,
+        step: 1,
+      },
+    },
+  ],
 };
 
