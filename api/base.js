@@ -1,5 +1,6 @@
 const fetch = require('isomorphic-fetch');
 require('es6-promise').polyfill();
+const { throwServerError } = require('../utils/general');
 
 const callAPI = function (url, data = {}, method = 'POST') {
   const { csrf } = data;
@@ -19,10 +20,10 @@ const callAPI = function (url, data = {}, method = 'POST') {
   
   return fetch(url, fetchObj) 
     .then((response) => { 
-      if (response.status >= 200 && response.status < 300) { 
-        return response; 
+      if (response.status < 200 || response.status >= 300) {
+        throwServerError(response);  
       }
-      throw new Error(response.statusText); 
+      return response;
     })
   .then(response => response.json()
         .then(json => ({ ...json, csrf: response.headers.get('X-CSRF-TOKEN') }))

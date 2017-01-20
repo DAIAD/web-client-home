@@ -12,6 +12,7 @@ const QueryActions = require('./QueryActions');
 const messageAPI = require('../api/message');
 
 const { getTypeByCategory, getInfoboxByAlertType } = require('../utils/messages');
+const { throwServerError } = require('../utils/general');
 
 const { MESSAGE_TYPES } = require('../constants/HomeConstants');
 const types = require('../constants/ActionTypes');
@@ -108,8 +109,8 @@ const acknowledge = function (id, category, timestamp) {
 
     return messageAPI.acknowledge(data)
     .then((response) => {
-      if (!response.success) {
-        console.error(response.errors && response.errors.length > 0 ? response.errors[0] : 'unknown');
+      if (!response || !response.success) {
+        throwServerError(response);  
       }
       
       dispatch(receivedMessageAck(response.success, response.errors));
@@ -223,10 +224,7 @@ const fetch = function (options) {
     return messageAPI.fetch(data)
     .then((response) => {
       if (!response || !response.success) {
-        const errorCode = response && response.errors && response.errors.length > 0 ? 
-                        response.errors[0].code 
-                          : 'unknownError';
-        throw new Error(errorCode);
+        throwServerError(response);  
       }
       dispatch(receivedMessages(response.success, null));
       dispatch(QueryActions.resetSuccess());

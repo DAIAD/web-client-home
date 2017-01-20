@@ -12,7 +12,7 @@ const types = require('../constants/ActionTypes');
 const InitActions = require('./InitActions');
 const { resetSuccess } = require('./QueryActions');
 const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
-const { filterObj } = require('../utils/general');
+const { filterObj, throwServerError } = require('../utils/general');
 
 const requestedLogin = function () {
   return {
@@ -209,10 +209,7 @@ const saveToProfile = function (profile) {
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
       if (!response || !response.success) {
-        const errorCode = response && response.errors && response.errors.length > 0 ? 
-          response.errors[0].code 
-          : 'unknownError';
-        throw new Error(errorCode);
+        throwServerError(response);  
       }
       return response;
     }) 
@@ -244,10 +241,7 @@ const updateDevice = function (update) {
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
       if (!response || !response.success) {
-        const errorCode = response && response.errors && response.errors.length > 0 ? 
-          response.errors[0].code 
-          : 'unknownError';
-        throw new Error(errorCode);
+        throwServerError(response);  
       }
       return response;
     }) 

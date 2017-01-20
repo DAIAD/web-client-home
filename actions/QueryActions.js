@@ -15,7 +15,7 @@ const meterAPI = require('../api/meter');
 
 const { reduceSessions, updateOrAppendToSession } = require('../utils/transformations');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
-const { getCacheKey } = require('../utils/general');
+const { getCacheKey, throwServerError } = require('../utils/general');
 // const { getTimeByPeriod, getLastShowerTime, getPreviousPeriodSoFar } = require('../utils/time');
 
 const requestedQuery = function () {
@@ -123,10 +123,7 @@ const queryDeviceSessions = function (options) {
 
 
       if (!response || !response.success) {
-        const errorCode = response && response.errors && response.errors.length > 0 ? 
-                          response.errors[0].code 
-                           : 'unknownError';
-        throw new Error(errorCode);
+        throwServerError(response);  
       }
       return response.devices;      
       // dispatch(saveToCache('AMPHIRO', options.length, response.devices));
@@ -200,10 +197,7 @@ const fetchDeviceSession = function (id, deviceKey) {
         dispatch(resetSuccess());
         
         if (!response || !response.success) {
-          const errorCode = response && response.errors && response.errors.length > 0 ? 
-                           response.errors[0].code 
-                           : 'unknownError';
-          throw new Error(errorCode);
+          throwServerError(response);  
         }
         return response.session;
       })
@@ -288,10 +282,7 @@ const queryMeterHistory = function (options) {
         dispatch(resetSuccess());
         
         if (!response || !response.success) {
-          const codeError = response && response.errors && response.errors.length > 0 ? 
-                           response.errors[0].code 
-                             : 'unknownError';
-          throw new Error(codeError);
+          throwServerError(response);  
         }
         return response.series;
       })
@@ -474,4 +465,6 @@ module.exports = {
   dismissError,
   resetSuccess,
   setError,
+  requestedQuery,
+  receivedQuery,
 };

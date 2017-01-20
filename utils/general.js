@@ -173,6 +173,15 @@ const filterObj = function (obj, included) {
   }, {});
 };
 
+const throwServerError = function (response) {
+  if (response.status === 401 || response.status === 403) {
+    throw new Error('unauthorized');
+  } else if (response && response.errors && response.errors.length > 0) {
+    throw new Error(response.errors[0].code);
+  }
+  throw new Error('unknownError');
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -185,4 +194,5 @@ module.exports = {
   uploadFile,
   getActiveLinks,
   filterObj,
+  throwServerError,
 };
