@@ -39,7 +39,8 @@
     "11": "December"
   },
   "errors": {
-    "unknownError": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
+    "Error: unauthorized": "You are not authorized to perform this action.",
+    "Error: unknownError": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
     "Error: Not Found": "API call not found. Your developer should be fired.",
     "Error: SharedErrorCode.UNKNOWN": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.", 
     "Error: Internal Server Error": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
@@ -59,7 +60,9 @@
     },
     "button": {
       "signin": "Sign in",
-      "signout": "Sign out"
+      "signout": "Sign out",
+      "reset-request": "Reset",
+      "reset-submit": "Submit"
     },
     "placehoder": {
       "username":"Username",
@@ -83,7 +86,8 @@
     "settings": "Settings",
     "profile": "Profile",
     "devices": "Devices",
-    "login": "Login"
+    "login": "Login",
+    "reset": "Password reset"
   },
   "dashboard": {
     "hello": "Welcome {name}!",
