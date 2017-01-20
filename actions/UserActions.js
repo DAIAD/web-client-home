@@ -10,50 +10,21 @@ const deviceAPI = require('../api/device');
 const types = require('../constants/ActionTypes');
 
 const InitActions = require('./InitActions');
-const { resetSuccess } = require('./QueryActions');
+const { resetSuccess, requestedQuery, receivedQuery, dismissError } = require('./QueryActions');
 const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
 const { filterObj, throwServerError } = require('../utils/general');
 
-const requestedLogin = function () {
-  return {
-    type: types.USER_REQUESTED_LOGIN,
-  };
-};
 
-const receivedLogin = function (success, errors, profile) {
+const receivedLogin = function (profile) {
   return {
     type: types.USER_RECEIVED_LOGIN,
-    success,
-    errors,
     profile,
   };
 };
 
-const requestedLogout = function () {
-  return {
-    type: types.USER_REQUESTED_LOGOUT,
-  };
-};
-
-const receivedLogout = function (success, errors) {
+const receivedLogout = function () {
   return {
     type: types.USER_RECEIVED_LOGOUT,
-    success,
-    errors,
-  };
-};
-
-const requestedQuery = function () {
-  return {
-    type: types.QUERY_REQUEST_START,
-  };
-};
-
-const receivedQuery = function (success, errors) {
-  return {
-    type: types.QUERY_REQUEST_END,
-    success,
-    errors,
   };
 };
 
@@ -82,22 +53,29 @@ const letTheRightOneIn = function () {
  *
  * @return {Promise} Resolved or rejected promise with user profile if resolved, errors if rejected
  */
+
 const fetchProfile = function () {
   return function (dispatch, getState) {
     return userAPI.getProfile()
     .then((response) => {
-      const { success, errors, profile } = response;
+      const { csrf, success, errors, profile } = response;
       
-      dispatch(receivedLogin(success, errors.length ? errors[0].code : null, profile));
+      if (csrf) { dispatch(setCsrf(csrf)); }
 
-      return response;
+      if (success) {
+        dispatch(receivedLogin(profile));
+        return Promise.resolve(response);
+      } 
+
+      return Promise.reject(response);
     })
     .catch((errors) => {
-      console.error('Error caught on profile fetch:', errors);
-      return errors;
+      console.error('Error caught on profile refresh:', errors);
+      throw errors;
     });
   };
 };
+
 /**
  * Performs user login 
  *
@@ -107,19 +85,25 @@ const fetchProfile = function () {
  */
 const login = function (username, password) {
   return function (dispatch, getState) {
-    dispatch(requestedLogin());
+    dispatch(requestedQuery());
 
     return userAPI.login(username, password)
     .then((response) => {
       const { csrf, success, errors, profile } = response;
 
       if (csrf) { dispatch(setCsrf(csrf)); }
-      
-      dispatch(receivedLogin(success, errors.length ? errors[0].code : null, profile));
+
+      dispatch(receivedQuery(success, errors.length ? errors[0].code : null));
 
       // Actions that need to be dispatched on login
       if (success) {
-        return dispatch(InitActions.initHome(profile));
+        dispatch(dismissError());
+        dispatch(receivedLogin(profile));
+        return dispatch(InitActions.initHome(profile))
+        .then(() => {
+          dispatch(InitActions.setReady());
+          dispatch(letTheRightOneIn());
+        });
       }
       return Promise.reject(response);
     })
@@ -137,7 +121,7 @@ const login = function (username, password) {
  */
 const logout = function () {
   return function (dispatch, getState) {
-    dispatch(requestedLogout());
+    dispatch(requestedQuery());
 
     const csrf = getState().user.csrf;
 
@@ -145,12 +129,14 @@ const logout = function () {
     .then((response) => {
       const { success, errors } = response;
     
-      dispatch(receivedLogout(success, errors.length ? errors[0].code : null));
+      dispatch(receivedQuery(success, errors.length ? errors[0].code : null));
+      dispatch(receivedLogout());
 
       return response;
     })
     .catch((errors) => {
-      dispatch(receivedLogout(true, errors.length ? errors[0].code : null));
+      dispatch(receivedQuery(false, errors));
+      //dispatch(receivedLogout());
       console.error('Error caught on logout:', errors);
       return errors;
     });
@@ -164,20 +150,18 @@ const logout = function () {
  */
 const refreshProfile = function () {
   return function (dispatch, getState) {
-    return dispatch(fetchProfile())
+    dispatch(fetchProfile())
     .then((response) => {
-      const { csrf, success, errors, profile } = response;
-      
-      if (csrf) { dispatch(setCsrf(csrf)); }
-
-      dispatch(receivedLogin(success, errors.length ? errors[0].code : null, profile));
-
+      const { success, profile } = response;
+      //.then((res) => {
+      //    if (res.success) {
       if (success) {
-        return dispatch(InitActions.initHome(profile));
-        //  .then(() => dispatch(letTheRightOneIn()));
-      } 
-
-      return Promise.reject(response);
+        dispatch(InitActions.initHome(profile))
+        .then(() => {
+          dispatch(InitActions.setReady());
+          dispatch(letTheRightOneIn());
+        });
+      }
     })
     .catch((errors) => {
       console.error('Error caught on profile refresh:', errors);
@@ -185,6 +169,7 @@ const refreshProfile = function () {
     });
   };
 };
+
 /**
  * Saves JSON data to profile  
  *

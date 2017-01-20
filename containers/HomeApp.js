@@ -3,7 +3,7 @@ const { connect } = require('react-redux');
 
 const HomeRoot = require('../components/sections/HomeRoot');
 
-const { login, logout, refreshProfile, letTheRightOneIn } = require('../actions/UserActions');
+const { login, logout, refreshProfile } = require('../actions/UserActions');
 const { setReady } = require('../actions/InitActions');
 const { setLocale } = require('../actions/LocaleActions');
 const { linkToMessage: linkToNotification } = require('../actions/MessageActions');
@@ -18,15 +18,12 @@ function mapStateToProps(state) {
     locale: state.locale,
     errors: state.query.errors,
     success: state.query.success,
-    loading: state.user.status.isLoading 
-      || state.locale.status.isLoading 
+    loading: state.locale.status.isLoading 
       || state.query.isLoading,
     alerts: state.section.messages.alerts,
     announcements: state.section.messages.announcements,
     recommendations: state.section.messages.recommendations,
     tips: state.section.messages.tips,
-
-
   };
 }
 
@@ -35,7 +32,6 @@ function mapDispatchToProps(dispatch) {
     login, 
     logout, 
     refreshProfile, 
-    letTheRightOneIn, 
     setLocale, 
     linkToNotification, 
     dismissError, 
@@ -62,20 +58,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       .then(() => {
         // refresh profile if session exists
         if (properties.reload) {
-          dispatchProps.refreshProfile()
-          .then((res) => {
-            if (res.success) {
-              dispatchProps.setReady();
-              dispatchProps.letTheRightOneIn();
-            }
-          });
+          dispatchProps.refreshProfile(); 
         } else {
           dispatchProps.setReady();
         }
       });
     },
-    login: (user, pass) => dispatchProps.login(user, pass)
-      .then(res => (res.success ? dispatchProps.letTheRightOneIn() : null)),
     unreadNotifications: messageArray
       .reduce((prev, curr) => (!curr.acknowledgedOn ? prev + 1 : prev), 0),
     messages: messageArray,
