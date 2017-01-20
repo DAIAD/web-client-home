@@ -3,8 +3,8 @@ const { connect } = require('react-redux');
 
 const HomeRoot = require('../components/sections/HomeRoot');
 
-const { login, logout, refreshProfile } = require('../actions/UserActions');
-const { setReady } = require('../actions/InitActions');
+const { login, logout, refreshProfile, requestPasswordReset } = require('../actions/UserActions');
+const { setReady, setForgotPassword } = require('../actions/InitActions');
 const { setLocale } = require('../actions/LocaleActions');
 const { linkToMessage: linkToNotification } = require('../actions/MessageActions');
 const { dismissError } = require('../actions/QueryActions');
@@ -14,7 +14,7 @@ const { combineMessages } = require('../utils/messages');
 function mapStateToProps(state) {
   return {
     user: state.user,
-    ready: state.user.ready,
+    ready: state.section.login.ready,
     locale: state.locale,
     errors: state.query.errors,
     success: state.query.success,
@@ -24,6 +24,7 @@ function mapStateToProps(state) {
     announcements: state.section.messages.announcements,
     recommendations: state.section.messages.recommendations,
     tips: state.section.messages.tips,
+    forgotPassword: state.section.login.password,
   };
 }
 
@@ -37,6 +38,8 @@ function mapDispatchToProps(dispatch) {
     dismissError, 
     setReady, 
     resize,
+    setForgotPassword,
+    requestPasswordReset,
   }, dispatch);
 }
 

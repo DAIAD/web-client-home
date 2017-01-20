@@ -4,11 +4,10 @@ const { Link } = require('react-router');
 
 const Header = require('../layout/Header');
 const Footer = require('../layout/Footer');
-const LoginPage = require('./Login');
+const Login = require('./Login');
 const { debounce, getActiveLinks } = require('../../utils/general');
 
 const { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
-
 
 function MainSidebar(props) {
   const { menuItems, routes = [] } = props;
@@ -93,11 +92,12 @@ const HomeRoot = React.createClass({
   render: function () {
     const { ready, locale, loading, user, deviceCount, messages, success,
       unreadNotifications, linkToNotification, login, logout, 
-      setLocale, errors, dismissError, children, routes } = this.props;
+      setLocale, errors, dismissError, children, routes, setForgotPassword,
+      resetForgotPassword, forgotPassword, requestPasswordReset } = this.props;
 
     if (!ready) {
       return <Loader />;
-    }
+    } 
     return (
       <IntlProvider 
         locale={locale.locale}
@@ -136,11 +136,16 @@ const HomeRoot = React.createClass({
               user.isAuthenticated ? 
                 children
                 :
-                <LoginPage 
+                <Login 
                   isAuthenticated={user.isAuthenticated}
-                  errors={user.status.errors}
+                  errors={errors}
                   login={login}
-                  logout={logout} 
+                  logout={logout}
+                  setForgotPassword={setForgotPassword}
+                  resetForgotPassword={resetForgotPassword}
+                  forgotPassword={forgotPassword}
+                  dismissError={dismissError}
+                  requestPasswordReset={requestPasswordReset}
                 />
             }
           </div>

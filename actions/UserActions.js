@@ -238,6 +238,34 @@ const updateDevice = function (update) {
   };
 };
 
+
+const requestPasswordReset = function (username) {
+  return function (dispatch, getState) {
+    const data = {
+      username, 
+    };
+
+    dispatch(requestedQuery());
+
+    return userAPI.requestPasswordReset(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+      dispatch(InitActions.setForgotPassword('requested'));
+      return response;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on requestPasswordReset:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
+
 module.exports = {
   login,
   logout,
@@ -246,4 +274,5 @@ module.exports = {
   saveToProfile,
   updateDevice,
   letTheRightOneIn,
+  requestPasswordReset,
 };
