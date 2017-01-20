@@ -139,7 +139,7 @@ function StatBox(props) {
   const bow = !(better == null || comparePercentage == null);
   const str = better ? 'better' : 'worse';
   return (
-    <div style={{ padding: 10 }}>
+    <div style={{ padding: 10, marginLeft: 10 }}>
       <div style={{ float: 'left', width: '50%' }}>
         <h2>
           <span>{highlight}</span>
@@ -153,10 +153,10 @@ function StatBox(props) {
               if (bow) {
                 return (
                   <span>
-                    <i className={`fa ${arrowClass}`} />
+                    <i className={`fa ${arrowClass}`} style={{ marginRight: 5 }} />
                     {
                       deviceType === 'AMPHIRO' ? 
-                        `${comparePercentage}% ${str} than last ${period}!` 
+                        `${comparePercentage}% ${str} than previous ${period}!` 
                         : 
                         `${comparePercentage}% ${str} than last ${period} so far!` 
                     }

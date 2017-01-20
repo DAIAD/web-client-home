@@ -14,9 +14,6 @@ const { getMetricMu } = require('../utils/general');
 
 
 function mapStateToProps(state) {
-  if (!state.user.isAuthenticated) {
-    return {};
-  }
   return {
     time: state.section.history.time,
     filter: state.section.history.filter,

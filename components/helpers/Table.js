@@ -85,9 +85,9 @@ function Pagination(props) {
             Array.from({ length: total }, (v, i) => i + 1)
             .map(page => 
               page === active ? 
-                <u><a className="pagination-item active" style={{ marginLeft: 10 }} onClick={() => { onPageClick(page); }}>{page}</a></u>
+                <u key={page}><a className="pagination-item active" style={{ marginLeft: 10 }} onClick={() => { onPageClick(page); }}>{page}</a></u>
               :
-              <a className="pagination-item" style={{ marginLeft: 10 }} onClick={() => { onPageClick(page); }}>{page}</a>
+              <a key={page} className="pagination-item" style={{ marginLeft: 10 }} onClick={() => { onPageClick(page); }}>{page}</a>
               )
           :
            <div />

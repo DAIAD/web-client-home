@@ -95,8 +95,8 @@ const members = [
     id: 'showMore',
     name: '',
     value: () => '' 
-    //    <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
-      },
+    //<img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
+  },
 ];
 
 

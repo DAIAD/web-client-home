@@ -26,7 +26,7 @@ const Settings = function (props) {
           onSelect={val => goTo(`/settings/${val}`)}
         >
           {
-            SETTINGS_MENU.map(item => item.hidden ? <div /> : (
+            SETTINGS_MENU.map(item => item.hidden ? <div key={item.name} /> : (
               <bs.Tab 
                 key={item.name}
                 eventKey={item.name} 

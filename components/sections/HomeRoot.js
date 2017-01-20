@@ -18,7 +18,7 @@ function MainSidebar(props) {
     <aside className="main-sidebar">
       <ul className="main-menu-side">
         {
-          menuItems.map(item => item.hidden ? <div /> : 
+          menuItems.map(item => item.hidden ? <div key={item.name} /> : 
               <li 
                 key={item.name} 
                 className={item.name === activeKey ? 
