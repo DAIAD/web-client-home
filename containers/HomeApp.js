@@ -1,10 +1,11 @@
 const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
+const { push } = require('react-router-redux');
 
 const HomeRoot = require('../components/sections/HomeRoot');
 
 const { login, logout, refreshProfile, requestPasswordReset } = require('../actions/UserActions');
-const { setReady, setForgotPassword } = require('../actions/InitActions');
+const { setReady } = require('../actions/InitActions');
 const { setLocale } = require('../actions/LocaleActions');
 const { linkToMessage: linkToNotification } = require('../actions/MessageActions');
 const { dismissError } = require('../actions/QueryActions');
@@ -24,22 +25,17 @@ function mapStateToProps(state) {
     announcements: state.section.messages.announcements,
     recommendations: state.section.messages.recommendations,
     tips: state.section.messages.tips,
-    forgotPassword: state.section.login.password,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
-    login, 
     logout, 
-    refreshProfile, 
     setLocale, 
     linkToNotification, 
+    refreshProfile,
     dismissError, 
-    setReady, 
     resize,
-    setForgotPassword,
-    requestPasswordReset,
   }, dispatch);
 }
 
@@ -56,16 +52,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...dispatchProps,
     ...ownProps, 
     init: () => {
-      // init locale
-      dispatchProps.setLocale(properties.locale)
-      .then(() => {
-        // refresh profile if session exists
-        if (properties.reload) {
-          dispatchProps.refreshProfile(); 
-        } else {
-          dispatchProps.setReady();
-        }
-      });
+      dispatchProps.setLocale(properties.locale);
+      dispatchProps.refreshProfile();
     },
     unreadNotifications: messageArray
       .reduce((prev, curr) => (!curr.acknowledgedOn ? prev + 1 : prev), 0),

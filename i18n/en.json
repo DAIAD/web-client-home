@@ -49,7 +49,14 @@
     "SharedErrorCode.UNKNOWN": "We are facing an internal problem, please try again in a while.",
     "fileWrongType": "Wrong file type. Only png, jpeg supported",
     "fileExceedSize": "File size too large. Up to 2MB allowed",
-    "fileUploadError": "File upload error."
+    "fileUploadError": "File upload error.",
+    "passwordMismatch": "Password mismatch. Please make sure you entered the same password twice",
+    "Error: PasswordErrorCode.INVALID_LENGTH": "The password is too short. At least 8 characters required",
+    "Error: PasswordErrorCode.CAPTCHA_VERIFICATION_FAILED": "Captcha verification failed. Please confirm you are a human being",
+    "confirmHumanity": "Please confirm you are a human being"
+  },
+  "info": {
+    "passwordMailSent": "An email has been sent to the address you provided. Please check your inbox"
   },
   "forms": {
     "submit": "Update"
@@ -66,7 +73,8 @@
     },
     "placehoder": {
       "username":"Username",
-      "password":"Password"
+      "password":"Password",
+      "password-confirm": "Confirm password"
     }
   },
   "section": {

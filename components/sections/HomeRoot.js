@@ -4,7 +4,6 @@ const { Link } = require('react-router');
 
 const Header = require('../layout/Header');
 const Footer = require('../layout/Footer');
-const Login = require('./Login');
 const { debounce, getActiveLinks } = require('../../utils/general');
 
 const { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
@@ -73,8 +72,7 @@ function QuerySuccess() {
 
 const HomeRoot = React.createClass({
   componentWillMount: function () {
-    const { init, ready } = this.props;
-    init();
+    this.props.init();
   },
   componentDidMount: function () {
     this.viewportListener = debounce(this.setViewport, 100, { maxWait: 1000 });
@@ -91,10 +89,8 @@ const HomeRoot = React.createClass({
   },
   render: function () {
     const { ready, locale, loading, user, deviceCount, messages, success,
-      unreadNotifications, linkToNotification, login, logout, 
-      setLocale, errors, dismissError, children, routes, setForgotPassword,
-      resetForgotPassword, forgotPassword, requestPasswordReset } = this.props;
-
+      unreadNotifications, linkToNotification, logout, 
+      setLocale, errors, dismissError, children, routes } = this.props;
     if (!ready) {
       return <Loader />;
     } 
@@ -133,20 +129,7 @@ const HomeRoot = React.createClass({
                 <MainSidebar menuItems={[]} />
             }
             {
-              user.isAuthenticated ? 
                 children
-                :
-                <Login 
-                  isAuthenticated={user.isAuthenticated}
-                  errors={errors}
-                  login={login}
-                  logout={logout}
-                  setForgotPassword={setForgotPassword}
-                  resetForgotPassword={resetForgotPassword}
-                  forgotPassword={forgotPassword}
-                  dismissError={dismissError}
-                  requestPasswordReset={requestPasswordReset}
-                />
             }
           </div>
           <Footer />

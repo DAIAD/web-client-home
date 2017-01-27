@@ -2,7 +2,6 @@ const keyMirror = require('keymirror');
 
 module.exports = keyMirror({
   HOME_IS_READY: null,
-  HOME_FORGOT_PASSWORD: null,
 
   LOCALE_CHANGE: null,
   LOCALE_REQUEST_MESSAGES: null,
@@ -28,6 +27,8 @@ module.exports = keyMirror({
   QUERY_SET_CACHE: null,
   QUERY_SET_ERROR: null,
   QUERY_RESET_SUCCESS: null,
+  QUERY_SET_INFO: null,
+  QUERY_DISMISS_INFO: null,
 
   HISTORY_SET_COMPARISON: null,
   HISTORY_SET_TIME: null,

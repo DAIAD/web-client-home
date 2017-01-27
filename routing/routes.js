@@ -1,5 +1,6 @@
 const React = require('react');
 const { Route, IndexRoute } = require('react-router');
+const requireAuth = require('./auth');
 
 const HomeApp = require('../containers/HomeApp');
 const Dashboard = require('../containers/DashboardData');
@@ -9,19 +10,25 @@ const Messages = require('../containers/MessageData');
 const Settings = require('../containers/SettingsData');
 const Profile = require('../components/sections/settings/Profile');
 const Devices = require('../components/sections/settings/Devices');
+
 const CommonsSettings = require('../components/sections/settings/commons/');
 const CommonsManage = require('../components/sections/settings/commons/Edit');
 const CommonsCreate = require('../components/sections/settings/commons/Form');
 const CommonsJoin = require('../components/sections/settings/commons/Join');
 
+const Login = require('../containers/Login');
+const LoginForm = require('../components/sections/login/LoginForm');
+const PasswordReset = require('../components/sections/login/PasswordReset');
+const PasswordResetRequest = require('../components/sections/login/PasswordResetRequest');
+
 const routes = () => (
   <Route path="/" component={HomeApp} >
-    <IndexRoute default="dashboard" component={Dashboard} />
-    <Route path="dashboard" component={Dashboard} />  
-    <Route path="history" component={History} />
-    <Route path="notifications" component={Messages} />
-    <Route path="commons" component={Commons} />
-    <Route path="settings" component={Settings}>
+    <IndexRoute default="dashboard" component={Dashboard} onEnter={requireAuth} />
+    <Route path="dashboard" component={Dashboard} onEnter={requireAuth} />  
+    <Route path="history" component={History} onEnter={requireAuth} />
+    <Route path="notifications" component={Messages} onEnter={requireAuth} />
+    <Route path="commons" component={Commons} onEnter={requireAuth} />
+    <Route path="settings" component={Settings} onEnter={requireAuth}>
       <IndexRoute default="profile" component={Profile} />
       <Route path="profile" component={Profile} />
       <Route path="devices" component={Devices} />
@@ -31,6 +38,11 @@ const routes = () => (
         <Route path="create" component={CommonsCreate} />
         <Route path="join" component={CommonsJoin} />
       </Route>
+    </Route>
+    <Route path="login" component={Login}>
+      <IndexRoute component={LoginForm} />
+      <Route path="/password/reset/" component={PasswordResetRequest} />
+      <Route path="/password/reset/:token" component={PasswordReset} />
     </Route>
   </Route>
 );

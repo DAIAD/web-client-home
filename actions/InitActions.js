@@ -27,12 +27,6 @@ const setReady = function () {
   };
 };
 
-const setForgotPassword = function (mode) {
-  return {
-    type: types.HOME_FORGOT_PASSWORD,
-    mode,
-  };
-};
 
 /**
  * Call all necessary actions to initialize app with profile data 
@@ -91,5 +85,4 @@ const initHome = function (profile) {
 module.exports = {
   initHome,
   setReady,
-  setForgotPassword,
 };

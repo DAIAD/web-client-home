@@ -54,6 +54,22 @@ const dismissError = function () {
   };
 };
 
+const setInfo = function (info) {
+  return {
+    type: types.QUERY_SET_INFO,
+    info,
+  };
+};
+
+ /**
+ * Dismiss info after acknowledgement
+ */
+const dismissInfo = function () {
+  return {
+    type: types.QUERY_DISMISS_INFO,
+  };
+};
+
 const cacheItemRequested = function (deviceType, timeOrLength) {
   return {
     type: types.QUERY_CACHE_ITEM_REQUESTED,
@@ -467,4 +483,6 @@ module.exports = {
   setError,
   requestedQuery,
   receivedQuery,
+  setInfo,
+  dismissInfo,
 };

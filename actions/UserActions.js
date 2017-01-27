@@ -4,13 +4,13 @@
  * 
  * @module UserActions
  */
-
+const { push } = require('react-router-redux');
 const userAPI = require('../api/user');
 const deviceAPI = require('../api/device');
 const types = require('../constants/ActionTypes');
 
 const InitActions = require('./InitActions');
-const { resetSuccess, requestedQuery, receivedQuery, dismissError } = require('./QueryActions');
+const { resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo } = require('./QueryActions');
 const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
 const { filterObj, throwServerError } = require('../utils/general');
 
@@ -64,14 +64,8 @@ const fetchProfile = function () {
 
       if (success) {
         dispatch(receivedLogin(profile));
-        return Promise.resolve(response);
       } 
-
-      return Promise.reject(response);
-    })
-    .catch((errors) => {
-      console.error('Error caught on profile refresh:', errors);
-      throw errors;
+      return Promise.resolve(response);
     });
   };
 };
@@ -103,13 +97,18 @@ const login = function (username, password) {
         .then(() => {
           dispatch(InitActions.setReady());
           dispatch(letTheRightOneIn());
+
+          // go to saved pathname
+          const { nextPathname } = getState().routing.locationBeforeTransitions.state;
+          if (nextPathname) {
+            dispatch(push(nextPathname));
+          }
         });
       }
       return Promise.reject(response);
     })
     .catch((errors) => {
       console.error('Error caught on user login:', errors);
-      throw errors;
     });
   };
 };
@@ -129,6 +128,7 @@ const logout = function () {
     .then((response) => {
       const { success, errors } = response;
     
+      dispatch(push('/login'));
       dispatch(receivedQuery(success, errors.length ? errors[0].code : null));
       dispatch(receivedLogout());
 
@@ -153,19 +153,21 @@ const refreshProfile = function () {
     dispatch(fetchProfile())
     .then((response) => {
       const { success, profile } = response;
-      //.then((res) => {
-      //    if (res.success) {
+
       if (success) {
+        // if refresh successful initialize
         dispatch(InitActions.initHome(profile))
         .then(() => {
           dispatch(InitActions.setReady());
           dispatch(letTheRightOneIn());
         });
+      } else {
+        // else enable login
+        dispatch(InitActions.setReady());
       }
     })
     .catch((errors) => {
       console.error('Error caught on profile refresh:', errors);
-      throw errors;
     });
   };
 };
@@ -223,7 +225,9 @@ const updateDevice = function (update) {
     return deviceAPI.updateDevice(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+      if (response.success) {
+        setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+      }
 
       if (!response || !response.success) {
         throwServerError(response);  
@@ -238,11 +242,12 @@ const updateDevice = function (update) {
   };
 };
 
-
 const requestPasswordReset = function (username) {
   return function (dispatch, getState) {
     const data = {
       username, 
+      application: 'HOME',
+      csrf: getState().user.csrf,
     };
 
     dispatch(requestedQuery());
@@ -250,16 +255,54 @@ const requestPasswordReset = function (username) {
     return userAPI.requestPasswordReset(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+      if (response.success) {
+        dispatch(resetSuccess());
+        dispatch(dismissError());
+        dispatch(setInfo('passwordMailSent'));
+      }
 
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      dispatch(InitActions.setForgotPassword('requested'));
       return response;
     }) 
     .catch((errors) => {
       console.error('Error caught on requestPasswordReset:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
+
+const resetPassword = function (password, token, captcha) {
+  return function (dispatch, getState) {
+    const data = {
+      token,
+      password,
+      captcha,
+      csrf: getState().user.csrf,
+    };
+
+    dispatch(requestedQuery());
+
+    return userAPI.resetPassword(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      if (response.success) {
+        dispatch(dismissError());
+        setTimeout(() => { 
+          dispatch(resetSuccess()); 
+          dispatch(push('/login'));
+        }, SUCCESS_SHOW_TIMEOUT);
+      }
+
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+      return response;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on resetPassword:', errors);
       dispatch(receivedQuery(false, errors));
       return errors;
     });
@@ -275,4 +318,5 @@ module.exports = {
   updateDevice,
   letTheRightOneIn,
   requestPasswordReset,
+  resetPassword,
 };

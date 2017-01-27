@@ -4,6 +4,7 @@ const initialState = {
   isLoading: false,
   success: null,
   errors: null,
+  info: null,
   cache: {}
 };
 
@@ -83,6 +84,16 @@ const query = function (state = initialState, action) {
         cache: newCache
       });
     }
+  
+    case types.QUERY_SET_INFO:
+      return Object.assign({}, state, {
+        info: action.info,
+      });
+
+    case types.QUERY_DISMISS_INFO:
+      return Object.assign({}, state, {
+        info: null
+      });
 
     default:
       return state;
