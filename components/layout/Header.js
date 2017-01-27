@@ -7,7 +7,7 @@ const { injectIntl, FormattedMessage } = require('react-intl');
 const LocaleSwitcher = require('../LocaleSwitcher');
 const Logout = require('../LogoutForm');
 
-const { IMAGES } = require('../../constants/HomeConstants'); 
+const { IMAGES, PNG_IMAGES } = require('../../constants/HomeConstants'); 
 
 /* DAIAD Logo */
 function MainLogo() {
@@ -41,7 +41,7 @@ function UserInfo(props) {
               :
               <img
                 className="profile-header-photo"
-                src={`${IMAGES}/daiad-consumer.png`} 
+                src={`${PNG_IMAGES}/daiad-consumer.png`} 
                 alt="profile"
               />
            }
