@@ -98,10 +98,13 @@ const login = function (username, password) {
           dispatch(InitActions.setReady());
           dispatch(letTheRightOneIn());
 
-          // go to saved pathname
-          const { nextPathname } = getState().routing.locationBeforeTransitions.state;
-          if (nextPathname) {
-            dispatch(push(nextPathname));
+          const transitionState = getState().routing.locationBeforeTransitions.state;
+          if (transitionState) {
+            // go to saved pathname
+            dispatch(push(transitionState.nextPathname));
+          } else {
+            // go to routing root 
+            dispatch(push('/'));
           }
         });
       }
@@ -160,6 +163,11 @@ const refreshProfile = function () {
         .then(() => {
           dispatch(InitActions.setReady());
           dispatch(letTheRightOneIn());
+
+          // make sure pathname does not remain /login
+          if (getState().routing.locationBeforeTransitions.pathname === 'login') {
+            dispatch(push('/'));
+          }
         });
       } else {
         // else enable login
