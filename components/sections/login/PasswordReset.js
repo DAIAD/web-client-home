@@ -22,8 +22,8 @@ const PasswordResetForm = React.createClass({
           e.preventDefault();
           if (this.password !== this.confirmPassword) {
             setError('passwordMismatch');
-          } else if (this.captcha == null) {
-            setError('confirmHumanity'); 
+          } else if (this.password.length < 8) {
+            setError('passwordTooShort');
           } else {
             this.props.resetPassword(this.password, this.token, this.captcha);
           }
