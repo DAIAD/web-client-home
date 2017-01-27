@@ -7,7 +7,7 @@ const LocaleSwitcher = require('../../LocaleSwitcher');
 
 const { uploadFile } = require('../../../utils/general');
 
-const { COUNTRIES, TIMEZONES, SYSTEM_UNITS } = require('../../../constants/HomeConstants');
+const { COUNTRIES, TIMEZONES, SYSTEM_UNITS, PNG_IMAGES } = require('../../../constants/HomeConstants');
 
 
 function ProfileForm(props) {
@@ -49,7 +49,7 @@ function ProfileForm(props) {
               width: 100,
               border: '2px #2D3580 solid',
             }} 
-            src="http://daiad.eu/wp-content/themes/swag/assets/images/daiad-consumer.png"
+            src={`${PNG_IMAGES}/daiad-consumer.png`} 
             alt="profile" 
           />
       }
