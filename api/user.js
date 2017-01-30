@@ -19,7 +19,6 @@ const UserAPI = {
     return callAPI('/action/profile/save', data);
   },
   requestPasswordReset: function (data) {
-    console.log('data:', data);
     return callAPI('/action/user/password/reset/token/create', data);
   },
   resetPassword: function (data) {

@@ -35,6 +35,7 @@ function mapDispatchToProps(dispatch) {
     linkToNotification, 
     refreshProfile,
     dismissError, 
+    setReady,
     resize,
   }, dispatch);
 }
@@ -53,7 +54,11 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...ownProps, 
     init: () => {
       dispatchProps.setLocale(properties.locale);
-      dispatchProps.refreshProfile();
+      if (properties.reload) {
+        dispatchProps.refreshProfile();
+      } else {
+        dispatchProps.setReady();
+      }
     },
     unreadNotifications: messageArray
       .reduce((prev, curr) => (!curr.acknowledgedOn ? prev + 1 : prev), 0),

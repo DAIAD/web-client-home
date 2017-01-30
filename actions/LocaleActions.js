@@ -10,6 +10,13 @@ const types = require('../constants/ActionTypes');
 
 const { flattenMessages } = require('../utils/general');
 
+const setCsrf = function (csrf) {
+  return {
+    type: types.USER_SESSION_SET_CSRF,
+    csrf,
+  };
+};
+
 const receivedMessages = function (success, errors, locale, messages) {
   return {
     type: types.LOCALE_RECEIVED_MESSAGES,
@@ -37,7 +44,14 @@ const requestedLocaleMessages = function (locale) {
 const fetchLocaleMessages = function (locale) {
   return function (dispatch, getState) {
     return localeAPI.fetchLocaleMessages({ locale })
-    .then((messages) => {
+    .then((response) => {
+      const messages = { ...response };
+      const { csrf } = messages;
+      delete messages.csrf;
+      
+      if (csrf) { dispatch(setCsrf(csrf)); }
+      //delete messages.csrf;
+
       dispatch(receivedMessages(true, null, locale, flattenMessages(messages)));
       return messages;
     })
