@@ -45,7 +45,6 @@ const InfoBox = React.createClass({
   render: function () {
     const { widget, updateWidget, removeWidget, intl, linkToHistory, width } = this.props;
     const { id, error, period, type, display, periods, time } = widget;
-
     const _t = intl.formatMessage;
     return (
       <div 
@@ -60,10 +59,10 @@ const InfoBox = React.createClass({
           <div className="header-right">
             <div>
               {
-                periods.map(p => (
+                periods && periods.map(p => (
                   <a 
                     key={p.id} 
-                    onClick={() => updateWidget(id, { period: p.id, time: p.time })} 
+                    onClick={() => updateWidget(id, { period: p.id })} 
                     style={{ marginLeft: 5 }}
                   >
                     {
@@ -183,7 +182,7 @@ function TipBox(props) {
 
 function InfoPanel(props) {
   const { mode, layout, widgets, updateLayout, updateWidget, removeWidget, 
-    chartFormatter, intl, periods, displays, linkToHistory, width } = props;
+    intl, periods, linkToHistory, width } = props;
   return (
     <ResponsiveGridLayout 
       className="layout"
@@ -213,8 +212,6 @@ function InfoPanel(props) {
              {...{
                mode, 
                periods, 
-               displays, 
-               chartFormatter, 
                widget, 
                updateWidget, 
                removeWidget, 
@@ -273,21 +270,16 @@ function ButtonToolbar(props) {
 }
 
 function AddWidgetForm(props) {
-  const { widgetToAdd, types, deviceTypes, setForm } = props;
-  const setWidgetToAdd = data => setForm('widgetToAdd', data);
-  const { deviceType, title, type } = widgetToAdd;
+  const { widgetToAdd, widgetTypes, deviceTypes, setForm, activeDeviceType, setDeviceType, setWidgetToAdd, onSubmit } = props;
+  const { title, description, id } = widgetToAdd;
   return (
-    <div>
+    <form onSubmit={onSubmit}>
       <bs.Tabs 
         className="history-time-nav" 
         position="top" 
         tabWidth={3} 
-        activeKey={deviceType} 
-        onSelect={key => setWidgetToAdd({ 
-          deviceType: key, 
-          title: null, 
-          type: key === 'METER' ? 'totalDifferenceStat' : 'totalVolumeStat'
-        })}
+        activeKey={activeDeviceType} 
+        onSelect={key => setDeviceType(key)}
       >
         {
           deviceTypes.map(devType =>
@@ -304,11 +296,11 @@ function AddWidgetForm(props) {
           <div>
             <ul className="add-widget-types">
               {
-                types.map((t, idx) =>
+                widgetTypes.map((t, idx) =>
                   <li key={idx}>
                     <a 
-                      className={type === t.id ? 'selected' : ''}  
-                      onClick={() => setWidgetToAdd({ type: t.id, title: null })} 
+                      className={id === t.id ? 'selected' : ''}  
+                      onClick={() => setWidgetToAdd(t)} 
                       value={t.id}
                     >
                       {t.title}
@@ -320,31 +312,33 @@ function AddWidgetForm(props) {
           </div>
         </div>
         <div className="add-widget-right">
-          <div>
+          <div style={{ padding: 10 }}>
             <input 
               type="text" 
               placeholder="Enter title..."
-              value={title || (types.find(t => t.id === type) ? 
-                               types.find(t => t.id === type).title : null 
-                              )
-              }
+              readOnly={title == null}
+              value={title}
               onChange={e => setWidgetToAdd({ title: e.target.value })}
             />
-            <p>{ types.find(t => t.id === widgetToAdd.type) ? 
-              types.find(t => t.id === widgetToAdd.type).description 
-                : null 
-              }
+            <p>
+              { description }
             </p>
           </div>
         </div>
       </div>
-    </div>
+    </form>
   );
 }
 
 function AddWidgetModal(props) {
-  const { showModal, switchMode, addWidget, metrics, types, deviceTypes, 
-    widgetToAdd, setForm } = props;
+  const { widgetToAdd, showModal, switchMode, addWidget, metrics, widgetTypes, deviceTypes, 
+    setForm, activeDeviceType, setDeviceType, setWidgetToAdd } = props;
+    
+  const onSubmit = (e) => { 
+    e.preventDefault();
+    addWidget(widgetToAdd); 
+    switchMode('normal'); 
+  };
   return (
     <bs.Modal 
       animation={false} 
@@ -359,13 +353,26 @@ function AddWidgetModal(props) {
         </bs.Modal.Title>
       </bs.Modal.Header>
       <bs.Modal.Body>
-        <AddWidgetForm {...{ widgetToAdd, metrics, types, deviceTypes, setForm }} /> 
+        <AddWidgetForm 
+          {...{ 
+            metrics, 
+            widgetToAdd,
+            widgetTypes, 
+            deviceTypes, 
+            setForm, 
+            setDeviceType,
+            activeDeviceType,
+            setWidgetToAdd,
+            onSubmit,
+            
+          }} 
+        /> 
       </bs.Modal.Body>
       <bs.Modal.Footer>
         <a onClick={() => switchMode('normal')}>Cancel</a>
         <a 
           style={{ marginLeft: 20 }} 
-          onClick={() => { addWidget(); switchMode('normal'); }}
+          onClick={onSubmit}
         >
           Add
         </a>
@@ -385,8 +392,9 @@ const Dashboard = React.createClass({
   
   render: function () {
     const { firstname, mode, dirty, switchMode, addWidget, saveToProfile, 
-      setDirty, resetDirty, deviceCount, meterCount, metrics, types, 
-      deviceTypes, widgetToAdd, setForm } = this.props;
+      setDirty, resetDirty, deviceCount, meterCount, metrics, widgetTypes, 
+      deviceTypes, widgetToAdd, setForm, activeDeviceType, setDeviceType, 
+      setWidgetToAdd } = this.props;
     return (
       <MainSection id="section.dashboard">
         <div className="dashboard">
@@ -399,9 +407,12 @@ const Dashboard = React.createClass({
                 addWidget, 
                 widgetToAdd,
                 metrics, 
-                types, 
+                widgetTypes, 
                 deviceTypes, 
-                setForm 
+                setForm,
+                activeDeviceType, 
+                setDeviceType,
+                setWidgetToAdd,
               }} 
             />
 

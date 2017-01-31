@@ -138,12 +138,12 @@ const setWidgets = function (widgets) {
  * @param {Object} data - Contains data options to be saved to widget state
  * 
  */
-const setWidgetData = function (id, data) {
+const setWidgetData = function (id, update) {
   return {
     type: types.DASHBOARD_UPDATE_WIDGET,
     id,
-    data: {
-      ...data,
+    update: {
+      ...update,
       synced: true,
     },
   };
@@ -158,45 +158,22 @@ const setWidgetData = function (id, data) {
  * (previous options are overriden), no check is performed
  * 
  */
-const updateWidget = function (id, data) {
+const updateWidget = function (id, update) {
   return function (dispatch, getState) {
     dispatch({
       type: types.DASHBOARD_UPDATE_WIDGET,
       id,
-      data: { ...data, synced: false },
+      update: { ...update, synced: false },
     });
 
-
+    /*
     if (Object.keys(data).length > 0) {
       dispatch(updateLayoutItem(id, data.display, data.type));
       dispatch(setDirty()); 
     }
+    */
     
     const widget = getState().section.dashboard.widgets.find(i => i.id === id);
-    const { type, deviceType, period } = widget;
-    const deviceKey = getDeviceKeysByType(getState().user.profile.devices, deviceType);
-    
-    widget.time = widget.time ? widget.time : getTimeByPeriod(period);
-
-    if (deviceType === 'METER') {
-      widget.query = {
-        cache: true,
-        deviceKey,
-        csrf: getState().user.csrf,
-      };
-
-      if (type === 'total') {
-        widget.prevTime = getPreviousPeriodSoFar(period);
-      }
-    } else if (deviceType === 'AMPHIRO') {
-      widget.query = {
-        cache: true,
-        type: 'SLIDING',
-        length: lastNFilterToLength(period),
-        deviceKey,
-        csrf: getState().user.csrf, 
-      };
-    }
 
     return dispatch(QueryActions.fetchWidgetData(widget))
     .then(res => dispatch(setWidgetData(id, res)))
@@ -221,15 +198,23 @@ const addWidget = function (options) {
     // find last id and increase by one
     const lastId = widgets.length ? Math.max(...widgets.map(widget => parseInt(widget.id, NaN))) : 0;
     if (isNaN(lastId)) {
-      throw new Error('last id NaN');
+      console.error('last id NaN');
+      return dispatch(QueryActions.setError(new Error('unknownError')));
     }
     const id = (lastId + 1).toString();
-    const display = options.display;
-    const type = options.type;
+    const { display, type } = options;
 
-    dispatch(createWidget({ ...options, id }));
+    const newWidget = {
+      data: [],
+      ...options,
+      ...getState().forms.widgetToAdd,
+      id,
+    };
+
+    dispatch(createWidget(newWidget));
     dispatch(appendLayout(id, display, type));
 
+    // fetch data
     dispatch(setDirty()); 
     dispatch(updateWidget(id, {}));
     return id;
@@ -267,18 +252,13 @@ const fetchAllWidgetsData = function () {
   };
 };
 
-const setWidgetToAdd = function (data) {
+const setDeviceType = function (deviceType) {
   return {
-    type: types.DASHBOARD_SET_WIDGET_TEMP,
-    data,
+    type: types.DASHBOARD_SET_WIDGET_DEVICE_TYPE,
+    deviceType,
   };
 };
 
-const resetWidgetToAdd = function () {
-  return {
-    type: types.DASHBOARD_RESET_WIDGET_TEMP,
-  };
-};
 
 module.exports = {
   resetDirty,
@@ -292,7 +272,6 @@ module.exports = {
   updateLayout,
   removeWidget,
   fetchAllWidgetsData,
-  setWidgetToAdd,
-  resetWidgetToAdd,
+  setDeviceType,
 };
 

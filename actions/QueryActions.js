@@ -15,7 +15,8 @@ const meterAPI = require('../api/meter');
 
 const { reduceMultipleSessions, updateOrAppendToSession } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
-const { getCacheKey, throwServerError } = require('../utils/general');
+const { getCacheKey, throwServerError, lastNFilterToLength } = require('../utils/general');
+const { getTimeByPeriod, getPreviousPeriodSoFar } = require('../utils/time');
 // const { getTimeByPeriod, getLastShowerTime, getPreviousPeriodSoFar } = require('../utils/time');
 
 const requestedQuery = function () {
@@ -130,8 +131,10 @@ const queryDeviceSessions = function (options) {
     }
     dispatch(requestedQuery());
     // const data = Object.assign({}, options, {deviceKey:deviceKey}, {csrf: getState().user.csrf});
-    const data = Object.assign({}, options);
-
+    const data = {
+      ...options,
+      csrf: getState().user.csrf,
+    };
     return deviceAPI.querySessions(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors, response.devices));
@@ -411,18 +414,14 @@ const queryMeterHistoryCache = function (options) {
  */
 const fetchWidgetData = function (options) {
   return function (dispatch, getState) {
-    const { type, deviceType, time, prevTime, query } = options;
-    const cache = query.cache || false;
-    const { deviceKey } = query;
-
-    // let time = options.time ? options.time : getTimeByPeriod(period);
-
+    const { type, deviceType, period } = options;
+    const cache = options.cache || true;
+    const deviceKey = getDeviceKeysByType(getState().user.profile.devices, deviceType);
+    
     if (!type || !deviceType || !deviceKey) {
       console.error('fetchWidgetData: Insufficient data provided (need type, deviceType, deviceKey):', options);
       throw new Error('fetchWidgetData: Insufficient data provided:');
     }
-
-    // const device = getDeviceKeysByType(getState().user.profile.devices, deviceType);
 
     let queryMeter;
     let queryDevice;
@@ -438,14 +437,16 @@ const fetchWidgetData = function (options) {
     if (!deviceKey || !deviceKey.length) {
       return Promise.resolve(); 
     }
+    const time = options.time ? options.time : getTimeByPeriod(period);
 
     if (deviceType === 'METER') {      
-      return dispatch(queryMeter({ ...options.query, time }))
+      const prevTime = getPreviousPeriodSoFar(period);
+      return dispatch(queryMeter({ cache, deviceKey, time }))
       .then(data => ({ data }))
       .then((res) => {
         if (type === 'total' && prevTime) {
           // fetch previous period data for comparison 
-          return dispatch(queryMeter({ ...options.query, time: prevTime }))
+          return dispatch(queryMeter({ cache, deviceKey, time: prevTime }))
           .then(prevData => ({ ...res, previous: prevData, prevTime }))
           .catch((error) => { 
             console.error('Caught error in widget previous period data fetch:', error); 
@@ -455,7 +456,7 @@ const fetchWidgetData = function (options) {
       });
     } else if (deviceType === 'AMPHIRO') {
       if (type === 'last') {
-        return dispatch(fetchLastDeviceSession(options.query))
+        return dispatch(fetchLastDeviceSession({ cache, deviceKey }))
         .then(response => ({ 
             data: response.data, 
             index: response.index, 
@@ -464,7 +465,11 @@ const fetchWidgetData = function (options) {
             time: response.timestamp,
         }));
       }
-      return dispatch(queryDevice(options.query))
+      return dispatch(queryDevice({ cache, 
+                                  type: 'SLIDING', 
+                                  length: lastNFilterToLength(period), 
+                                  deviceKey,
+      }))
       .then(data => ({ data }));
     }
     return Promise.reject(new Error('noDeviceType'));

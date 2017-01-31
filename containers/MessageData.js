@@ -7,7 +7,7 @@ const Notifications = require('../components/sections/Notifications');
 
 const MessageActions = require('../actions/MessageActions');
 
-const { prepareWidget } = require('../utils/widgets/');
+const prepareWidget = require('../utils/widgets');
 const { stripTags } = require('../utils/messages');
 
 function mapStateToProps(state) {

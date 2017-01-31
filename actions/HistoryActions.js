@@ -65,7 +65,6 @@ const fetchData = function () {
         deviceKey: getState().section.history.activeDevice, 
         type: 'SLIDING', 
         length: lastNFilterToLength(getState().section.history.timeFilter), 
-        csrf: getState().user.csrf,
       }))
       .then(sessions => dispatch(setSessions(sessions)))
       .then(() => dispatch(setDataSynced()))
@@ -79,7 +78,6 @@ const fetchData = function () {
       dispatch(QueryActions.queryMeterHistoryCache({
         deviceKey: getState().section.history.activeDevice, 
         time: getState().section.history.time, 
-        csrf: getState().user.csrf,
       }))
       .then(sessions => dispatch(setSessions(sessions)))
       .then(() => dispatch(setDataSynced()))
@@ -95,7 +93,6 @@ const fetchData = function () {
           time: getPreviousPeriod(getState().section.history.timeFilter, 
                                   getState().section.history.time.startDate
                                  ), 
-          csrf: getState().user.csrf,
         }))
         .then(sessions => dispatch(setComparisonSessions(sessions)))
       .catch((error) => { 

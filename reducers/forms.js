@@ -1,11 +1,7 @@
 const types = require('../constants/ActionTypes');
 
 const initialState = {
-  widgetToAdd: {
-    deviceType: 'METER',
-    type: 'totalDifferenceStat',
-    title: 'Total volume Stat',
-  },
+  widgetToAdd: {},
   profileForm: {},
   commonForm: {
     id: null,

@@ -49,12 +49,6 @@ const initHome = function (profile) {
 
     if (getMeterCount(profile.devices) === 0) {
       dispatch(HistoryActions.setActiveDeviceType('AMPHIRO', true));
-      
-      dispatch(FormActions.setForm('widgetToAdd', {
-        deviceType: 'AMPHIRO',
-        type: 'totalVolumeStat',
-        title: 'Shower volume',
-      }));
     } else {
       dispatch(HistoryActions.setActiveDeviceType('METER', true));
     }

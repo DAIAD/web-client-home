@@ -10,10 +10,10 @@ const { setForm } = require('../actions/FormActions');
 const Dashboard = require('../components/sections/Dashboard');
 
 const { getDeviceCount, getMeterCount } = require('../utils/device');
-const { prepareWidget } = require('../utils/widgets/');
+const prepareWidget = require('../utils/widgets');
 const { filterObj } = require('../utils/general');
 
-const { WIDGET_TYPES } = require('../constants/HomeConstants');
+const { AMPHIRO_WIDGET_TYPES, METER_WIDGET_TYPES } = require('../constants/HomeConstants');
 
 
 function mapStateToProps(state) {
@@ -25,6 +25,7 @@ function mapStateToProps(state) {
     dirty: state.section.dashboard.dirty,
     widgets: state.section.dashboard.widgets,
     widgetToAdd: state.forms.widgetToAdd,
+    activeDeviceType: state.section.dashboard.widgetDeviceType,
     width: state.viewport.width,
   };
 }
@@ -39,11 +40,6 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const deviceType = (stateProps.widgetToAdd && stateProps.widgetToAdd.deviceType) ? 
-    stateProps.widgetToAdd.deviceType 
-    : 
-    null;
-
   let deviceTypes = [{
     id: 'AMPHIRO', 
     title: 'Shower',
@@ -76,30 +72,35 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     layout: stateProps.layout,
   };
 
-  const types = WIDGET_TYPES
-  .filter(x => (deviceType ? stateProps.widgetToAdd.deviceType === x.devType : null));
+  if (stateProps.activeDeviceType !== 'AMPHIRO' &&
+      stateProps.activeDeviceType !== 'METER') {
+        console.error('Oops, wrong device type', stateProps.activeDeviceType);
+      }
+  const widgetTypes = stateProps.activeDeviceType === 'AMPHIRO' ? 
+    AMPHIRO_WIDGET_TYPES.map(w => ({ 
+      ...w, 
+      deviceType: 'AMPHIRO',
+    }))
+    :
+    METER_WIDGET_TYPES.map(w => ({ 
+      ...w, 
+      deviceType: 'METER', 
+    }));
+
+  const setWidgetToAdd = data => dispatchProps.setForm('widgetToAdd', data);
 
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
     widgets: stateProps.widgets.map(widget => 
-      prepareWidget(widget, stateProps.devices, ownProps.intl)),
-    addWidget: () => {
-      const type = types.find(x => x.id === stateProps.widgetToAdd.type);
-      return dispatchProps.addWidget({
-        data: [], 
-        period: deviceType === 'AMPHIRO' ? 'ten' : 'month', 
-        ...stateProps.widgetToAdd, 
-        title: stateProps.widgetToAdd.title || type.title, 
-        ...type.data,
-      });
-    },
+      prepareWidget(widget, stateProps.devices, ownProps.intl)),   
     deviceCount: getDeviceCount(stateProps.devices),
     meterCount: getMeterCount(stateProps.devices),
     saveToProfile: () => dispatchProps.saveToProfile({ configuration: JSON.stringify(newWidgetState) }),
     deviceTypes,
-    types,
+    widgetTypes,
+    setWidgetToAdd,
   };
 }
 

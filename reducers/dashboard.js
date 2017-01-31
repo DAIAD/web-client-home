@@ -14,11 +14,7 @@ const initialState = {
     { i: '8', x: 2, y: 2, w: 2, h: 2 },
     { i: '9', x: 0, y: 3, w: 2, h: 1 },
   ],
-  widgetToAdd: {
-    deviceType: 'METER',
-    type: 'totalDifferenceStat',
-    title: 'Total volume Stat',
-  },
+  widgetDeviceType: 'METER',
   widgets: [
     {
     id: '1', 
@@ -158,7 +154,7 @@ const dashboard = function (state = initialState, action) {
       const newWidgets = [...state.widgets];
       // TODO: had to use let instead of const because of browserify block scope error
       const idx = newWidgets.findIndex(obj => obj.id === action.id);
-      newWidgets[idx] = { ...newWidgets[idx], ...action.data };
+      newWidgets[idx] = { ...newWidgets[idx], ...action.update };
       
       return Object.assign({}, state, {
         widgets: newWidgets
@@ -186,15 +182,9 @@ const dashboard = function (state = initialState, action) {
       });
     }
 
-    case types.DASHBOARD_SET_WIDGET_TEMP: {
+    case types.DASHBOARD_SET_WIDGET_DEVICE_TYPE: {
       return Object.assign({}, state, {
-        widgetToAdd: Object.assign({}, state.widgetToAdd, action.data) 
-      });
-    }
-
-    case types.DASHBOARD_RESET_WIDGET_TEMP: {
-      return Object.assign({}, state, {
-        widgetToAdd: initialState.widgetToAdd 
+        widgetDeviceType: action.deviceType, 
       });
     }
 
