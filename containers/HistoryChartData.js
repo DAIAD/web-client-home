@@ -9,7 +9,7 @@ const HistoryChart = require('../components/sections/HistoryChart');
 const { addPeriodToSessions } = require('../utils/time');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 const { getDeviceNameByKey } = require('../utils/device');
-const { getDataSessions } = require('../utils/transformations');
+const { getDataSessions } = require('../utils/sessions');
 const { getMetricMu } = require('../utils/general');
 
 

@@ -13,7 +13,7 @@ const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants
 const deviceAPI = require('../api/device');
 const meterAPI = require('../api/meter');
 
-const { reduceSessions, updateOrAppendToSession } = require('../utils/transformations');
+const { reduceMultipleSessions, updateOrAppendToSession } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
 const { getCacheKey, throwServerError } = require('../utils/general');
 // const { getTimeByPeriod, getLastShowerTime, getPreviousPeriodSoFar } = require('../utils/time');
@@ -241,12 +241,13 @@ const fetchLastDeviceSession = function (options) {
     } else {
       querySessions = queryDeviceSessions;
     }
-    return dispatch(querySessions({ ...options, type: 'SLIDING', length: 10 }))
+    return dispatch(querySessions({ ...options, type: 'SLIDING', length: 1 }))
     .then((sessions) => {
-      const reduced = reduceSessions(getState().user.profile.devices, sessions);        
+      const reduced = reduceMultipleSessions(getState().user.profile.devices, sessions);        
       // find last
       const lastSession = reduced.reduce((curr, prev) => 
-                                         ((curr.timestamp > prev.timestamp) ? curr : prev), {}); 
+        ((curr.timestamp > prev.timestamp) ? curr : prev), {}); 
+
       const { device, id, index, timestamp } = lastSession;
 
       if (!id) throw new Error('sessionIDNotFound');
@@ -391,7 +392,7 @@ const queryMeterHistoryCache = function (options) {
  * @param {String} options.period - The period to query.
  *                                  For METER one of day, week, month, year, custom (time-based)
  *                                  for AMPHIRO one of ten, twenty, fifty (index-based)
- * @param {String} options.type - The infobox type. One of: 
+ * @param {String} options.type - The widget type. One of: 
  *                                total (total metric consumption for period and deviceType),
  *                                last (last shower - only for deviceType AMPHIRO),
  *                                efficiency (energy efficiency for period - 
@@ -408,7 +409,7 @@ const queryMeterHistoryCache = function (options) {
  *                                budget (User budget information. Static for the moment)
  *
  */
-const fetchInfoboxData = function (options) {
+const fetchWidgetData = function (options) {
   return function (dispatch, getState) {
     const { type, deviceType, time, prevTime, query } = options;
     const cache = query.cache || false;
@@ -417,8 +418,8 @@ const fetchInfoboxData = function (options) {
     // let time = options.time ? options.time : getTimeByPeriod(period);
 
     if (!type || !deviceType || !deviceKey) {
-      console.error('fetchInfoboxData: Insufficient data provided (need type, deviceType, deviceKey):', options);
-      throw new Error('fetchInfoboxData: Insufficient data provided:');
+      console.error('fetchWidgetData: Insufficient data provided (need type, deviceType, deviceKey):', options);
+      throw new Error('fetchWidgetData: Insufficient data provided:');
     }
 
     // const device = getDeviceKeysByType(getState().user.profile.devices, deviceType);
@@ -447,7 +448,7 @@ const fetchInfoboxData = function (options) {
           return dispatch(queryMeter({ ...options.query, time: prevTime }))
           .then(prevData => ({ ...res, previous: prevData, prevTime }))
           .catch((error) => { 
-            console.error('Caught error in infobox previous period data fetch:', error); 
+            console.error('Caught error in widget previous period data fetch:', error); 
           });
         }
         return Promise.resolve(res);
@@ -456,11 +457,11 @@ const fetchInfoboxData = function (options) {
       if (type === 'last') {
         return dispatch(fetchLastDeviceSession(options.query))
         .then(response => ({ 
-          data: response.data, 
-          index: response.index, 
-          device: response.device, 
-          showerId: response.id, 
-          time: response.timestamp,
+            data: response.data, 
+            index: response.index, 
+            device: response.device, 
+            showerId: response.id, 
+            time: response.timestamp,
         }));
       }
       return dispatch(queryDevice(options.query))
@@ -477,7 +478,7 @@ module.exports = {
   fetchLastDeviceSession,
   queryMeterHistoryCache,
   queryMeterHistory,
-  fetchInfoboxData,
+  fetchWidgetData,
   dismissError,
   resetSuccess,
   setError,

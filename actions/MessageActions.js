@@ -11,7 +11,7 @@ const QueryActions = require('./QueryActions');
 
 const messageAPI = require('../api/message');
 
-const { getTypeByCategory, getInfoboxByAlertType } = require('../utils/messages');
+const { getTypeByCategory, getWidgetByAlertType } = require('../utils/messages');
 const { throwServerError } = require('../utils/general');
 
 const { MESSAGE_TYPES } = require('../constants/HomeConstants');
@@ -173,11 +173,11 @@ const setActiveMessageId = function (id) {
     dispatch(acknowledge(id, category, new Date().getTime()));
 
     if (category === 'alerts') {
-      const infobox = getInfoboxByAlertType(activeMessage.alert, activeMessage.createdOn);
-      if (!infobox) return;
+      const widget = getWidgetByAlertType(activeMessage.alert, activeMessage.createdOn);
+      if (!widget) return;
 
-      dispatch(QueryActions.fetchInfoboxData(infobox)) 
-      .then(data => dispatch(setMessageExtra(id, category, { extra: { ...infobox, ...data } })))
+      dispatch(QueryActions.fetchWidgetData(widget)) 
+      .then(data => dispatch(setMessageExtra(id, category, { extra: { ...widget, ...data } })))
       .catch((error) => {
         console.error('Oops, sth went wrong in setting message extra data', error);
       });

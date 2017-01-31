@@ -170,7 +170,7 @@ function ErrorDisplay(props) {
     <div className="error-display">
       <a onClick={() => dismissError()} className="error-display-x">x</a>
       <img src={`${IMAGES}/alert.svg`} alt="error" />
-      <span className="infobox-error">
+      <span className="widget-error">
         <FormattedMessage id={`errors.${errors}`} />
       </span>
     </div>

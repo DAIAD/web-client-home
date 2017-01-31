@@ -10,7 +10,8 @@ const { setForm } = require('../actions/FormActions');
 const Dashboard = require('../components/sections/Dashboard');
 
 const { getDeviceCount, getMeterCount } = require('../utils/device');
-const { transformInfoboxData } = require('../utils/transformations');
+const { prepareWidget } = require('../utils/widgets/');
+const { filterObj } = require('../utils/general');
 
 const { WIDGET_TYPES } = require('../constants/HomeConstants');
 
@@ -22,8 +23,8 @@ function mapStateToProps(state) {
     layout: state.section.dashboard.layout,
     mode: state.section.dashboard.mode,
     dirty: state.section.dashboard.dirty,
-    infoboxes: state.section.dashboard.infobox,
-    infoboxToAdd: state.forms.infoboxToAdd,
+    widgets: state.section.dashboard.widgets,
+    widgetToAdd: state.forms.widgetToAdd,
     width: state.viewport.width,
   };
 }
@@ -38,8 +39,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const deviceType = (stateProps.infoboxToAdd && stateProps.infoboxToAdd.deviceType) ? 
-    stateProps.infoboxToAdd.deviceType 
+  const deviceType = (stateProps.widgetToAdd && stateProps.widgetToAdd.deviceType) ? 
+    stateProps.widgetToAdd.deviceType 
     : 
     null;
 
@@ -62,42 +63,41 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     deviceTypes = deviceTypes.filter(x => x.id !== 'AMPHIRO');
   }
 
-  const saveData = {
-    infoboxes: stateProps.infoboxes.map(x => ({ 
-      id: x.id, 
-      deviceType: x.deviceType, 
-      display: x.display, 
-      metric: x.metric, 
-      period: x.period, 
-      title: x.title, 
-      type: x.type,
-    })), 
+  const newWidgetState = {
+    widgets: stateProps.widgets.map(widget => filterObj(widget, [
+      'id',
+      'deviceType',
+      'display',
+      'metric',
+      'period',
+      'title',
+      'type',
+    ])),
     layout: stateProps.layout,
   };
 
   const types = WIDGET_TYPES
-  .filter(x => (deviceType ? stateProps.infoboxToAdd.deviceType === x.devType : null));
+  .filter(x => (deviceType ? stateProps.widgetToAdd.deviceType === x.devType : null));
 
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
-    infoboxes: stateProps.infoboxes.map(infobox => 
-      transformInfoboxData(infobox, stateProps.devices, ownProps.intl)),
-    addInfobox: () => {
-      const type = types.find(x => x.id === stateProps.infoboxToAdd.type);
-      // ?  types.find(x => x.id === stateProps.infoboxToAdd.type).data : {}
-      return dispatchProps.addInfobox({
+    widgets: stateProps.widgets.map(widget => 
+      prepareWidget(widget, stateProps.devices, ownProps.intl)),
+    addWidget: () => {
+      const type = types.find(x => x.id === stateProps.widgetToAdd.type);
+      return dispatchProps.addWidget({
         data: [], 
         period: deviceType === 'AMPHIRO' ? 'ten' : 'month', 
-        ...stateProps.infoboxToAdd, 
-        title: stateProps.infoboxToAdd.title || (type ? type.title : null), 
-        ...(type ? type.data : {}),
+        ...stateProps.widgetToAdd, 
+        title: stateProps.widgetToAdd.title || type.title, 
+        ...type.data,
       });
     },
     deviceCount: getDeviceCount(stateProps.devices),
     meterCount: getMeterCount(stateProps.devices),
-    saveToProfile: () => dispatchProps.saveToProfile({ configuration: JSON.stringify(saveData) }),
+    saveToProfile: () => dispatchProps.saveToProfile({ configuration: JSON.stringify(newWidgetState) }),
     deviceTypes,
     types,
   };

@@ -1,6 +1,6 @@
 const types = require('../constants/ActionTypes');
 
-const { updateOrAppendToSession } = require('../utils/transformations');
+const { updateOrAppendToSession } = require('../utils/sessions');
 const { thisYear } = require('../utils/time');
 
 const initialState = {

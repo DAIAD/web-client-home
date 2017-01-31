@@ -10,7 +10,6 @@ const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
-const { getSessionById } = require('../utils/transformations');
 const { lastNFilterToLength } = require('../utils/general');
 
 const QueryActions = require('./QueryActions');

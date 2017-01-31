@@ -1,7 +1,7 @@
 const types = require('../constants/ActionTypes');
 
 const initialState = {
-  infoboxToAdd: {
+  widgetToAdd: {
     deviceType: 'METER',
     type: 'totalDifferenceStat',
     title: 'Total volume Stat',

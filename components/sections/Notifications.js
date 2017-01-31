@@ -12,7 +12,7 @@ const ChartBox = require('../helpers/ChartBox');
 
 function NotificationMessage(props) {
   const { notification, nextMessageId, previousMessageId, 
-    setActiveMessageId, infobox } = props;
+    setActiveMessageId, widget } = props;
 
   return !notification ? 
     <div /> 
@@ -30,8 +30,8 @@ function NotificationMessage(props) {
             null
       }
       {
-        infobox && infobox.chartData ? 
-          <ChartBox {...infobox} />
+        widget && widget.chartData ? 
+          <ChartBox {...widget} />
           : null
       } 
 
@@ -110,7 +110,7 @@ const Notifications = React.createClass({
   render: function () {
     const { intl, categories, messages: notifications, activeMessageId, 
       previousMessageId, nextMessageId, activeMessage: notification, activeTab, 
-      setActiveMessageId, setActiveTab, infobox } = this.props;
+      setActiveMessageId, setActiveTab, widget } = this.props;
     const _t = intl.formatMessage;
     return (
       <MainSection id="section.notifications">
@@ -155,7 +155,7 @@ const Notifications = React.createClass({
                 setActiveMessageId, 
                 previousMessageId, 
                 nextMessageId, 
-                infobox 
+                widget,
               }} 
             />
           </div>

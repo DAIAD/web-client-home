@@ -9,7 +9,7 @@ const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
-const { getSessionById } = require('../utils/transformations');
+const { getSessionById } = require('../utils/sessions');
 const { lastNFilterToLength } = require('../utils/general');
 
 const QueryActions = require('./QueryActions');
@@ -337,6 +337,9 @@ const linkToHistory = function (options) {
     
     if (deviceType) {
       dispatch(setActiveDeviceType(deviceType, false));
+    }
+    if (device) {
+      dispatch(setActiveDevice(device, false));
     }
     if (metric) {
       dispatch(setMetricFilter(metric));

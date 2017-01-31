@@ -26,7 +26,7 @@ Dashboard
 ----------------------
 
 The main section. Contains a series of widgets that provide a brief consumption overview.
-It is made up of a set of predefined widgets (also refered to as infoboxes) and the functionality to add/remove/update and change their layout.
+It is made up of a set of predefined widgets and the functionality to add/remove/update and change their layout.
 
 
 History

@@ -39,8 +39,8 @@ const initHome = function (profile) {
 
     if (profile.configuration) {
       const configuration = JSON.parse(profile.configuration);
-      if (configuration.infoboxes) {
-        dispatch(DashboardActions.setInfoboxes(configuration.infoboxes));
+      if (configuration.widgets) {
+        dispatch(DashboardActions.setWidgets(configuration.widgets));
       }
       if (configuration.layout) {
         dispatch(DashboardActions.updateLayout(configuration.layout, false));
@@ -50,7 +50,7 @@ const initHome = function (profile) {
     if (getMeterCount(profile.devices) === 0) {
       dispatch(HistoryActions.setActiveDeviceType('AMPHIRO', true));
       
-      dispatch(FormActions.setForm('infoboxToAdd', {
+      dispatch(FormActions.setForm('widgetToAdd', {
         deviceType: 'AMPHIRO',
         type: 'totalVolumeStat',
         title: 'Shower volume',
@@ -74,7 +74,7 @@ const initHome = function (profile) {
     ]);
     
     dispatch(FormActions.setForm('profileForm', profileForm));
-    return dispatch(DashboardActions.fetchAllInfoboxesData())
+    return dispatch(DashboardActions.fetchAllWidgetsData())
     .then(() => {
       dispatch(LocaleActions.setLocale(profile.locale));
       return Promise.resolve({ success: true, profile });

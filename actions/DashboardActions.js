@@ -22,9 +22,9 @@ const setLastSession = function (session) {
 };
 */
 
-const createInfobox = function (data) {
+const createWidget = function (data) {
   return {
-    type: types.DASHBOARD_ADD_INFOBOX,
+    type: types.DASHBOARD_ADD_WIDGET,
     data,
   };
 };
@@ -96,7 +96,7 @@ const updateLayout = function (layout, dirty = true) {
 /**
  * Updates layout item dimensions based on display
  * 
- * @param {String} id - The id of the infobox appearence to update
+ * @param {String} id - The id of the widget appearence to update
  * @param {String} display - One of stat, display
  * 
  */
@@ -117,30 +117,30 @@ const updateLayoutItem = function (id, display, type) {
 };
 
 /**
- * Sets infoboxes 
+ * Sets widgets 
  * 
- * @param {Object[]} infoboxes - array of objects containing infobox options as specified 
- *  in {@link fetchInfoboxData}.  
+ * @param {Object[]} widgets - array of objects containing widget options as specified 
+ *  in {@link fetchWidgetData}.  
  */
-const setInfoboxes = function (infoboxes) {
+const setWidgets = function (widgets) {
   return {
-    type: types.DASHBOARD_SET_INFOBOXES,
-    infoboxes,
+    type: types.DASHBOARD_SET_WIDGETS,
+    widgets,
   };
 };
       
 /**
- * Updates an existing infobox with data.
+ * Updates an existing widget with data.
  * Important: This action only sets the data returned by asynchronous fetch action and 
  * does not trigger data fetch
  * 
- * @param {String} id - The id of the infobox to update 
- * @param {Object} data - Contains data options to be saved to infobox state
+ * @param {String} id - The id of the widget to update 
+ * @param {Object} data - Contains data options to be saved to widget state
  * 
  */
-const setInfoboxData = function (id, data) {
+const setWidgetData = function (id, data) {
   return {
-    type: types.DASHBOARD_UPDATE_INFOBOX,
+    type: types.DASHBOARD_UPDATE_WIDGET,
     id,
     data: {
       ...data,
@@ -150,18 +150,18 @@ const setInfoboxData = function (id, data) {
 };
 
 /**
- * Updates an existing infobox with provided options.
+ * Updates an existing widget with provided options.
  * Important: This action triggers data fetch 
  * 
- * @param {String} id - The id of the infobox to update 
- * @param {Object} update - Contains update options to be saved to infobox state 
+ * @param {String} id - The id of the widget to update 
+ * @param {Object} update - Contains update options to be saved to widget state 
  * (previous options are overriden), no check is performed
  * 
  */
-const updateInfobox = function (id, data) {
+const updateWidget = function (id, data) {
   return function (dispatch, getState) {
     dispatch({
-      type: types.DASHBOARD_UPDATE_INFOBOX,
+      type: types.DASHBOARD_UPDATE_WIDGET,
       id,
       data: { ...data, synced: false },
     });
@@ -172,24 +172,24 @@ const updateInfobox = function (id, data) {
       dispatch(setDirty()); 
     }
     
-    const infobox = getState().section.dashboard.infobox.find(i => i.id === id);
-    const { type, deviceType, period } = infobox;
+    const widget = getState().section.dashboard.widgets.find(i => i.id === id);
+    const { type, deviceType, period } = widget;
     const deviceKey = getDeviceKeysByType(getState().user.profile.devices, deviceType);
     
-    infobox.time = infobox.time ? infobox.time : getTimeByPeriod(period);
+    widget.time = widget.time ? widget.time : getTimeByPeriod(period);
 
     if (deviceType === 'METER') {
-      infobox.query = {
+      widget.query = {
         cache: true,
         deviceKey,
         csrf: getState().user.csrf,
       };
 
       if (type === 'total') {
-        infobox.prevTime = getPreviousPeriodSoFar(period);
+        widget.prevTime = getPreviousPeriodSoFar(period);
       }
     } else if (deviceType === 'AMPHIRO') {
-      infobox.query = {
+      widget.query = {
         cache: true,
         type: 'SLIDING',
         length: lastNFilterToLength(period),
@@ -198,28 +198,28 @@ const updateInfobox = function (id, data) {
       };
     }
 
-    return dispatch(QueryActions.fetchInfoboxData(infobox))
-    .then(res => dispatch(setInfoboxData(id, res)))
+    return dispatch(QueryActions.fetchWidgetData(widget))
+    .then(res => dispatch(setWidgetData(id, res)))
     .catch((error) => { 
-      console.error('Caught error in infobox data fetch:', error); 
-      dispatch(setInfoboxData(id, { data: [], error: 'Oops sth went wrong, please refresh the page.' })); 
+      console.error('Caught error in widget data fetch:', error); 
+      dispatch(setWidgetData(id, { data: [], error: 'Oops sth went wrong, please refresh the page.' })); 
     });
   };
 };
 
 /**
- * Adds new infobox to dashboard with provided data 
- * @param {Object} data - Contains all needed options to be saved to infobox state, 
+ * Adds new widget to dashboard with provided data 
+ * @param {Object} data - Contains all needed options to be saved to widget state, 
  * no check is performed
- * @return {String} id - The id of the added infobox 
+ * @return {String} id - The id of the added widget 
  * 
  */
-const addInfobox = function (options) {
+const addWidget = function (options) {
   return function (dispatch, getState) {
-    const infobox = getState().section.dashboard.infobox;
+    const widgets = getState().section.dashboard.widgets;
 
     // find last id and increase by one
-    const lastId = infobox.length ? Math.max(...infobox.map(info => parseInt(info.id, NaN))) : 0;
+    const lastId = widgets.length ? Math.max(...widgets.map(widget => parseInt(widget.id, NaN))) : 0;
     if (isNaN(lastId)) {
       throw new Error('last id NaN');
     }
@@ -227,56 +227,56 @@ const addInfobox = function (options) {
     const display = options.display;
     const type = options.type;
 
-    dispatch(createInfobox({ ...options, id }));
+    dispatch(createWidget({ ...options, id }));
     dispatch(appendLayout(id, display, type));
 
     dispatch(setDirty()); 
-    dispatch(updateInfobox(id, {}));
+    dispatch(updateWidget(id, {}));
     return id;
   };
 };
     
 /**
- * Removes an existing infobox from state
+ * Removes an existing widget from state
  * 
- * @param {String} id - The id of the infobox to remove 
+ * @param {String} id - The id of the widget to remove 
  * 
  */
-const removeInfobox = function (id) {
+const removeWidget = function (id) {
   return function (dispatch, getState) {
     dispatch(setDirty());
     dispatch({
-      type: types.DASHBOARD_REMOVE_INFOBOX,
+      type: types.DASHBOARD_REMOVE_WIDGET,
       id,
     });
   };
 };
 
 /**
- * Fetch data for all infoboxes in state 
+ * Fetch data for all widgets in state 
  * 
  */
-const fetchAllInfoboxesData = function () {
+const fetchAllWidgetsData = function () {
   return function (dispatch, getState) {
   /*
    * sequential execution to take advantage of cache
    */
-    return getState().section.dashboard.infobox
-    .map(infobox => updateInfobox(infobox.id, {}))
+    return getState().section.dashboard.widgets
+    .map(widget => updateWidget(widget.id, {}))
     .reduce((prev, curr) => prev.then(() => dispatch(curr)), Promise.resolve());
   };
 };
 
-const setInfoboxToAdd = function (data) {
+const setWidgetToAdd = function (data) {
   return {
-    type: types.DASHBOARD_SET_INFOBOX_TEMP,
+    type: types.DASHBOARD_SET_WIDGET_TEMP,
     data,
   };
 };
 
-const resetInfoboxToAdd = function () {
+const resetWidgetToAdd = function () {
   return {
-    type: types.DASHBOARD_RESET_INFOBOX_TEMP,
+    type: types.DASHBOARD_RESET_WIDGET_TEMP,
   };
 };
 
@@ -284,15 +284,15 @@ module.exports = {
   resetDirty,
   setDirty,
   switchMode,
-  addInfobox,
-  updateInfobox,
-  setInfoboxData,
-  setInfoboxes,
+  addWidget,
+  updateWidget,
+  setWidgetData,
+  setWidgets,
   updateLayoutItem,
   updateLayout,
-  removeInfobox,
-  fetchAllInfoboxesData,
-  setInfoboxToAdd,
-  resetInfoboxToAdd,
+  removeWidget,
+  fetchAllWidgetsData,
+  setWidgetToAdd,
+  resetWidgetToAdd,
 };
 

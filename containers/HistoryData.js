@@ -7,7 +7,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const History = require('../components/sections/History');
 
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-const { reduceSessions, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/transformations');
+const { reduceMultipleSessions, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
@@ -39,7 +39,7 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const devType = stateProps.activeDeviceType;  
-  const sessions = sortSessions(reduceSessions(stateProps.devices, stateProps.data), 
+  const sessions = sortSessions(reduceMultipleSessions(stateProps.devices, stateProps.data), 
                                 stateProps.sortFilter, 
                                 stateProps.sortOrder
                                ).map(s => ({ 

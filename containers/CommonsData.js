@@ -11,7 +11,7 @@ const { queryMeterHistoryCache } = require('../actions/QueryActions');
 const timeUtil = require('../utils/time');
 const { getDeviceKeysByType } = require('../utils/device');
 
-const { getDataSessions, sortSessions } = require('../utils/transformations');
+const { getDataSessions, sortSessions } = require('../utils/sessions');
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels } = require('../utils/chart');
 const { COMMONS_USER_SORT } = require('../constants/HomeConstants');
 

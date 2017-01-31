@@ -14,12 +14,12 @@ const initialState = {
     { i: '8', x: 2, y: 2, w: 2, h: 2 },
     { i: '9', x: 0, y: 3, w: 2, h: 1 },
   ],
-  infoboxToAdd: {
+  widgetToAdd: {
     deviceType: 'METER',
     type: 'totalDifferenceStat',
     title: 'Total volume Stat',
   },
-  infobox: [
+  widgets: [
     {
     id: '1', 
     title: 'Shower Volume',
@@ -130,38 +130,38 @@ const dashboard = function (state = initialState, action) {
         mode: action.mode
       });
       
-    case types.DASHBOARD_SET_INFOBOXES: {
+    case types.DASHBOARD_SET_WIDGETS: {
       return Object.assign({}, state, {
-        infobox: action.infoboxes 
+        widgets: action.widgets 
       });
     }
 
-    case types.DASHBOARD_ADD_INFOBOX: {
-      const newInfobox = [...state.infobox, action.data];
+    case types.DASHBOARD_ADD_WIDGET: {
+      const newWidgets = [...state.widgets, action.data];
       
       return Object.assign({}, state, {
-        infobox: newInfobox
+        widgets: newWidgets
       });
     }
  
-    case types.DASHBOARD_REMOVE_INFOBOX: {
-      const newInfobox = state.infobox.filter(x => x.id !== action.id);
+    case types.DASHBOARD_REMOVE_WIDGET: {
+      const newWidgets = state.widgets.filter(x => x.id !== action.id);
       const newLayout = state.layout.filter(x => x.i !== action.id);
 
       return Object.assign({}, state, {
-        infobox: newInfobox,
+        widgets: newWidgets,
         layout: newLayout,
       });
     }
 
-    case types.DASHBOARD_UPDATE_INFOBOX: {
-      const newInfobox = [...state.infobox];
+    case types.DASHBOARD_UPDATE_WIDGET: {
+      const newWidgets = [...state.widgets];
       // TODO: had to use let instead of const because of browserify block scope error
-      const idx = newInfobox.findIndex(obj => obj.id === action.id);
-      newInfobox[idx] = { ...newInfobox[idx], ...action.data };
+      const idx = newWidgets.findIndex(obj => obj.id === action.id);
+      newWidgets[idx] = { ...newWidgets[idx], ...action.data };
       
       return Object.assign({}, state, {
-        infobox: newInfobox
+        widgets: newWidgets
       });
     }
   
@@ -186,15 +186,15 @@ const dashboard = function (state = initialState, action) {
       });
     }
 
-    case types.DASHBOARD_SET_INFOBOX_TEMP: {
+    case types.DASHBOARD_SET_WIDGET_TEMP: {
       return Object.assign({}, state, {
-        infoboxToAdd: Object.assign({}, state.infoboxToAdd, action.data) 
+        widgetToAdd: Object.assign({}, state.widgetToAdd, action.data) 
       });
     }
 
-    case types.DASHBOARD_RESET_INFOBOX_TEMP: {
+    case types.DASHBOARD_RESET_WIDGET_TEMP: {
       return Object.assign({}, state, {
-        infoboxToAdd: initialState.infoboxToAdd 
+        widgetToAdd: initialState.widgetToAdd 
       });
     }
 

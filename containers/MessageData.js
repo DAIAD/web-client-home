@@ -7,7 +7,7 @@ const Notifications = require('../components/sections/Notifications');
 
 const MessageActions = require('../actions/MessageActions');
 
-const { transformInfoboxData } = require('../utils/transformations');
+const { prepareWidget } = require('../utils/widgets/');
 const { stripTags } = require('../utils/messages');
 
 function mapStateToProps(state) {
@@ -66,11 +66,11 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     messages[activeMessageIndex] 
     : null;
 
-  const infobox = activeMessage && activeMessage.extra ? 
-    transformInfoboxData(activeMessage.extra, 
-                         stateProps.devices, 
-                         ownProps.intl
-                        ) : {}; 
+  const widget = activeMessage && activeMessage.extra ? 
+    prepareWidget(activeMessage.extra, 
+                  stateProps.devices, 
+                  ownProps.intl
+                 ) : {}; 
   return {
     ...stateProps,
     ...dispatchProps,
@@ -82,7 +82,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       messages[activeMessageIndex - 1].id
     : null,
     categories,
-    infobox,
+    widget,
     messages,
     activeMessage,
   };

@@ -9,7 +9,7 @@ const getTypeByCategory = function (category) {
   throw new Error('category not supported: ', category);
 };
 
-const getInfoboxByAlertType = function (type, timestamp) {
+const getWidgetByAlertType = function (type, timestamp) {
   switch (type) {
 
     case 'WATER_LEAK':
@@ -68,6 +68,6 @@ const combineMessages = function (categories) {
 module.exports = {
   combineMessages,
   getTypeByCategory,
-  getInfoboxByAlertType,
+  getWidgetByAlertType,
   stripTags,
 };

@@ -15,7 +15,7 @@ function ErrorDisplay(props) {
   return props.errors ? 
     <div style={{ zIndex: 100 }}>
       <img src={`${IMAGES}/alert.svg`} alt="error" />
-      <span className="infobox-error">{`${props.errors}`}</span>
+      <span className="widget-error">{`${props.errors}`}</span>
     </div>
     :
     <div />;
@@ -43,18 +43,18 @@ const InfoBox = React.createClass({
     };
   },
   render: function () {
-    const { infobox, updateInfobox, removeInfobox, intl, linkToHistory, width } = this.props;
-    const { id, error, period, type, display, periods, time } = infobox;
+    const { widget, updateWidget, removeWidget, intl, linkToHistory, width } = this.props;
+    const { id, error, period, type, display, periods, time } = widget;
 
     const _t = intl.formatMessage;
     return (
       <div 
-        className="infobox"
+        className="widget"
         ref={(el) => { if (!this.state.el) { this.setState({ el }); } }}
       >
-        <div className="infobox-header">
+        <div className="widget-header">
           <div className="header-left">
-            <h4>{infobox.title}</h4>
+            <h4>{widget.title}</h4>
           </div>
 
           <div className="header-right">
@@ -63,7 +63,7 @@ const InfoBox = React.createClass({
                 periods.map(p => (
                   <a 
                     key={p.id} 
-                    onClick={() => updateInfobox(id, { period: p.id, time: p.time })} 
+                    onClick={() => updateWidget(id, { period: p.id, time: p.time })} 
                     style={{ marginLeft: 5 }}
                   >
                     {
@@ -83,11 +83,11 @@ const InfoBox = React.createClass({
                   <span />
             }
             {
-              // TODO: disable delete infobox until add is created
+              // TODO: disable delete widget until add is created
               <a 
-                className="infobox-x" 
+                className="widget-x" 
                 style={{ float: 'right', marginLeft: 5, marginRight: 5 }} 
-                onClick={() => removeInfobox(infobox.id)}
+                onClick={() => removeWidget(widget.id)}
               >
                 <i className="fa fa-times" />
               </a>
@@ -95,7 +95,7 @@ const InfoBox = React.createClass({
           </div>
         </div>
         
-        <div className="infobox-body">
+        <div className="widget-body">
           {
             (() => {
               if (error) {
@@ -108,7 +108,7 @@ const InfoBox = React.createClass({
               } else if (display === 'chart') {
                 return (
                   <ChartBox 
-                    {...infobox} 
+                    {...widget} 
                     width={this.state.el ? this.state.el.clientWidth : '100%'}
                     height={this.state.el ? this.state.el.clientHeight - 90 : null}
                   /> 
@@ -123,8 +123,8 @@ const InfoBox = React.createClass({
             )()
            }
         </div>
-        <div className="infobox-footer">
-          <a onClick={() => linkToHistory(infobox)}>See more</a>
+        <div className="widget-footer">
+          <a onClick={() => linkToHistory(widget)}>See more</a>
         </div>
       </div>
     );
@@ -132,7 +132,7 @@ const InfoBox = React.createClass({
 });
 
 function StatBox(props) {
-  const { deviceType, highlight, period, better, comparePercentage, mu } = props.infobox;
+  const { deviceType, highlight, period, better, comparePercentage, mu } = props.widget;
   
   //const duration = data?(Array.isArray(data)?null:data.duration):null;
   const arrowClass = better ? 'fa-arrow-down green' : 'fa-arrow-up red';
@@ -173,7 +173,7 @@ function StatBox(props) {
 }
 
 function TipBox(props) {
-  const { highlight } = props.infobox;
+  const { highlight } = props.widget;
   return (
     <div >
       <p>{highlight}</p>
@@ -182,7 +182,7 @@ function TipBox(props) {
 }
 
 function InfoPanel(props) {
-  const { mode, layout, infoboxes, updateLayout, updateInfobox, removeInfobox, 
+  const { mode, layout, widgets, updateLayout, updateWidget, removeWidget, 
     chartFormatter, intl, periods, displays, linkToHistory, width } = props;
   return (
     <ResponsiveGridLayout 
@@ -192,7 +192,7 @@ function InfoPanel(props) {
       cols={{ lg: 8, md: 4, sm: 2 }}
       rowHeight={160}
       measureBeforeMount
-      draggableHandle=".infobox-header"
+      draggableHandle=".widget-header"
       resizable
       draggable
       onResizeStop={(newLayout) => { 
@@ -207,17 +207,17 @@ function InfoPanel(props) {
       }}
     >
       {
-       infoboxes.map(infobox => (
-         <div key={infobox.id}>
+       widgets.map(widget => (
+         <div key={widget.id}>
            <InfoBox 
              {...{
                mode, 
                periods, 
                displays, 
                chartFormatter, 
-               infobox, 
-               updateInfobox, 
-               removeInfobox, 
+               widget, 
+               updateWidget, 
+               removeWidget, 
                intl, 
                linkToHistory,
                width,
@@ -272,10 +272,10 @@ function ButtonToolbar(props) {
   );
 }
 
-function AddInfoboxForm(props) {
-  const { infoboxToAdd, types, deviceTypes, setForm } = props;
-  const setInfoboxToAdd = data => setForm('infoboxToAdd', data);
-  const { deviceType, title, type } = infoboxToAdd;
+function AddWidgetForm(props) {
+  const { widgetToAdd, types, deviceTypes, setForm } = props;
+  const setWidgetToAdd = data => setForm('widgetToAdd', data);
+  const { deviceType, title, type } = widgetToAdd;
   return (
     <div>
       <bs.Tabs 
@@ -283,7 +283,7 @@ function AddInfoboxForm(props) {
         position="top" 
         tabWidth={3} 
         activeKey={deviceType} 
-        onSelect={key => setInfoboxToAdd({ 
+        onSelect={key => setWidgetToAdd({ 
           deviceType: key, 
           title: null, 
           type: key === 'METER' ? 'totalDifferenceStat' : 'totalVolumeStat'
@@ -299,16 +299,16 @@ function AddInfoboxForm(props) {
             )
         } 
       </bs.Tabs>
-      <div className="add-infobox">
-        <div className="add-infobox-left">
+      <div className="add-widget">
+        <div className="add-widget-left">
           <div>
-            <ul className="add-infobox-types">
+            <ul className="add-widget-types">
               {
                 types.map((t, idx) =>
                   <li key={idx}>
                     <a 
                       className={type === t.id ? 'selected' : ''}  
-                      onClick={() => setInfoboxToAdd({ type: t.id, title: null })} 
+                      onClick={() => setWidgetToAdd({ type: t.id, title: null })} 
                       value={t.id}
                     >
                       {t.title}
@@ -319,7 +319,7 @@ function AddInfoboxForm(props) {
             </ul>
           </div>
         </div>
-        <div className="add-infobox-right">
+        <div className="add-widget-right">
           <div>
             <input 
               type="text" 
@@ -328,10 +328,10 @@ function AddInfoboxForm(props) {
                                types.find(t => t.id === type).title : null 
                               )
               }
-              onChange={e => setInfoboxToAdd({ title: e.target.value })}
+              onChange={e => setWidgetToAdd({ title: e.target.value })}
             />
-            <p>{ types.find(t => t.id === infoboxToAdd.type) ? 
-              types.find(t => t.id === infoboxToAdd.type).description 
+            <p>{ types.find(t => t.id === widgetToAdd.type) ? 
+              types.find(t => t.id === widgetToAdd.type).description 
                 : null 
               }
             </p>
@@ -342,13 +342,13 @@ function AddInfoboxForm(props) {
   );
 }
 
-function AddInfoboxModal(props) {
-  const { showModal, switchMode, addInfobox, metrics, types, deviceTypes, 
-    infoboxToAdd, setForm } = props;
+function AddWidgetModal(props) {
+  const { showModal, switchMode, addWidget, metrics, types, deviceTypes, 
+    widgetToAdd, setForm } = props;
   return (
     <bs.Modal 
       animation={false} 
-      className="add-infobox-modal" 
+      className="add-widget-modal" 
       show={showModal} onHide={() => switchMode('normal')} 
       bsSize="large" 
       backdrop="static"
@@ -359,13 +359,13 @@ function AddInfoboxModal(props) {
         </bs.Modal.Title>
       </bs.Modal.Header>
       <bs.Modal.Body>
-        <AddInfoboxForm {...{ infoboxToAdd, metrics, types, deviceTypes, setForm }} /> 
+        <AddWidgetForm {...{ widgetToAdd, metrics, types, deviceTypes, setForm }} /> 
       </bs.Modal.Body>
       <bs.Modal.Footer>
         <a onClick={() => switchMode('normal')}>Cancel</a>
         <a 
           style={{ marginLeft: 20 }} 
-          onClick={() => { addInfobox(); switchMode('normal'); }}
+          onClick={() => { addWidget(); switchMode('normal'); }}
         >
           Add
         </a>
@@ -378,26 +378,26 @@ const Dashboard = React.createClass({
   //mixins: [ PureRenderMixin ],
 
   componentWillMount: function () {
-    //const { fetchAllInfoboxesData, switchMode } = this.props;
+    //const { fetchAllWidgetesData, switchMode } = this.props;
     //switchMode("normal");
-    //fetchAllInfoboxesData();
+    //fetchAllWidgetesData();
   },
   
   render: function () {
-    const { firstname, mode, dirty, switchMode, addInfobox, saveToProfile, 
+    const { firstname, mode, dirty, switchMode, addWidget, saveToProfile, 
       setDirty, resetDirty, deviceCount, meterCount, metrics, types, 
-      deviceTypes, infoboxToAdd, setForm } = this.props;
+      deviceTypes, widgetToAdd, setForm } = this.props;
     return (
       <MainSection id="section.dashboard">
         <div className="dashboard">
           <div className="dashboard-infopanel">
             <SayHello firstname={firstname} />
-            <AddInfoboxModal 
+            <AddWidgetModal 
               {...{
                 showModal: mode === 'add', 
                 switchMode, 
-                addInfobox, 
-                infoboxToAdd,
+                addWidget, 
+                widgetToAdd,
                 metrics, 
                 types, 
                 deviceTypes, 
