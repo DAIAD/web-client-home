@@ -336,7 +336,7 @@ const linkToHistory = function (options) {
       dispatch(setActiveDeviceType(deviceType, false));
     }
     if (device) {
-      dispatch(setActiveDevice(device, false));
+      dispatch(setActiveDevice([device], false));
     }
     if (metric) {
       dispatch(setMetricFilter(metric));

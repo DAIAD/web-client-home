@@ -98,6 +98,13 @@ const getMetricMu = function (metric) {
   throw new Error(`unrecognized metric ${metric}`);
 };
 
+const getShowerMetricMu = function (metric) {
+  if (metric === 'volume') return 'lt';
+  else if (metric === 'energy') return 'W';
+  else if (metric === 'temperature') return '°C';
+  throw new Error(`unrecognized metric ${metric}`);
+};
+
 const lastNFilterToLength = function (filter) {
   if (filter === 'ten') return 10;
   else if (filter === 'twenty') return 20;
@@ -188,6 +195,7 @@ module.exports = {
   getFriendlyDuration,
   getEnergyClass,
   getMetricMu,
+  getShowerMetricMu,
   lastNFilterToLength,
   getCacheKey,
   debounce,

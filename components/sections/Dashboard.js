@@ -82,7 +82,6 @@ const InfoBox = React.createClass({
                   <span />
             }
             {
-              // TODO: disable delete widget until add is created
               <a 
                 className="widget-x" 
                 style={{ float: 'right', marginLeft: 5, marginRight: 5 }} 

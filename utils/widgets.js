@@ -50,12 +50,12 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   const reduced = data ? reduceMetric(devices, data, metric) : 0;
   
   // TODO: static
-  let fac;
+  let fac = 1.1;
   if (period === 'ten') fac = 1.2;
   else if (period === 'twenty') fac = 0.8;
   else if (period === 'fifty') fac = 0.75;
 
-  const previousReduced = deviceType === 'AMPHIRO' ?
+  const previousReduced = (deviceType === 'AMPHIRO' || previous == null) ?
     reduced * fac 
     :
     reduceMetric(devices, previous, metric);

@@ -31,11 +31,11 @@ module.exports = {
     showAllSymbol: true,
     symbolSize: 7,
   },
-  
+
   grid: {
-    x: 80,
+    x: 70,
     x2: 20, 
-    y: -20,
+    y: -40,
     y2: 30,
   },
 };

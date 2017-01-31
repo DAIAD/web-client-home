@@ -127,14 +127,14 @@ const reduceMetric = function (devices, data, metric) {
 const calculateIndexes = function (sessions) { 
   return sessions.map((session, idx, array) => ({
     ...session, 
-    next: array[idx + 1] ? 
+    prev: array[idx + 1] ? 
     [
       array[idx + 1].device, 
       array[idx + 1].id, 
       array[idx + 1].timestamp,
     ]
     : null,
-    prev: array[idx - 1] ? 
+    next: array[idx - 1] ? 
     [
       array[idx - 1].device, 
       array[idx - 1].id, 

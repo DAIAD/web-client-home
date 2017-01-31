@@ -4,50 +4,27 @@ const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl')
 
 const { LineChart } = require('react-echarts');
 const theme = require('../chart/themes/session');
-
 const { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../../constants/HomeConstants'); 
 
 function SessionInfoItem(props) {
   const _t = props.intl.formatMessage;
   return !props.data ? <div /> : (
   <li className="session-item" >
-    {
-      props.sessionClick ?
-        <a 
-          onClick={() => props.sessionClick(props.id)} 
-          title={_t({ id: props.details })}
-        >
-          <h4 style={{ float: 'left' }}>
-            <img
-              style={{ 
-                height: props.id === 'temperature' ? 30 : 24, 
-                marginLeft: props.id === 'temperature' ? 7 : 0,
-                marginRight: 20
-              }} 
-              src={`${IMAGES}/${props.icon}`}
-              alt={props.name}
-            />
-            <FormattedMessage id={props.title} />
-          </h4>
-          <h4 style={{ float: 'right' }}>{props.data} <span>{props.mu}</span></h4>
-        </a>
-      :
-      <span>
-        <h4 style={{ float: 'left' }}>
-          <img 
-            style={{ 
-              height: props.id === 'temperature' ? 30 : 24, 
-              marginLeft: props.id === 'temperature' ? 7 : 0, 
-              marginRight: 20,
-            }} 
-            src={`${IMAGES}/${props.icon}`} 
-            alt={props.name} 
-          />
-          <FormattedMessage id={props.title} />
-        </h4>
-        <h4 style={{ float: 'right' }}>{props.data} <span>{props.mu}</span></h4>
-      </span>
-    }
+    <span>
+      <h4 style={{ float: 'left' }}>
+        <img 
+          style={{ 
+            height: props.id === 'temperature' ? 30 : 24, 
+            marginLeft: props.id === 'temperature' ? 7 : 0, 
+            marginRight: 20,
+          }} 
+          src={`${IMAGES}/${props.icon}`} 
+          alt={props.name} 
+        />
+        <FormattedMessage id={props.title} />
+      </h4>
+      <h4 style={{ float: 'right' }}>{props.data} <span>{props.mu}</span></h4>
+    </span>
   </li>
   );
 }
@@ -106,7 +83,7 @@ function SessionInfo(props) {
 
 function Session(props) {
   const { intl, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
-    firstname, activeDeviceType, width } = props;
+    firstname, activeDeviceType, activeSessionFilter, sessionFilters, width, mu } = props;
     
   if (!data) return <div />;
   const { history, id } = data;
@@ -131,6 +108,23 @@ function Session(props) {
     return (
       <div className="shower-container">
         <div className="shower-chart-area">
+          <bs.Tabs 
+            position="top" 
+            tabWidth={10} 
+            activeKey={activeSessionFilter} 
+            onSelect={(val) => { setSessionFilter(val); }}
+          >
+            {
+              sessionFilters.map(metric => (
+                <bs.Tab 
+                  key={metric.id} 
+                  eventKey={metric.id} 
+                  title={_t(metric.title)} 
+                /> 
+              ))
+            }
+          </bs.Tabs>
+
           <LineChart
             height={300}
             width={width} 
@@ -140,14 +134,8 @@ function Session(props) {
               boundaryGap: true,
             }}
             yAxis={{
-              formatter: y => `${y} lt`,
-            }}
-            grid={{
-              x: 50,
-              x2: 50,
-              y: -30,
-              y2: 30,
-            }}
+              formatter: y => `${y} ${mu}`,
+            }} 
             series={[{ name: `${_t('section.shower')} ${id}`, data: chartData, fill: 0.55 }]}
           />
         </div>

@@ -1,13 +1,14 @@
 const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
+const moment = require('moment');
 
 //const { getChartTimeData } = require('../utils/chart');
 
 const SessionModal = require('../components/sections/Session');
-
 const HistoryActions = require('../actions/HistoryActions');
-const moment = require('moment');
+const { getShowerMetricMu } = require('../utils/general');
+const { SHOWER_METRICS } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
@@ -31,7 +32,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       
   const chartFormatter = t => moment(t).format('hh:mm');
   const measurements = data && data.measurements ? data.measurements : [];
-
   return {
     ...stateProps,
     ...dispatchProps,
@@ -41,8 +41,11 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     chartCategories: measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss')),
     chartData: measurements.map(measurement => measurement ? 
                                 measurement[stateProps.activeSessionFilter]
-                                : null),
+                                  : null),
     showModal: stateProps.activeSession != null,
+    sessionFilters: SHOWER_METRICS
+      .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
+    mu: getShowerMetricMu(stateProps.activeSessionFilter),
   };
 }
 
