@@ -112,8 +112,7 @@ const deviceToDeviceForm = function (device) {
 };
 
 const deviceFormToDevice = function (deviceForm) {
-  const { name, type, key, unit, heatingSystem, heatingEfficiency, costEnergy, 
-    costWater, shareOfSolar } = deviceForm;
+  const { name, type, key, unit } = deviceForm;
   return {
     name,
     type,
