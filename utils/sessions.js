@@ -16,6 +16,10 @@ const getDataSessions = function (devices, data) {
   return [];
 };
 
+const getSessionsCount = function (devices, data) {
+  return data.map(dev => getDataSessions(devices, dev).length).reduce((p, c) => p + c, 0);
+};
+
 // reduces array of devices with multiple sessions arrays
 // to single array of sessions 
 // and prepare for table presentation
@@ -64,19 +68,6 @@ const prepareSessionsForTable = function (devices, data, user, granularity, intl
   return sessions;
 };
 
-// TODO: hm?
-const getSessionsCount = function (devices, data) {
-  return reduceMultipleSessions(devices, data)
-  .map(() => 1)
-  .reduce((p, c) => p + c, 0);
-};
-
-const getShowersCount = function (devices, data) {
-  return reduceMultipleSessions(devices, data)
-  .map(s => s.count ? s.count : 1)
-  .reduce((p, c) => p + c, 0);
-};
-
 const getSessionIndexById = function (sessions, id) {
   if (!id || !sessions || !sessions.length || !sessions[0].id) {
     return null;
@@ -106,14 +97,14 @@ const updateOrAppendToSession = function (devices, data) {
   return updated;
 };
 
-const getShowerMeasurements = function (devices, data, index) {
-  const sessions = getDataSessions(devices, data);
-
-  if (!sessions || !Array.isArray(sessions) || sessions.length < index) {
+const getShowerMeasurementsById = function (data, id) {
+  if (!data || !Array.isArray(data.sessions)) {
     return [];
   }
+  const sessions = data.sessions;
 
-  return sessions[index] ? sessions[index].measurements : [];
+  const found = sessions.find(session => session.id === id);
+  return found ? found.measurements : [];
 };
 
 const reduceMetric = function (devices, data, metric) {
@@ -209,8 +200,8 @@ module.exports = {
   prepareSessionsForTable,
   sortSessions,
   reduceMetric,
-  getShowersCount,
-  getShowerMeasurements,
+  getSessionsCount,
+  getShowerMeasurementsById,
   meterSessionsToCSV,
   deviceSessionsToCSV,
 };

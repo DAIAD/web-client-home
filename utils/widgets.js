@@ -4,9 +4,9 @@ const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_PERIODS, METER_PERIODS } =
 
 const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
-const { getTimeByPeriod, getLowerGranularityPeriod } = require('./time');
+const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { reduceMetric, getDataSessions, getShowerMeasurements, getShowersCount } = require('./sessions');
+const { reduceMetric, getDataSessions, getShowerMeasurementsById, getSessionsCount } = require('./sessions');
 
 const tip = function (widget) {
   return {
@@ -16,9 +16,9 @@ const tip = function (widget) {
 };
 
 const amphiroLastShower = function (widget, devices, intl) {
-  const { data, device, index, metric } = widget;
+  const { data, device, showerId, metric } = widget;
   const last = data ? data.find(d => d.deviceKey === device) : null;
-  const measurements = last ? getShowerMeasurements(devices, last, index) : [];
+  const measurements = last ? getShowerMeasurementsById(last, showerId) : [];
   const chartCategories = measurements.map(m => moment(m.timestamp).format('hh:mm:ss'));
   const chartData = [{
     name: getDeviceNameByKey(devices, device) || '', 
@@ -134,7 +134,7 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
     : 
     Math.round((Math.abs(reduced - previousReduced) / previousReduced) * 100);
  
-  const showers = getShowersCount(devices, data);
+  const showers = getSessionsCount(devices, data);
   const highlight = (showers === 0 || reduced === 0) ? null : getEnergyClass(reduced / showers);
   return {
     ...widget,

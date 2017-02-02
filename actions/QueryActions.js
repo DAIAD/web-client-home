@@ -314,47 +314,6 @@ const queryMeterHistory = function (options) {
 };
 
 /**
- * Query Meter for current meter status
- * @param {Array} deviceKey - Array of device keys to query
- * @return {Promise} Resolve returns Object containing meter sessions data 
- *  in form {data: sessionsData}, reject returns possible errors
- * 
- */   
-/*
-const queryMeterStatus = function (deviceKey) {
-  return function (dispatch, getState) {
-    if (!deviceKey) {
-      throw new Error(`Not sufficient data provided for meter status: deviceKeys:${deviceKey}`);
-    }
-    dispatch(requestedMeterStatus());
-    
-    const data = {
-      deviceKey, 
-      csrf: getState().user.csrf 
-    };
-    return meterAPI.getStatus(data)
-      .then((response) => {
-        dispatch(receivedMeterStatus(response.success, 
-                                     response.errors, 
-                                     response.devices ? response.devices : [],
-                                    ));
-        if (!response || !response.success) {
-        const errorCode = response && response.errors && response.errors.length > 0 ? 
-        response.errors[0].code 
-        : 'unknownError';
-          throw new Error(errorCode);
-        }
-        return response;
-      })
-      .catch((error) => {
-        dispatch(receivedQuery(false, error));
-        throw error;
-      });
-  };
-};
-*/
-
-/**
  * Wrapper to queryMeterHistory with cache functionality
  * @param {Object} options - The queryMeterHistory options object
  * @return {Promise} Resolve returns Object containing meter sessions data 
