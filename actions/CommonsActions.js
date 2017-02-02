@@ -10,7 +10,7 @@ const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
-const { lastNFilterToLength } = require('../utils/general');
+const { showerFilterToLength } = require('../utils/general');
 
 const QueryActions = require('./QueryActions');
 
@@ -53,8 +53,7 @@ const fetchData = function () {
       dispatch(QueryActions.queryDeviceSessionsCache({ 
         deviceKey: amphiros, 
         type: 'SLIDING', 
-        length: lastNFilterToLength(getState().section.commons.timeFilter), 
-        csrf: getState().user.csrf,
+        length: showerFilterToLength(getState().section.commons.timeFilter), 
       }))
       .then(sessions => dispatch(setSessions(sessions)))
       .then(() => dispatch(setDataSynced()))
@@ -70,7 +69,6 @@ const fetchData = function () {
       dispatch(QueryActions.queryMeterHistoryCache({
         deviceKey: meters, 
         time: getState().section.commons.time, 
-        csrf: getState().user.csrf,
       }))
       .then(sessions => dispatch(setSessions(sessions)))
       .then(() => dispatch(setDataSynced()))

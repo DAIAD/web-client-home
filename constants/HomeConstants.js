@@ -187,6 +187,10 @@ module.exports = {
       id: 'fifty', 
       title: 'periods.fifty',
     },
+    {
+      id: 'all', 
+      title: 'periods.all',
+    },
   ],
   METER_METRICS: [
     {

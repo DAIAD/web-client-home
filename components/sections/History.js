@@ -8,7 +8,7 @@ const MainSection = require('../layout/MainSection');
 const Topbar = require('../layout/Topbar');
 const { SidebarLeft, SidebarRight } = require('../layout/Sidebars');
 const Table = require('../helpers/Table');
-const { TimeNavigator, CustomTimeNavigator } = require('../helpers/Navigators');
+const { TimeNavigator, CustomTimeNavigator, ShowerNavigator } = require('../helpers/Navigators');
 
 //sub-containers
 const SessionData = require('../../containers/SessionData');
@@ -110,11 +110,17 @@ const History = React.createClass({
     const time = timeUtil.getTimeByPeriod(key);
     if (time) this.props.setTime(time, true);
   },
-  handlePrevious: function () { 
+  handleTimePrevious: function () { 
     this.props.setTime(this.props.previousPeriod);
   },
-  handleNext: function () { 
+  handleTimeNext: function () { 
     this.props.setTime(this.props.nextPeriod);
+  },
+  handleShowerPrevious: function () {
+    this.props.decreaseShowerIndex();
+  },
+  handleShowerNext: function () {
+    this.props.increaseShowerIndex();
   },
   handleDeviceChange: function (val) {
     const mapped = val.map(d => d.value); 
@@ -137,7 +143,8 @@ const History = React.createClass({
   },
   render: function () {
     const { intl, amphiros, activeDevice, activeDeviceType, timeFilter, 
-      time, metrics, periods, comparisons, deviceTypes } = this.props;
+      time, metrics, periods, comparisons, deviceTypes, data, 
+      hasShowersBefore, hasShowersAfter } = this.props;
     const _t = intl.formatMessage;
 
     return (
@@ -281,9 +288,23 @@ const History = React.createClass({
                     }
                     return (
                       <TimeNavigator 
-                        handlePrevious={this.handlePrevious} 
-                        handleNext={this.handleNext}
+                        handlePrevious={this.handleTimePrevious} 
+                        handleNext={this.handleTimeNext}
                         time={time}
+                      />
+                    );
+                  } else if (timeFilter !== 'all') {
+                    return (
+                      <ShowerNavigator 
+                        handlePrevious={this.handleShowerPrevious} 
+                        handleNext={this.handleShowerNext}
+                        hasNext={hasShowersAfter()}
+                        hasPrevious={hasShowersBefore()}
+                        showerRanges={data.map(s => s && s.range ? ({ 
+                          first: s.range.first, 
+                          last: s.range.last,
+                          name: s.name,
+                        }) : {})}
                       />
                     );
                   }

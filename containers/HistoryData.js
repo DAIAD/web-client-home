@@ -7,7 +7,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const History = require('../components/sections/History');
 
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/sessions');
+const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
@@ -30,6 +30,7 @@ function mapStateToProps(state) {
     synced: state.section.history.synced,
     data: state.section.history.data,
     comparison: state.section.history.comparison,
+    showerIndex: state.section.history.showerIndex,
   };
 }
 
@@ -117,6 +118,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     deviceTypes,
     csvData,
     reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.metricFilter)} ${getMetricMu(stateProps.metricFilter)}`,
+    hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
+    hasShowersBefore: () => hasShowersBefore(stateProps.data),
+
   };
 }
 

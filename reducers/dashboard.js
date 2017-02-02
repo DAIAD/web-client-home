@@ -154,6 +154,10 @@ const dashboard = function (state = initialState, action) {
       const newWidgets = [...state.widgets];
       // TODO: had to use let instead of const because of browserify block scope error
       const idx = newWidgets.findIndex(obj => obj.id === action.id);
+
+      // make sure id is not overriden
+      const update = action.update;
+      delete update.id;
       newWidgets[idx] = { ...newWidgets[idx], ...action.update };
       
       return Object.assign({}, state, {

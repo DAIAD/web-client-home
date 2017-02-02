@@ -39,7 +39,7 @@
     "11": "December"
   },
   "errors": {
-    "Error: unauthorized": "You are not authorized to perform this action.",
+    "Error: SharedErrorCode.AUTHENTICATION": "You are not authorized to perform this action.",
     "Error: unknownError": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
     "Error: Not Found": "API call not found. Your developer should be fired.",
     "Error: SharedErrorCode.UNKNOWN": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.", 
@@ -126,9 +126,11 @@
     "month": "Month",
     "week": "Week",
     "day": "Day",
+    "hour": "Hour",
     "ten": "Last 10",
     "twenty": "Last 20",
-    "fifty": "Last 50"
+    "fifty": "Last 50",
+    "all": "All"
   },
   "notifications": {
     "showAll": "Show all",

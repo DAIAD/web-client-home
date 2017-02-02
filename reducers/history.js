@@ -16,7 +16,8 @@ const initialState = {
   comparison: null,
   data: [],
   comparisonData: [],
-  time: thisYear()
+  time: thisYear(),
+  showerIndex: 0,
 };
  
 const history = function (state = initialState, action) {
@@ -102,6 +103,11 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_SORT_ORDER:
       return Object.assign({}, state, {
         sortOrder: action.order
+      });
+
+    case types.HISTORY_SET_SHOWER_INDEX:
+      return Object.assign({}, state, {
+        showerIndex: action.index,
       });
 
     case types.USER_RECEIVED_LOGOUT:

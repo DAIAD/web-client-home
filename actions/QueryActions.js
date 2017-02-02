@@ -13,9 +13,9 @@ const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants
 const deviceAPI = require('../api/device');
 const meterAPI = require('../api/meter');
 
-const { reduceMultipleSessions, updateOrAppendToSession } = require('../utils/sessions');
+const { updateOrAppendToSession, getShowerRange, getLastShowers, getLastShowerIdFromMultiple, } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
-const { getCacheKey, throwServerError, lastNFilterToLength } = require('../utils/general');
+const { getCacheKey, throwServerError, showerFilterToLength } = require('../utils/general');
 const { getTimeByPeriod, getPreviousPeriodSoFar } = require('../utils/time');
 // const { getTimeByPeriod, getLastShowerTime, getPreviousPeriodSoFar } = require('../utils/time');
 
@@ -133,6 +133,7 @@ const queryDeviceSessions = function (options) {
     // const data = Object.assign({}, options, {deviceKey:deviceKey}, {csrf: getState().user.csrf});
     const data = {
       ...options,
+      type: 'SLIDING', 
       csrf: getState().user.csrf,
     };
     return deviceAPI.querySessions(data)
@@ -144,11 +145,11 @@ const queryDeviceSessions = function (options) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      return response.devices;      
-      // dispatch(saveToCache('AMPHIRO', options.length, response.devices));
-      // return only the items requested
-      // return filterDataByDeviceKeys(response.devices, deviceKey);
-      // return response.devices;
+      
+      return response.devices.map(session => ({ 
+          ...session,
+          range: session.sessions ? getShowerRange(session.sessions) : {}
+        }));
     })
     .catch((error) => {
       dispatch(receivedQuery(false, error));
@@ -166,24 +167,27 @@ const queryDeviceSessions = function (options) {
  */
 const queryDeviceSessionsCache = function (options) {
   return function (dispatch, getState) {
-    const { length, deviceKey } = options;
+    const { length, deviceKey, type, index = 0 } = options;
     // if item found in cache return it
-    if (getState().query.cache[getCacheKey('AMPHIRO', length)]) {
-      dispatch(cacheItemRequested('AMPHIRO', length));
-      const cacheItem = getState().query.cache[getCacheKey('AMPHIRO', length)].data;
-      return Promise.resolve(filterDataByDeviceKeys(cacheItem, deviceKey));
+    if (getState().query.cache[getCacheKey('AMPHIRO')]) {
+      dispatch(cacheItemRequested('AMPHIRO'));
+      const cacheItem = getState().query.cache[getCacheKey('AMPHIRO')].data;
+      const filteredData = filterDataByDeviceKeys(cacheItem, deviceKey);
+      return Promise.resolve(getLastShowers(filteredData, length, index));
     }
     // else fetch all items to save in cache
+    // TODO: 5000 top limit
     const newOptions = {
       ...options, 
+      length: 5000,
       deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO'),
     };
     
     return dispatch(queryDeviceSessions(newOptions))
     .then((devices) => {
-      dispatch(saveToCache('AMPHIRO', length, devices));
+      dispatch(saveToCache('AMPHIRO', null, devices));
       // return only the items requested
-      return filterDataByDeviceKeys(devices, deviceKey);
+      return getLastShowers(filterDataByDeviceKeys(devices, deviceKey), length, index);
     });
   };
 };
@@ -244,9 +248,9 @@ const fetchLastDeviceSession = function (options) {
     } else {
       querySessions = queryDeviceSessions;
     }
-    return dispatch(querySessions({ ...options, type: 'SLIDING', length: 1 }))
-    .then((sessions) => {
-      const reduced = reduceMultipleSessions(getState().user.profile.devices, sessions);        
+    return dispatch(querySessions({ ...options, length: 1 }))
+    .then((response) => {
+      const reduced = response.reduce((p, c) => [...p, ...c.sessions.map(s => ({ ...s, device: c.deviceKey }))], []);
       // find last
       const lastSession = reduced.reduce((curr, prev) => 
         ((curr.timestamp > prev.timestamp) ? curr : prev), {}); 
@@ -254,16 +258,15 @@ const fetchLastDeviceSession = function (options) {
       const { device, id, index, timestamp } = lastSession;
 
       if (!id) throw new Error('sessionIDNotFound');
-      const devSessions = sessions.find(x => x.deviceKey === device);
-      
+      const devSessions = response.find(x => x.deviceKey === device);
+
       return dispatch(fetchDeviceSession(id, device))
       .then(session => ({ 
-        device, 
-        index, 
-        id, 
-        timestamp,
+        ...session,
+        showerId: id,
+        device,
         data: updateOrAppendToSession([devSessions], { ...session, deviceKey: device }), 
-      }))
+        }))
       .catch((error) => { throw error; });
     });
   };
@@ -414,20 +417,16 @@ const fetchWidgetData = function (options) {
         return Promise.resolve(res);
       });
     } else if (deviceType === 'AMPHIRO') {
+      const amphiroCache = getState().query.cache[getCacheKey('AMPHIRO')];
+      const allShowers = amphiroCache ? amphiroCache.data : [];
+
       if (type === 'last') {
-        return dispatch(fetchLastDeviceSession({ cache, deviceKey }))
-        .then(response => ({ 
-            data: response.data, 
-            index: response.index, 
-            device: response.device, 
-            showerId: response.id, 
-            time: response.timestamp,
-        }));
+        return dispatch(fetchLastDeviceSession({ cache, deviceKey }));
       }
-      return dispatch(queryDevice({ cache, 
-                                  type: 'SLIDING', 
-                                  length: lastNFilterToLength(period), 
-                                  deviceKey,
+      return dispatch(queryDevice({ 
+        cache, 
+        length: showerFilterToLength(period, getLastShowerIdFromMultiple(allShowers)),
+        deviceKey,
       }))
       .then(data => ({ data }));
     }

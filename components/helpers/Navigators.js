@@ -67,7 +67,52 @@ function TimeNavigator(props) {
   );
 }
 
+function ShowerNavigator(props) {
+  const { showerRanges, handlePrevious, handleNext, hasNext, hasPrevious } = props;
+  return (
+    <div className="navigator">
+      { 
+        hasPrevious ? 
+          <a className="navigator-child pull-left" onClick={handlePrevious}>
+            <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
+          </a>
+          :
+          <div className="navigator-child pull-left">
+            &nbsp;
+          </div>
+       }
+      <div className="navigator-child"> 
+        {
+          showerRanges.map((range, i) => (
+            <div key={i}>
+              <FormattedMessage id="history.showers" />
+              &nbsp;
+              <span>{range.first}</span>
+              - 
+              <span>{range.last}</span>
+        &nbsp;
+              <span>{`(${range.name})`}</span>
+            </div>
+            ))
+        }
+      </div>
+      {
+        hasNext ?
+          <a className="navigator-child pull-right" onClick={handleNext}>
+            <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
+          </a>
+          :
+          <div className="navigator-child pull-right">
+            &nbsp;
+          </div>
+
+      }
+    </div>
+  );
+}
+
 module.exports = {
   TimeNavigator,
   CustomTimeNavigator,
+  ShowerNavigator,
 };

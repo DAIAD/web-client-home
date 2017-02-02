@@ -9,7 +9,7 @@ const HistoryChart = require('../components/sections/HistoryChart');
 const { addPeriodToSessions } = require('../utils/time');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 const { getDeviceNameByKey } = require('../utils/device');
-const { getDataSessions } = require('../utils/sessions');
+const { getDataSessions, getLastShowerIdFromMultiple } = require('../utils/sessions');
 const { getMetricMu } = require('../utils/general');
 
 
@@ -33,7 +33,7 @@ function mapDispatchToProps(dispatch) {
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const xCategories = stateProps.activeDeviceType === 'METER' ? 
     getChartMeterCategories(stateProps.time) : 
-      getChartAmphiroCategories(stateProps.timeFilter);
+      getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
 
       
   const chartData = stateProps.data.map((devData) => {

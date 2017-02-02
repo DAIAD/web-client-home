@@ -51,27 +51,30 @@ const getChartMeterCategoryLabels = function (xData, time, intl) {
   return xData.map(t => getTimeLabelByGranularityShort(t, time.granularity, intl));
 };
 
-const getChartAmphiroCategories = function (period) {
+const getChartAmphiroCategories = function (period, last) {
+  let length = 0;
   if (period === 'ten') {
-    return Array.from({ length: 10 }, (v, i) => `#${i + 1}`);
+    length = 10;
   } else if (period === 'twenty') {
-    return Array.from({ length: 20 }, (v, i) => `#${i + 1}`);
+    length = 20;
   } else if (period === 'fifty') {
-    return Array.from({ length: 50 }, (v, i) => `#${i + 1}`);
+    length = 50;
+  } else if (period === 'all') {
+    length = last;
   } 
-  return [];
+  return Array.from({ length }, (v, i) => `${i + 1}`);
 };
 
 // TODO: have to make sure data is ALWAYS fetched in order of ascending ids 
 // for amphiro, ascending timestamps for meters
 
 const getChartAmphiroData = function (sessions, categories) {
-  if (!Array.isArray(sessions) 
-      || !Array.isArray(categories)) {
+  if (!Array.isArray(sessions) || !Array.isArray(categories)) {
     throw new Error('Cant\'t create chart. Check provided data and category', sessions, categories);
   }
   if (sessions.length === 0) return [sessions[0]];
-  return categories.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
+  //return categories.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
+  return categories.map((v, i) => sessions[i]);
 };
 
 const getChartMeterData = function (sessions, categories, time) {

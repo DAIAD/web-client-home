@@ -105,16 +105,17 @@ const getShowerMetricMu = function (metric) {
   throw new Error(`unrecognized metric ${metric}`);
 };
 
-const lastNFilterToLength = function (filter) {
+const showerFilterToLength = function (filter, last) {
   if (filter === 'ten') return 10;
   else if (filter === 'twenty') return 20;
   else if (filter === 'fifty') return 50;
+  else if (filter === 'all') return last;
   throw new Error(`unrecognized filter ${filter}`);
 };
 
 const getCacheKey = function (deviceType, timeOrLength) {
   if (deviceType === 'AMPHIRO') {
-    return `AMPHIRO,${timeOrLength}`;
+    return 'AMPHIRO';
   } else if (deviceType === 'METER') {
     return `METER,${timeOrLength.startDate}-${timeOrLength.endDate}`;
   }
@@ -196,7 +197,7 @@ module.exports = {
   getEnergyClass,
   getMetricMu,
   getShowerMetricMu,
-  lastNFilterToLength,
+  showerFilterToLength,
   getCacheKey,
   debounce,
   uploadFile,

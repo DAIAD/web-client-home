@@ -43,7 +43,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
   const periods = deviceType === 'AMPHIRO' ? 
-    DEV_PERIODS 
+    DEV_PERIODS.filter(p => p.id !== 'all') 
     : 
     METER_PERIODS.filter(p => p.id !== 'custom');
 
@@ -116,7 +116,7 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
   }
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
-  const periods = DEV_PERIODS;
+  const periods = DEV_PERIODS.filter(p => p.id !== 'all');
 
   const reduced = data ? reduceMetric(devices, data, metric) : 0;
 

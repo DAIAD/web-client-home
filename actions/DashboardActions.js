@@ -9,7 +9,6 @@
 const types = require('../constants/ActionTypes');
 const { getTimeByPeriod, getPreviousPeriodSoFar } = require('../utils/time');
 const { getDeviceKeysByType } = require('../utils/device');
-const { lastNFilterToLength } = require('../utils/general');
 const QueryActions = require('./QueryActions');
 
 // TODO: commented out unused action
@@ -165,14 +164,12 @@ const updateWidget = function (id, update) {
       id,
       update: { ...update, synced: false },
     });
-
     /*
     if (Object.keys(data).length > 0) {
       dispatch(updateLayoutItem(id, data.display, data.type));
       dispatch(setDirty()); 
     }
     */
-    
     const widget = getState().section.dashboard.widgets.find(i => i.id === id);
 
     return dispatch(QueryActions.fetchWidgetData(widget))

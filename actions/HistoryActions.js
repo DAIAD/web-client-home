@@ -9,8 +9,8 @@ const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
-const { getSessionById } = require('../utils/sessions');
-const { lastNFilterToLength } = require('../utils/general');
+const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
+const { showerFilterToLength, getCacheKey } = require('../utils/general');
 
 const QueryActions = require('./QueryActions');
 
@@ -48,25 +48,33 @@ const setDataUnsynced = function () {
   };
 };
 
+
 /**
  * Performs query based on selected history section filters and saves data
  */
 const fetchData = function () {
   return function (dispatch, getState) {
+      const { showerIndex, activeDeviceType, activeDevice, timeFilter, time, data } = getState().section.history;
     // AMPHIRO
-    if (getState().section.history.activeDeviceType === 'AMPHIRO') {
-      if (getState().section.history.activeDevice.length === 0) {
+    if (activeDeviceType === 'AMPHIRO') {
+      if (activeDevice.length === 0) {
         dispatch(setSessions([]));
         dispatch(setDataSynced());
         return;
       }
-
+      const amphiroCache = getState().query.cache[getCacheKey('AMPHIRO')];
+      const allShowers = amphiroCache ? amphiroCache.data : [];
+      const step = showerFilterToLength(timeFilter, getLastShowerIdFromMultiple(allShowers));
+      
       dispatch(QueryActions.queryDeviceSessionsCache({ 
-        deviceKey: getState().section.history.activeDevice, 
-        type: 'SLIDING', 
-        length: lastNFilterToLength(getState().section.history.timeFilter), 
+        deviceKey: activeDevice, 
+        length: step, 
+        index: showerIndex,
       }))
-      .then(sessions => dispatch(setSessions(sessions)))
+      .then((sessions) => {
+        dispatch(setSessions(sessions));
+      })
+
       .then(() => dispatch(setDataSynced()))
       .catch((error) => { 
         console.error('Caught error in history device query:', error); 
@@ -74,10 +82,10 @@ const fetchData = function () {
         dispatch(setDataSynced());
       });
       // SWM
-    } else if (getState().section.history.activeDeviceType === 'METER') {
+    } else if (activeDeviceType === 'METER') {
       dispatch(QueryActions.queryMeterHistoryCache({
-        deviceKey: getState().section.history.activeDevice, 
-        time: getState().section.history.time, 
+        deviceKey: activeDevice, 
+        time: time, 
       }))
       .then(sessions => dispatch(setSessions(sessions)))
       .then(() => dispatch(setDataSynced()))
@@ -105,28 +113,6 @@ const fetchData = function () {
 };
 
 /**
- * Sets active devices. 
- *
- * @param {Array} deviceKey - Device keys to set active. 
- *  Important: Device keys must only be of one deviceType (METER or AMPHIRO)  
- * @param {Bool} query=true - If true performs query based on active filters to update data
- */
-const setActiveDevice = function (deviceKey, query = true) {
-  return function (dispatch, getState) {
-    dispatch({
-      type: types.HISTORY_SET_ACTIVE_DEVICE,
-      deviceKey,
-    });
-    
-    if (query) { 
-      dispatch(setDataUnsynced());
-      dispatch(fetchData());
-    }
-  };
-};
-
-
-/**
  * Resets active session to null. 
  */
 const resetActiveSession = function () {
@@ -147,18 +133,27 @@ const setMetricFilter = function (filter) {
   };
 };
 
+const setShowerIndex = function (index) {
+  return {
+    type: types.HISTORY_SET_SHOWER_INDEX,
+    index,
+  };
+};
+
 /**
  * Sets time/period filter for history section. 
  *
  * @param {String} filter - time/period filter 
  */
 const setTimeFilter = function (filter) {
-  return {
-    type: types.HISTORY_SET_TIME_FILTER,
-    filter,
+  return function (dispatch, getState) {
+    dispatch({
+      type: types.HISTORY_SET_TIME_FILTER,
+      filter,
+    });
+    dispatch(setShowerIndex(0));
   };
 };
-
 
 /**
  * Sets session metric filter for active session in history section. 
@@ -197,6 +192,27 @@ const setSortOrder = function (order) {
   };
 };
 
+/**
+ * Sets active devices. 
+ *
+ * @param {Array} deviceKey - Device keys to set active. 
+ *  Important: Device keys must only be of one deviceType (METER or AMPHIRO)  
+ * @param {Bool} query=true - If true performs query based on active filters to update data
+ */
+const setActiveDevice = function (deviceKey, query = true) {
+  return function (dispatch, getState) {
+    dispatch({
+      type: types.HISTORY_SET_ACTIVE_DEVICE,
+      deviceKey,
+    });
+    
+    dispatch(setShowerIndex(0));
+    if (query) { 
+      dispatch(setDataUnsynced());
+      dispatch(fetchData());
+    }
+  };
+};
 /**
  * Sets active time window in history section
  *
@@ -242,6 +258,7 @@ const setActiveDeviceType = function (deviceType, query = true) {
       dispatch(setMetricFilter('volume'));
       dispatch(setTimeFilter('ten'));
       dispatch(setSortFilter('id'));
+      dispatch(setShowerIndex(0));
     } else if (deviceType === 'METER') {
       dispatch(setMetricFilter('difference'));
       dispatch(setTimeFilter('year'));
@@ -306,6 +323,7 @@ const setActiveSession = function (deviceKey, id, timestamp) {
     }
   };
 };
+
 /**
  * Updates all history options provided and switches to history section
  *
@@ -403,6 +421,26 @@ const setComparison = function (comparison, query = true) {
   };
 };
 
+const increaseShowerIndex = function () {
+  return function (dispatch, getState) {
+    const index = getState().section.history.showerIndex;
+    if (hasShowersAfter(index)) {
+      dispatch(setShowerIndex(index + 1));
+      dispatch(fetchData());
+    }
+  };
+};
+
+const decreaseShowerIndex = function () {
+  return function (dispatch, getState) {
+    const index = getState().section.history.showerIndex;
+    if (hasShowersBefore(getState().section.history.data)) { 
+      dispatch(setShowerIndex(index - 1));
+      dispatch(fetchData());
+    }
+  };
+};
+
 module.exports = {
   linkToHistory,
   fetchDeviceSession,
@@ -419,4 +457,7 @@ module.exports = {
   setSessionFilter,
   setSortFilter,
   setSortOrder,
+  setShowerIndex,
+  increaseShowerIndex,
+  decreaseShowerIndex,
 };

@@ -193,6 +193,51 @@ const deviceSessionsToCSV = function (sessions) {
           'Device, Id, Historic, Volume, Energy, Energy%A0Class, Temperature, Duration, Timestamp');
 };
 
+const getShowerRange = function (sessions) {
+  if (!Array.isArray(sessions)) {
+    console.error('sessions must be array in getShowerRange', sessions);
+    return {};
+  }
+  return {
+    first: sessions[0].id,
+    last: sessions[sessions.length - 1].id,
+  };
+};
+
+const getLastShowerIdFromMultiple = function (data) {
+  return Math.max(...data.map(device => 
+                              Array.isArray(device.sessions) ? device.sessions.length : 0));
+};
+
+const getLastShowers = function (data, chunk, index) {
+  return data.map((device) => {
+    const from = device.sessions.length + (chunk * (index - 1));
+    const to = (device.sessions.length + (chunk * index)) - 1;
+    const sessions = device.sessions
+    .filter((session, i, arr) => i >= from && i <= to);
+    
+    const first = sessions[0] && sessions[0].id;
+    const last = sessions[sessions.length - 1] && sessions[sessions.length - 1].id;
+    return { 
+      ...device,
+      range: {
+        first,
+        last,
+      },
+      sessions,
+    };
+  });
+};
+
+const hasShowersAfter = function (index) {
+  return index < 0;
+};
+
+const hasShowersBefore = function (data) {
+  if (!Array.isArray(data) || !data[0].range || !data[0].range.first) return false;
+  return data.reduce((p, c) => c.range.first !== 1 && c.range.first != null ? c.range.first : p, null) != null;
+};
+
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
@@ -204,4 +249,9 @@ module.exports = {
   getShowerMeasurementsById,
   meterSessionsToCSV,
   deviceSessionsToCSV,
+  getShowerRange,
+  getLastShowers,
+  getLastShowerIdFromMultiple,
+  hasShowersBefore,
+  hasShowersAfter,
 };
