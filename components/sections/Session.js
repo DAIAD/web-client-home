@@ -83,10 +83,10 @@ function SessionInfo(props) {
 
 function Session(props) {
   const { intl, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
-    firstname, activeDeviceType, activeSessionFilter, sessionFilters, width, mu } = props;
+    firstname, activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period } = props;
     
   if (!data) return <div />;
-  const { history, id } = data;
+  const { history, id, min, max, date } = data;
   const _t = x => intl.formatMessage({ id: x });
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
@@ -184,15 +184,37 @@ function Session(props) {
     <div className="shower-container">
       <div className="shower-chart-area">
         <h4>
-          <i className={arrowClass} />
-          <b>{percentDifference}</b>
-          <span>
+          <div> 
+          {
+            min ? 
+              <h5>
+                <i className="fa fa-check green " />&nbsp;&nbsp;
+                <span>{_t(`periods.${period}`) + ' with minimum consumption. Well done!'}</span>
+              </h5>
+              :
+              <span />
+           }
+           {
+             max ?
+              <h5>
+                <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
+                <span>{_t(`periods.${period}`) + ' with maximum consumption'}</span>
+              </h5>
+              :
+              <span />
+          }
+          </div>
+          <br />
+          <div>
+            <i className={arrowClass} />
+            <b>{percentDifference}</b>
             {
               better != null ? 
                 `  ${betterStr} than last measurement!` 
                 : 
-                'No comparison data'}
-          </span>
+                  'No comparison data'
+            }
+          </div>
         </h4>
       </div>
       

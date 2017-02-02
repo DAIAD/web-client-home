@@ -8,6 +8,7 @@ const moment = require('moment');
 const SessionModal = require('../components/sections/Session');
 const HistoryActions = require('../actions/HistoryActions');
 const { getShowerMetricMu } = require('../utils/general');
+const { getLowerGranularityPeriod } = require('../utils/time');
 const { SHOWER_METRICS } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
@@ -16,6 +17,7 @@ function mapStateToProps(state) {
     data: state.section.history.data,
     activeSessionFilter: state.section.history.activeSessionFilter,
     activeSession: state.section.history.activeSession,
+    timeFilter: state.section.history.timeFilter,
     width: state.viewport.width,
   };
 }
@@ -46,6 +48,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFilters: SHOWER_METRICS
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
     mu: getShowerMetricMu(stateProps.activeSessionFilter),
+    period: getLowerGranularityPeriod(stateProps.timeFilter),
   };
 }
 

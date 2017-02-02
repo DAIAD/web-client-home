@@ -1,5 +1,6 @@
 const { getFriendlyDuration, getEnergyClass } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
+const { getTimeLabelByGranularity } = require('./chart');
 
 // Returns sessions for AMPHIRO/METER given the DATA API response
 const getDataSessions = function (devices, data) {
@@ -16,36 +17,51 @@ const getDataSessions = function (devices, data) {
 };
 
 // reduces array of devices with multiple sessions arrays
-// to single array of sessions (including device key)
-const reduceMultipleSessions = function (devices, data) {
+// to single array of sessions 
+// and prepare for table presentation
+const prepareSessionsForTable = function (devices, data, user, granularity, intl) {
   if (!devices || !data) return [];
-  return data
-         .map(device =>  
-              getDataSessions(devices, device)
-              .map((session, idx, array) => {
-                const devType = getDeviceTypeByKey(devices, device.deviceKey);
-                const vol = devType === 'METER' ? 'difference' : 'volume'; 
-                const diff = array[idx - 1] ? (array[idx][vol] - array[idx - 1][vol]) : null;
-                return {
-                  ...session,
-                  index: idx, 
-                  devType,
-                  device: device.deviceKey,
-                  devName: getDeviceNameByKey(devices, device.deviceKey),
-                  duration: session.duration ? Math.floor(session.duration / 60) : null,
-                  friendlyDuration: getFriendlyDuration(session.duration), 
-                  temperature: session.temperature ? 
-                    Math.round(session.temperature * 10) / 10 
-                    : null,
-                  energyClass: getEnergyClass(session.energy), 
-                  percentDiff: (diff != null && array[idx - 1][vol] !== 0) ? 
-                    Math.round(10000 * (diff / array[idx - 1][vol])) / 100 
-                    : null,
-                  hasChartData: Array.isArray(session.measurements) 
-                  && session.measurements.length > 0,
-                };
-              }))
-          .reduce((p, c) => p.concat(c), []);
+  const sessions = data.map(device => getDataSessions(devices, device)
+                  .map((session, idx, array) => {
+                    const devType = getDeviceTypeByKey(devices, device.deviceKey);
+                    const vol = devType === 'METER' ? 'difference' : 'volume'; 
+                    const diff = array[idx - 1] != null ? (array[idx][vol] - array[idx - 1][vol]) : null;
+                    return {
+                      ...session,
+                      index: idx, 
+                      devType,
+                      vol: session[vol],
+                      device: device.deviceKey,
+                      devName: getDeviceNameByKey(devices, device.deviceKey),
+                      duration: session.duration ? Math.floor(session.duration / 60) : null,
+                      friendlyDuration: getFriendlyDuration(session.duration), 
+                      temperature: session.temperature ? 
+                        Math.round(session.temperature * 10) / 10 
+                        : null,
+                      energyClass: getEnergyClass(session.energy), 
+                      percentDiff: (diff != null && array[idx - 1][vol] !== 0) ? 
+                        Math.round(10000 * (diff / array[idx - 1][vol])) / 100 
+                        : null,
+                      hasChartData: Array.isArray(session.measurements) && 
+                        session.measurements.length > 0,
+                      user,
+                      date: getTimeLabelByGranularity(session.timestamp, 
+                                                      granularity, 
+                                                      intl
+                                                     ),
+                    };
+                  }))
+                .reduce((p, c) => [...p, ...c], []);
+                
+  if (sessions.length === 0) { return []; }
+  
+  if (granularity !== 0) {
+    const minIdx = sessions.reduce((imin, c, i, arr) => c.vol <= arr[imin].vol && c.vol !== 0 ? i : imin, 0);
+    sessions[minIdx].min = true;
+  }
+  const maxIdx = sessions.reduce((imax, c, i, arr) => c.vol >= arr[imax].vol ? i : imax, 0);
+  sessions[maxIdx].max = true;
+  return sessions;
 };
 
 // TODO: hm?
@@ -190,7 +206,7 @@ module.exports = {
   getSessionById,
   updateOrAppendToSession,
   getDataSessions,
-  reduceMultipleSessions,
+  prepareSessionsForTable,
   sortSessions,
   reduceMetric,
   getShowersCount,

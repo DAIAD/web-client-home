@@ -15,12 +15,32 @@ const meter = [
     id: 'comparison',
     name: '',
     value: (value, field, row) => {
+      const { min, max } = row;
       if (row.percentDiff == null) {
-        return <i className="dash" />;
+        return (
+          <span>
+            <i className="dash" />
+            &nbsp;
+            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
+            { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
+          </span>
+        );
       } else if (row.percentDiff < 0) {
-        return <i className="fa fa-arrow-down green" />;
+        return (
+          <span>
+            <i className="fa fa-arrow-down green" />
+            &nbsp;
+            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
+          </span>
+        );
       }
-      return <i className="fa fa-arrow-up red" />;
+      return (
+        <span>
+          <i className="fa fa-arrow-up red" />
+          &nbsp;
+          { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
+        </span>
+      );
     },
   },
   {

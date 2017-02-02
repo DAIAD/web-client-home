@@ -7,7 +7,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const History = require('../components/sections/History');
 
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-const { reduceMultipleSessions, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/sessions');
+const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
@@ -39,17 +39,15 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const devType = stateProps.activeDeviceType;  
-  const sessions = sortSessions(reduceMultipleSessions(stateProps.devices, stateProps.data), 
+  const sessions = sortSessions(prepareSessionsForTable(stateProps.devices, 
+                                                        stateProps.data, 
+                                                        stateProps.firstname, 
+                                                        stateProps.time.granularity,
+                                                        ownProps.intl
+                                                       ),
                                 stateProps.sortFilter, 
                                 stateProps.sortOrder
-                               ).map(s => ({ 
-                                 ...s, 
-                                 user: stateProps.firstname,
-                                 date: getTimeLabelByGranularity(s.timestamp, 
-                                                                 stateProps.time.granularity, 
-                                                                 ownProps.intl
-                                                                ),
-  }));
+                               );
 
   const sessionFields = stateProps.activeDeviceType === 'METER' ? 
     meterSessionSchema
