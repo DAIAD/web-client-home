@@ -48,7 +48,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFilters: SHOWER_METRICS
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
     mu: getShowerMetricMu(stateProps.activeSessionFilter),
-    period: getLowerGranularityPeriod(stateProps.timeFilter),
+    period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',
   };
 }
 

@@ -97,6 +97,13 @@
     "login": "Login",
     "reset": "Password reset"
   },
+  "common": {
+    "volume": "volume",
+    "difference": "volume",
+    "energy": "energy",
+    "temperature": "temperature",
+    "duration": "duration"
+  },
   "dashboard": {
     "hello": "Welcome {name}!",
     "add": "Add widget"
@@ -117,7 +124,14 @@
     "energyDetails": "Estimated energy used for hot water",
     "countDetails": "The total number of aggregated showers",
     "durationDetails": "The duration of the shower",
-    "limitedData": "Oops, limited data..."
+    "limitedData": "Oops, limited data...",
+    "inPicturesHover": "Approximately {number} times the {metric} of a {scale}!",
+    "bottle": "bottle",
+    "bucket": "bucket",
+    "pool": "pool",
+    "light-bulb": "light bulb",
+    "home-energy": "home",
+    "city": "city"
   },
   "periods": {
     "always": "Since the beginning of time",

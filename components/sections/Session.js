@@ -4,26 +4,81 @@ const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl')
 
 const { LineChart } = require('react-echarts');
 const theme = require('../chart/themes/session');
+const { volumeToPictures, energyToPictures } = require('../../utils/sessions'); 
 const { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../../constants/HomeConstants'); 
 
-function SessionInfoItem(props) {
+
+function Picture(props) {
+  const { display, items, metric, remaining, iconSuffix = '', _t } = props;
+  return (
+    <img 
+      src={`${IMAGES}/${display}${iconSuffix}.svg`} 
+      className={['picture', display].join(' ')}
+      title={_t({ id: 'history.inPicturesHover' },
+        {
+          number: items, 
+          metric: _t({ id: `common.${metric}` }),
+          scale: _t({ id: `history.${display}` }),
+        })
+      }
+      alt={display}
+    />
+  );
+}
+
+function InPictures(props) {
+  const { display, items, remaining, metric } = props;
+  return (
+    <div className="in-pictures">
+      {
+        Array.from({ length: items }).map((v, i) => (
+          <Picture {...props} />
+          ))
+      }
+      {(() => {
+        if (remaining === 0.25) {
+          return <Picture {...props} iconSuffix="-25" />;
+        } else if (remaining === 0.5) {
+          return <Picture {...props} iconSuffix="-50" />;
+        } else if (remaining === 0.75) {
+          return <Picture {...props} iconSuffix="-75" />;
+        }
+        return <i />;
+      })()
+      }
+    </div>
+  );
+}
+
+function SessionInfoLine(props) {
+  const { id, name, title, icon, data, mu } = props;
   const _t = props.intl.formatMessage;
-  return !props.data ? <div /> : (
+  return !data ? <div /> : (
   <li className="session-item" >
     <span>
       <h4 style={{ float: 'left' }}>
         <img 
           style={{ 
-            height: props.id === 'temperature' ? 30 : 24, 
-            marginLeft: props.id === 'temperature' ? 7 : 0, 
+            height: id === 'temperature' ? 30 : 24, 
+            marginLeft: id === 'temperature' ? 7 : 0, 
             marginRight: 20,
           }} 
-          src={`${IMAGES}/${props.icon}`} 
-          alt={props.name} 
-        />
-        <FormattedMessage id={props.title} />
+          src={`${IMAGES}/${icon}`} 
+          alt={name} 
+        /> 
+        <FormattedMessage id={title} />
       </h4>
-      <h4 style={{ float: 'right' }}>{props.data} <span>{props.mu}</span></h4>
+      {
+        (() => {
+          if (id === 'difference' || id === 'volume') {
+            return <InPictures {...{ ...volumeToPictures(data), metric: id, _t }} />;
+          } else if (id === 'energy') {
+            return <InPictures {...{ ...energyToPictures(data), metric: id, _t }} />;
+          }
+          return <span />;
+        })()
+      }
+      <h4 style={{ float: 'right' }}>{data} <span>{mu}</span></h4>
     </span>
   </li>
   );
@@ -63,7 +118,7 @@ function SessionInfo(props) {
     <ul className="sessions-list" >
       {
         metrics.map(metric => (
-          <SessionInfoItem 
+          <SessionInfoLine
             key={metric.id} 
             intl={intl} 
             icon={metric.icon} 
@@ -253,6 +308,13 @@ const SessionModal = React.createClass({
         show={this.props.showModal} 
         onHide={this.onClose} 
         bsSize="large"
+        onKeyDown={(e) => { 
+          if (e.keyCode === 39 && !disabledNext) {
+            this.onNext();
+          } else if (e.keyCode === 37 && !disabledPrevious) {
+            this.onPrevious();
+          } 
+        }}
       >
         <bs.Modal.Header closeButton>
           <bs.Modal.Title>

@@ -1,6 +1,7 @@
-const { getFriendlyDuration, getEnergyClass } = require('./general');
+const { getFriendlyDuration, getEnergyClass, energyToPower } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
 const { getTimeLabelByGranularity } = require('./chart');
+const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY } = require('../constants/HomeConstants');
 
 // Returns sessions for AMPHIRO/METER given the DATA API response
 const getDataSessions = function (devices, data) {
@@ -238,6 +239,52 @@ const hasShowersBefore = function (data) {
   return data.reduce((p, c) => c.range.first !== 1 && c.range.first != null ? c.range.first : p, null) != null;
 };
 
+
+// Estimates how many bottles/buckets/pools the given volume corresponds to
+// the remaining is provided in quarters
+const volumeToPictures = function (volume) {
+  const div = c => Math.floor(volume / c);
+  const rem = c => Math.floor((4 * (volume % c)) / c) / 4;
+  if (volume < VOLUME_BUCKET) {
+    return {
+      display: 'bottle',
+      items: div(VOLUME_BOTTLE),
+      remaining: rem(VOLUME_BOTTLE),
+    }; 
+  } else if (volume < VOLUME_POOL) {
+    return {
+      display: 'bucket',
+      items: div(VOLUME_BUCKET),
+      remaining: rem(VOLUME_BUCKET),
+    };
+  } 
+  return {
+    display: 'pool',
+    items: div(VOLUME_POOL),
+    remaining: 0,
+  };
+};
+
+const energyToPictures = function (energy) {
+  const div = c => Math.floor(energy / c);
+
+  if (energy < ENERGY_HOUSE) {
+    return {
+      display: 'light-bulb',
+      items: div(ENERGY_BULB),
+    };
+  } else if (energy < ENERGY_CITY) {
+    return {
+      display: 'home-energy',
+      items: div(ENERGY_HOUSE),
+    };
+  }
+  return {
+    display: 'city',
+    items: div(ENERGY_CITY),
+  };
+};
+
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
@@ -254,4 +301,6 @@ module.exports = {
   getLastShowerIdFromMultiple,
   hasShowersBefore,
   hasShowersAfter,
+  volumeToPictures,
+  energyToPictures,
 };

@@ -4,6 +4,12 @@ module.exports = {
   NOTIFICATION_TITLE_LENGTH: 50,
   CACHE_SIZE: 20,
   SUCCESS_SHOW_TIMEOUT: 2000,
+  VOLUME_BOTTLE: 1.5,
+  VOLUME_BUCKET: 40,
+  VOLUME_POOL: 10000,
+  ENERGY_BULB: 30,
+  ENERGY_HOUSE: 1000,
+  ENERGY_CITY: 1000000,
   LOCALES: ['en', 'el', 'de', 'es'],
   COUNTRIES: ['United Kingdom', 'Spain', 'Greece'],
   TIMEZONES: [
@@ -140,7 +146,7 @@ module.exports = {
       mu: 'W', 
       title: 'history.energy', 
       details: 'history.energyDetails',
-      con: 'energy.svg', 
+      icon: 'energy.svg', 
       clickable: true,
     }, 
     {
