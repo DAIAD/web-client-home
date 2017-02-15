@@ -1,7 +1,7 @@
 const { getFriendlyDuration, getEnergyClass, energyToPower } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
 const { getTimeLabelByGranularity } = require('./chart');
-const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY } = require('../constants/HomeConstants');
+const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 // Returns sessions for AMPHIRO/METER given the DATA API response
 const getDataSessions = function (devices, data) {
@@ -201,8 +201,8 @@ const getShowerRange = function (sessions) {
     return {};
   }
   return {
-    first: sessions[0].id,
-    last: sessions[sessions.length - 1].id,
+    first: sessions[0] ? sessions[0].id : null,
+    last: sessions[sessions.length - 1] ? sessions[sessions.length - 1].id : null,
   };
 };
 
@@ -211,10 +211,13 @@ const getLastShowerIdFromMultiple = function (data) {
                               Array.isArray(device.sessions) ? device.sessions.length : 0));
 };
 
-const getLastShowers = function (data, chunk, index) {
+const filterShowers = function (data, chunk, idx) {
+  const index = Math.floor(((chunk * idx) % SHOWERS_PAGE) / chunk);
+
   return data.map((device) => {
     const from = device.sessions.length + (chunk * (index - 1));
     const to = (device.sessions.length + (chunk * index)) - 1;
+
     const sessions = device.sessions
     .filter((session, i, arr) => i >= from && i <= to);
     
@@ -236,13 +239,13 @@ const hasShowersAfter = function (index) {
 };
 
 const hasShowersBefore = function (data) {
-  if (!Array.isArray(data) || !data[0].range || !data[0].range.first) return false;
+  if (!Array.isArray(data) || !data[0] || !data[0].range || !data[0].range.first) return false;
   return data.reduce((p, c) => c.range.first !== 1 && c.range.first != null ? c.range.first : p, null) != null;
 };
 
 
 // Estimates how many bottles/buckets/pools the given volume corresponds to
-// the remaining is provided in quarters
+// The remaining is provided in quarters
 const volumeToPictures = function (volume) {
   const div = c => Math.floor(volume / c);
   const rem = c => Math.floor((4 * (volume % c)) / c) / 4;
@@ -298,7 +301,7 @@ module.exports = {
   meterSessionsToCSV,
   deviceSessionsToCSV,
   getShowerRange,
-  getLastShowers,
+  filterShowers,
   getLastShowerIdFromMultiple,
   hasShowersBefore,
   hasShowersAfter,

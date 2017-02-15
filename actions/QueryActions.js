@@ -8,16 +8,16 @@
  */
 
 const types = require('../constants/ActionTypes');
-const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
+const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 const deviceAPI = require('../api/device');
 const meterAPI = require('../api/meter');
 
-const { updateOrAppendToSession, getShowerRange, getLastShowers, getLastShowerIdFromMultiple, } = require('../utils/sessions');
+const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
-const { getCacheKey, throwServerError, showerFilterToLength } = require('../utils/general');
+const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex } = require('../utils/general');
 const { getTimeByPeriod, getPreviousPeriodSoFar } = require('../utils/time');
-// const { getTimeByPeriod, getLastShowerTime, getPreviousPeriodSoFar } = require('../utils/time');
+
 
 const requestedQuery = function () {
   return {
@@ -71,10 +71,10 @@ const dismissInfo = function () {
   };
 };
 
-const cacheItemRequested = function (deviceType, timeOrLength) {
+const cacheItemRequested = function (cacheKey) {
   return {
     type: types.QUERY_CACHE_ITEM_REQUESTED,
-    key: getCacheKey(deviceType, timeOrLength),
+    key: cacheKey,
   };
 };
 
@@ -85,7 +85,7 @@ const setCache = function (cache) {
   };
 };
 
-const saveToCache = function (deviceType, timeOrLength, data) {
+const saveToCache = function (cacheKey, data) {
   return function (dispatch, getState) {
     const { cache } = getState().query;
     if (Object.keys(cache).length >= CACHE_SIZE) {
@@ -104,7 +104,7 @@ const saveToCache = function (deviceType, timeOrLength, data) {
     }
     dispatch({
       type: types.QUERY_SAVE_TO_CACHE,
-      key: getCacheKey(deviceType, timeOrLength),
+      key: cacheKey,
       data,
     });
   };
@@ -130,7 +130,7 @@ const queryDeviceSessions = function (options) {
       throw new Error(`Not sufficient data provided for device sessions query: deviceKey:${deviceKey}`);
     }
     dispatch(requestedQuery());
-    // const data = Object.assign({}, options, {deviceKey:deviceKey}, {csrf: getState().user.csrf});
+    
     const data = {
       ...options,
       type: 'SLIDING', 
@@ -165,29 +165,35 @@ const queryDeviceSessions = function (options) {
  * data in form {data: sessionsData}, reject returns possible errors
  * 
  */
+
 const queryDeviceSessionsCache = function (options) {
   return function (dispatch, getState) {
     const { length, deviceKey, type, index = 0 } = options;
+
+    const cacheKey = getCacheKey('AMPHIRO', length, index);
+    const startIndex = SHOWERS_PAGE * getShowersPagingIndex(length, index);
+
     // if item found in cache return it
-    if (getState().query.cache[getCacheKey('AMPHIRO')]) {
-      dispatch(cacheItemRequested('AMPHIRO'));
-      const cacheItem = getState().query.cache[getCacheKey('AMPHIRO')].data;
-      const filteredData = filterDataByDeviceKeys(cacheItem, deviceKey);
-      return Promise.resolve(getLastShowers(filteredData, length, index));
+    if (getState().query.cache[cacheKey]) {
+      dispatch(cacheItemRequested(cacheKey));
+      const cacheItem = getState().query.cache[cacheKey].data;
+      const deviceData = filterDataByDeviceKeys(cacheItem, deviceKey);
+      return Promise.resolve(filterShowers(deviceData, length, index));
     }
-    // else fetch all items to save in cache
-    // TODO: 5000 top limit
+    
     const newOptions = {
       ...options, 
-      length: 5000,
+      length: SHOWERS_PAGE,
+      startIndex,
       deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO'),
     };
     
     return dispatch(queryDeviceSessions(newOptions))
     .then((devices) => {
-      dispatch(saveToCache('AMPHIRO', null, devices));
+      dispatch(saveToCache(cacheKey, devices));
       // return only the items requested
-      return getLastShowers(filterDataByDeviceKeys(devices, deviceKey), length, index);
+      const deviceData = filterDataByDeviceKeys(devices, deviceKey);
+      return filterShowers(deviceData, length, index);
     });
   };
 };
@@ -328,9 +334,11 @@ const queryMeterHistoryCache = function (options) {
   return function (dispatch, getState) {
     const { deviceKey, time } = options;
 
-    if (getState().query.cache[getCacheKey('METER', time)]) {
-      dispatch(cacheItemRequested('METER', time));
-      const cacheItem = getState().query.cache[getCacheKey('METER', time)].data;
+    const cacheKey = getCacheKey('METER', time);
+
+    if (getState().query.cache[cacheKey]) {
+      dispatch(cacheItemRequested(cacheKey));
+      const cacheItem = getState().query.cache[cacheKey].data;
       return Promise.resolve(filterDataByDeviceKeys(cacheItem, deviceKey));
     }
     // fetch all meters requested in order to save to cache 
@@ -341,7 +349,7 @@ const queryMeterHistoryCache = function (options) {
     }; 
     return dispatch(queryMeterHistory(newOptions))
     .then((series) => {
-      dispatch(saveToCache('METER', time, series));
+      dispatch(saveToCache(cacheKey, series));
       // return only the meters requested  
       return filterDataByDeviceKeys(series, deviceKey);
     });
@@ -417,15 +425,15 @@ const fetchWidgetData = function (options) {
         return Promise.resolve(res);
       });
     } else if (deviceType === 'AMPHIRO') {
-      const amphiroCache = getState().query.cache[getCacheKey('AMPHIRO')];
-      const allShowers = amphiroCache ? amphiroCache.data : [];
+      //const amphiroCache = getState().query.cache[getCacheKey('AMPHIRO')];
+      //const allShowers = amphiroCache ? amphiroCache.data : [];
 
       if (type === 'last') {
         return dispatch(fetchLastDeviceSession({ cache, deviceKey }));
       }
       return dispatch(queryDevice({ 
         cache, 
-        length: showerFilterToLength(period, getLastShowerIdFromMultiple(allShowers)),
+        length: showerFilterToLength(period),
         deviceKey,
       }))
       .then(data => ({ data }));

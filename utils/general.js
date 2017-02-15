@@ -1,3 +1,5 @@
+const { SHOWERS_PAGE } = require('../constants/HomeConstants');
+
 // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
 const validateEmail = function (email) {
   const re = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -105,19 +107,35 @@ const getShowerMetricMu = function (metric) {
   throw new Error(`unrecognized metric ${metric}`);
 };
 
-const showerFilterToLength = function (filter, last) {
+const showerFilterToLength = function (filter) {
   if (filter === 'ten') return 10;
   else if (filter === 'twenty') return 20;
   else if (filter === 'fifty') return 50;
-  else if (filter === 'all') return last;
+  else if (filter === 'all') return 5000;
   throw new Error(`unrecognized filter ${filter}`);
 };
 
-const getCacheKey = function (deviceType, timeOrLength) {
+const getShowersPagingIndex = function (length, index) {
+  return Math.floor((length * Math.abs(index)) / SHOWERS_PAGE);
+};
+
+const getAmphiroCacheKey = function (length, index) {
+  const cacheIdx = -1 * getShowersPagingIndex(length, index);
+  return `AMPHIRO,${SHOWERS_PAGE},${cacheIdx}`;
+};
+
+const getMeterCacheKey = function (time) {
+  return `METER,${time.startDate},${time.endDate}`;
+};
+
+const getCacheKey = function (deviceType, ...rest) {
   if (deviceType === 'AMPHIRO') {
-    return 'AMPHIRO';
+    if (rest.length < 2) {
+      throw new Error('cant get amphiro cache key without length, index');
+    }
+    return getAmphiroCacheKey(...rest);
   } else if (deviceType === 'METER') {
-    return `METER,${timeOrLength.startDate}-${timeOrLength.endDate}`;
+    return getMeterCacheKey(...rest);
   }
   throw new Error(`deviceType ${deviceType} not supported`);
 };
@@ -199,6 +217,7 @@ module.exports = {
   getShowerMetricMu,
   showerFilterToLength,
   getCacheKey,
+  getShowersPagingIndex,
   debounce,
   uploadFile,
   getActiveLinks,

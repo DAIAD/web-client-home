@@ -62,13 +62,10 @@ const fetchData = function () {
         dispatch(setDataSynced());
         return;
       }
-      const amphiroCache = getState().query.cache[getCacheKey('AMPHIRO')];
-      const allShowers = amphiroCache ? amphiroCache.data : [];
-      const step = showerFilterToLength(timeFilter, getLastShowerIdFromMultiple(allShowers));
       
       dispatch(QueryActions.queryDeviceSessionsCache({ 
         deviceKey: activeDevice, 
-        length: step, 
+        length: showerFilterToLength(timeFilter),
         index: showerIndex,
       }))
       .then((sessions) => {
@@ -85,7 +82,7 @@ const fetchData = function () {
     } else if (activeDeviceType === 'METER') {
       dispatch(QueryActions.queryMeterHistoryCache({
         deviceKey: activeDevice, 
-        time: time, 
+        time, 
       }))
       .then(sessions => dispatch(setSessions(sessions)))
       .then(() => dispatch(setDataSynced()))

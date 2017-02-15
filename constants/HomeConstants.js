@@ -3,6 +3,7 @@ module.exports = {
   PNG_IMAGES: '/assets/images/home/png',
   NOTIFICATION_TITLE_LENGTH: 50,
   CACHE_SIZE: 20,
+  SHOWERS_PAGE: 1000,
   SUCCESS_SHOW_TIMEOUT: 2000,
   VOLUME_BOTTLE: 1.5,
   VOLUME_BUCKET: 40,
