@@ -106,6 +106,7 @@ function SessionInfo(props) {
               day="numeric" 
               weekday="long" 
             /> 
+            &nbsp;
             <FormattedTime value={new Date(data.timestamp)} />
           </span> 
           :
@@ -208,22 +209,21 @@ function Session(props) {
     return (
       <div className="shower-container">
         <div className="shower-chart-area">
-          <h3><FormattedMessage id="history.limitedData" /></h3>
-        </div>
-
-        <div style={{ marginTop: 10 }}>
-          <h5>
-            <i className={arrowClass} />
-            <b>{percentDifference}</b>
-            <span>
-              {
-                better != null ? 
-                  `  ${betterStr} than last shower`
-                  : 
-                 'No comparison data'
-              }
-            </span>
-          </h5>
+          <div className="limited-data-text">
+            <h3><FormattedMessage id="history.limitedData" /></h3>
+            <h5>
+              <i className={arrowClass} />
+              <b>{percentDifference}</b>
+              <span>
+                {
+                  better != null ? 
+                    `  ${betterStr} than last shower`
+                    : 
+                   'No comparison data'
+                }
+              </span>
+            </h5>
+          </div> 
         </div> 
 
         <SessionInfo
@@ -238,39 +238,41 @@ function Session(props) {
   return (
     <div className="shower-container">
       <div className="shower-chart-area">
-        <h4>
-          <div> 
-          {
-            min ? 
-              <h5>
-                <i className="fa fa-check green " />&nbsp;&nbsp;
-                <span>{_t(`periods.${period}`) + ' with minimum consumption. Well done!'}</span>
-              </h5>
-              :
-              <span />
-           }
-           {
-             max ?
-              <h5>
-                <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
-                <span>{_t(`periods.${period}`) + ' with maximum consumption'}</span>
-              </h5>
-              :
-              <span />
-          }
-          </div>
-          <br />
-          <div>
-            <i className={arrowClass} />
-            <b>{percentDifference}</b>
+        <div className="limited-data-text">
+          <h4>
+            <div> 
             {
-              better != null ? 
-                `  ${betterStr} than last measurement!` 
-                : 
-                  'No comparison data'
+              min ? 
+                <h5>
+                  <i className="fa fa-check green " />&nbsp;&nbsp;
+                  <span>{_t(`periods.${period}`) + ' with minimum consumption. Well done!'}</span>
+                </h5>
+                :
+                <span />
+             }
+             {
+               max ?
+                <h5>
+                  <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
+                  <span>{_t(`periods.${period}`) + ' with maximum consumption'}</span>
+                </h5>
+                :
+                <span />
             }
-          </div>
-        </h4>
+            </div>
+            <br />
+            <div>
+              <i className={arrowClass} />
+              <b>{percentDifference}</b>
+              {
+                better != null ? 
+                  `  ${betterStr} than last measurement!` 
+                  : 
+                    'No comparison data'
+              }
+            </div>
+          </h4>
+        </div>
       </div>
       
       <SessionInfo
