@@ -234,6 +234,7 @@ The DAIAD project bundles the following files under the MIT License:
 - React-Select v1.0.0-beta9     https://github.com/JedWatson/react-select               Copyright (c) Jed Watson 2016
 - Redux v3.3.1                  https://github.com/reactjs/redux                        Copyright (c) 2015-present Dan Abramov
 - Redux Thunk v1.0.3            https://github.com/gaearon/redux-thunk                  Copyright (c) 2015 Dan Abramov
+- react-infinite-scroller v1.0.4 https://github.com/CassetteRocks/react-infinite-scroller Copyright (c) 2016 CASSETTE Copyright (c) 2013 guillaumervls
 
 All rights reserved.
 
