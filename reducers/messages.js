@@ -1,7 +1,7 @@
 const types = require('../constants/ActionTypes');
 
 const initialState = {
-  activeTab: 'recommendations',
+  activeTab: 'alerts',
   activeMessageId: null,
   alerts: [],
   recommendations: [],

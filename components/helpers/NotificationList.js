@@ -1,8 +1,9 @@
 const React = require('react');
+const classNames = require('classnames');
 const InfiniteScroll = require('react-infinite-scroller');
 
 function NotificationList(props) {
-  const { notifications, onItemClick, hasMore, loadMore } = props;
+  const { notifications, onItemClick, hasMore, loadMore, activeId } = props;
   return (
     <div className="notification-list scrollable">
       <InfiniteScroll
@@ -17,10 +18,11 @@ function NotificationList(props) {
           {
             notifications.map((notification) => {
               const notificationClass = notification.acknowledgedOn ? 'read' : 'unread';
+              const activeClass = notification.id === activeId ? 'active' : '';
               return (
                 <li 
                   key={notification.id} 
-                  className={notificationClass} 
+                  className={classNames(notificationClass, activeClass)} 
                 >
                   <a onClick={() => onItemClick(notification.id, notification.category)}>
                     {

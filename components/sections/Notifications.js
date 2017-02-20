@@ -3,7 +3,6 @@ const React = require('react');
 const bs = require('react-bootstrap');
 const classNames = require('classnames');
 const { FormattedRelative } = require('react-intl');
-const InfiniteScroll = require('react-infinite-scroller');
 
 const { IMAGES } = require('../../constants/HomeConstants'); 
 
@@ -41,14 +40,9 @@ function NotificationMessage(props) {
         <p>{notification.description}</p>
         {
           (() => notification.acknowledgedOn ?
-            <div>
-              <p style={{ width: '100%', textAlign: 'right', fontSize: '0.8em' }}>
-                <i 
-                  style={{ marginRight: 5 }}
-                  className={classNames('fa', 'fa-md', 'green', 'fa-check')} 
-                />
-                <FormattedRelative value={notification.acknowledgedOn} />
-              </p>
+            <div className="acknowledged">
+              <i className={classNames('fa', 'fa-md', 'green', 'fa-check')} />
+              <FormattedRelative value={notification.acknowledgedOn} />
             </div>
             : <span />
            )()
@@ -95,6 +89,7 @@ const Notifications = React.createClass({
               onItemClick={setActiveMessageId}
               hasMore={!loading && (notifications.length < totalInCategory)}
               loadMore={fetchMoreActive}
+              activeId={activeMessageId}
             />
           </div>
           <div className="notifications-right">

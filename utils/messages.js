@@ -60,8 +60,7 @@ const combineMessages = function (categories) {
 };
 
 const getAllMessageTypes = function () {
-  return Object.keys(MESSAGE_TYPES)
-  .map((type => MESSAGE_TYPES[type]));
+  return Object.values(MESSAGE_TYPES);
 };
 
 module.exports = {

@@ -149,18 +149,16 @@ const increaseActiveIndex = function (category, step) {
  *                                        RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
  */
 const setActiveTab = function (category) {
-  return function (dispatch, getState) {
-    if (!(category === 'alerts' 
-          || category === 'announcements' 
-          || category === 'recommendations' 
-          || category === 'tips')) {
-      throw new Error('Tab needs to be one of alerts, announcements, recommendations, tips. Provided: ', category);
-    }
+  if (!(category === 'alerts' 
+        || category === 'announcements' 
+        || category === 'recommendations' 
+        || category === 'tips')) {
+    throw new Error('Tab needs to be one of alerts, announcements, recommendations, tips. Provided: ', category);
+  }
 
-    dispatch({
-      type: types.MESSAGES_SET_ACTIVE_TAB,
-      category,
-    });
+  return {
+    type: types.MESSAGES_SET_ACTIVE_TAB,
+    category,
   };
 };
 
@@ -290,15 +288,17 @@ const fetchMoreAll = function () {
   return function (dispatch, getState) {
     const { activeIndex, total } = getState().section.messages;
     
-    const categories = Object.keys(MESSAGE_TYPES).map((category) => {
+    const categories = Object.keys(MESSAGE_TYPES)
+    .map((category) => {
       if (activeIndex[category] + MESSAGES_PAGE >= total[category]) {
         return null;
       }
       dispatch(increaseActiveIndex(category, MESSAGES_PAGE));
       return category;
-    });
+    })
+    .filter(x => x != null);
 
-    dispatch(fetchAndAppend(categories.filter(x => x != null)));
+    dispatch(fetchAndAppend(categories));
   };
 };
 
