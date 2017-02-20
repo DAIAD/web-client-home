@@ -73,6 +73,7 @@ module.exports = keyMirror({
   MESSAGES_ACK_REQUEST_END: null,
   MESSAGES_SET_ACTIVE: null,
   MESSAGES_SET_ACTIVE_TAB: null,
+  MESSAGES_INCREASE_ACTIVE_INDEX: null,
   MESSAGE_SET_READ: null,
   MESSAGE_SET_EXTRA: null,
 

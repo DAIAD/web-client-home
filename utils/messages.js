@@ -1,17 +1,12 @@
 const { last24Hours } = require('./time');
+const { MESSAGE_TYPES } = require('../constants/HomeConstants');
 
 const getTypeByCategory = function (category) {
-  if (category === 'alerts') return 'ALERT';
-  else if (category === 'announcements') return 'ANNOUNCEMENT';
-  else if (category === 'recommendations') return 'RECOMMENDATION_DYNAMIC';
-  else if (category === 'tips') return 'RECOMMENDATION_STATIC';
-  
-  throw new Error('category not supported: ', category);
+  return MESSAGE_TYPES[category];
 };
 
 const getWidgetByAlertType = function (type, timestamp) {
   switch (type) {
-
     case 'WATER_LEAK':
       return {
         type: 'total',
@@ -64,10 +59,15 @@ const combineMessages = function (categories) {
                        .sort((a, b) => b.createdOn - a.createdOn);
 };
 
+const getAllMessageTypes = function () {
+  return Object.keys(MESSAGE_TYPES)
+  .map((type => MESSAGE_TYPES[type]));
+};
 
 module.exports = {
   combineMessages,
   getTypeByCategory,
   getWidgetByAlertType,
   stripTags,
+  getAllMessageTypes,
 };

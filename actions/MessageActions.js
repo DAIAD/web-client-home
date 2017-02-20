@@ -11,10 +11,10 @@ const QueryActions = require('./QueryActions');
 
 const messageAPI = require('../api/message');
 
-const { getTypeByCategory, getWidgetByAlertType } = require('../utils/messages');
+const { getTypeByCategory, getWidgetByAlertType, getAllMessageTypes } = require('../utils/messages');
 const { throwServerError } = require('../utils/general');
 
-const { MESSAGE_TYPES } = require('../constants/HomeConstants');
+const { MESSAGE_TYPES, MESSAGES_PAGE } = require('../constants/HomeConstants');
 const types = require('../constants/ActionTypes');
 
 
@@ -64,16 +64,17 @@ const setMessageRead = function (id, category, timestamp) {
   };
 };
 
-const setMessages = function (response) {
-  const messages = {};
-  const { alerts, recommendations, tips, announcements } = response;
-  if (alerts.length > 0) messages.alerts = alerts;
-  if (announcements.length > 0) messages.announcements = announcements;
-  if (recommendations.length > 0) messages.recommendations = recommendations;
-  if (tips.length > 0) messages.tips = tips;
-
+const setMessages = function (messages) {
   return {
     type: types.MESSAGES_SET,
+    messages,
+  };
+};
+
+const appendMessages = function (category, messages) {
+  return {
+    type: types.MESSAGES_APPEND,
+    category,
     messages,
   };
 };
@@ -93,7 +94,6 @@ const acknowledge = function (id, category, timestamp) {
     if (!id || !category || !timestamp) {
       throw new Error(`Not sufficient data provided for message acknowledgement. (id, type, timestamp): ${id}, ${category}, ${timestamp}`);
     }
-
     const message = getState().section.messages[category].find(x => x.id === id);
     
     if (message && message.acknowledgedOn != null) {
@@ -102,8 +102,13 @@ const acknowledge = function (id, category, timestamp) {
     dispatch(requestedMessageAck());
 
     const type = getTypeByCategory(category);
+
     const data = {
-      messages: [{ id, type, timestamp }], 
+      messages: [{ 
+        id, 
+        type, 
+        timestamp,
+      }], 
       csrf: getState().user.csrf,
     };
 
@@ -127,6 +132,14 @@ const acknowledge = function (id, category, timestamp) {
   };
 };
 
+const increaseActiveIndex = function (category, step) {
+  return {
+    type: types.MESSAGES_INCREASE_ACTIVE_INDEX,
+    category,
+    step,
+  };
+};
+
 /**
  * Set active message category 
  *
@@ -136,16 +149,18 @@ const acknowledge = function (id, category, timestamp) {
  *                                        RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
  */
 const setActiveTab = function (category) {
-  if (!(category === 'alerts' 
-        || category === 'announcements' 
-        || category === 'recommendations' 
-        || category === 'tips')) {
-    throw new Error('Tab needs to be one of alerts, announcements, recommendations, tips. Provided: ', category);
-  }
+  return function (dispatch, getState) {
+    if (!(category === 'alerts' 
+          || category === 'announcements' 
+          || category === 'recommendations' 
+          || category === 'tips')) {
+      throw new Error('Tab needs to be one of alerts, announcements, recommendations, tips. Provided: ', category);
+    }
 
-  return {
-    type: types.MESSAGES_SET_ACTIVE_TAB,
-    category,
+    dispatch({
+      type: types.MESSAGES_SET_ACTIVE_TAB,
+      category,
+    });
   };
 };
 
@@ -173,7 +188,7 @@ const setActiveMessageId = function (id) {
     dispatch(acknowledge(id, category, new Date().getTime()));
 
     if (category === 'alerts') {
-      const widget = getWidgetByAlertType(activeMessage.alert, activeMessage.createdOn);
+      const widget = getWidgetByAlertType(activeMessage.alertType, activeMessage.createdOn);
       if (!widget) return;
 
       dispatch(QueryActions.fetchWidgetData(widget)) 
@@ -218,9 +233,10 @@ const fetch = function (options) {
     dispatch(requestedMessages());
 
     const data = {
-      pagination: options,
+      messages: options,
       csrf: getState().user.csrf,
     };
+
     return messageAPI.fetch(data)
     .then((response) => {
       if (!response || !response.success) {
@@ -238,24 +254,98 @@ const fetch = function (options) {
   };
 };
 
+const fetchAndAppend = function (categories) {
+  return function (dispatch, getState) {
+    const data = categories.map(category => ({
+      type: MESSAGE_TYPES[category],
+      pagination: {
+        ascending: false,
+        size: MESSAGES_PAGE,
+        offset: getState().section.messages.activeIndex[category],
+      },
+    }));
+
+    dispatch(fetch(data))
+    .then((response) => {
+      categories.forEach((category) => {
+        dispatch(appendMessages(category, response[category]));
+      });
+    });
+  };
+};
+
+const fetchMoreSingle = function (category) {
+  return function (dispatch, getState) {
+    const { activeIndex, total } = getState().section.messages;
+    
+    if (activeIndex[category] + MESSAGES_PAGE >= total[category]) {
+      return;
+    }
+    dispatch(increaseActiveIndex(category, MESSAGES_PAGE));
+    dispatch(fetchAndAppend([category]));
+  };
+};
+
+const fetchMoreAll = function () {
+  return function (dispatch, getState) {
+    const { activeIndex, total } = getState().section.messages;
+    
+    const categories = Object.keys(MESSAGE_TYPES).map((category) => {
+      if (activeIndex[category] + MESSAGES_PAGE >= total[category]) {
+        return null;
+      }
+      dispatch(increaseActiveIndex(category, MESSAGES_PAGE));
+      return category;
+    });
+
+    dispatch(fetchAndAppend(categories.filter(x => x != null)));
+  };
+};
+
+
 /**
  * Fetch all messages in descending order (most recent first)
  */
-const fetchAll = function () {
+const fetchInitial = function () {
   return function (dispatch, getState) {
-    dispatch(fetch(MESSAGE_TYPES.map(x => ({ ...x, ascending: false }))))
-    .then(response => (response && response.success ? 
-          dispatch(setMessages(response)) 
-          : response)
-         );
+    const data = getAllMessageTypes().map(type => ({ 
+      type,
+      pagination: {
+        ascending: false,
+        size: MESSAGES_PAGE,
+        offset: 0,
+      },
+    }));
+    dispatch(fetch(data))
+    .then((response) => {
+      if (!response) return;
+
+      const messages = {
+        alerts: response.alerts,
+        announcements: response.announcements,
+        recommendations: response.recommendations,
+        tips: response.tips,
+        total: {
+          alerts: response.totalAlerts,
+          announcements: response.totalAnnouncements,
+          recommendations: response.totalRecommendations,
+          tips: response.totalTips,
+        },
+      };
+      
+      dispatch(setMessages(messages));
+    });
   };
 };
 
 module.exports = {
   linkToMessage,
   fetch,
-  fetchAll,
+  fetchInitial,
+  fetchMoreAll,
+  fetchMoreSingle,
   acknowledge,
   setActiveTab,
   setActiveMessageId,
+  appendMessages,
 };

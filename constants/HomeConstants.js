@@ -18,12 +18,13 @@ module.exports = {
     'Europe/Madrid',
     'Europe/Athens',
   ],
-  MESSAGE_TYPES: [
-    { type: 'ALERT' }, 
-    { type: 'RECOMMENDATION_STATIC' }, 
-    { type: 'RECOMMENDATION_DYNAMIC' }, 
-    { type: 'ANNOUNCEMENT' },
-  ],
+  MESSAGES_PAGE: 10,
+  MESSAGE_TYPES: {
+    alerts: 'ALERT',
+    announcements: 'ANNOUNCEMENT',
+    recommendations: 'RECOMMENDATION_DYNAMIC',
+    tips: 'RECOMMENDATION_STATIC',
+  }, 
   MAIN_MENU: [{
     name: 'dashboard',
     title: 'section.dashboard',

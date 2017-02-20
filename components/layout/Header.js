@@ -6,7 +6,7 @@ const { injectIntl, FormattedMessage } = require('react-intl');
 
 const LocaleSwitcher = require('../LocaleSwitcher');
 const Logout = require('../LogoutForm');
-
+const NotificationList = require('../helpers/NotificationList');
 const { IMAGES, PNG_IMAGES } = require('../../constants/HomeConstants'); 
 
 /* DAIAD Logo */
@@ -68,7 +68,6 @@ const NotificationMenuItem = React.createClass({
         id="notifications-trigger"
         trigger="click"
         title={_t({ id: this.props.item.title })}
-        rootClose
         placement="bottom"
         onEnter={() => this.setState({ popover: true })}
         onExit={() => this.setState({ popover: false })}
@@ -77,12 +76,12 @@ const NotificationMenuItem = React.createClass({
             id="notifications-popover"
             title={_t({ id: this.props.item.title })} 
           >
-            <div className="scrollable">
-              <NotificationList
-                notifications={this.props.notifications} 
-                linkToNotification={this.props.linkToNotification}
-              />
-            </div>
+            <NotificationList
+              notifications={this.props.notifications} 
+              onItemClick={(id, category) => { this.props.linkToNotification({ id, category }); }}
+              hasMore={!this.props.loading && (this.props.notifications.length < this.props.totalNotifications)}
+              loadMore={this.props.fetchMoreAll}
+            />
             <div className="footer">
               <Link 
                 className="notifications-show-all" 
@@ -93,7 +92,6 @@ const NotificationMenuItem = React.createClass({
             </div>
           </bs.Popover>
         }
-        className="notifications-button" 
       >
         <a
           onMouseEnter={() => this.setState({ hover: true })}
@@ -112,52 +110,20 @@ const NotificationMenuItem = React.createClass({
   }
 });
 
-function NotificationList(props) {
-  //const maxLength = NOTIFICATION_TITLE_LENGTH;
-  return (
-    <div className="notification-list">
-      <ul className="list-unstyled">
-        {
-          props.notifications.map((notification) => {
-            const notificationClass = notification.acknowledgedOn ? 'read' : 'unread';
-            return (
-              <li 
-                key={notification.category + notification.id} 
-                className={notificationClass} 
-              >
-                <a 
-                  onClick={() => props.linkToNotification({ 
-                    id: notification.id, 
-                    category: notification.category,
-                  })}
-                >
-                  {
-                    notification.title
-                  }
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
-    </div>
-  );
-}
 function NotificationArea(props) {
   return (
     <div className="notification-area">
       <div className="notifications notification-item">
-        <NotificationMenuItem 
-          intl={props.intl}
-          item={{
-            name: 'notifications',
-            title: 'section.notifications',
-            image: 'images/svg/info.svg',
-            link: '#',
+        <NotificationMenuItem
+          {...{
+            ...props,
+            item: {
+              name: 'notifications',
+              title: 'section.notifications',
+              image: 'images/svg/info.svg',
+              link: '#',
+            }
           }}
-          unreadNotifications={props.unreadNotifications}
-          notifications={props.notifications}
-          linkToNotification={props.linkToNotification}
         />
       </div>
     </div>  
@@ -180,8 +146,8 @@ function ErrorDisplay(props) {
 
 function Header(props) {   
   const { intl, firstname, photo, isAuthenticated, notifications, linkToNotification, 
-    unreadNotifications, logout, deviceCount, setLocale, locale, 
-    errors, dismissError } = props;
+    unreadNotifications, totalNotifications, logout, deviceCount, setLocale, locale, 
+    errors, dismissError, fetchMoreAll, loading } = props;
   return (
     <header className="site-header">
       {
@@ -199,6 +165,9 @@ function Header(props) {
                 deviceCount={deviceCount}
                 notifications={notifications} 
                 unreadNotifications={unreadNotifications}
+                totalNotifications={totalNotifications}
+                loading={loading}
+                fetchMoreAll={fetchMoreAll}
                 linkToNotification={linkToNotification}
               />
               <UserInfo
@@ -230,6 +199,5 @@ function Header(props) {
   );
 }
 
-Header.NotificationList = NotificationList;
 module.exports = injectIntl(Header);
 

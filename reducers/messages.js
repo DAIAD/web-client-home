@@ -1,12 +1,24 @@
 const types = require('../constants/ActionTypes');
 
 const initialState = {
-  activeTab: 'alerts',
+  activeTab: 'recommendations',
   activeMessageId: null,
   alerts: [],
   recommendations: [],
-  tips: [],
   announcements: [],
+  tips: [],
+  activeIndex: {
+    alerts: 0,
+    recommendations: 0,
+    announcements: 0,
+    tips: 0,
+  },
+  total: {
+    alerts: 0,
+    recommendations: 0,
+    announcements: 0,
+    tips: 0,
+  },
 };
 
 const messages = function (state = initialState, action) {
@@ -15,13 +27,15 @@ const messages = function (state = initialState, action) {
       return Object.assign({}, state, action.messages);
 
     case types.MESSAGES_APPEND: {
-      const newMessages = state[action.category]
-      .slice()
-      .concat(action.messages);
+      if (!Array.isArray(action.messages) || action.messages.length === 0) return state;
+      const newMessages = [
+        ...state[action.category],
+        ...action.messages,
+      ];
 
       const newState = { ...state };
       newState[action.category] = newMessages;
-
+      
       return newState;
     }
 
@@ -54,6 +68,12 @@ const messages = function (state = initialState, action) {
       newState[action.category] = newMessages;
       
       return newState;
+    }
+  
+    case types.MESSAGES_INCREASE_ACTIVE_INDEX: {
+      const activeIndex = { ...state.activeIndex };
+      activeIndex[action.category] += action.step;
+      return Object.assign({}, state, { activeIndex });
     }
 
     case types.USER_RECEIVED_LOGOUT:

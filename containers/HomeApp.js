@@ -7,7 +7,7 @@ const HomeRoot = require('../components/sections/HomeRoot');
 const { login, logout, refreshProfile, requestPasswordReset } = require('../actions/UserActions');
 const { setReady } = require('../actions/InitActions');
 const { setLocale } = require('../actions/LocaleActions');
-const { linkToMessage: linkToNotification } = require('../actions/MessageActions');
+const { linkToMessage: linkToNotification, fetchMoreAll } = require('../actions/MessageActions');
 const { dismissError } = require('../actions/QueryActions');
 const { resize } = require('../actions/ViewportActions');
 const { combineMessages } = require('../utils/messages');
@@ -25,6 +25,7 @@ function mapStateToProps(state) {
     announcements: state.section.messages.announcements,
     recommendations: state.section.messages.recommendations,
     tips: state.section.messages.tips,
+    totalNotifications: state.section.messages.total,
   };
 }
 
@@ -37,6 +38,7 @@ function mapDispatchToProps(dispatch) {
     dismissError, 
     setReady,
     resize,
+    fetchMoreAll,
   }, dispatch);
 }
 
@@ -63,6 +65,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     unreadNotifications: messageArray
       .reduce((prev, curr) => (!curr.acknowledgedOn ? prev + 1 : prev), 0),
     messages: messageArray,
+    totalNotifications: Object.values(stateProps.totalNotifications).reduce((p, c) => p + c, 0),
   };
 }
 

@@ -3,12 +3,14 @@ const React = require('react');
 const bs = require('react-bootstrap');
 const classNames = require('classnames');
 const { FormattedRelative } = require('react-intl');
+const InfiniteScroll = require('react-infinite-scroller');
 
 const { IMAGES } = require('../../constants/HomeConstants'); 
 
 const Topbar = require('../layout/Topbar');
 const MainSection = require('../layout/MainSection');
 const ChartBox = require('../helpers/ChartBox');
+const NotificationList = require('../helpers/NotificationList');
 
 function NotificationMessage(props) {
   const { notification, nextMessageId, previousMessageId, 
@@ -52,56 +54,6 @@ function NotificationMessage(props) {
            )()
         }
       </div>
-
-      <div className="notification-pagination">
-        {
-          previousMessageId != null ? 
-            <a 
-              className="pull-left" 
-              onClick={() => setActiveMessageId(previousMessageId)}
-            >
-              <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
-              <span>Previous</span>
-            </a>
-            : <span />
-        }
-        {
-          nextMessageId != null ? 
-            <a 
-              className="pull-right" 
-              onClick={() => setActiveMessageId(nextMessageId)}
-            >
-              <span>Next</span>
-              <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
-            </a>
-            : <span />
-        }
-      </div>
-    </div>
-  );
-}
-
-function NotificationList(props) {
-  //const maxLength = NOTIFICATION_TITLE_LENGTH;
-  return (
-    <div className="notification-list">
-      <ul className="list-unstyled">
-        {
-          props.notifications.map((notification) => {
-            const activeClass = notification.id === props.activeMessageId ? ' active' : ''; 
-            const notificationClass = notification.acknowledgedOn ? ' read' : ' unread';
-            return (
-              <li key={notification.id} className={notificationClass + activeClass} >
-                <a onClick={() => props.setActiveMessageId(notification.id)}>
-                  {
-                    notification.title
-                  }
-                </a>
-              </li>
-            );
-          })
-        }
-      </ul>
     </div>
   );
 }
@@ -110,7 +62,7 @@ const Notifications = React.createClass({
   render: function () {
     const { intl, categories, messages: notifications, activeMessageId, 
       previousMessageId, nextMessageId, activeMessage: notification, activeTab, 
-      setActiveMessageId, setActiveTab, widget } = this.props;
+      setActiveMessageId, setActiveTab, widget, fetchMoreActive, totalInCategory, loading } = this.props;
     const _t = intl.formatMessage;
     return (
       <MainSection id="section.notifications">
@@ -139,14 +91,11 @@ const Notifications = React.createClass({
             </Topbar>
 
             <NotificationList 
-              {...{ 
-                notifications, 
-                activeMessageId, 
-                previousMessageId, 
-                nextMessageId, 
-                setActiveMessageId 
-              }}
-            />   
+              notifications={notifications}
+              onItemClick={setActiveMessageId}
+              hasMore={!loading && (notifications.length < totalInCategory)}
+              loadMore={fetchMoreActive}
+            />
           </div>
           <div className="notifications-right">
             <NotificationMessage 
@@ -160,12 +109,6 @@ const Notifications = React.createClass({
             />
           </div>
         </div>
-        { /* hack for notification window to close after it has been clicked */ }
-        <input 
-          type="hidden" 
-          ref={(i) => { if (i !== null) { i.click(); } } 
-          }
-        />
       </MainSection>
     );
   }

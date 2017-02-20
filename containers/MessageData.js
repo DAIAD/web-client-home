@@ -2,7 +2,6 @@ const { injectIntl } = require('react-intl');
 const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 
-
 const Notifications = require('../components/sections/Notifications');
 
 const MessageActions = require('../actions/MessageActions');
@@ -14,11 +13,14 @@ function mapStateToProps(state) {
   return {
     devices: state.user.profile.devices,
     activeTab: state.section.messages.activeTab,
+    activeIndex: state.section.messages.activeIndex,
     activeMessageId: state.section.messages.activeMessageId,
     alerts: state.section.messages.alerts,
     announcements: state.section.messages.announcements,
     recommendations: state.section.messages.recommendations,
     tips: state.section.messages.tips,
+    total: state.section.messages.total,
+    loading: state.query.isLoading,
   };
 }
 
@@ -28,7 +30,7 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   // joint alerts & announcements
-  const alertments = stateProps.alerts.concat(stateProps.announcements);
+  const alertments = [...stateProps.alerts, ...stateProps.announcements];
 
   let messages = [];
   if (stateProps.activeTab === 'alerts') messages = alertments;
@@ -41,7 +43,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     id: 'alerts', 
     title: 'notifications.alerts', 
     unread: alertments
-    .reduce((prev, curr) => !(curr.acknowledgedOn ? prev + 1 : prev), 0),
+    .reduce((prev, curr) => (!curr.acknowledgedOn ? prev + 1 : prev), 0),
   }, 
   {
     id: 'recommendations', 
@@ -85,6 +87,15 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     widget,
     messages,
     activeMessage,
+    fetchMoreActive: () => {
+      if (stateProps.activeTab === 'alerts') {
+        dispatchProps.fetchMoreSingle('alerts');
+        dispatchProps.fetchMoreSingle('announcements');
+      } else {
+        dispatchProps.fetchMoreSingle(stateProps.activeTab);
+      }
+    },
+    totalInCategory: stateProps.total[stateProps.activeTab],
   };
 }
 

@@ -11,7 +11,7 @@ const DashboardActions = require('./DashboardActions');
 const HistoryActions = require('./HistoryActions');
 const FormActions = require('./FormActions');
 const { letTheRightOneIn } = require('./UserActions');
-const { fetchAll: fetchAllMessages } = require('./MessageActions');
+const { fetchInitial: fetchAllMessages } = require('./MessageActions');
 const { getMeterCount } = require('../utils/device');
 const { filterObj } = require('../utils/general');
 

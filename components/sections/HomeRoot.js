@@ -89,7 +89,7 @@ const HomeRoot = React.createClass({
   },
   render: function () {
     const { ready, locale, loading, user, deviceCount, messages, success,
-      unreadNotifications, linkToNotification, logout, 
+      unreadNotifications, linkToNotification, totalNotifications, fetchMoreAll, logout, 
       setLocale, errors, dismissError, children, routes } = this.props;
     if (!ready) {
       return <Loader />;
@@ -112,8 +112,11 @@ const HomeRoot = React.createClass({
             deviceCount={deviceCount}
             isAuthenticated={user.isAuthenticated}
             notifications={messages}
+            totalNotifications={totalNotifications}
             unreadNotifications={unreadNotifications}
+            loading={loading}
             linkToNotification={linkToNotification}
+            fetchMoreAll={fetchMoreAll}
             locale={locale.locale}
             logout={logout} 
             setLocale={setLocale}
