@@ -211,7 +211,7 @@ const timeToBuckets = function (time) {
   return buckets;
 };
 
-const addPeriodToSessions = function (sessions, period) {
+const bringPastSessionsToPresent = function (sessions, period) {
   return sessions.map(session => ({
     ...session, 
     timestamp: period === 'month' ? 
@@ -243,6 +243,6 @@ module.exports = {
   getLastPeriod,
   timeToBuckets,
   getLowerGranularityPeriod,
-  addPeriodToSessions,
+  bringPastSessionsToPresent,
   getComparisonPeriod,
 };

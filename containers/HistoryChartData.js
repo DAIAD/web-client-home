@@ -6,7 +6,7 @@ const HistoryActions = require('../actions/HistoryActions');
 
 const HistoryChart = require('../components/sections/HistoryChart');
 
-const { addPeriodToSessions } = require('../utils/time');
+const { bringPastSessionsToPresent } = require('../utils/time');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 const { getDeviceNameByKey } = require('../utils/device');
 const { getDataSessions, getLastShowerIdFromMultiple } = require('../utils/sessions');
@@ -71,7 +71,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       energy: Math.round(session.energy / 10) / 100,
     }));
     const xData = stateProps.activeDeviceType === 'METER' ? 
-        getChartMeterData(addPeriodToSessions(sessions, stateProps.timeFilter), 
+        getChartMeterData(bringPastSessionsToPresent(sessions, stateProps.timeFilter),
                           xCategories, 
                           stateProps.time
                          ) 
