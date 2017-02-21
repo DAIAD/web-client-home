@@ -39,6 +39,7 @@ function mapDispatchToProps(dispatch) {
     setReady,
     resize,
     fetchMoreAll,
+    goTo: push,
   }, dispatch);
 }
 

@@ -71,6 +71,8 @@ const NotificationMenuItem = React.createClass({
         placement="bottom"
         onEnter={() => this.setState({ popover: true })}
         onExit={() => this.setState({ popover: false })}
+        rootClose
+        ref={(node) => { this.node = node; }}
         overlay={
           <bs.Popover 
             id="notifications-popover"
@@ -78,17 +80,23 @@ const NotificationMenuItem = React.createClass({
           >
             <NotificationList
               notifications={this.props.notifications} 
-              onItemClick={(id, category) => { this.props.linkToNotification({ id, category }); }}
+              onItemClick={(id, category) => {
+                this.node.hide();
+                this.props.linkToNotification({ id, category }); 
+              }}
               hasMore={!this.props.loading && (this.props.notifications.length < this.props.totalNotifications)}
               loadMore={this.props.fetchMoreAll}
             />
             <div className="footer">
-              <Link 
-                className="notifications-show-all" 
-                to="/notifications"
+              <a 
+                className="notifications-show-all"
+                onClick={() => {
+                  this.node.hide();
+                  this.props.goTo('notifications');
+                }}
               >
                 {_t({ id: 'notifications.showAll' })}
-              </Link>
+              </a>
             </div>
           </bs.Popover>
         }
@@ -147,7 +155,7 @@ function ErrorDisplay(props) {
 function Header(props) {   
   const { intl, firstname, photo, isAuthenticated, notifications, linkToNotification, 
     unreadNotifications, totalNotifications, logout, deviceCount, setLocale, locale, 
-    errors, dismissError, fetchMoreAll, loading } = props;
+    errors, dismissError, fetchMoreAll, loading, goTo } = props;
   return (
     <header className="site-header">
       {
@@ -169,6 +177,7 @@ function Header(props) {
                 loading={loading}
                 fetchMoreAll={fetchMoreAll}
                 linkToNotification={linkToNotification}
+                goTo={goTo}
               />
               <UserInfo
                 intl={intl}

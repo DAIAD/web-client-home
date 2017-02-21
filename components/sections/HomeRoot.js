@@ -90,7 +90,7 @@ const HomeRoot = React.createClass({
   render: function () {
     const { ready, locale, loading, user, deviceCount, messages, success,
       unreadNotifications, linkToNotification, totalNotifications, fetchMoreAll, logout, 
-      setLocale, errors, dismissError, children, routes } = this.props;
+      setLocale, errors, dismissError, children, routes, goTo } = this.props;
     if (!ready) {
       return <Loader />;
     } 
@@ -122,6 +122,7 @@ const HomeRoot = React.createClass({
             setLocale={setLocale}
             errors={errors}
             dismissError={dismissError}
+            goTo={goTo}
           />
 
           <div className="main-container">
