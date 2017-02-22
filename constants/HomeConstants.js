@@ -406,6 +406,7 @@ module.exports = {
       type: 'comparison', 
       metric: 'difference', 
       display: 'chart',
+      period: 'month',
     },
     {
       id: 'budget', 

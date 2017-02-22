@@ -31,7 +31,10 @@ function NotificationMessage(props) {
       }
       {
         widget && widget.chartData ? 
-          <ChartWidget {...widget} />
+          <ChartWidget 
+            height={300}
+            {...widget} 
+          />
           : null
       } 
 

@@ -96,6 +96,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   
   return {
     ...widget,
+    time,
     periods,
     highlight,
     mu,
@@ -114,7 +115,6 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
   } else if (deviceType !== 'AMPHIRO') {
     console.error('only amphiro energy efficiency supported');
   }
-  const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
   const periods = DEV_PERIODS.filter(p => p.id !== 'all');
 
@@ -211,6 +211,7 @@ const meterBreakdown = function (widget, devices, intl) {
   const device = getDeviceKeysByType(devices, deviceType);
   const reduced = data ? reduceMetric(devices, data, metric) : 0;
   
+  const time = widget.time ? widget.time : getTimeByPeriod(period);
   // TODO: static
   // dummy data
   const chartCategories = ['toilet', 'faucet', 'shower', 'kitchen'];
@@ -228,7 +229,9 @@ const meterBreakdown = function (widget, devices, intl) {
   const invertAxis = true;
   return {
     ...widget,
+    time,
     periods,
+    chartType: 'horizontal-bar',
     chartCategories,
     chartColors,
     chartData,
@@ -244,6 +247,7 @@ const meterComparison = function (widget, devices, intl) {
     console.error('only meter comparison supported');
   }
 
+  const time = widget.time ? widget.time : getTimeByPeriod(period);
   //const periods = deviceType === 'AMPHIRO' ? DEV_PERIODS : METER_PERIODS.filter(p => p.id !== 'custom');
   const periods = METER_PERIODS.filter(p => p.id !== 'custom');
   const reduced = data ? reduceMetric(devices, data, metric) : 0;
@@ -264,7 +268,9 @@ const meterComparison = function (widget, devices, intl) {
   const invertAxis = true;
   return {
     ...widget,
+    time,
     periods,
+    chartType: 'horizontal-bar',
     chartCategories,
     chartColors,
     chartData,
