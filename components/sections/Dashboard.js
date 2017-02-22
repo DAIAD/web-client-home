@@ -5,7 +5,7 @@ const { Responsive, WidthProvider } = require('react-grid-layout');
 const { Link } = require('react-router');
 
 const MainSection = require('../layout/MainSection');
-const ChartBox = require('../helpers/ChartBox');
+const ChartWidget = require('../helpers/ChartWidget');
 
 const { IMAGES } = require('../../constants/HomeConstants');
 
@@ -36,7 +36,7 @@ function SayHello(props) {
   );
 }
 
-const InfoBox = React.createClass({
+const WidgetItem = React.createClass({
   getInitialState: function () {
     return {
       el: null 
@@ -101,11 +101,11 @@ const InfoBox = React.createClass({
               } 
               if (display === 'stat') {
                 return (
-                  <StatBox {...this.props} /> 
+                  <StatWidget {...this.props} /> 
                 );
               } else if (display === 'chart') {
                 return (
-                  <ChartBox 
+                  <ChartWidget
                     {...widget} 
                     width={this.state.el ? this.state.el.clientWidth : '100%'}
                     height={this.state.el ? this.state.el.clientHeight - 90 : null}
@@ -113,7 +113,7 @@ const InfoBox = React.createClass({
                 );
               } else if (display === 'tip') {
                 return (
-                  <TipBox {...this.props} />
+                  <TipWidget {...this.props} />
                 );
               }
               return <div />;
@@ -129,7 +129,7 @@ const InfoBox = React.createClass({
   }
 });
 
-function StatBox(props) {
+function StatWidget(props) {
   const { deviceType, highlight, period, better, comparePercentage, mu } = props.widget;
   
   //const duration = data?(Array.isArray(data)?null:data.duration):null;
@@ -170,7 +170,7 @@ function StatBox(props) {
   );
 }
 
-function TipBox(props) {
+function TipWidget(props) {
   const { highlight } = props.widget;
   return (
     <div >
@@ -179,7 +179,7 @@ function TipBox(props) {
   );
 }
 
-function InfoPanel(props) {
+function WidgetPanel(props) {
   const { mode, layout, widgets, updateLayout, updateWidget, removeWidget, 
     intl, periods, linkToHistory, width } = props;
   return (
@@ -207,7 +207,7 @@ function InfoPanel(props) {
       {
        widgets.map(widget => (
          <div key={widget.id}>
-           <InfoBox 
+           <WidgetItem 
              {...{
                mode, 
                periods, 
@@ -415,7 +415,7 @@ const Dashboard = React.createClass({
               }} 
             />
 
-            <InfoPanel {...this.props} />
+            <WidgetPanel {...this.props} />
 
           </div>
           <div className="dashboard-right">

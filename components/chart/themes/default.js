@@ -127,7 +127,7 @@ module.exports = {
 
   grid: {
     x: 75, 
-    y: -30, 
+    y: 0, 
     x2: 20, 
     y2: 50,
   },

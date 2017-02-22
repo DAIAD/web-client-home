@@ -8,7 +8,7 @@ const { IMAGES } = require('../../constants/HomeConstants');
 
 const Topbar = require('../layout/Topbar');
 const MainSection = require('../layout/MainSection');
-const ChartBox = require('../helpers/ChartBox');
+const ChartWidget = require('../helpers/ChartWidget');
 const NotificationList = require('../helpers/NotificationList');
 
 function NotificationMessage(props) {
@@ -31,7 +31,7 @@ function NotificationMessage(props) {
       }
       {
         widget && widget.chartData ? 
-          <ChartBox {...widget} />
+          <ChartWidget {...widget} />
           : null
       } 
 

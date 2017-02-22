@@ -34,6 +34,11 @@ module.exports = {
       }
     }
   },
+  
+  legend: {
+    show: false,
+  },
+
 
   grid: {
     x: 80,
