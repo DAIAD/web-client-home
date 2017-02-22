@@ -97,9 +97,10 @@ function SessionsList(props) {
 }
 
 const History = React.createClass({
-
   componentWillMount: function () {
-
+    if (!this.props.synced) {
+      this.props.fetchData();
+    } 
   },
   handleTypeSelect: function (key) {
     this.props.setMetricFilter(key); 
