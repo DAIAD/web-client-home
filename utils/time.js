@@ -60,7 +60,8 @@ const getLowerGranularityPeriod = function (period) {
   else if (period === 'month') return 'week';
   else if (period === 'week') return 'day';
   else if (period === 'day') return 'hour';
-  throw new Error('error in get lower granularity period with', period);
+  console.error('error in lower granularity period');
+  return null;
 };
 
 const getTimeByPeriod = function (period) {
