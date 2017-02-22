@@ -34,7 +34,23 @@ module.exports = {
       }
     }
   },
-  
+
+  line: {
+    itemStyle: {
+      normal: {
+        lineStyle: {
+          width: 18,
+          type: 'solid',
+        },
+      },
+      emphasis: {
+      }
+    },
+    smooth: true,
+    symbol: 'emptyCircle',
+    symbolSize: 6,
+    showAllSymbol: true,
+  },
   grid: {
     x: 70,
     x2: 10,
@@ -63,7 +79,7 @@ module.exports = {
       ]
     },
     splitLine: {
-      show: false,
+      show: true,
       lineStyle: {
         color: ['#ccc'],
         width: 1,
@@ -98,7 +114,7 @@ module.exports = {
       show: false,
       length: 0,
     },
-  },
-
+    boundaryGap: [10, 10],
+  }, 
 };
 

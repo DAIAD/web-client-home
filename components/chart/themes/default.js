@@ -1,8 +1,8 @@
 module.exports = {
-    color: [
+  color: [
     '#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E', '#EBB7B1',
   ],
-  //color: ['#42f465', 'red', 'blue', '#2D3580', '#CD4D3E', 'yellow', 'green'],
+  symbol: ['emptyCircle', 'emptyRectangle', 'emptyTriangle', 'emptyDiamond', 'circle'], 
   
   backgroundColor: '#fff',
 
