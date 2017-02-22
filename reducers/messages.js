@@ -42,12 +42,11 @@ const messages = function (state = initialState, action) {
     case types.MESSAGES_SET_ACTIVE_TAB:
       return Object.assign({}, state, {
         activeTab: action.category,
-        activeMessageId: null
       });
     
     case types.MESSAGES_SET_ACTIVE:
       return Object.assign({}, state, {
-        activeMessageId: action.id
+        activeMessageId: action.id,
       });
 
     case types.MESSAGE_SET_READ: {
@@ -62,7 +61,7 @@ const messages = function (state = initialState, action) {
   
     case types.MESSAGE_SET_EXTRA: {
       const newMessages = state[action.category]
-      .map(m => m.id === action.id ? ({ ...m, ...action.extra }) : m);
+      .map(m => m.id === action.id ? ({ ...m, extra: action.extra }) : m);
 
       const newState = { ...state };
       newState[action.category] = newMessages;

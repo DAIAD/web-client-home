@@ -11,7 +11,7 @@ const QueryActions = require('./QueryActions');
 
 const messageAPI = require('../api/message');
 
-const { getTypeByCategory, getWidgetByAlertType, getAllMessageTypes } = require('../utils/messages');
+const { getTypeByCategory, getCategoryByType, getWidgetByAlertType, getAllMessageTypes } = require('../utils/messages');
 const { throwServerError } = require('../utils/general');
 
 const { MESSAGE_TYPES, MESSAGES_PAGE } = require('../constants/HomeConstants');
@@ -92,7 +92,8 @@ const appendMessages = function (category, messages) {
 const acknowledge = function (id, category, timestamp) {
   return function (dispatch, getState) {
     if (!id || !category || !timestamp) {
-      throw new Error(`Not sufficient data provided for message acknowledgement. (id, type, timestamp): ${id}, ${category}, ${timestamp}`);
+      throw new Error('Not sufficient data provided for message acknowledgement.' +
+                      'Requires id, type, timestamp');
     }
     const message = getState().section.messages[category].find(x => x.id === id);
     
@@ -149,16 +150,22 @@ const increaseActiveIndex = function (category, step) {
  *                                        RECOMMENDATION_DYNAMIC, ANNOUNCEMENT
  */
 const setActiveTab = function (category) {
-  if (!(category === 'alerts' 
-        || category === 'announcements' 
-        || category === 'recommendations' 
-        || category === 'tips')) {
-    throw new Error('Tab needs to be one of alerts, announcements, recommendations, tips. Provided: ', category);
+  if (!Object.keys(MESSAGE_TYPES).includes(category)) {
+    throw new Error('Tab needs to be one of ' + 
+                    Object.keys(MESSAGE_TYPES).join(', ') + 
+                    'Provided ' + category);
   }
-
+  const tab = category === 'announcements' ? 'alerts' : category; 
   return {
     type: types.MESSAGES_SET_ACTIVE_TAB,
-    category,
+    category: tab,
+  };
+};
+
+const setActiveMessageId = function (id) {
+  return {
+    type: types.MESSAGES_SET_ACTIVE,
+    id,
   };
 };
 
@@ -167,30 +174,29 @@ const setActiveTab = function (category) {
  * Important! the message category must have been set otherwise
  *
  * @param {Number} id - The message id
+ * @param {String} type - The message type
  */
-const setActiveMessageId = function (id) {
+const setActiveMessage = function (id, type) {
   return function (dispatch, getState) {
-    if (!id) throw new Error('Not sufficient data provided for selecting message, missing id');
-
-    dispatch({
-      type: types.MESSAGES_SET_ACTIVE,
-      id,
-    });
-
-    const category = getState().section.messages.activeTab;
-    const activeMessageIndex = getState().section.messages[category].findIndex(x => x.id === id);
-    const activeMessage = activeMessageIndex != null ? 
-      getState().section.messages[category][activeMessageIndex] 
-      : {};
+    if (!id || !type) {
+      throw new Error('Not sufficient data provided for selecting message, missing id and/or message type');
+    }
+    const category = getCategoryByType(type);
+    
+    dispatch(setActiveTab(category));
+    dispatch(setActiveMessageId(id));
 
     dispatch(acknowledge(id, category, new Date().getTime()));
+
+    const activeMessage = getState().section.messages[category]
+    .find(m => m.id === id);
 
     if (category === 'alerts') {
       const widget = getWidgetByAlertType(activeMessage.alertType, activeMessage.createdOn);
       if (!widget) return;
 
       dispatch(QueryActions.fetchWidgetData(widget)) 
-      .then(data => dispatch(setMessageExtra(id, category, { extra: { ...widget, ...data } })))
+      .then(data => dispatch(setMessageExtra(id, category, { ...widget, ...data })))
       .catch((error) => {
         console.error('Oops, sth went wrong in setting message extra data', error);
       });
@@ -205,13 +211,9 @@ const setActiveMessageId = function (id) {
  * @param {String} options.id - Message id to set active 
  * @param {Array} options.category - Message category to set active 
  */
-const linkToMessage = function (options) {
+const linkToMessage = function (id, type) {
   return function (dispatch, getState) {
-    const { id, category } = options;
-
-    if (category) dispatch(setActiveTab(category));
-    if (id) dispatch(setActiveMessageId(id));
-
+    dispatch(setActiveMessage(id, type));
     dispatch(push('/notifications'));
   };
 };
@@ -243,7 +245,16 @@ const fetch = function (options) {
       dispatch(receivedMessages(response.success, null));
       dispatch(QueryActions.resetSuccess());
 
-      return response;
+      // make sure announcements have description field like other message types
+      const announcements = response.announcements.map(m => ({
+        ...m,
+        description: m.content,
+      }));
+
+      return {
+        ...response,
+        announcements,
+      };
     })
     .catch((error) => {
       console.error('Caught error in messages fetch:', error); 
@@ -346,6 +357,6 @@ module.exports = {
   fetchMoreSingle,
   acknowledge,
   setActiveTab,
-  setActiveMessageId,
+  setActiveMessage,
   appendMessages,
 };

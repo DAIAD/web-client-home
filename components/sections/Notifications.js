@@ -13,8 +13,7 @@ const NotificationList = require('../helpers/NotificationList');
 
 function NotificationMessage(props) {
   const { notification, nextMessageId, previousMessageId, 
-    setActiveMessageId, widget } = props;
-
+    setActiveMessage, widget } = props;
   return !notification ? 
     <div /> 
     : (
@@ -48,6 +47,22 @@ function NotificationMessage(props) {
            )()
         }
       </div>
+      <div className="notification-pagination">
+        {
+          previousMessageId != null ? 
+            <a className="pull-left" onClick={() => setActiveMessage(previousMessageId, notification.type)}>
+              <img alt="previous" src={`${IMAGES}/arrow-big-left.svg`} /><span>Previous</span>
+            </a>
+        : <span />
+        }
+        {
+          nextMessageId != null ? 
+            <a className="pull-right" onClick={() => setActiveMessage(nextMessageId, notification.type)}>
+              <span>Next</span><img alt="next" src={`${IMAGES}/arrow-big-right.svg`} />
+            </a>
+            : <span />
+        }
+      </div>
     </div>
   );
 }
@@ -56,7 +71,7 @@ const Notifications = React.createClass({
   render: function () {
     const { intl, categories, messages: notifications, activeMessageId, 
       previousMessageId, nextMessageId, activeMessage: notification, activeTab, 
-      setActiveMessageId, setActiveTab, widget, fetchMoreActive, totalInCategory, loading } = this.props;
+      setActiveMessage, setActiveTab, widget, fetchMoreActive, totalInCategory, loading } = this.props;
     const _t = intl.formatMessage;
     return (
       <MainSection id="section.notifications">
@@ -86,7 +101,7 @@ const Notifications = React.createClass({
 
             <NotificationList 
               notifications={notifications}
-              onItemClick={setActiveMessageId}
+              onItemClick={setActiveMessage}
               hasMore={!loading && (notifications.length < totalInCategory)}
               loadMore={fetchMoreActive}
               activeId={activeMessageId}
@@ -96,7 +111,7 @@ const Notifications = React.createClass({
             <NotificationMessage 
               {...{ 
                 notification, 
-                setActiveMessageId, 
+                setActiveMessage, 
                 previousMessageId, 
                 nextMessageId, 
                 widget,

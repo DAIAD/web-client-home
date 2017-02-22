@@ -24,7 +24,7 @@ function NotificationList(props) {
                   key={notification.id} 
                   className={classNames(notificationClass, activeClass)} 
                 >
-                  <a onClick={() => onItemClick(notification.id, notification.category)}>
+                  <a onClick={() => onItemClick(notification.id, notification.type)}>
                     {
                       notification.title
                     }

@@ -5,6 +5,10 @@ const getTypeByCategory = function (category) {
   return MESSAGE_TYPES[category];
 };
 
+const getCategoryByType = function (type) {
+  return Object.keys(MESSAGE_TYPES).find(msgType => MESSAGE_TYPES[msgType] === type);
+};
+
 const getWidgetByAlertType = function (type, timestamp) {
   switch (type) {
     case 'WATER_LEAK':
@@ -35,8 +39,8 @@ const getWidgetByAlertType = function (type, timestamp) {
 const stripTags = function (message) {
   let title = message.title;
   let description = message.description;
+  
   const strings = ['<h1>', '</h1>', '<h2>', '</h2>', '<h3>', '</h3>'];
-
   strings.forEach((s) => {
     title = title.replace(new RegExp(s, 'g'), '');
     description = description.replace(new RegExp(s, 'g'), '');
@@ -49,12 +53,10 @@ const stripTags = function (message) {
   };
 };
 
-// TODO: type label already present in messages
-// remove extra maps
-// TODO: fix sort
+// TODO: remove extra maps
 const combineMessages = function (categories) {
   return categories.map(cat => 
-                       cat.values.map(msg => ({ ...stripTags(msg), category: cat.name })))
+                       cat.values.map(msg => stripTags(msg)))
                        .reduce(((prev, curr) => prev.concat(curr)), [])
                        .sort((a, b) => b.createdOn - a.createdOn);
 };
@@ -66,6 +68,7 @@ const getAllMessageTypes = function () {
 module.exports = {
   combineMessages,
   getTypeByCategory,
+  getCategoryByType,
   getWidgetByAlertType,
   stripTags,
   getAllMessageTypes,

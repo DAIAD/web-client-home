@@ -37,6 +37,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   else if (stateProps.activeTab === 'recommendations') messages = stateProps.recommendations;
   else if (stateProps.activeTab === 'tips') messages = stateProps.tips;
 
+  // strip tags
   messages = messages.map(message => stripTags(message));
 
   const categories = [{
@@ -60,13 +61,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   ];
 
   // const unread = categories.reduce(((prev, curr) => curr.unread+prev), 0); 
-  const activeMessageIndex = stateProps.activeMessageId ? 
-    messages.findIndex(x => x.id === stateProps.activeMessageId) 
-    : null;
 
-  const activeMessage = activeMessageIndex != null ? 
-    messages[activeMessageIndex] 
-    : null;
+  const activeMessage = stateProps.activeMessageId ? 
+    messages.find(x => x.id === stateProps.activeMessageId) 
+  : null;
+
+  const activeMessageIndex = messages.findIndex(m => m.id === stateProps.activeMessageId);
 
   const widget = activeMessage && activeMessage.extra ? 
     prepareWidget(activeMessage.extra, 

@@ -80,9 +80,9 @@ const NotificationMenuItem = React.createClass({
           >
             <NotificationList
               notifications={this.props.notifications} 
-              onItemClick={(id, category) => {
+              onItemClick={(id, type) => {
                 this.node.hide();
-                this.props.linkToNotification({ id, category }); 
+                this.props.linkToNotification(id, type); 
               }}
               hasMore={!this.props.loading && (this.props.notifications.length < this.props.totalNotifications)}
               loadMore={this.props.fetchMoreAll}
