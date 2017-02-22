@@ -74,7 +74,11 @@ const getChartAmphiroData = function (sessions, categories) {
   }
   if (sessions.length === 0) return [sessions[0]];
   //return categories.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
-  return categories.map((v, i) => sessions[i]);
+  const sessionsNormalized = [
+    ...Array.from({ length: categories.length - sessions.length }), 
+    ...sessions
+  ];
+  return categories.map((v, i) => sessionsNormalized[i]);
 };
 
 const getChartMeterData = function (sessions, categories, time) {
