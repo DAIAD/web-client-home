@@ -31,6 +31,7 @@ function mapStateToProps(state) {
     data: state.section.history.data,
     comparison: state.section.history.comparison,
     showerIndex: state.section.history.showerIndex,
+    forecasting: state.section.history.forecasting,
   };
 }
 

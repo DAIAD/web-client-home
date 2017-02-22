@@ -19,9 +19,10 @@ function HistoryChart(props) {
         formatter: y => `${y} ${mu}`,
       }}
       onPointClick={onPointClick}
-      series={chartData.map(s => ({
-        ...s,
+      series={chartData.map((s, i) => ({
         fill: 0.55,
+        symbol: theme.symbol[i % theme.symbol.length],
+        ...s,
       }))}
     />
   );

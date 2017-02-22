@@ -48,6 +48,12 @@ const setDataUnsynced = function () {
   };
 };
 
+const setForecastData = function (data) {
+  return {
+    type: types.HISTORY_SET_FORECAST_DATA,
+    data,
+  };
+};
 
 /**
  * Performs query based on selected history section filters and saves data
@@ -91,7 +97,8 @@ const fetchData = function () {
         dispatch(setSessions([]));
         dispatch(setDataSynced());
       });
-      
+
+      // comparisons
       if (getState().section.history.comparison === 'last') {
         dispatch(QueryActions.queryMeterHistoryCache({
           deviceKey: getState().section.history.activeDevice, 
@@ -105,7 +112,43 @@ const fetchData = function () {
         console.error('Caught error in history comparison query:', error); 
       });
       }
+
+      // forecasting
+      if (getState().section.history.forecasting) {
+        dispatch(QueryActions.queryMeterForecast({
+          time: getState().section.history.time,
+        }))
+        .then((sessions) => {
+          const sortedByTime = sessions.sort((a, b) => {
+            if (a.timestamp < b.timestamp) return -1;
+            else if (a.timestamp > b.timestamp) return 1;
+            return 0;
+          });
+          dispatch(setForecastData(sortedByTime));
+        })
+        .catch((error) => {
+          dispatch(setForecastData([]));
+          console.error('Caught error in history forecast query:', error);
+        });
+      }
     }
+  };
+};
+
+const enableForecasting = function () {
+  return function (dispatch, getState) {
+    dispatch({
+      type: types.HISTORY_SET_FORECASTING,
+      enable: true,
+    });
+    dispatch(fetchData());
+  };
+};
+
+const disableForecasting = function () {
+  return {
+    type: types.HISTORY_SET_FORECASTING,
+    enable: false,
   };
 };
 
@@ -457,4 +500,6 @@ module.exports = {
   setShowerIndex,
   increaseShowerIndex,
   decreaseShowerIndex,
+  enableForecasting,
+  disableForecasting,
 };

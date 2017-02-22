@@ -23,6 +23,8 @@ function mapStateToProps(state) {
     data: state.section.history.data,
     comparisonData: state.section.history.comparisonData,
     width: state.viewport.width,
+    forecasting: state.section.history.forecasting,
+    forecastData: state.section.history.forecastData,
   };
 }
 
@@ -84,6 +86,22 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       data: xData.map(x => x ? x[stateProps.filter] : null),
     });
   });
+  
+  const forecast = stateProps.activeDeviceType === 'METER' && stateProps.forecasting ? 
+    [{
+      name: 'Forecast',
+      data: getChartMeterData(stateProps.forecastData,
+                        xCategories, 
+                        stateProps.time
+                       ).map(x => x && x.volume && x.volume.SUM ? 
+                         Math.round(100 * x.volume.SUM) / 100
+                         : null),
+      lineType: 'dashed',
+      color: '#2d3480',
+      fill: 0.1,
+      symbol: 'emptyRectangle',
+    }]
+    : [];
 
   return {
     ...stateProps,
@@ -93,6 +111,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     mu: getMetricMu(stateProps.filter), 
     chartData: [
       ...chartData,
+      ...forecast,
       ...comparison,
     ],
     //chart width = viewport width - main menu - sidebar left - sidebar right - padding

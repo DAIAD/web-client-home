@@ -18,6 +18,8 @@ const initialState = {
   comparisonData: [],
   time: thisYear(),
   showerIndex: 0,
+  forecasting: true,
+  forecastData: [],
 };
  
 const history = function (state = initialState, action) {
@@ -108,6 +110,16 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_SHOWER_INDEX:
       return Object.assign({}, state, {
         showerIndex: action.index,
+      });
+
+    case types.HISTORY_SET_FORECASTING:
+      return Object.assign({}, state, {
+        forecasting: action.enable,
+      });
+
+    case types.HISTORY_SET_FORECAST_DATA:
+      return Object.assign({}, state, {
+        forecastData: action.data,
       });
 
     case types.USER_RECEIVED_LOGOUT:

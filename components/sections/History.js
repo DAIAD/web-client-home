@@ -135,6 +135,13 @@ const History = React.createClass({
     }
     this.props.setActiveDevice(vals);
   },
+  handleForecastingChanged: function (vals) {
+    if (this.props.forecasting) {
+      this.props.disableForecasting();
+    } else {
+      this.props.enableForecasting();
+    }
+  },
   handleComparisonSelect: function (val) {
     this.props.setComparison(val); 
   },
@@ -144,9 +151,8 @@ const History = React.createClass({
   render: function () {
     const { intl, amphiros, activeDevice, activeDeviceType, timeFilter, 
       time, metrics, periods, comparisons, deviceTypes, data, 
-      hasShowersBefore, hasShowersAfter } = this.props;
+      hasShowersBefore, hasShowersAfter, forecasting } = this.props;
     const _t = intl.formatMessage;
-
     return (
       <MainSection id="section.history">
         <Topbar> 
@@ -233,6 +239,31 @@ const History = React.createClass({
                   )
               }
             </CheckboxGroup>
+            <br />
+            { activeDeviceType === 'METER' ?
+              <CheckboxGroup 
+                name="forecasting" 
+                value={[forecasting]}
+                onChange={this.handleForecastingChanged}
+              >
+                {
+                  Checkbox => (
+                    <div className="shower-devices">
+                      <label key="enable" htmlFor="enable">
+                        <Checkbox 
+                          id="enable"
+                          value
+                        />
+                        <label htmlFor="enable" />
+                        Forecasting
+                      </label>
+                    </div>
+                    )
+                }
+              </CheckboxGroup>
+              : <div />
+            }
+
             <br />
             { 
               comparisons && comparisons.length > 0 ?

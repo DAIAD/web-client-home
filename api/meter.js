@@ -6,7 +6,10 @@ const MeterAPI = {
   },
   getHistory: function (data) {
     return callAPI('/action/meter/history', data);
-  }
+  },
+  getForecast: function (data) {
+    return callAPI('/action/data/meter/forecast', data);
+  },
 };
 
 module.exports = MeterAPI;

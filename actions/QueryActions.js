@@ -16,7 +16,7 @@ const meterAPI = require('../api/meter');
 const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
 const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex } = require('../utils/general');
-const { getTimeByPeriod, getPreviousPeriodSoFar } = require('../utils/time');
+const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod } = require('../utils/time');
 
 
 const requestedQuery = function () {
@@ -356,6 +356,52 @@ const queryMeterHistoryCache = function (options) {
   };
 };
 
+const queryMeterForecast = function (options) {
+  return function (dispatch, getState) {
+    const { time } = options;
+    if (!time || !time.startDate || !time.endDate || !time.granularity) {
+      throw new Error('Not sufficient data provided for meter forecast query' + 
+                      'Requires time object with startDate, endDate and granularity');
+    }
+    dispatch(requestedQuery());
+    
+    const data = {
+      query: {
+        time: {
+          type: 'ABSOLUTE',
+          start: time.startDate,
+          end: time.endDate,
+          granularity: getLowerGranularityPeriod(
+            convertGranularityToPeriod(time.granularity)
+          ),
+        },
+        population: [{
+          type: 'USER',
+          users: [getState().user.profile.key],
+        }],
+      },
+      csrf: getState().user.csrf,
+    };
+
+    return meterAPI.getForecast(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors, response.session));
+      dispatch(resetSuccess());
+      
+      if (!response || !response.success || !Array.isArray(response.meters) || 
+          !response.meters[0] || !response.meters[0].points) {
+        throwServerError(response);  
+      }
+      return response.meters[0].points;
+    })
+    .catch((error) => {
+      console.log('caught: ', error);
+      dispatch(receivedQuery(false, error));
+      throw error;
+    });
+  };
+};
+
 /**
  * Fetch data based on provided options and handle query response before returning
  * 
@@ -457,4 +503,5 @@ module.exports = {
   receivedQuery,
   setInfo,
   dismissInfo,
+  queryMeterForecast,
 };
