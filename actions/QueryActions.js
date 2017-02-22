@@ -359,8 +359,8 @@ const queryMeterHistoryCache = function (options) {
 const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
     const { time } = options;
-    if (!time || !time.startDate || !time.endDate || !time.granularity) {
-      throw new Error('Not sufficient data provided for meter forecast query' + 
+    if (!time || !time.startDate || !time.endDate || time.granularity == null) {
+      throw new Error('Not sufficient data provided for meter forecast query. ' + 
                       'Requires time object with startDate, endDate and granularity');
     }
     dispatch(requestedQuery());
