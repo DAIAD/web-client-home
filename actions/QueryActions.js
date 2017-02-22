@@ -395,7 +395,7 @@ const queryMeterForecast = function (options) {
       return response.meters[0].points;
     })
     .catch((error) => {
-      console.log('caught: ', error);
+      console.error('caught error in query meter forecast: ', error);
       dispatch(receivedQuery(false, error));
       throw error;
     });
@@ -466,6 +466,12 @@ const fetchWidgetData = function (options) {
           .then(prevData => ({ ...res, previous: prevData, prevTime }))
           .catch((error) => { 
             console.error('Caught error in widget previous period data fetch:', error); 
+          });
+        } else if (type === 'forecast') {
+          return dispatch(queryMeterForecast({ time }))
+          .then(forecastData => ({ ...res, forecastData }))
+          .catch((error) => { 
+            console.error('Caught error in widget forecast data fetch:', error); 
           });
         }
         return Promise.resolve(res);

@@ -146,30 +146,54 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
 };
 
 const meterForecast = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+  const { data, forecastData, period, deviceType, metric, previous } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter forecast supported');
   }
+  const time = widget.time ? widget.time : getTimeByPeriod(period);
   const periods = METER_PERIODS.filter(p => p.id !== 'custom');
 
   const device = getDeviceKeysByType(devices, deviceType);
-  //chartType = 'bar';
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-  // TODO: static
-  // dummy data
-  const chartCategories = [2014, 2015, 2016];
+  
   const chartColors = ['#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'];
-  const chartData = [{
-    name: 'Consumption', 
-    data: [Math.round(reduced), Math.round(reduced * 1.5), Math.round(reduced * 0.8)],
-  }];
   const mu = getMetricMu(metric);
+  const xCategories = getChartMeterCategories(time);
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time, intl);
+  
+  const chartData = data ? data.map((devData) => {
+    const sessions = getDataSessions(devices, devData);
+    return {
+      name: getDeviceNameByKey(devices, devData.deviceKey) || '', 
+      data: getChartMeterData(sessions, 
+                              getChartMeterCategories(time),
+                              time
+                             ).map(x => x ? x[widget.metric] : null),
+    };
+  }) : [];
+
+  const forecastChartData = forecastData ? [{
+    name: 'Forecast',
+    data: getChartMeterData(forecastData,
+                            xCategories, 
+                            time
+                           ).map(x => x && x.volume && x.volume.SUM ? 
+                             Math.round(100 * x.volume.SUM) / 100
+                             : null),
+    lineType: 'dashed',
+    color: '#2d3480',
+    fill: 0.1,
+    symbol: 'emptyRectangle',
+  }]
+  : [];
+
   return {
     ...widget,
+    chartType: 'bar',
+    time,
     periods,
-    chartCategories,
-    chartData,
+    chartCategories: xCategoryLabels,
+    chartData: [...chartData, ...forecastChartData],
     chartColors,
     mu,
   };

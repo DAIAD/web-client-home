@@ -7,13 +7,14 @@
 
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
-const { getDeviceKeysByType } = require('../utils/device');
+const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
 const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
 const { showerFilterToLength, getCacheKey } = require('../utils/general');
 
 const QueryActions = require('./QueryActions');
 
+const { DEV_PERIODS } = require('../constants/HomeConstants');
 
 const setSessions = function (sessions) {
   return {
@@ -135,13 +136,15 @@ const fetchData = function () {
   };
 };
 
-const enableForecasting = function () {
+const enableForecasting = function (query = true) {
   return function (dispatch, getState) {
     dispatch({
       type: types.HISTORY_SET_FORECASTING,
       enable: true,
     });
-    dispatch(fetchData());
+    if (query) {
+      dispatch(fetchData());
+    }
   };
 };
 
@@ -191,7 +194,9 @@ const setTimeFilter = function (filter) {
       type: types.HISTORY_SET_TIME_FILTER,
       filter,
     });
-    dispatch(setShowerIndex(0));
+    if (DEV_PERIODS.map(p => p.id).includes(filter)) {
+      dispatch(setShowerIndex(0));
+    }
   };
 };
 
@@ -241,18 +246,23 @@ const setSortOrder = function (order) {
  */
 const setActiveDevice = function (deviceKey, query = true) {
   return function (dispatch, getState) {
+    const deviceType = getDeviceTypeByKey(getState().user.profile.devices, deviceKey);
+
     dispatch({
       type: types.HISTORY_SET_ACTIVE_DEVICE,
       deviceKey,
     });
-    
-    dispatch(setShowerIndex(0));
-    if (query) { 
+
+    if (query) {  
+      if (deviceType === 'AMPHIRO') {
+        dispatch(setShowerIndex(0));
+      }
       dispatch(setDataUnsynced());
       dispatch(fetchData());
     }
   };
 };
+
 /**
  * Sets active time window in history section
  *
@@ -388,7 +398,7 @@ const setActiveSession = function (deviceKey, id, timestamp) {
  */
 const linkToHistory = function (options) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, period, time, data } = options;
+    const { showerId, device, deviceType, metric, period, time, data, forecastData } = options;
     
     if (deviceType) {
       dispatch(setActiveDeviceType(deviceType, false));
@@ -412,7 +422,14 @@ const linkToHistory = function (options) {
     } else { 
       dispatch(resetActiveSession()); 
     }
-    
+
+    if (forecastData && Array.isArray(forecastData)) {
+      dispatch(enableForecasting(false));
+      dispatch(setForecastData(forecastData));
+    } else {
+      dispatch(disableForecasting());
+    }
+
     if (data && Array.isArray(data)) { 
       dispatch(setSessions(data));
       dispatch(setDataSynced());
