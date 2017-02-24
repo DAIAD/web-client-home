@@ -3,13 +3,7 @@ const types = require('../constants/ActionTypes');
 const initialState = {
   widgetToAdd: {},
   profileForm: {},
-  commonForm: {
-    id: null,
-    name: '',
-    description: '',
-    members: [],
-    owners: [],
-  },
+  commonForm: {},
   deviceForm: {
     unit: 'METRIC',
     key: null,
@@ -31,7 +25,7 @@ const form = function (state = initialState, action) {
 
     case types.FORM_RESET: {
       const newState = { ...state };
-      newState[action.form] = { ...newState[action.form], ...initialState[action.form] };
+      newState[action.form] = { ...initialState[action.form] };
 
       return newState;
     }
