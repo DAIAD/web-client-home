@@ -18,34 +18,6 @@ const { MESSAGE_TYPES, MESSAGES_PAGE } = require('../constants/HomeConstants');
 const types = require('../constants/ActionTypes');
 
 
-const requestedMessages = function () {
-  return {
-    type: types.MESSAGES_REQUEST_START,
-  };
-};
-
-const receivedMessages = function (success, errors) {
-  return {
-    type: types.MESSAGES_REQUEST_END,
-    success,
-    errors,
-  };
-};
-
-const requestedMessageAck = function () {
-  return {
-    type: types.MESSAGES_ACK_REQUEST_START,
-  };
-};
-
-const receivedMessageAck = function (success, errors) {
-  return {
-    type: types.MESSAGES_ACK_REQUEST_END,
-    success,
-    errors,
-  };
-};
-
 const setMessageExtra = function (id, category, extra) {
   return {
     type: types.MESSAGE_SET_EXTRA,
@@ -100,7 +72,7 @@ const acknowledge = function (id, category, timestamp) {
     if (message && message.acknowledgedOn != null) {
       return Promise.resolve();
     }
-    dispatch(requestedMessageAck());
+    dispatch(QueryActions.requestedQuery());
 
     const type = getTypeByCategory(category);
 
@@ -119,7 +91,7 @@ const acknowledge = function (id, category, timestamp) {
         throwServerError(response);  
       }
       
-      dispatch(receivedMessageAck(response.success, response.errors));
+      dispatch(QueryActions.receivedQuery(response.success, response.errors));
       dispatch(QueryActions.resetSuccess());
 
       dispatch(setMessageRead(id, category, timestamp));
@@ -127,7 +99,7 @@ const acknowledge = function (id, category, timestamp) {
       return response;
     })
     .catch((error) => {
-      dispatch(receivedMessageAck(false, error));
+      dispatch(QueryActions.receivedQuery(false, error));
       throw error;
     });
   };
@@ -230,7 +202,7 @@ const fetch = function (options) {
   return function (dispatch, getState) {
     if (!Array.isArray(options)) throw new Error('Fetch requires array of options:', options);
 
-    dispatch(requestedMessages());
+    dispatch(QueryActions.requestedQuery());
 
     const data = {
       messages: options,
@@ -242,7 +214,7 @@ const fetch = function (options) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      dispatch(receivedMessages(response.success, null));
+      dispatch(QueryActions.receivedQuery(response.success, null));
       dispatch(QueryActions.resetSuccess());
 
       // make sure announcements have description field like other message types
@@ -258,7 +230,7 @@ const fetch = function (options) {
     })
     .catch((error) => {
       console.error('Caught error in messages fetch:', error); 
-      dispatch(receivedMessages(false, error));
+      dispatch(QueryActions.receivedQuery(false, error));
     });
   };
 };

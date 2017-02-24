@@ -1,7 +1,7 @@
 const types = require('../constants/ActionTypes');
 
 const initialState = {
-  isLoading: false,
+  isLoading: 0,
   success: null,
   errors: null,
   info: null,
@@ -11,26 +11,22 @@ const initialState = {
 const query = function (state = initialState, action) {
   switch (action.type) {
     case types.QUERY_REQUEST_START:
-    case types.MESSAGES_REQUEST_START:
-    case types.MESSAGES_ACK_REQUEST_START:
       return Object.assign({}, state, {
-        isLoading: true,
+        isLoading: state.isLoading + 1,
       });
 
     case types.QUERY_REQUEST_END:
-    case types.MESSAGES_REQUEST_END:
-    case types.MESSAGES_ACK_REQUEST_END:
       switch (action.success) {
         case true:
           return Object.assign({}, state, {
-            isLoading: false,
+            isLoading: state.isLoading - 1,
             success: true,
             //errors: null
           });
 
         case false:
           return Object.assign({}, state, {
-            isLoading: false,
+            isLoading: state.isLoading - 1,
             success: false,
             errors: action.errors
           });

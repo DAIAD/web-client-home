@@ -8,6 +8,8 @@
 const localeAPI = require('../api/locales');
 const types = require('../constants/ActionTypes');
 
+const { requestedQuery, receivedQuery, resetSuccess } = require('./QueryActions');
+
 const { flattenMessages } = require('../utils/general');
 
 const setCsrf = function (csrf) {
@@ -17,20 +19,11 @@ const setCsrf = function (csrf) {
   };
 };
 
-const receivedMessages = function (success, errors, locale, messages) {
+const receivedMessages = function (locale, messages) {
   return {
     type: types.LOCALE_RECEIVED_MESSAGES,
-    success,
-    errors,
     locale,
     messages,
-  };
-};
-
-const requestedLocaleMessages = function (locale) {
-  return {
-    type: types.LOCALE_REQUEST_MESSAGES,
-    locale,
   };
 };
 
@@ -43,6 +36,8 @@ const requestedLocaleMessages = function (locale) {
  */
 const fetchLocaleMessages = function (locale) {
   return function (dispatch, getState) {
+    dispatch(requestedQuery());
+
     return localeAPI.fetchLocaleMessages({ locale })
     .then((response) => {
       const messages = { ...response };
@@ -50,13 +45,15 @@ const fetchLocaleMessages = function (locale) {
       delete messages.csrf;
       
       if (csrf) { dispatch(setCsrf(csrf)); }
-      //delete messages.csrf;
 
-      dispatch(receivedMessages(true, null, locale, flattenMessages(messages)));
+      dispatch(receivedQuery(true, null));
+      dispatch(resetSuccess());
+
+      dispatch(receivedMessages(locale, flattenMessages(messages)));
       return messages;
     })
     .catch((errors) => {
-      dispatch(receivedMessages(false, errors, null, []));
+      dispatch(receivedQuery(false, errors));
       return errors;
     });
   };
@@ -74,9 +71,6 @@ const setLocale = function (locale) {
     if (getState().locale.locale === locale) {
       return Promise.resolve(true);
     }
-    // dispatch request messages to update state
-    dispatch(requestedLocaleMessages(locale));
-    // dispatch fetch messages to call API
     return dispatch(fetchLocaleMessages(locale));
   };
 };
