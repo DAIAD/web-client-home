@@ -166,7 +166,7 @@ const meterForecast = function (widget, devices, intl) {
     return {
       name: getDeviceNameByKey(devices, devData.deviceKey) || '', 
       data: getChartMeterData(sessions, 
-                              getChartMeterCategories(time),
+                              xCategories,
                               time
                              ).map(x => x ? x[widget.metric] : null),
     };
@@ -180,10 +180,6 @@ const meterForecast = function (widget, devices, intl) {
                            ).map(x => x && x.volume && x.volume.SUM ? 
                              Math.round(100 * x.volume.SUM) / 100
                              : null),
-    lineType: 'dashed',
-    color: '#2d3480',
-    fill: 0.1,
-    symbol: 'emptyRectangle',
   }]
   : [];
 

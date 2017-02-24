@@ -385,7 +385,7 @@ const queryMeterForecast = function (options) {
 
     return meterAPI.getForecast(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors, response.session));
+      dispatch(receivedQuery(response.success, response.errors));
       dispatch(resetSuccess());
       
       if (!response || !response.success || !Array.isArray(response.meters) || 
