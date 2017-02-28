@@ -99,11 +99,11 @@ const getPreviousPeriod = function (period, timestamp = moment().valueOf()) {
   const sPeriod = period === 'week' ? 'isoweek' : period;
   return {
     startDate: moment(timestamp)
-    .startOf(sPeriod)
-    .subtract(1, period).valueOf(),
+    .subtract(1, period)
+    .startOf(sPeriod).valueOf(),
     endDate: moment(timestamp)
-    .endOf(sPeriod)
-    .subtract(1, period).valueOf(),
+    .subtract(1, period)
+    .endOf(sPeriod).valueOf(),
     granularity: convertPeriodToGranularity(period),
   };
 };
