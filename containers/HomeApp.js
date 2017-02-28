@@ -15,7 +15,7 @@ const { combineMessages } = require('../utils/messages');
 function mapStateToProps(state) {
   return {
     user: state.user,
-    ready: state.section.login.ready,
+    ready: state.user.ready,
     locale: state.locale,
     errors: state.query.errors,
     success: state.query.success,

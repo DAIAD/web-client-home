@@ -3,6 +3,7 @@ const types = require('../constants/ActionTypes');
 const initialState = {
   isAuthenticated: false,
   csrf: null,
+  ready: false,
   profile: {
     devices: []
   }
@@ -20,6 +21,12 @@ const user = function (state = initialState, action) {
       return Object.assign({}, state, {
         isAuthenticated: true
       });
+    
+    case types.HOME_IS_READY:
+      return Object.assign({}, state, {
+        ready: true,
+      });
+
 
     case types.USER_RECEIVED_LOGOUT:
       return Object.assign({}, state, {
