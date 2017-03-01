@@ -102,6 +102,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     mu,
     better,
     comparePercentage,
+    forecasting: false,
     chartCategories,
     chartData,
   };
@@ -185,6 +186,7 @@ const meterForecast = function (widget, devices, intl) {
 
   return {
     ...widget,
+    forecasting: true,
     chartType: 'bar',
     time,
     periods,

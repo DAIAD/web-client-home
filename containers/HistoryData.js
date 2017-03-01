@@ -19,19 +19,8 @@ const { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_
 function mapStateToProps(state) {
   return {
     firstname: state.user.profile.firstname,
-    time: state.section.history.time,
-    activeDevice: state.section.history.activeDevice,
-    activeDeviceType: state.section.history.activeDeviceType,
-    metricFilter: state.section.history.filter,
-    timeFilter: state.section.history.timeFilter,
-    sortFilter: state.section.history.sortFilter,
-    sortOrder: state.section.history.sortOrder,
     devices: state.user.profile.devices,
-    synced: state.section.history.synced,
-    data: state.section.history.data,
-    comparison: state.section.history.comparison,
-    showerIndex: state.section.history.showerIndex,
-    forecasting: state.section.history.forecasting,
+    ...state.section.history,
   };
 }
 
@@ -118,7 +107,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFields,
     deviceTypes,
     csvData,
-    reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.metricFilter)} ${getMetricMu(stateProps.metricFilter)}`,
+    reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.filter)} ${getMetricMu(stateProps.filter)}`,
     hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
     hasShowersBefore: () => hasShowersBefore(stateProps.data),
 

@@ -106,45 +106,38 @@ const History = React.createClass({
     this.props.setMetricFilter(key); 
   },
   handlePeriodSelect: function (key) {
-    this.props.setTimeFilter(key);
-
     const time = timeUtil.getTimeByPeriod(key);
-    if (time) this.props.setTime(time, true);
+    this.props.setQueryAndFetch({ period: key, time });
   },
   handleTimePrevious: function () { 
-    this.props.setTime(this.props.previousPeriod);
+    this.props.setQueryAndFetch({ time: this.props.previousPeriod });
   },
   handleTimeNext: function () { 
-    this.props.setTime(this.props.nextPeriod);
+    this.props.setQueryAndFetch({ time: this.props.nextPeriod });
   },
   handleShowerPrevious: function () {
-    this.props.decreaseShowerIndex();
+    this.props.setQueryAndFetch({ decreaseShowerIndex: true });
   },
   handleShowerNext: function () {
-    this.props.increaseShowerIndex();
+    this.props.setQueryAndFetch({ increaseShowerIndex: true });
   },
   handleDeviceChange: function (val) {
-    const mapped = val.map(d => d.value); 
-    this.props.setActiveDevice(mapped);
+    const keys = val.map(d => d.value); 
+    this.props.setQueryAndFetch({ device: keys });
   },
   handleDeviceTypeSelect: function (val) {
-    this.props.setActiveDeviceType(val);
+    this.props.setQueryAndFetch({ deviceType: val });
   },
   handleActiveDevicesChanged: function (vals) {
-    if (this.props.activeDeviceType === 'METER') { 
-      this.props.setActiveDeviceType('AMPHIRO', false);
-    }
-    this.props.setActiveDevice(vals);
+    const switchDevType = this.props.activeDeviceType === 'METER' ? { deviceType: 'AMPHIRO' } : {};
+    this.props.setQueryAndFetch({ device: vals, ...switchDevType });
   },
   handleForecastingChanged: function (vals) {
-    if (this.props.forecasting) {
-      this.props.disableForecasting();
-    } else {
-      this.props.enableForecasting();
-    }
+    const forecasting = (vals.length > 0 && vals[0] === 'enabled');
+    this.props.setQueryAndFetch({ forecasting });
   },
   handleComparisonSelect: function (val) {
-    this.props.setComparison(val); 
+    this.props.setQueryAndFetch({ comparison: val });
   },
   handleSortSelect: function (e, val) {
     this.props.setSortFilter(val);
@@ -180,7 +173,7 @@ const History = React.createClass({
             <bs.Tabs 
               position="left" 
               tabWidth={20} 
-              activeKey={this.props.metricFilter} 
+              activeKey={this.props.filter} 
               onSelect={this.handleTypeSelect}
             >
               {
@@ -244,7 +237,7 @@ const History = React.createClass({
             { activeDeviceType === 'METER' ?
               <CheckboxGroup 
                 name="forecasting" 
-                value={[forecasting]}
+                value={forecasting ? ['enabled'] : []}
                 onChange={this.handleForecastingChanged}
               >
                 {
@@ -253,7 +246,7 @@ const History = React.createClass({
                       <label key="enable" htmlFor="enable">
                         <Checkbox 
                           id="enable"
-                          value
+                          value="enabled"
                         />
                         <label htmlFor="enable" />
                         Forecasting
@@ -294,7 +287,7 @@ const History = React.createClass({
               this.props.comparison ?
                 <a 
                   style={{ marginLeft: 20, marginTop: 20 }} 
-                  onClick={() => this.props.setComparison(null)}
+                  onClick={() => this.handleComparisonSelect(null)}
                 >
                   Clear
                 </a>
@@ -313,7 +306,7 @@ const History = React.createClass({
                     if (timeFilter === 'custom') { 
                       return (
                         <CustomTimeNavigator 
-                          updateTime={this.props.updateTime}
+                          updateTime={newTime => this.props.setQueryAndFetch({ time: newTime })}
                           time={time}
                         />
                       );

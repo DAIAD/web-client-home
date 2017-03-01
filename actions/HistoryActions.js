@@ -9,7 +9,7 @@ const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
-const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
+const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter, isValidShowerIndex } = require('../utils/sessions');
 const { showerFilterToLength, getCacheKey } = require('../utils/general');
 
 const QueryActions = require('./QueryActions');
@@ -78,7 +78,6 @@ const fetchData = function () {
       .then((sessions) => {
         dispatch(setSessions(sessions));
       })
-
       .then(() => dispatch(setDataSynced()))
       .catch((error) => { 
         console.error('Caught error in history device query:', error); 
@@ -91,7 +90,9 @@ const fetchData = function () {
         deviceKey: activeDevice, 
         time, 
       }))
-      .then(sessions => dispatch(setSessions(sessions)))
+      .then((sessions) => {
+        dispatch(setSessions(sessions));
+      })
       .then(() => dispatch(setDataSynced()))
       .catch((error) => { 
         console.error('Caught error in history meter query:', error); 
@@ -112,6 +113,8 @@ const fetchData = function () {
         dispatch(setComparisonSessions([]));
         console.error('Caught error in history comparison query:', error); 
       });
+      } else {
+        dispatch(setComparisonSessions([]));
       }
 
       // forecasting
@@ -136,15 +139,10 @@ const fetchData = function () {
   };
 };
 
-const enableForecasting = function (query = true) {
-  return function (dispatch, getState) {
-    dispatch({
-      type: types.HISTORY_SET_FORECASTING,
-      enable: true,
-    });
-    if (query) {
-      dispatch(fetchData());
-    }
+const enableForecasting = function () {
+  return {
+    type: types.HISTORY_SET_FORECASTING,
+    enable: true,
   };
 };
 
@@ -244,22 +242,10 @@ const setSortOrder = function (order) {
  *  Important: Device keys must only be of one deviceType (METER or AMPHIRO)  
  * @param {Bool} query=true - If true performs query based on active filters to update data
  */
-const setActiveDevice = function (deviceKey, query = true) {
-  return function (dispatch, getState) {
-    const deviceType = getDeviceTypeByKey(getState().user.profile.devices, deviceKey);
-
-    dispatch({
-      type: types.HISTORY_SET_ACTIVE_DEVICE,
-      deviceKey,
-    });
-
-    if (query) {  
-      if (deviceType === 'AMPHIRO') {
-        dispatch(setShowerIndex(0));
-      }
-      dispatch(setDataUnsynced());
-      dispatch(fetchData());
-    }
+const setActiveDevice = function (deviceKey) {
+  return {
+    type: types.HISTORY_SET_ACTIVE_DEVICE,
+    deviceKey: Array.isArray(deviceKey) ? deviceKey : [deviceKey],
   };
 };
 
@@ -273,16 +259,17 @@ const setActiveDevice = function (deviceKey, query = true) {
  * One of 0: minute, 1: hour, 2: day, 3: week, 4: month
  * @param {Bool} query=true - If true performs query based on active filters to update data
  */
-const setTime = function (time, query = true) {
-  return function (dispatch, getState) {
-    dispatch({
-      type: types.HISTORY_SET_TIME,
-      time,
-    });
-    if (query) { 
-      dispatch(setDataUnsynced());
-      dispatch(fetchData());
-    }
+const setTime = function (time) {
+  return {
+    type: types.HISTORY_SET_TIME,
+    time,
+  };
+};
+
+const setActiveDeviceType = function (deviceType) {
+  return {
+    type: types.HISTORY_SET_ACTIVE_DEVICE_TYPE,
+    deviceType,
   };
 };
 
@@ -294,12 +281,9 @@ const setTime = function (time, query = true) {
  * @param {Array} deviceType - Active device type. One of AMPHIRO, METER  
  * @param {Bool} query=true - If true performs query based on active filters to update data
  */
-const setActiveDeviceType = function (deviceType, query = true) {
+const switchActiveDeviceType = function (deviceType) {
   return function (dispatch, getState) {
-    dispatch({
-      type: types.HISTORY_SET_ACTIVE_DEVICE_TYPE,
-      deviceType,
-    });
+    dispatch(setActiveDeviceType(deviceType));
     const devices = getDeviceKeysByType(getState().user.profile.devices, deviceType);
     dispatch(setActiveDevice(devices, false));
     
@@ -312,13 +296,8 @@ const setActiveDeviceType = function (deviceType, query = true) {
     } else if (deviceType === 'METER') {
       dispatch(setMetricFilter('difference'));
       dispatch(setTimeFilter('year'));
-      dispatch(setTime(getTimeByPeriod('year'), query));
+      dispatch(setTime(getTimeByPeriod('year')));
       dispatch(setSortFilter('timestamp'));
-    }
-    
-    if (query) { 
-      dispatch(setDataUnsynced());
-      dispatch(fetchData());
     }
   };
 };
@@ -375,7 +354,61 @@ const setActiveSession = function (deviceKey, id, timestamp) {
 };
 
 /**
- * Updates all history options provided and switches to history section
+ * Updates active time window in history section
+ * Same as setTime, only without providing granularity 
+ * which is computed based on difference between startDate, endDate
+ * See {@link setTime}
+ */
+const updateTime = function (time) {
+  return function (dispatch, getState) {
+    const stateTime = getState().section.history.time;
+    const { 
+      startDate = stateTime.startDate, 
+      endDate = stateTime.endDate, 
+        granularity = getGranularityByDiff(startDate, endDate) 
+    } = time;
+
+    dispatch(setTime({ startDate, endDate, granularity }));
+  };
+};
+
+/**
+ * Sets comparison filter. Currently active only for deviceType METER
+ *
+ * @param {String} comparison - Comparison filter. One of: 
+ * last (compare with user data from last period) 
+ * @param {Bool} query=true - If true performs query based on active filters to update data
+ */
+const setComparison = function (comparison) {
+  return {
+    type: types.HISTORY_SET_COMPARISON,
+    comparison,
+  };
+    //if (comparison == null) dispatch(setComparisonSessions([]));
+};
+
+const increaseShowerIndex = function () {
+  return function (dispatch, getState) {
+    const index = getState().section.history.showerIndex;
+    if (hasShowersAfter(index)) {
+      dispatch(setShowerIndex(index + 1));
+    }
+  };
+};
+
+const decreaseShowerIndex = function () {
+  return function (dispatch, getState) {
+    const index = getState().section.history.showerIndex;
+    if (hasShowersBefore(getState().section.history.data)) { 
+      dispatch(setShowerIndex(index - 1));
+    }
+  };
+};
+
+/**
+ * Updates all history options provided
+ *
+ * TODO: needs update
  *
  * @param {Object} options - Contains all needed options for history
  * @param {String} options.deviceType - Active device type. One of AMPHIRO, METER
@@ -396,105 +429,52 @@ const setActiveSession = function (deviceKey, id, timestamp) {
  * @param {Object} options.data - If provided data will be copied to history section. 
  * Used to avoid extra fetch
  */
-const linkToHistory = function (options) {
+const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, period, time, data, forecastData } = options;
+    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, data, forecastData } = query;
+
+    dispatch(setDataUnsynced());
+
+    if (deviceType) dispatch(switchActiveDeviceType(deviceType));
+    if (device) dispatch(setActiveDevice(device));
+    if (metric) dispatch(setMetricFilter(metric));
+    if (sessionMetric) dispatch(setSessionFilter(sessionMetric));
+    if (period) dispatch(setTimeFilter(period));
+    if (time) dispatch(updateTime(time));
+    if (increaseIndex === true) dispatch(increaseShowerIndex());
+    if (decreaseIndex === true) dispatch(decreaseShowerIndex());
     
-    if (deviceType) {
-      dispatch(setActiveDeviceType(deviceType, false));
-    }
-    if (device) {
-      dispatch(setActiveDevice([device], false));
-    }
-    if (metric) {
-      dispatch(setMetricFilter(metric));
-    }
-    if (period) {
-      dispatch(setTimeFilter(period));
-    }
-    if (time) {
-      dispatch(setTime(time, false));
-    }
+    if (forecasting === true) dispatch(enableForecasting());
+    else if (forecasting === false) dispatch(disableForecasting());
+
+    if (comparison) dispatch(setComparison(comparison));
+    else if (comparison === null) dispatch(setComparison(null));
 
     if (device != null && showerId != null) { 
-      dispatch(setSessionFilter(metric)); 
       dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
-    } else { 
-      dispatch(resetActiveSession()); 
-    }
+    } 
 
     if (forecastData && Array.isArray(forecastData)) {
-      dispatch(enableForecasting(false));
       dispatch(setForecastData(forecastData));
-    } else {
-      dispatch(disableForecasting());
     }
 
     if (data && Array.isArray(data)) { 
       dispatch(setSessions(data));
       dispatch(setDataSynced());
-    }
+    }    
+  };
+};
+const setQueryAndFetch = function (query) {
+  return function (dispatch, getState) {
+    dispatch(setQuery(query));
+    dispatch(fetchData());
+  };
+};
 
+const linkToHistory = function (options) {
+  return function (dispatch, getState) {
+    dispatch(setQuery(options));
     dispatch(push('/history'));
-  };
-};
-
-/**
- * Updates active time window in history section
- * Same as setTime, only without providing granularity 
- * which is computed based on difference between startDate, endDate
- * See {@link setTime}
- */
-const updateTime = function (time, query = true) {
-  return function (dispatch, getState) {
-    let { startDate, endDate } = time;
-    startDate = startDate || getState().section.history.time.startDate;
-    endDate = endDate || getState().section.history.time.endDate;
-
-    const granularity = getGranularityByDiff(startDate, endDate);
-
-    dispatch(setTime({ startDate, endDate, granularity }, query));
-  };
-};
-
-/**
- * Sets comparison filter. Currently active only for deviceType METER
- *
- * @param {String} comparison - Comparison filter. One of: 
- * last (compare with user data from last period) 
- * @param {Bool} query=true - If true performs query based on active filters to update data
- */
-const setComparison = function (comparison, query = true) {
-  return function (dispatch, getState) {
-    dispatch({
-      type: types.HISTORY_SET_COMPARISON,
-      comparison,
-    });
-    if (comparison == null) dispatch(setComparisonSessions([]));
-
-    if (query) {
-      dispatch(fetchData());
-    }
-  };
-};
-
-const increaseShowerIndex = function () {
-  return function (dispatch, getState) {
-    const index = getState().section.history.showerIndex;
-    if (hasShowersAfter(index)) {
-      dispatch(setShowerIndex(index + 1));
-      dispatch(fetchData());
-    }
-  };
-};
-
-const decreaseShowerIndex = function () {
-  return function (dispatch, getState) {
-    const index = getState().section.history.showerIndex;
-    if (hasShowersBefore(getState().section.history.data)) { 
-      dispatch(setShowerIndex(index - 1));
-      dispatch(fetchData());
-    }
   };
 };
 
@@ -506,7 +486,7 @@ module.exports = {
   updateTime,
   setComparison,
   setActiveDevice,
-  setActiveDeviceType,
+  switchActiveDeviceType,
   setActiveSession,
   resetActiveSession,
   setMetricFilter,
@@ -519,4 +499,5 @@ module.exports = {
   decreaseShowerIndex,
   enableForecasting,
   disableForecasting,
+  setQueryAndFetch,
 };
