@@ -1,120 +1,80 @@
 const React = require('react');
 const bs = require('react-bootstrap');
-const { FormattedMessage } = require('react-intl');
+const { FormattedMessage, FormattedDate } = require('react-intl');
 const Select = require('react-select');
 
-const CommonForm = React.createClass({
-  componentWillMount: function () {
-    if (!this.props.edit) {
-      this.props.clearCommon();
-    }
-  },
-  submit: function (e) {
-    e.preventDefault();
-    // TODO: Proper Validation
-    if (this.props.common.name === '') {
-      alert('no name');
-    } else if (this.props.edit) {
-      this.props.setConfirm(this.props.common, 'edit'); 
-      //this.props.editCommon(this.state.common);
-      //this.props.close();
-    } else {
-      this.props.setConfirm({ 
-        ...this.props.common, 
-        id: Math.max(...this.props.allCommons.map(c => c.id)) + 1, 
-        createdOn: new Date().valueOf(), 
-        owners: [],
-        members: [],
-        joined: true,
-        owned: true,
-      }, 'create'); 
-    }
-  },
-  render: function () {
-    const { close, allCommons, edit, owned, allMembers = [], deleteCommon, updateCommon, common } = this.props;
+const { uploadFile } = require('../../../../utils/general');
+const { IMAGES } = require('../../../../constants/HomeConstants');
 
-    if (!common) {
-      return <div />;
-    }
-    return (
-      <div style={{ width: 400 }}>
-      <form 
-        id="form-create-modal"
-        onSubmit={this.submit}
-        style={{ textAlign: 'left' }} 
-      >
-        
-        <bs.Input 
-          type="text"
-          placeholder="Common name..."
-          label="Name"
-          disabled={edit && !owned}
-          onChange={(e) => { 
-            updateCommon({ ...common, name: e.target.value });
-          }}
-          value={common.name}
-        />
-        
-        <bs.Input 
-          type="textarea"
-          placeholder="Common description..."
-          label="Description"
-          disabled={edit && !owned}
-          onChange={(e) => { 
-            updateCommon({ ...common, description: e.target.value });
-          }}
-          value={common.description}
-        />
-      { edit ?
-        <div>
-          <label htmlFor="select-owners">Owners</label>
-          <Select
-            id="select-owners"
-            name="select-owners"
-            disabled={edit && !owned}
-            multi
-            value={common.owners.map(m => m.id)}
-            options={common.members.map(m => ({ value: m.id, label: m.name }))}
-            onChange={(val) => { 
-              console.log('changed:', val); 
-              updateCommon({ ...common, owners: common.members.filter(m => val.map(v => v.value).includes(m.id)), });
-            }}
-          />
-        </div>
-        : <div /> 
-      }
-      </form>
-      <br />
-      { !edit || owned ? 
-        <button style={{ float: 'right' }} onClick={this.submit}>{ edit ? 'Update' : 'Create' }</button>
-        :
-          <div />
-       }
+function CommonForm(props) {
+  const { values, onChange, disabled, errors } = props;
+  return (
+    <div>
       { 
-        edit && owned ?
-          <button
-            onClick={() => { this.props.setConfirm(this.props.common, 'delete'); }}
-            style={{ float: 'right', marginRight: 20 }}
-          >
-            Delete common
-          </button>
-        :
-          <span />
-     }
-     { 
-        edit ?
-          <button
-            onClick={() => { this.props.setConfirm(this.props.common, 'leave'); }}
-            style={{ float: 'right', marginRight: 20 }}
-          >
-            Leave common
-          </button>
-        :
-          <span />
-     }
-      </div>
-    );
-  }
-});
+        values.image ? 
+          <img 
+            style={{ 
+              marginTop: -5, 
+              marginBottom: 20,
+              height: 100,
+              width: 100,
+              border: '2px #2D3580 solid',
+            }} 
+            src={`data:image/png;base64,${values.image}`} 
+            alt="commons" 
+          />
+          :
+          <img 
+            style={{ 
+              marginTop: -5, 
+              marginBottom: 20,
+              height: 100,
+              width: 100,
+              background: '#2D3580',
+              border: '2px #2D3580 solid',
+            }} 
+            src={`${IMAGES}/commons-menu.svg`} 
+            alt="commons-default" 
+          />
+      }
+      { !disabled ? 
+      <input
+        id="file-uploader"
+        type="file"
+        onChange={(e) => {
+          const file = e.target.files[0];
+          uploadFile(file,
+                     (value) => {
+                       //if (errors) { dismissError(); }
+                       onChange({ image: value });
+                     },
+                     (error) => {
+                       console.error('error uploading', error);
+                       //setError(error);
+                     });
+        }}
+      />
+      : <div />
+      }
+      <hr />
+      <bs.Input 
+        type="text"
+        placeholder="Common name..."
+        label="Name"
+        disabled={disabled}
+        onChange={(e) => { onChange({ name: e.target.value }); }}
+        value={values.name}
+      />
+      <bs.Input 
+        type="textarea"
+        placeholder="Common description..."
+        label="Description"
+        disabled={disabled}
+        onChange={(e) => { onChange({ description: e.target.value }); }}
+        value={values.description}
+      /> 
+    </div>
+  );
+}
 
 module.exports = CommonForm;

@@ -1,36 +1,93 @@
 const React = require('react');
 const bs = require('react-bootstrap');
-const { FormattedMessage } = require('react-intl');
-const Select = require('react-select');
+const { FormattedMessage, FormattedDate, FormattedTime } = require('react-intl');
 
-const CommonForm = require('./Form');
+const CommonFormFields = require('./Form');
 
-function EditCommons(props) {
-  const { mode, myCommons, allCommons, setConfirm, setForm, updateCommon, clearCommon, common: commonForm, params } = props;
-  //const defaultActive = params && params.id ? parseInt(params.id, 0) : null;
-  //defaultActiveKey={defaultActive}
+function UpdateCommons(props) {
+  const { myCommons, commonForm, actions } = props;
+  const { confirmUpdate, confirmDelete, confirmLeave, updateCommonForm } = actions;
+  if (myCommons.length === 0) {
+    return <span>No commons joined.</span>;
+  }
   return (
     <bs.Accordion 
       className="col-md-10" 
       animation={false}
-      onSelect={(val) => { updateCommon(myCommons.find(c => c.id === val)); }}
+      onSelect={(val) => { updateCommonForm(myCommons.find(c => c.key === val)); }}
     >
       {
         myCommons.map(common => ( 
           <bs.Panel 
-            key={common.id}
-            header={common.name}
-            eventKey={common.id}
+            key={common.key}
+            header={common.name || 'No name'}
+            eventKey={common.key}
           >
-            <CommonForm
-              allCommons={allCommons}
-              setConfirm={setConfirm}
-              owned={common.owned}
-              common={commonForm}
-              updateCommon={updateCommon}
-              clearCommon={clearCommon}
-              edit
-            />
+            <form 
+              id={`form-common-update-${common.key}`}
+              style={{ width: '100%' }}
+              onSubmit={(e) => { 
+                e.preventDefault();
+                confirmUpdate();
+              }}
+            >
+              <CommonFormFields
+                values={commonForm}
+                onChange={updateCommonForm}
+                disabled={!commonForm.owner}
+              />
+              
+            <label htmlFor="common-size">Members:</label>
+            <span id="common-size">{commonForm.size}</span>
+
+            <br />
+            <label htmlFor="common-created">Created:</label>
+            <span id="common-created">
+              <FormattedDate value={commonForm.createdOn} />
+            </span>
+            
+            <br />
+            <label htmlFor="common-updated">Last updated:</label>
+            <span id="common-updated">
+              <FormattedDate value={commonForm.updatedOn} />
+              &nbsp;
+              <FormattedTime value={commonForm.updatedOn} />
+            </span>
+                    
+              { commonForm.owner ? 
+                <div>
+                  
+                  <bs.Button 
+                    type="submit"
+                    style={{ float: 'right' }} 
+                  >
+                    Update
+                  </bs.Button>
+
+                  <bs.Button 
+                    style={{ float: 'right', marginRight: 10 }} 
+                    bsStyle="danger"
+                    onClick={() => { 
+                      confirmDelete();
+                    }}
+                  >
+                    Delete Common
+                  </bs.Button>
+                </div>
+                :
+                <div >
+                  <bs.Button 
+                    style={{ float: 'right', marginRight: 10 }} 
+                    bsStyle="warning"
+                    onClick={() => {
+                      confirmLeave();
+                    }}
+                  >
+                    Leave Common
+                  </bs.Button>
+                </div>
+              }
+            </form>
           </bs.Panel>
           ))
       }
@@ -38,4 +95,4 @@ function EditCommons(props) {
   );
 }
 
-module.exports = EditCommons;
+module.exports = UpdateCommons;

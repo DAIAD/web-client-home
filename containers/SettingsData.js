@@ -43,18 +43,29 @@ function mapDispatchToProps(dispatch) {
       dismissError,
       goTo: route => push(route),
       updateDevice,
-    }, dispatch),
-  };
+    }, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   return {
     ...stateProps,
-    ...dispatchProps,
+    actions: {
+      ...dispatchProps,
+      updateProfileForm: data => dispatchProps.setForm('profileForm', data),
+      updateDeviceForm: data => dispatchProps.setForm('deviceForm', data),
+      updateCommonForm: common => dispatchProps.setForm('commonForm', common), 
+      clearCommonForm: () => dispatchProps.resetForm('commonForm'), 
+      searchCommons: () => { 
+        dispatchProps.searchCommons({ name: stateProps.searchFilter }); 
+        dispatchProps.resetForm('commonForm');
+      },
+      confirmCreate: () => dispatchProps.setConfirm(stateProps.commonForm, 'create'),
+      confirmUpdate: () => dispatchProps.setConfirm(stateProps.commonForm, 'update'),
+      confirmDelete: () => dispatchProps.setConfirm(stateProps.commonForm, 'delete'),
+      confirmJoin: () => dispatchProps.setConfirm(stateProps.commonForm, 'join'),
+      confirmLeave: () => dispatchProps.setConfirm(stateProps.commonForm, 'leave'),
+    },
     ...ownProps,
-    allCommonsFiltered: stateProps.allCommons
-      .filter(common => !common.joined)
-      .filter(common => stateProps.searchFilter === '' ? true : matches(common.name, stateProps.searchFilter)),
   };
 }
 

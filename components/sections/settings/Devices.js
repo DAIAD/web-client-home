@@ -202,14 +202,14 @@ function MeterProperties(props) {
 
 function DevicesForm(props) {
   const { intl, devices, deviceForm, actions } = props;
-  const { updateDevice, setForm, resetForm, fetchProfile } = actions;
+  const { updateDevice, updateDeviceForm, fetchProfile } = actions;
   const _t = x => intl.formatMessage({ id: x });
   return (
     <div>
       <bs.Accordion 
         className="col-xs-10"
         onSelect={(val) => { 
-          setForm('deviceForm', deviceToDeviceForm(devices.find(d => d.deviceKey === val)));
+          updateDeviceForm(deviceToDeviceForm(devices.find(d => d.deviceKey === val)));
         }}
       >
         {
@@ -232,7 +232,7 @@ function DevicesForm(props) {
             >
               <Device 
                 fetchProfile={fetchProfile}
-                updateForm={v => setForm('deviceForm', v)}
+                updateForm={updateDeviceForm}
                 updateDevice={updateDevice}
                 intl={intl} 
                 deviceForm={deviceForm}

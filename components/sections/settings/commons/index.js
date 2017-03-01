@@ -38,9 +38,8 @@ function Confirm(props) {
 }
 
 function CommonsSettings(props) {
-  const { searchFilter, confirmation, active, mode, myCommons, allCommons, allCommonsFiltered, actions, params, children, commonForm, routes } = props;
-  const { setSearchFilter, setConfirm, clickConfirm, resetConfirm, 
-    setForm, resetForm, goTo } = actions;
+  const { searchFilter, confirm, active, mode, myCommons, allCommons, actions, params, children, commonForm, routes, searchCommons } = props;
+  const { setSearchFilter, setConfirm, clickConfirm, resetConfirm, goTo } = actions;
 
   const COMMONS_MENU = MAIN_MENU
   .find(item => item.name === 'settings')
@@ -75,25 +74,14 @@ function CommonsSettings(props) {
       </SidebarRight> 
       
       <div style={{ margin: 20, height: '100%', width: '100%' }}>
-      {
-        React.cloneElement(children, { 
-          setConfirm, 
-          allCommons, 
-          allMembers: [], 
-          common: commonForm, 
-          myCommons, 
-          updateCommon: common => setForm('commonForm', common), 
-          clearCommon: () => resetForm('commonForm'), 
-          setSearchFilter, 
-          searchFilter, 
-          allCommonsFiltered
-        })
-      } 
-    </div>
-      
+        {
+          React.cloneElement(children, props)
+        }
+      </div>
+
       <Confirm
-        show={confirmation !== null}
-        confirmation={confirmation}
+        show={confirm !== null}
+        confirmation={confirm}
         action={clickConfirm}
         close={resetConfirm}
       />

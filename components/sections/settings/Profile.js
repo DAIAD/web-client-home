@@ -11,9 +11,8 @@ const { COUNTRIES, TIMEZONES, SYSTEM_UNITS, PNG_IMAGES } = require('../../../con
 
 
 function ProfileForm(props) {
-  const { intl, profile, locale, errors, actions } = props;
-  const { saveToProfile, fetchProfile, setLocale, setForm, setError, dismissError } = actions;
-  const setProfileForm = data => setForm('profileForm', data);
+  const { intl, profileForm: profile, locale, errors, actions } = props;
+  const { saveToProfile, updateProfileForm, fetchProfile, setLocale, setForm, setError, dismissError } = actions;
   const _t = x => intl.formatMessage({ id: x });
   return (
     <form 
@@ -61,7 +60,7 @@ function ProfileForm(props) {
           uploadFile(file,
                      (value) => {
                        if (errors) { dismissError(); }
-                       setProfileForm({ photo: value });
+                       updateProfileForm({ photo: value });
                      },
                      (error) => {
                        setError(error);
@@ -80,25 +79,25 @@ function ProfileForm(props) {
         type="text" 
         label={_t('profile.firstname')} 
         value={profile.firstname} 
-        onChange={e => setProfileForm({ firstname: e.target.value })} 
+        onChange={e => updateProfileForm({ firstname: e.target.value })} 
       />
       <bs.Input 
         type="text" 
         label={_t('profile.lastname')} 
         value={profile.lastname}  
-        onChange={e => setProfileForm({ lastname: e.target.value })} 
+        onChange={e => updateProfileForm({ lastname: e.target.value })} 
       />
       <bs.Input 
         type="text" 
         label={_t('profile.address')} 
         value={profile.address} 
-        onChange={e => setProfileForm({ address: e.target.value })} 
+        onChange={e => updateProfileForm({ address: e.target.value })} 
       />
       <bs.Input 
         type="text" 
         label={_t('profile.zip')} 
         value={profile.zip}  
-        onChange={e => setProfileForm({ zip: e.target.value })} 
+        onChange={e => updateProfileForm({ zip: e.target.value })} 
       />
 
       <div className="form-group">
@@ -116,7 +115,7 @@ function ProfileForm(props) {
             'Select country'}
           id="country-switcher"
           onSelect={(e, val) => { 
-            setProfileForm({ country: val });
+            updateProfileForm({ country: val });
           }}
         >
           {
@@ -149,7 +148,7 @@ function ProfileForm(props) {
             _t('profile.unit.default')}
           value={profile.unit}
           onSelect={(e, val) => { 
-            setProfileForm({ unit: val });
+            updateProfileForm({ unit: val });
           }}
         >
           {
@@ -180,7 +179,7 @@ function ProfileForm(props) {
             'Select timezone'}
           id="timezone-switcher"
           onSelect={(e, val) => { 
-            setProfileForm({ timezone: val });
+            updateProfileForm({ timezone: val });
           }}
         >
           {
@@ -210,7 +209,7 @@ function ProfileForm(props) {
           intl={intl}
           setLocale={(val) => { 
             setLocale(val); 
-            setProfileForm({ locale: val });
+            updateProfileForm({ locale: val });
           }}
           locale={locale}
         />
