@@ -47,17 +47,12 @@ const initHome = function (profile) {
         dispatch(DashboardActions.updateLayout(configuration.layout, false));
       }
     }
-    
-    dispatch(CommonsActions.getMyCommons())
-    .then(commons => Array.isArray(commons) && commons.length > 0 ? 
-          dispatch(CommonsActions.setActive(commons[0].key)) 
-          : null);
-
+     
     if (getMeterCount(profile.devices) === 0) {
-      dispatch(HistoryActions.setActiveDeviceType('AMPHIRO', false));
+      dispatch(HistoryActions.switchActiveDeviceType('AMPHIRO'));
       dispatch(DashboardActions.setDeviceType('AMPHIRO'));
     } else {
-      dispatch(HistoryActions.setActiveDeviceType('METER', false));
+      dispatch(HistoryActions.switchActiveDeviceType('METER'));
     }
 
     const profileForm = filterObj(profile, [
@@ -75,7 +70,15 @@ const initHome = function (profile) {
     ]);
     
     dispatch(FormActions.setForm('profileForm', profileForm));
-    return dispatch(DashboardActions.fetchAllWidgetsData())
+
+    const fetchCommonsData = dispatch(CommonsActions.getMyCommons())
+    .then(commons => Array.isArray(commons) && commons.length > 0 ? 
+          dispatch(CommonsActions.setActive(commons[0].key)) 
+          : null);
+
+    const fetchWidgetsData = dispatch(DashboardActions.fetchAllWidgetsData());
+
+    return Promise.all([fetchCommonsData, fetchWidgetsData])
     .then(() => {
       dispatch(LocaleActions.setLocale(profile.locale));
       return Promise.resolve({ success: true, profile });
