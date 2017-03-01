@@ -12,7 +12,7 @@ const callAPI = function (url, data = {}, method = 'POST') {
       'Content-Type': 'application/json',
       'X-CSRF-TOKEN': csrf
     },
-    ...(method === 'POST' ?
+    ...((method === 'POST' || method === 'PUT') ?
         ({ body: JSON.stringify(data) })
           : {})
   };

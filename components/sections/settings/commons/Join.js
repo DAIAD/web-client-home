@@ -1,58 +1,83 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
-const Select = require('react-select');
 
 const Table = require('../../../helpers/Table');
 
 const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSchema } = require('../../../../schemas/commons');
 
+const { debounce } = require('../../../../utils/general');
+
+const { COMMONS_SEARCH_PAGE } = require('../../../../constants/HomeConstants');
 
 const JoinCommons = React.createClass({
   componentWillMount: function () {
-    this.props.clearCommon();
-  },
-  submit: function () {
-    this.props.setConfirm(this.props.common, 'join'); 
+    if (!this.props.synced) {
+      this.props.actions.searchCommons();
+    }
   },
   render: function () {
-    const { allCommonsFiltered, setSearchFilter, searchFilter, updateCommon, clearCommon, common } = this.props;
+    const { allCommons, searchFilter, count, pagingIndex, commonForm, actions } = this.props;
+    const { updateCommonForm, clearCommonForm, searchCommons, setSearchFilter, setSearchPagingIndex, confirmJoin, setCommonsQueryAndFetch } = actions;
     return (
-      <div style={{ width: '100%' }}>
-        <form className="search-field">
+      <div style={{ margin: 20 }}>
+        <form 
+          className="search-field"
+          onSubmit={(e) => { e.preventDefault(); setCommonsQueryAndFetch({ index: 0 }); }}
+        >
           <input 
             type="text"
             placeholder="Search..."
-            onChange={(e) => { setSearchFilter(e.target.value); }}
+            onChange={(e) => { 
+              setSearchFilter(e.target.value);
+              debounce(() => { 
+                setCommonsQueryAndFetch({ index: 0 });
+              }, 300)();
+            }}
             value={searchFilter}
           />
-          <button className="clear-button" type="reset" onClick={(e) => { setSearchFilter(''); }} />
+          <button 
+            className="clear-button" 
+            type="reset" 
+            onClick={(e) => { setCommonsQueryAndFetch({ index: 0, name: '' }); }} 
+          />
         </form>
         
       <Table
         className="session-list"
         rowClassName={row => 
-          `session-list-item inverted ${common.id === row.id ? 'selected' : ''}`
+          `session-list-item inverted ${commonForm.key === row.key ? 'selected' : ''}`
         }
         fields={allCommonsSchema}
-        data={allCommonsFiltered}
+        data={allCommons}
+        pagination={{
+            total: Math.ceil(count / COMMONS_SEARCH_PAGE),
+            active: pagingIndex,
+            onPageClick: (page) => { 
+              setCommonsQueryAndFetch({ index: page - 1 });
+            },
+          }}
+
         onRowClick={(row) => {
-          if (common.id === row.id) {
-            clearCommon();
+          if (commonForm.key === row.key) {
+            clearCommonForm();
           } else {
-            updateCommon(row);
-            }
+            updateCommonForm(row);
+          }
         }}
       />
       {
-        common.id ?
-          <button 
+        commonForm.key && !commonForm.member ?
+          <bs.Button 
             type="submit"
             style={{ marginTop: 20, float: 'right' }} 
-            onClick={this.submit}
+            onClick={() => {
+              //setConfirm(commonForm, 'join');
+              confirmJoin();
+            }}
           >
             Join
-          </button>
+          </bs.Button>
         :
           <div />
       }

@@ -4,9 +4,9 @@ const { IMAGES } = require('../constants/HomeConstants');
 
 const commons = [
   {
-    id: 'id',
-    name: '',
-    value: () => '',
+    id: 'key',
+    name: 'Key',
+    //value: () => '',
   },
   {
     id: 'name',
@@ -36,7 +36,7 @@ const commons = [
 
 const allCommons = [
   {
-    id: 'id',
+    id: 'key',
     name: '',
     value: () => '',
   },
@@ -45,12 +45,22 @@ const allCommons = [
     name: 'Name',
   },
   {
-    id: 'membersCount',
-    name: '# members',
+    id: 'size',
+    name: 'Members',
   },
   {
     id: 'description',
     name: 'Description',
+  },
+  {
+    id: 'createdOn',
+    name: 'Created',
+    value: value => <FormattedDate value={value} />,
+  },
+  {
+    id: 'member',
+    name: 'Member',
+    value: value => value ? <i style={{ marginRight: 20 }} className="checkbox fa fa-check" /> : <i />,
   },
   {
     id: 'selected',
@@ -64,28 +74,32 @@ const allCommons = [
 
 const members = [
   {
-    id: 'id',
+    id: 'key',
     name: '',
     value: () => ''
   },
   {
     id: 'ranking',
     name: 'Ranking',
-    value: (value, field, row) => `#${value}`, 
+    //value: (value, field, row) => `#${value}`, 
   },
   {
-    id: 'name',
-    name: 'Name',
+    id: 'firstname',
+    name: 'First name',
   },
   {
-    id: 'memberSince',
+    id: 'lastname',
+    name: 'Last name',
+  },
+  {
+    id: 'joinedOn',
     name: 'Member since',
     value: value => (<FormattedDate value={value} />),
   },
   {
     id: 'consumption',
     name: 'Last month',
-    value: value => `${value} lt`,
+    //value: value => `${value} lt`,
   },
   {
     id: 'efficiency',

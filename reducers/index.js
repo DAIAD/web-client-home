@@ -10,6 +10,7 @@ const messages = require('./messages');
 const forms = require('./forms');
 const viewport = require('./viewport');
 const commons = require('./commons');
+const manageCommons = require('./manageCommons');
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -23,6 +24,10 @@ const rootReducer = combineReducers({
     dashboard,
     messages,
     commons,
+    settings: combineReducers({
+      commons: manageCommons,
+    }),
+
   }),
 });
 

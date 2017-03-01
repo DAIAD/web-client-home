@@ -15,26 +15,28 @@ const theme = require('../chart/themes/history');
 
 const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSchema } = require('../../schemas/commons');
 const timeUtil = require('../../utils/time');
-const { METER_PERIODS } = require('../../constants/HomeConstants');
+const { debounce } = require('../../utils/general');
 
+const { IMAGES, METER_PERIODS, COMMONS_MEMBERS_PAGE, COMMONS_USER_SORT } = require('../../constants/HomeConstants');
 
 const CommonsDetails = React.createClass({
   handlePeriodSelect: function (key) {
-    this.props.actions.setTimeFilter(key);
-
     const time = timeUtil.getTimeByPeriod(key);
-    if (time) this.props.actions.setTime(time, true);
+    if (time) this.props.actions.setDataQueryAndFetch({ timeFilter: key, time });
   },
   handlePrevious: function () { 
-    this.props.actions.setTime(this.props.previousPeriod, true);
+    this.props.actions.setDataQueryAndFetch({ time: this.props.previousPeriod });
   },
   handleNext: function () { 
-    this.props.actions.setTime(this.props.nextPeriod, true);
+    this.props.actions.setDataQueryAndFetch({ time: this.props.nextPeriod });
+  },
+  handleSortSelect: function (e, val) {
+    this.props.actions.setMemberQueryAndFetch({ sortBy: val });
   },
   render: function () {
-    const { active, intl, time, timeFilter, chartCategories, chartData, allCommons, selectedMembers, sortFilter, sortOrder, sortOptions, memberSearchFilter, actions } = this.props;
-    const { editCommon, deleteCommon, leaveCommon, addMemberToChart, removeMemberFromChart, setSortFilter, setSortOrder, setMemberSearchFilter } = actions;
-    
+    const { active, intl, time, timeFilter, chartCategories, chartData, members, actions } = this.props;
+    const { selected: selectedMembers, active: activeMembers, sortFilter, sortOrder, searchFilter, count: memberCount, pagingIndex } = members;
+    const { addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData, setDataQueryAndFetch } = actions;
     if (!active) {
       return (
         <div>
@@ -42,7 +44,7 @@ const CommonsDetails = React.createClass({
         </div>
       );
     }
-    const { name, members, owned } = active;
+    const { name, owned } = active;
 
     const periods = METER_PERIODS
     .filter(period => period.id !== 'day');
@@ -74,9 +76,7 @@ const CommonsDetails = React.createClass({
             timeFilter === 'custom' ?  
               <CustomTimeNavigator 
                 updateTime={(newTime) => { 
-                  //this.setTimeAndQuery({ ...time, ...newTime });
-                  //this.props.actions.setTimeFilter(key);
-                  this.props.actions.setTime(newTime, true);
+                   this.props.actions.setDataQueryAndFetch({ time: newTime });
                 }}
                 time={time}
               />
@@ -113,14 +113,29 @@ const CommonsDetails = React.createClass({
         
         <div>
         <div style={{ float: 'left', marginLeft: 20 }}>
-          <form className="search-field" onSubmit={(e) => { e.preventDefault(); }}>
+          <form 
+            className="search-field" 
+            onSubmit={(e) => { 
+              e.preventDefault(); 
+              setMemberQueryAndFetch({ index: 0 }); 
+            }}
+          >
             <input 
               type="text"
               placeholder="Search member..."
-              onChange={(e) => { setMemberSearchFilter(e.target.value); }}
-              value={memberSearchFilter}
+              onChange={(e) => { 
+                setMemberSearchFilter(e.target.value);
+                debounce(() => { 
+                  setMemberQueryAndFetch({ index: 0 }); 
+                }, 300)();
+              }}
+              value={searchFilter}
             />
-            <button className="clear-button" type="reset" onClick={(e) => { setMemberSearchFilter(''); }} />
+            <button 
+              className="clear-button" 
+              type="reset" 
+              onClick={(e) => { setMemberQueryAndFetch({ index: 0, name: '' }); }} 
+            />
           </form>
 
         </div>
@@ -132,35 +147,35 @@ const CommonsDetails = React.createClass({
             style={{ float: 'right', marginLeft: 10, textAlign: 'right' }}
           >
             <bs.DropdownButton
-              title={sortOptions.find(sort => sort.id === sortFilter) ? 
-                sortOptions.find(sort => sort.id === sortFilter).title
-                : 'Volume'}
+              title={COMMONS_USER_SORT.find(sort => sort.id === sortFilter) ? 
+                COMMONS_USER_SORT.find(sort => sort.id === sortFilter).title
+                : 'Last name'}
               id="sort-by"
               defaultValue={sortFilter}
-              onSelect={(e, val) => setSortFilter(val)}
+              onSelect={this.handleSortSelect}
             >
               {
-                sortOptions.map(sort => 
-                  <bs.MenuItem 
-                    key={sort.id} 
-                    eventKey={sort.id} 
+                COMMONS_USER_SORT.map(sort =>
+                  <bs.MenuItem
+                    key={sort.id}
+                    eventKey={sort.id}
                     value={sort.id}
                   >
                     {sort.title}
                   </bs.MenuItem>
                 )
-              } 
+              }
             </bs.DropdownButton>
 
             <div style={{ float: 'right', marginLeft: 20 }}>
               {
                 sortOrder === 'asc' ? 
-                  <a onClick={() => setSortOrder('desc')}>
-                    <i className="fa fa-arrow-down" />
+                  <a onClick={() => setMemberQueryAndFetch({ sortOrder: 'desc' })}>
+                    <i className="fa fa-arrow-up" />
                   </a>
                  :
-                 <a onClick={() => setSortOrder('asc')}>
-                   <i className="fa fa-arrow-up" />
+                 <a onClick={() => setMemberQueryAndFetch({ sortOrder: 'asc' })}>
+                   <i className="fa fa-arrow-down" />
                  </a>
               }
             </div>
@@ -170,21 +185,25 @@ const CommonsDetails = React.createClass({
 
       <br />
       <br />
+        <span style={{ marginLeft: 20 }}><b>Found:</b> {memberCount}</span>
+        <bs.Button style={{ marginRight: 20, float: 'right' }}alt="chart-button" onClick={() => { fetchData(); }}>Compare</bs.Button>
         <p style={{ marginLeft: 20 }}><i className="fa fa-info-circle" />&nbsp;<i>Click on up to 3 members to compare against</i></p>
         <Table
           className="session-list"
-          rowClassName={row => selectedMembers.find(m => m.id === row.id) ? 'session-list-item selected' : 'session-list-item'}
+          rowClassName={row => selectedMembers.find(m => m.key === row.key) ? 'session-list-item selected' : 'session-list-item'}
           fields={membersSchema}
-          data={members}
+          data={activeMembers}
           pagination={{
-            total: 3,
-            active: 2,
-            onPageClick: (page) => {},
+            total: Math.ceil(memberCount / COMMONS_MEMBERS_PAGE),
+            active: pagingIndex,
+            onPageClick: (page) => { 
+              setMemberQueryAndFetch({ index: page - 1 });
+            },
           }}
           onRowClick={(row) => {
-            if (selectedMembers.map(u => u.id).includes(row.id)) {
+            if (selectedMembers.map(u => u.key).includes(row.key)) {
               removeMemberFromChart(row);
-            } else {
+            } else if (selectedMembers.length < 3) {
               addMemberToChart({ ...row, selected: selectedMembers.length + 1 });
             }
           }}
@@ -195,11 +214,19 @@ const CommonsDetails = React.createClass({
 });
 
 const Commons = React.createClass({
+  componentWillMount: function () {
+    console.log('commons will mount');
+    if (!this.props.synced) {
+      console.log('fetching');
+      this.props.actions.fetchData();
+    } 
+    if (this.props.active) {
+      this.props.actions.searchCommonMembers();
+    }
+  },
   render: function () {
-    const { intl, active, commons, allCommons, allCommonsFiltered, mode, searchFilter, confirmation, actions } = this.props;
-    const { switchActive, joinCommon, leaveCommon, createCommon, editCommon, deleteCommon, 
-      switchToNormal, switchToEdit, switchToCreate, switchToJoin, setSearchFilter, 
-      resetConfirm, confirm, clickConfirm, goToManage } = actions;
+    const { intl, active, myCommons, mode, searchFilter, members: { count: memberCount }, actions } = this.props;
+    const { setDataQueryAndFetch, setSearchFilter, resetConfirm, confirm, clickConfirm, goToManage } = actions;
     const { selected, selectedUsers } = this.props;
     return (
       <MainSection id="section.commons">
@@ -225,41 +252,71 @@ const Commons = React.createClass({
           <SidebarRight> 
             <div className="commons-right">
               
-              <div>
-                <label htmlFor="select-commons"><h5 style={{ textAlign: 'center' }}>Active common</h5></label>
+              <div> 
+                { 
+                  active && active.image ? 
+                    <img 
+                      style={{ 
+                        marginTop: 20, 
+                        marginBottom: 20,
+                        height: 100,
+                        width: 100,
+                        border: '2px #2D3580 solid',
+                      }} 
+                      src={`data:image/png;base64,${active.image}`} 
+                      alt="commons" 
+                    />
+                    :
+                    <img 
+                      style={{ 
+                        marginTop: 20, 
+                        marginBottom: 20,
+                        height: 100,
+                        width: 100,
+                        background: '#2D3580',
+                        border: '2px #2D3580 solid',
+                      }} 
+                      src={`${IMAGES}/commons-menu.svg`} 
+                      alt="commons-default" 
+                    />
+                }
+                { this.props.lala ? 
+                  <label htmlFor="select-commons"><h5 style={{ textAlign: 'center' }}>Active common</h5></label> : <span /> 
+                }
                 <bs.DropdownButton
                   pullRight
                   title={active ? active.name : 'Explore'}
                   id="select-commons"
                   value={active ? active.id : null}
                   onSelect={(e, val) => { 
-                    switchActive(val);
+                    setDataQueryAndFetch({ active: val });
                   }}
                 >
                   {
-                    commons.map(common => 
+                    myCommons.map(common => 
                       <bs.MenuItem 
-                        key={common.id} 
-                        eventKey={common.id} 
-                        value={common.id}
+                        key={common.key} 
+                        eventKey={common.key} 
+                        value={common.key}
                       >
-                      { common.name }
+                      { common.name || 'No name'}
                       </bs.MenuItem>
                     )
                   }	
                 </bs.DropdownButton>
                 { active ? 
-                  <p><i className="fa fa-info-circle" />&nbsp; {active.description}</p>
+                  <p>
+                    <span><i className="fa fa-info-circle" />&nbsp; {active.description}</span>
+                    <br />
+                    <span>{`${memberCount} members`}</span>
+                  </p>
                   : <span />
                 }
                 {
                   active && this.props.lala ?
                     <button
                       style={{ width: '100%', marginTop: 20 }}
-                      onClick={() => {
-                        //switchToEdit();
-                        goToManage();
-                      }}
+                      onClick={() => goToManage()}
                     >
                       Manage
                     </button>

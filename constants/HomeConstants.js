@@ -4,6 +4,8 @@ module.exports = {
   NOTIFICATION_TITLE_LENGTH: 50,
   CACHE_SIZE: 20,
   SHOWERS_PAGE: 1000,
+  COMMONS_MEMBERS_PAGE: 10,
+  COMMONS_SEARCH_PAGE: 10,
   SUCCESS_SHOW_TIMEOUT: 2000,
   VOLUME_BOTTLE: 1.5,
   VOLUME_BUCKET: 40,
@@ -49,7 +51,6 @@ module.exports = {
     title: 'section.commons',
     image: 'commons-menu.svg',
     route: '/commons',
-    hidden: true,
   },
   {
     name: 'settings',
@@ -71,7 +72,6 @@ module.exports = {
         name: 'commons',
         title: 'Commons',
         route: 'settings/commons',
-        hidden: true,
         children: [
           {
             name: 'edit',
@@ -80,7 +80,7 @@ module.exports = {
           }, 
           {
             name: 'create',
-            title: 'Create',
+            title: 'Create new',
             route: 'settings/commons/create',
           },
           {
@@ -266,15 +266,19 @@ module.exports = {
   ],
   COMMONS_USER_SORT: [
     {
-      id: 'ranking',
+      id: 'RANKING',
       title: 'Ranking',
     },
     {
-      id: 'consumption',
-      title: 'Consumption',
+      id: 'FIRSTNAME',
+      title: 'First name',
     },
     {
-      id: 'memberSince',
+      id: 'LASTNAME',
+      title: 'Last name',
+    },
+    {
+      id: 'DATE_JOINED',
       title: 'Date joined',
     },
   ],

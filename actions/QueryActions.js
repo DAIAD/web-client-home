@@ -12,6 +12,7 @@ const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT, SHOWERS_PAGE } = require('../constants
 
 const deviceAPI = require('../api/device');
 const meterAPI = require('../api/meter');
+const dataAPI = require('../api/data');
 
 const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
@@ -360,8 +361,8 @@ const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
     const { time } = options;
     if (!time || !time.startDate || !time.endDate || time.granularity == null) {
-      throw new Error('Not sufficient data provided for meter forecast query. ' + 
-                      'Requires time object with startDate, endDate and granularity');
+      throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
+                      'time object with startDate, endDate and granularity');
     }
     dispatch(requestedQuery());
     
@@ -396,6 +397,61 @@ const queryMeterForecast = function (options) {
     })
     .catch((error) => {
       console.error('caught error in query meter forecast: ', error);
+      dispatch(receivedQuery(false, error));
+      throw error;
+    });
+  };
+};
+
+const queryData = function (options) {
+  return function (dispatch, getState) {
+    const { time, population, source, metrics } = options;
+    /*
+    if (!time || !time.startDate || !time.endDate || time.granularity == null 
+        || !population || !source || !metrics) {
+      throw new Error('Not sufficient data provided for data query. Requires: \n' + 
+                      'time object with startDate, endDate and granularity,\n' +
+                      'population,\n' +
+                      'source,\n' +
+                      'metrics\n'
+                     );
+                     }
+    */
+    dispatch(requestedQuery());
+    
+    const data = {
+      query: {
+        time: {
+          type: 'ABSOLUTE',
+          start: time.startDate,
+          end: time.endDate,
+          granularity: getLowerGranularityPeriod(
+            convertGranularityToPeriod(time.granularity)
+          ),
+        },
+        population, 
+        source,
+        metrics,
+      },
+      csrf: getState().user.csrf,
+    };
+
+    console.log('requesting data with', data);
+
+    return dataAPI.query(data)
+    .then((response) => {
+      console.log('got: ', response);
+      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(resetSuccess());
+      
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+
+      return response;
+    })
+    .catch((error) => {
+      console.error('caught error in data query: ', error);
       dispatch(receivedQuery(false, error));
       throw error;
     });
@@ -510,4 +566,5 @@ module.exports = {
   setInfo,
   dismissInfo,
   queryMeterForecast,
+  queryData,
 };
