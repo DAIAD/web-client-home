@@ -309,6 +309,7 @@ const SessionModal = React.createClass({
         animation={false} 
         show={this.props.showModal} 
         onHide={this.onClose} 
+        dialogClassName="session-modal"
         bsSize="large"
         onKeyDown={(e) => { 
           if (e.keyCode === 39 && !disabledNext) {

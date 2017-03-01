@@ -78,7 +78,7 @@ function Pagination(props) {
           <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
         </a> 
           :
-         <div />
+         <div className="navigator-child pull-left" />
         }
         {
           total > 0 ? 
@@ -98,7 +98,7 @@ function Pagination(props) {
           <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
         </a>
         :
-          <div />
+          <div className="navigator-child pull-right" />
         }
       </div>
     </div>

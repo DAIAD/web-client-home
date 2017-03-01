@@ -25,9 +25,8 @@ function NotificationList(props) {
                   className={classNames(notificationClass, activeClass)} 
                 >
                   <a onClick={() => onItemClick(notification.id, notification.type)}>
-                    {
-                      notification.title
-                    }
+                    <i /> 
+                    <span>{notification.title}</span>
                   </a>
                 </li>
               );
