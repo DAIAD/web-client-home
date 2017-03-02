@@ -54,7 +54,7 @@ module.exports = {
   grid: {
     x: 70,
     x2: 10,
-    y: -20,
+    y: 0,
     y2: 30,
   },
   
