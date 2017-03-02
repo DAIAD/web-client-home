@@ -111,6 +111,17 @@ const saveToCache = function (cacheKey, data) {
   };
 };
 
+const fetchFromCache = function (cacheKey) {
+  return function (dispatch, getState) {
+    if (getState().query.cache[cacheKey]) {
+      dispatch(cacheItemRequested(cacheKey));
+      const { data } = getState().query.cache[cacheKey];
+      return Promise.resolve(data);
+    }
+    return Promise.reject('notFound');
+  };
+};
+
 /**
  * Query Device sessions
  * @param {Object} options - Query options
@@ -175,27 +186,27 @@ const queryDeviceSessionsCache = function (options) {
     const startIndex = SHOWERS_PAGE * getShowersPagingIndex(length, index);
 
     // if item found in cache return it
-    if (getState().query.cache[cacheKey]) {
-      dispatch(cacheItemRequested(cacheKey));
-      const cacheItem = getState().query.cache[cacheKey].data;
-      const deviceData = filterDataByDeviceKeys(cacheItem, deviceKey);
+    return dispatch(fetchFromCache(cacheKey))
+    .then((data) => {
+      const deviceData = filterDataByDeviceKeys(data, deviceKey);
       return Promise.resolve(filterShowers(deviceData, length, index));
-    }
-    
-    const newOptions = {
-      ...options, 
-      length: SHOWERS_PAGE,
-      startIndex,
-      deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO'),
-    };
-    
-    return dispatch(queryDeviceSessions(newOptions))
-    .then((devices) => {
-      dispatch(saveToCache(cacheKey, devices));
-      // return only the items requested
-      const deviceData = filterDataByDeviceKeys(devices, deviceKey);
-      return filterShowers(deviceData, length, index);
-    });
+    })
+    .catch((error) => {
+      const newOptions = {
+        ...options, 
+        length: SHOWERS_PAGE,
+        startIndex,
+        deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO'),
+      };
+      
+      return dispatch(queryDeviceSessions(newOptions))
+      .then((devices) => {
+        dispatch(saveToCache(cacheKey, devices));
+        // return only the items requested
+        const deviceData = filterDataByDeviceKeys(devices, deviceKey);
+        return filterShowers(deviceData, length, index);
+      });
+    }); 
   };
 };
  
@@ -336,23 +347,25 @@ const queryMeterHistoryCache = function (options) {
     const { deviceKey, time } = options;
 
     const cacheKey = getCacheKey('METER', time);
-
-    if (getState().query.cache[cacheKey]) {
-      dispatch(cacheItemRequested(cacheKey));
-      const cacheItem = getState().query.cache[cacheKey].data;
-      return Promise.resolve(filterDataByDeviceKeys(cacheItem, deviceKey));
-    }
-    // fetch all meters requested in order to save to cache 
-    const newOptions = {
-      ...options, 
-      time, 
-      deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'METER'),
-    }; 
-    return dispatch(queryMeterHistory(newOptions))
-    .then((series) => {
-      dispatch(saveToCache(cacheKey, series));
-      // return only the meters requested  
-      return filterDataByDeviceKeys(series, deviceKey);
+    
+    return dispatch(fetchFromCache(cacheKey))
+    .then((data) => {
+      const deviceData = filterDataByDeviceKeys(data, deviceKey);
+      return Promise.resolve(deviceData);
+    })
+    .catch((error) => {
+      // fetch all meters requested in order to save to cache 
+      const newOptions = {
+        ...options, 
+        time, 
+        deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'METER'),
+      }; 
+      return dispatch(queryMeterHistory(newOptions))
+      .then((series) => {
+        dispatch(saveToCache(cacheKey, series));
+        // return only the meters requested  
+        return filterDataByDeviceKeys(series, deviceKey);
+      });
     });
   };
 };
