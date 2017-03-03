@@ -13,7 +13,7 @@ const { getDeviceKeysByType } = require('../utils/device');
 
 const { getDataSessions, sortSessions, getLastShowerIdFromMultiple } = require('../utils/sessions');
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
-
+const { formatMessage } = require('../utils/general');
 
 function mapStateToProps(state) {
   return {
@@ -70,6 +70,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     nextPeriod: timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.endDate),
     chartData,
     chartCategories: xCategoryLabels,
+    _t: formatMessage(ownProps.intl),
   };
 }
 

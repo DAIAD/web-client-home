@@ -8,6 +8,7 @@ const MessageActions = require('../actions/MessageActions');
 
 const prepareWidget = require('../utils/widgets');
 const { stripTags } = require('../utils/messages');
+const { formatMessage } = require('../utils/general');
 
 function mapStateToProps(state) {
   return {
@@ -96,6 +97,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       }
     },
     totalInCategory: stateProps.total[stateProps.activeTab],
+    _t: formatMessage(ownProps.intl),
   };
 }
 

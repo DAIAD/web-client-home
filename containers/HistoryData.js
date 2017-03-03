@@ -9,7 +9,7 @@ const History = require('../components/sections/History');
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
 const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
-const { getMetricMu } = require('../utils/general');
+const { getMetricMu, formatMessage } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
 
 const { meter: meterSessionSchema, amphiro: amphiroSessionSchema } = require('../schemas/history');
@@ -110,7 +110,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.filter)} ${getMetricMu(stateProps.filter)}`,
     hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
     hasShowersBefore: () => hasShowersBefore(stateProps.data),
-
+    _t: formatMessage(ownProps.intl),
   };
 }
 

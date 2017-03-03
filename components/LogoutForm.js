@@ -7,7 +7,7 @@ const Logout = React.createClass({
     this.props.logout();
   },
   render: function () {
-    const _t = this.props.intl.formatMessage;
+    const { _t } = this.props;
     if (!this.props.isAuthenticated) {
       return (<div />);
     }
@@ -15,7 +15,7 @@ const Logout = React.createClass({
       <a 
         id="logout"
         className="logout"
-        title={_t({ id: 'loginForm.button.signout' })}
+        title={_t('loginForm.button.signout')}
         onClick={this.onLogout}
         type="submit"
       >

@@ -43,9 +43,8 @@ const WidgetItem = React.createClass({
     };
   },
   render: function () {
-    const { widget, updateWidget, removeWidget, intl, linkToHistory, width } = this.props;
+    const { widget, updateWidget, removeWidget, _t, linkToHistory, width } = this.props;
     const { id, error, period, type, display, periods, time } = widget;
-    const _t = intl.formatMessage;
     return (
       <div 
         className="widget"
@@ -67,9 +66,9 @@ const WidgetItem = React.createClass({
                   >
                     {
                       p.id === period ? 
-                        <u>{_t({ id: p.title })}</u>
+                        <u>{_t(p.title)}</u>
                         :
-                         _t({ id: p.title })
+                         _t(p.title)
                     }
                   </a>
                   ))
@@ -180,8 +179,8 @@ function TipWidget(props) {
 }
 
 function WidgetPanel(props) {
-  const { mode, layout, widgets, updateLayout, updateWidget, removeWidget, 
-    intl, periods, linkToHistory, width } = props;
+  const { _t, mode, layout, widgets, updateLayout, updateWidget, removeWidget, 
+    periods, linkToHistory, width } = props;
   return (
     <ResponsiveGridLayout 
       className="layout"
@@ -214,7 +213,7 @@ function WidgetPanel(props) {
                widget, 
                updateWidget, 
                removeWidget, 
-               intl, 
+               _t,
                linkToHistory,
                width,
              }} 

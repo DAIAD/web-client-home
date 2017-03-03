@@ -208,6 +208,12 @@ const throwServerError = function (response) {
   throw new Error('unknownError');
 };
 
+const formatMessage = function (intl) {
+  return function (x, rest) {
+    return intl.formatMessage({ id: x }, rest);
+  };
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -223,4 +229,5 @@ module.exports = {
   getActiveLinks,
   filterObj,
   throwServerError,
+  formatMessage,
 };

@@ -9,8 +9,7 @@ const Login = React.createClass({
     this.password = null;
   },
   render: function () {
-    const { intl, errors, goToResetPassword } = this.props;
-    const _t = x => intl.formatMessage({ id: x });
+    const { _t, errors, goToResetPassword } = this.props;
     return (
       <form 
         key="login" 

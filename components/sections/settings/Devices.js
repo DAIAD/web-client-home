@@ -59,11 +59,10 @@ function InputProperty(props) {
 }
 
 function Device(props) {
-  const { intl, updateDevice, updateForm, fetchProfile, deviceForm } = props;
+  const { intl, _t, updateDevice, updateForm, fetchProfile, deviceForm } = props;
   const { name, key, macAddress, type, serial, registeredOn, unit, properties } = deviceForm;
   const { formatMessage, formatDate, formatTime } = props.intl;
   
-  const _t = x => intl.formatMessage({ id: x });
   return (
     <form 
       className="col-md-8" 
@@ -201,9 +200,8 @@ function MeterProperties(props) {
 }
 
 function DevicesForm(props) {
-  const { intl, devices, deviceForm, actions } = props;
+  const { intl, _t, devices, deviceForm, actions } = props;
   const { updateDevice, updateDeviceForm, fetchProfile } = actions;
-  const _t = x => intl.formatMessage({ id: x });
   return (
     <div>
       <bs.Accordion 
@@ -234,7 +232,8 @@ function DevicesForm(props) {
                 fetchProfile={fetchProfile}
                 updateForm={updateDeviceForm}
                 updateDevice={updateDevice}
-                intl={intl} 
+                _t={_t}
+                intl={intl}
                 deviceForm={deviceForm}
               />
             </bs.Panel>

@@ -34,7 +34,7 @@ const CommonsDetails = React.createClass({
     this.props.actions.setMemberQueryAndFetch({ sortBy: val });
   },
   render: function () {
-    const { active, intl, time, timeFilter, chartCategories, chartData, members, actions } = this.props;
+    const { _t, active, time, timeFilter, chartCategories, chartData, members, actions } = this.props;
     const { selected: selectedMembers, active: activeMembers, sortFilter, sortOrder, searchFilter, count: memberCount, pagingIndex } = members;
     const { addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData, setDataQueryAndFetch } = actions;
     if (!active) {
@@ -49,7 +49,6 @@ const CommonsDetails = React.createClass({
     const periods = METER_PERIODS
     .filter(period => period.id !== 'day');
     const mu = 'lt';
-    const _t = x => intl.formatMessage({ id: x }); 
 
     return (
       <div>       

@@ -143,10 +143,9 @@ const History = React.createClass({
     this.props.setSortFilter(val);
   },
   render: function () {
-    const { intl, amphiros, activeDevice, activeDeviceType, timeFilter, 
+    const { _t, amphiros, activeDevice, activeDeviceType, timeFilter, 
       time, metrics, periods, comparisons, deviceTypes, data, 
       hasShowersBefore, hasShowersAfter, forecasting } = this.props;
-    const _t = intl.formatMessage;
     return (
       <MainSection id="section.history">
         <Topbar> 
@@ -162,7 +161,7 @@ const History = React.createClass({
                 <bs.Tab 
                   key={period.id} 
                   eventKey={period.id} 
-                  title={_t({ id: period.title })} 
+                  title={_t(period.title)} 
                 />
               ))
             } 

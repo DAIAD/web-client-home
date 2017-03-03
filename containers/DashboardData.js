@@ -11,7 +11,7 @@ const Dashboard = require('../components/sections/Dashboard');
 
 const { getDeviceCount, getMeterCount } = require('../utils/device');
 const prepareWidget = require('../utils/widgets');
-const { filterObj } = require('../utils/general');
+const { filterObj, formatMessage } = require('../utils/general');
 
 const { AMPHIRO_WIDGET_TYPES, METER_WIDGET_TYPES } = require('../constants/HomeConstants');
 
@@ -101,6 +101,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     deviceTypes,
     widgetTypes,
     setWidgetToAdd,
+    _t: formatMessage(ownProps.intl),
   };
 }
 

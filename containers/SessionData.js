@@ -7,7 +7,7 @@ const moment = require('moment');
 
 const SessionModal = require('../components/sections/Session');
 const HistoryActions = require('../actions/HistoryActions');
-const { getShowerMetricMu } = require('../utils/general');
+const { getShowerMetricMu, formatMessage } = require('../utils/general');
 const { getLowerGranularityPeriod } = require('../utils/time');
 const { SHOWER_METRICS } = require('../constants/HomeConstants');
 
@@ -49,6 +49,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
     mu: getShowerMetricMu(stateProps.activeSessionFilter),
     period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',
+    _t: formatMessage(ownProps.intl),
   };
 }
 

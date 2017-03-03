@@ -7,6 +7,7 @@ const { injectIntl, FormattedMessage } = require('react-intl');
 const LocaleSwitcher = require('../LocaleSwitcher');
 const Logout = require('../LogoutForm');
 const NotificationList = require('../helpers/NotificationList');
+const { formatMessage } = require('../../utils/general');
 const { IMAGES, PNG_IMAGES } = require('../../constants/HomeConstants'); 
 
 /* DAIAD Logo */
@@ -25,7 +26,7 @@ function MainLogo() {
 /* User options */
 
 function UserInfo(props) {
-  const _t = props.intl.formatMessage;
+  const { _t } = props;
   return (
     <div className="user-menu" >
       <div title={_t({ id: 'section.profile' })}>
@@ -61,13 +62,13 @@ const NotificationMenuItem = React.createClass({
   render: function () {
     const hasUnread = this.props.unreadNotifications > 0 ? 'hasUnread' : '';
     const unreadNotifications = hasUnread ? this.props.unreadNotifications : '';
-    const _t = this.props.intl.formatMessage;
+    const { _t } = this.props;
     return (
       
       <bs.OverlayTrigger 
         id="notifications-trigger"
         trigger="click"
-        title={_t({ id: this.props.item.title })}
+        title={_t(this.props.item.title)}
         placement="bottom"
         onEnter={() => this.setState({ popover: true })}
         onExit={() => this.setState({ popover: false })}
@@ -76,7 +77,7 @@ const NotificationMenuItem = React.createClass({
         overlay={
           <bs.Popover 
             id="notifications-popover"
-            title={_t({ id: this.props.item.title })} 
+            title={_t(this.props.item.title)} 
           >
             <NotificationList
               notifications={this.props.notifications} 
@@ -95,7 +96,7 @@ const NotificationMenuItem = React.createClass({
                   this.props.goTo('notifications');
                 }}
               >
-                {_t({ id: 'notifications.showAll' })}
+                {_t('notifications.showAll')}
               </a>
             </div>
           </bs.Popover>
@@ -139,7 +140,7 @@ function NotificationArea(props) {
 }
 
 function ErrorDisplay(props) {
-  const { errors, dismissError } = props;
+  const { _t, errors, dismissError } = props;
   return errors ? 
     <div className="error-display">
       <a onClick={() => dismissError()} className="error-display-x">x</a>
@@ -156,20 +157,22 @@ function Header(props) {
   const { intl, firstname, photo, isAuthenticated, notifications, linkToNotification, 
     unreadNotifications, totalNotifications, logout, deviceCount, setLocale, locale, 
     errors, dismissError, fetchMoreAll, loading, goTo } = props;
+
+  const _t = formatMessage(intl);
   return (
     <header className="site-header">
       {
         isAuthenticated ? 
           <div>
             <ErrorDisplay
-              intl={intl}
+              _t={_t}
               dismissError={dismissError}
               errors={errors} 
             />
             <MainLogo />
             <div className="top-header-right">
               <NotificationArea
-                intl={intl}
+                _t={_t}
                 deviceCount={deviceCount}
                 notifications={notifications} 
                 unreadNotifications={unreadNotifications}
@@ -180,12 +183,12 @@ function Header(props) {
                 goTo={goTo}
               />
               <UserInfo
-                intl={intl}
+                _t={_t}
                 photo={photo}
                 firstname={firstname}
               />
               <Logout
-                intl={intl}   
+                _t={_t}
                 isAuthenticated={isAuthenticated}
                 logout={logout}
                 className="navbar logout"
@@ -197,7 +200,7 @@ function Header(props) {
             <MainLogo />
             <div className="top-header-right">
               <LocaleSwitcher
-                intl={intl}
+                _t={_t}
                 setLocale={setLocale}
                 locale={locale}
               /> 

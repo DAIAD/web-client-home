@@ -14,11 +14,11 @@ function Picture(props) {
     <img 
       src={`${IMAGES}/${display}${iconSuffix}.svg`} 
       className={['picture', display].join(' ')}
-      title={_t({ id: 'history.inPicturesHover' },
+      title={_t('history.inPicturesHover',
         {
           number: items, 
-          metric: _t({ id: `common.${metric}` }),
-          scale: _t({ id: `history.${display}` }),
+          metric: _t(`common.${metric}`),
+          scale: _t(`history.${display}`),
         })
       }
       alt={display}
@@ -51,8 +51,7 @@ function InPictures(props) {
 }
 
 function SessionInfoLine(props) {
-  const { id, name, title, icon, data, mu } = props;
-  const _t = props.intl.formatMessage;
+  const { id, name, title, icon, data, mu, _t } = props;
   return !data ? <div /> : (
   <li className="session-item" >
     <span>
@@ -85,7 +84,7 @@ function SessionInfoLine(props) {
 }
 
 function SessionInfo(props) {
-  const { setSessionFilter, intl, data, firstname, activeDeviceType } = props;
+  const { setSessionFilter, _t, data, firstname, activeDeviceType } = props;
   const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
    
   return !data ? <div /> : (
@@ -121,7 +120,7 @@ function SessionInfo(props) {
         metrics.map(metric => (
           <SessionInfoLine
             key={metric.id} 
-            intl={intl} 
+            _t={_t}
             icon={metric.icon} 
             sessionClick={metric.clickable ? setSessionFilter : null} 
             title={metric.title} 
@@ -138,12 +137,11 @@ function SessionInfo(props) {
 }
 
 function Session(props) {
-  const { intl, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
+  const { _t, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
     firstname, activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period } = props;
     
   if (!data) return <div />;
   const { history, id, min, max, date } = data;
-  const _t = x => intl.formatMessage({ id: x });
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
   const betterStr = better ? 'better' : 'worse';
@@ -198,9 +196,9 @@ function Session(props) {
           
         <SessionInfo
           firstname={firstname}
-          intl={intl}
           setSessionFilter={setSessionFilter}
           activeDeviceType={activeDeviceType}
+          _t={_t}
           data={data} 
         /> 
       </div>
@@ -229,7 +227,7 @@ function Session(props) {
         <SessionInfo
           firstname={firstname}
           activeDeviceType={activeDeviceType}
-          intl={intl}
+          _t={_t}
           data={data} 
         />
       </div> 
@@ -278,7 +276,7 @@ function Session(props) {
       <SessionInfo
         firstname={firstname}
         activeDeviceType={activeDeviceType}
-        intl={intl}
+        _t={_t}
         data={data} 
       />
     </div> 
@@ -303,7 +301,6 @@ const SessionModal = React.createClass({
     const { next, prev } = data;
     const disabledNext = !Array.isArray(next);
     const disabledPrevious = !Array.isArray(prev);
-    //const _t = intl.formatMessage;
     return (
       <bs.Modal 
         animation={false} 

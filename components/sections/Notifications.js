@@ -72,10 +72,9 @@ function NotificationMessage(props) {
 
 const Notifications = React.createClass({
   render: function () {
-    const { intl, categories, messages: notifications, activeMessageId, 
+    const { _t, categories, messages: notifications, activeMessageId, 
       previousMessageId, nextMessageId, activeMessage: notification, activeTab, 
       setActiveMessage, setActiveTab, widget, fetchMoreActive, totalInCategory, loading } = this.props;
-    const _t = intl.formatMessage;
     return (
       <MainSection id="section.notifications">
         <div className="notifications">
@@ -95,7 +94,7 @@ const Notifications = React.createClass({
                       <bs.Tab 
                         key={category.id} 
                         eventKey={category.id} 
-                        title={_t({ id: category.title }) + unreadReminder} 
+                        title={_t(category.title) + unreadReminder} 
                       />);
                   })
                 } 

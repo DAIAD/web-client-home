@@ -12,6 +12,8 @@ const { setError, dismissError } = require('../actions/QueryActions');
 
 const Settings = require('../components/sections/settings/');
 
+const { formatMessage } = require('../utils/general');
+
 function matches(str1, str2) {
   return str1.toLowerCase().indexOf(str2.toLowerCase()) !== -1;
 }
@@ -63,8 +65,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       confirmJoin: () => dispatchProps.setConfirm(stateProps.commonForm, 'join'),
       confirmLeave: () => dispatchProps.setConfirm(stateProps.commonForm, 'leave'),
     },
-    pagingIndex: stateProps.pagingIndex + 1, // 1-based
     ...ownProps,
+    pagingIndex: stateProps.pagingIndex + 1, // 1-based
+    _t: formatMessage(ownProps.intl),
   };
 }
 
