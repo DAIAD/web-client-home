@@ -132,21 +132,6 @@ const setSelectedMembers = function (members) {
   };
 };
 
-const addMemberToChart = function (member) {
-  return function (dispatch, getState) {
-    const members = [...getState().section.commons.members.selected, member];
-    dispatch(setSelectedMembers(members));
-  };
-};
-
-const removeMemberFromChart = function (member) {
-  return function (dispatch, getState) {
-    const members = getState().section.commons.members.selected
-    .filter(m => m.key !== member.key);
-
-    dispatch(setSelectedMembers(members));
-  };
-};
 
 const setActive = function (key) {
   return {
@@ -337,6 +322,22 @@ const setDataQueryAndFetch = function (query) {
     if (members != null) dispatch(setSelectedMembers(members));
 
     dispatch(fetchData());
+  };
+};
+
+const addMemberToChart = function (member) {
+  return function (dispatch, getState) {
+    const members = [...getState().section.commons.members.selected, member];
+    dispatch(setDataQueryAndFetch({ members }));
+  };
+};
+
+const removeMemberFromChart = function (member) {
+  return function (dispatch, getState) {
+    const members = getState().section.commons.members.selected
+    .filter(m => m.key !== member.key);
+
+    dispatch(setDataQueryAndFetch({ members }));
   };
 };
 

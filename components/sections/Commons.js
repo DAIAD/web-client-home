@@ -186,7 +186,6 @@ const CommonsDetails = React.createClass({
       <br />
       <br />
         <span style={{ marginLeft: 20 }}><b>Found:</b> {memberCount}</span>
-        <bs.Button style={{ marginRight: 20, float: 'right' }}alt="chart-button" onClick={() => { fetchData(); }}>Compare</bs.Button>
         <p style={{ marginLeft: 20 }}><i className="fa fa-info-circle" />&nbsp;<i>Click on up to 3 members to compare against</i></p>
         <Table
           className="session-list"
@@ -215,9 +214,7 @@ const CommonsDetails = React.createClass({
 
 const Commons = React.createClass({
   componentWillMount: function () {
-    console.log('commons will mount');
     if (!this.props.synced) {
-      console.log('fetching');
       this.props.actions.fetchData();
     } 
     if (this.props.active) {
