@@ -13,7 +13,7 @@ const Devices = require('../components/sections/settings/Devices');
 
 const CommonsSettings = require('../components/sections/settings/commons/');
 const CommonsManage = require('../components/sections/settings/commons/Edit');
-const CommonsCreate = require('../components/sections/settings/commons/Form');
+const CommonsCreate = require('../components/sections/settings/commons/Create');
 const CommonsJoin = require('../components/sections/settings/commons/Join');
 
 const Login = require('../containers/Login');
