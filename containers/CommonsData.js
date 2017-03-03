@@ -7,11 +7,8 @@ const { push } = require('react-router-redux');
 const Commons = require('../components/sections/Commons');
 
 const CommonsActions = require('../actions/CommonsActions');
-const { queryMeterHistoryCache } = require('../actions/QueryActions');
 const timeUtil = require('../utils/time');
-const { getDeviceKeysByType } = require('../utils/device');
-
-const { getDataSessions, sortSessions, getLastShowerIdFromMultiple } = require('../utils/sessions');
+const { getLastShowerIdFromMultiple } = require('../utils/sessions');
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 
 
@@ -24,7 +21,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
       ...CommonsActions,
-      queryMeterHistoryCache,
       goToManage: () => push('/settings/commons'),
     }, dispatch);
 }
@@ -42,17 +38,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
      : xCategories;
 
-  const chartData = stateProps.data.map(data => ({
-    name: data.label, 
-    data: getChartMeterData(data.points,
+  const chartData = stateProps.data.map((data, i) => ({
+    name: data.label || '', 
+    data: getChartMeterData(data.sessions,
                             xCategories, 
                             stateProps.time
                            ).map(x => x && x[stateProps.filter] ? 
-                             x[stateProps.filter].AVERAGE 
-                             : null),
-   lineType: active && data.label === active.name ? 'dashed' : 'solid',
-   color: active && data.label === active.name ? '#2d3480' : null,
-   symbol: active && data.label === active.name ? 'emptyRectangle' : null,
+                             x[stateProps.filter] 
+                             : null) || [],
   }));
 
   return {

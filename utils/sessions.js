@@ -3,22 +3,9 @@ const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
 const { getTimeLabelByGranularity } = require('./chart');
 const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
-// Returns sessions for AMPHIRO/METER given the DATA API response
-const getDataSessions = function (devices, data) {
-  if (!data || !data.deviceKey) return [];
-  
-  const devType = getDeviceTypeByKey(devices, data.deviceKey);
-  
-  if (devType === 'AMPHIRO') {
-    return data.sessions;
-  } else if (devType === 'METER') {
-    return data.values;
-  }
-  return [];
-};
 
 const getSessionsCount = function (devices, data) {
-  return data.map(dev => getDataSessions(devices, dev).length).reduce((p, c) => p + c, 0);
+  return data.map(dev => dev.sessions.length).reduce((p, c) => p + c, 0);
 };
 
 // reduces array of devices with multiple sessions arrays
@@ -26,18 +13,18 @@ const getSessionsCount = function (devices, data) {
 // and prepare for table presentation
 const prepareSessionsForTable = function (devices, data, user, granularity, intl) {
   if (!devices || !data) return [];
-  const sessions = data.map(device => getDataSessions(devices, device)
+  const sessions = data.map(device => device.sessions 
                   .map((session, idx, array) => {
                     const devType = getDeviceTypeByKey(devices, device.deviceKey);
-                    const vol = devType === 'METER' ? 'difference' : 'volume'; 
+                    const vol = 'volume'; 
                     const diff = array[idx - 1] != null ? (array[idx][vol] - array[idx - 1][vol]) : null;
                     return {
                       ...session,
                       index: idx, 
                       devType,
-                      vol: session[vol],
+                      vol: session.volume,
                       device: device.deviceKey,
-                      devName: getDeviceNameByKey(devices, device.deviceKey),
+                      devName: getDeviceNameByKey(devices, device.deviceKey) || 'SWM',
                       duration: session.duration ? Math.floor(session.duration / 60) : null,
                       friendlyDuration: getFriendlyDuration(session.duration), 
                       temperature: session.temperature ? 
@@ -114,7 +101,7 @@ const reduceMetric = function (devices, data, metric) {
   const sessions = getSessionsCount(devices, data);
 
   let reducedMetric = data
-  .map(d => getDataSessions(devices, d)
+  .map(d => d.sessions 
        .map(it => it[metric] ? it[metric] : 0)
        .reduce(((p, c) => p + c), 0)
   )
@@ -292,7 +279,6 @@ const energyToPictures = function (energy) {
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
-  getDataSessions,
   prepareSessionsForTable,
   sortSessions,
   reduceMetric,

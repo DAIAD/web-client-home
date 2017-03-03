@@ -13,7 +13,7 @@ const commonsAPI = require('../api/commons');
 
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
-const { showerFilterToLength, throwServerError } = require('../utils/general');
+const { showerFilterToLength, throwServerError, getCacheKey } = require('../utils/general');
 const { flattenCommonsGroups } = require('../utils/commons');
 
 const QueryActions = require('./QueryActions');
@@ -23,6 +23,13 @@ const { COMMONS_MEMBERS_PAGE } = require('../constants/HomeConstants');
 const setSessions = function (sessions) {
   return {
     type: types.COMMONS_SET_SESSIONS,
+    sessions,
+  };
+};
+
+const appendSessions = function (sessions) {
+  return {
+    type: types.COMMONS_APPEND_SESSIONS,
     sessions,
   };
 };
@@ -99,7 +106,7 @@ const setActiveDeviceType = function (deviceType) {
       dispatch(setMetricFilter('volume'));
       dispatch(setTimeFilter('ten'));
     } else if (deviceType === 'METER') {
-      dispatch(setMetricFilter('difference'));
+      dispatch(setMetricFilter('volume'));
       dispatch(setTimeFilter('year'));
       dispatch(setTime(getTimeByPeriod('year')));
     }
@@ -129,22 +136,6 @@ const setSelectedMembers = function (members) {
   return {
     type: types.COMMONS_SET_SELECTED_MEMBERS,
     members,
-  };
-};
-
-const addMemberToChart = function (member) {
-  return function (dispatch, getState) {
-    const members = [...getState().section.commons.members.selected, member];
-    dispatch(setSelectedMembers(members));
-  };
-};
-
-const removeMemberFromChart = function (member) {
-  return function (dispatch, getState) {
-    const members = getState().section.commons.members.selected
-    .filter(m => m.key !== member.key);
-
-    dispatch(setSelectedMembers(members));
   };
 };
 
@@ -281,39 +272,61 @@ const fetchData = function () {
 
     const common = {
       type: 'GROUP',
-      label: active.name,
+      name: active.name,
+      label: getCacheKey(activeDeviceType, active.key, time),
       group: active.key,
     };
 
     const myself = {
       type: 'USER',
-      label: 'Me',
+      name: 'Me',
+      label: getCacheKey('METER', getState().user.profile.key, time),
       users: [getState().user.profile.key],
     };
 
     const selected = selectedMembers.map(user => ({
       type: 'USER',
-      label: `${user.firstname} ${user.lastname}`,
+      name: `${user.firstname} ${user.lastname}`,
+      label: getCacheKey('METER', user.key, time),
       users: [user.key],
     }));
 
-    dispatch(QueryActions.queryData({ 
-      time,
-      source: activeDeviceType,
-      population: [
-        myself,
-        common,
-        ...selected,
-      ],
-      metrics: ['AVERAGE'],
-    }))
-    .then((dataRes) => { 
-      dispatch(setSessions(dataRes.meters));
-      dispatch(setDataSynced());
-    })
-    .catch((error) => { 
-      console.error('Caught error in commons data fetch', error); 
-      dispatch(setDataSynced());
+    const populations = [
+      myself,
+      common,
+      ...selected,
+    ];
+
+    dispatch(setSessions([]));
+    // serialize query to take advantage of cache (?)
+    populations.forEach((population) => {
+      dispatch(QueryActions.queryDataCache({ 
+        time,
+        source: activeDeviceType,
+        population: [population],
+        metrics: ['AVERAGE', 'SUM'],
+      }))
+      .then((dataRes) => { 
+        const sessions = dataRes.map((data, idx) => {
+          const requested = populations.find(p => p.label === data.label);
+          if (requested) {
+            return {
+              sessions: data.sessions.map(session => ({ 
+                ...session, 
+                volume: session.volume.AVERAGE || session.volume.SUM 
+              })),
+              label: requested.name,
+            };
+          }
+          return data;
+        });
+        dispatch(appendSessions(sessions));
+        dispatch(setDataSynced());
+      })
+      .catch((error) => { 
+        console.error('Caught error in commons data fetch', error); 
+        dispatch(setDataSynced());
+      });
     });
   };
 };
@@ -337,6 +350,22 @@ const setDataQueryAndFetch = function (query) {
     if (members != null) dispatch(setSelectedMembers(members));
 
     dispatch(fetchData());
+  };
+};
+
+const addMemberToChart = function (member) {
+  return function (dispatch, getState) {
+    const members = [...getState().section.commons.members.selected, member];
+    dispatch(setDataQueryAndFetch({ members }));
+  };
+};
+
+const removeMemberFromChart = function (member) {
+  return function (dispatch, getState) {
+    const members = getState().section.commons.members.selected
+    .filter(m => m.key !== member.key);
+
+    dispatch(setDataQueryAndFetch({ members }));
   };
 };
 

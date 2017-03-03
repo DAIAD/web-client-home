@@ -18,7 +18,7 @@ const getWidgetByAlertType = function (type, timestamp) {
         period: 'day',
         time: last24Hours(timestamp),
         deviceType: 'METER',
-        metric: 'difference',
+        metric: 'volume',
         data: [],
       };
 

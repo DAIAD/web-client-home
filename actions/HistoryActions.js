@@ -61,7 +61,7 @@ const setForecastData = function (data) {
  */
 const fetchData = function () {
   return function (dispatch, getState) {
-      const { showerIndex, activeDeviceType, activeDevice, timeFilter, time, data } = getState().section.history;
+      const { showerIndex, activeDeviceType, activeDevice, timeFilter, time, data, synced } = getState().section.history;
     // AMPHIRO
     if (activeDeviceType === 'AMPHIRO') {
       if (activeDevice.length === 0) {
@@ -86,14 +86,13 @@ const fetchData = function () {
       });
       // SWM
     } else if (activeDeviceType === 'METER') {
-      dispatch(QueryActions.queryMeterHistoryCache({
-        deviceKey: activeDevice, 
-        time, 
+      dispatch(QueryActions.queryMeterHistory({
+        time,
       }))
-      .then((sessions) => {
-        dispatch(setSessions(sessions));
+      .then((meterData) => {
+        dispatch(setSessions(meterData));
+        dispatch(setDataSynced());
       })
-      .then(() => dispatch(setDataSynced()))
       .catch((error) => { 
         console.error('Caught error in history meter query:', error); 
         dispatch(setSessions([]));
@@ -102,13 +101,13 @@ const fetchData = function () {
 
       // comparisons
       if (getState().section.history.comparison === 'last') {
-        dispatch(QueryActions.queryMeterHistoryCache({
-          deviceKey: getState().section.history.activeDevice, 
-          time: getPreviousPeriod(getState().section.history.timeFilter, 
+        const prevTime = getPreviousPeriod(getState().section.history.timeFilter, 
                                   getState().section.history.time.startDate
-                                 ), 
+                                 );
+        dispatch(QueryActions.queryMeterHistory({
+          time: prevTime, 
         }))
-        .then(sessions => dispatch(setComparisonSessions(sessions)))
+        .then(lastData => dispatch(setComparisonSessions(lastData)))
       .catch((error) => { 
         dispatch(setComparisonSessions([]));
         console.error('Caught error in history comparison query:', error); 
@@ -119,19 +118,20 @@ const fetchData = function () {
 
       // forecasting
       if (getState().section.history.forecasting) {
-        dispatch(QueryActions.queryMeterForecast({
+        dispatch(QueryActions.queryMeterForecastCache({
           time: getState().section.history.time,
         }))
-        .then((sessions) => {
+        .then((forecastingData) => {
+          const sessions = forecastingData.sessions;
           const sortedByTime = sessions.sort((a, b) => {
             if (a.timestamp < b.timestamp) return -1;
             else if (a.timestamp > b.timestamp) return 1;
             return 0;
           });
-          dispatch(setForecastData(sortedByTime));
+          dispatch(setForecastData({ ...forecastingData, sessions: sortedByTime }));
         })
         .catch((error) => {
-          dispatch(setForecastData([]));
+          dispatch(setForecastData({}));
           console.error('Caught error in history forecast query:', error);
         });
       }
@@ -288,13 +288,14 @@ const switchActiveDeviceType = function (deviceType) {
     dispatch(setActiveDevice(devices, false));
     
     // set default options when switching
+    // TODO: reset with action to initial state
     if (deviceType === 'AMPHIRO') {
       dispatch(setMetricFilter('volume'));
       dispatch(setTimeFilter('ten'));
       dispatch(setSortFilter('id'));
       dispatch(setShowerIndex(0));
     } else if (deviceType === 'METER') {
-      dispatch(setMetricFilter('difference'));
+      dispatch(setMetricFilter('volume'));
       dispatch(setTimeFilter('year'));
       dispatch(setTime(getTimeByPeriod('year')));
       dispatch(setSortFilter('timestamp'));
@@ -454,7 +455,7 @@ const setQuery = function (query) {
       dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
     } 
 
-    if (forecastData && Array.isArray(forecastData)) {
+    if (forecastData) {
       dispatch(setForecastData(forecastData));
     }
 

@@ -31,6 +31,16 @@ const commons = function (state = initialState, action) {
         data: action.sessions,
       };
 
+    case types.COMMONS_APPEND_SESSIONS:
+      return {
+        ...state,
+        data: [
+          ...state.data,
+          ...action.sessions,
+        ],
+      };
+
+
     case types.COMMONS_SET_MINE:
       return {
         ...state,

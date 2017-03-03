@@ -3,7 +3,7 @@ const { IMAGES } = require('../constants/HomeConstants');
 
 const meter = [
   {
-    id: 'difference',
+    id: 'volume',
     name: 'Volume',
     value: (value, field, row) => 
       <span style={{ fontSize: '2.5em' }}>

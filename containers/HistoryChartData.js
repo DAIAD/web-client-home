@@ -9,7 +9,7 @@ const HistoryChart = require('../components/sections/HistoryChart');
 const { bringPastSessionsToPresent } = require('../utils/time');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 const { getDeviceNameByKey } = require('../utils/device');
-const { getDataSessions, getLastShowerIdFromMultiple } = require('../utils/sessions');
+const { getLastShowerIdFromMultiple } = require('../utils/sessions');
 const { getMetricMu } = require('../utils/general');
 
 
@@ -37,28 +37,40 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     getChartMeterCategories(stateProps.time) : 
       getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
 
-      
-  const chartData = stateProps.data.map((devData) => {
-    const sessions = getDataSessions(stateProps.devices, devData)
-    .map(session => ({
-      ...session,
-      duration: Math.round(100 * (session.duration / 60)) / 100,
-      energy: Math.round(session.energy / 10) / 100,
-    }));
-  
-    const xData = stateProps.activeDeviceType === 'METER' ? 
-      getChartMeterData(sessions, xCategories, stateProps.time) 
-      : 
-      getChartAmphiroData(sessions, xCategories);
-
-    return ({
-      name: getDeviceNameByKey(stateProps.devices, devData.deviceKey), 
-      data: xData.map(x => x ? x[stateProps.filter] : null),
-      metadata: {
-        device: devData.deviceKey,
-        ids: xData.map(val => val ? [val.id, val.timestamp] : [null, null])
-      }
-    });
+  const chartData = stateProps.data.map((devData) => {  
+    if (stateProps.activeDeviceType === 'METER') {
+      const xData = getChartMeterData(devData.sessions,
+                          xCategories, 
+                          stateProps.time
+                         ).map(x => x && x[stateProps.filter] && x[stateProps.filter] ? 
+                           Math.round(100 * x[stateProps.filter]) / 100
+                           : null);
+      return {
+        name: 'SWM',
+        data: xData,
+        metadata: {
+          device: devData.deviceKey,
+          ids: xData.map(val => val ? [val.id, val.timestamp] : [null, null])
+        },
+      };
+    } else if (stateProps.activeDeviceType === 'AMPHIRO') {
+      const sessions = devData.sessions 
+      .map(session => ({
+        ...session,
+        duration: Math.round(100 * (session.duration / 60)) / 100,
+        energy: Math.round(session.energy / 10) / 100,
+      }));
+      const xData = getChartAmphiroData(sessions, xCategories);
+      return {
+        name: getDeviceNameByKey(stateProps.devices, devData.deviceKey) || '', 
+        data: xData.map(x => x ? x[stateProps.filter] : null),
+        metadata: {
+          device: devData.deviceKey,
+          ids: xData.map(val => val ? [val.id, val.timestamp] : [null, null])
+        },
+      };
+    }
+    return [];
   });
 
   const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
@@ -66,35 +78,30 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
      : xCategories;
 
   const comparison = stateProps.comparisonData.map((devData) => {
-    const sessions = getDataSessions(stateProps.devices, devData)
-    .map(session => ({
-      ...session,
-      duration: Math.round(100 * (session.duration / 60)) / 100,
-      energy: Math.round(session.energy / 10) / 100,
-    }));
     const xData = stateProps.activeDeviceType === 'METER' ? 
-        getChartMeterData(bringPastSessionsToPresent(sessions, stateProps.timeFilter),
+        getChartMeterData(bringPastSessionsToPresent(devData.sessions, stateProps.timeFilter),
                           xCategories, 
                           stateProps.time
-                         ) 
+                         ).map(x => x && x[stateProps.filter] && x[stateProps.filter] ? 
+                           Math.round(100 * x[stateProps.filter]) / 100
+                           : null)
        : 
-       getChartAmphiroData(sessions, xCategories);
-
+         [];
     return ({
-      name: `${getDeviceNameByKey(stateProps.devices, devData.deviceKey)}` +
+      name: 'SWM' +
          ` (previous ${stateProps.timeFilter})`,
-      data: xData.map(x => x ? x[stateProps.filter] : null),
+      data: xData,
     });
   });
   
-  const forecast = stateProps.activeDeviceType === 'METER' && stateProps.forecasting ? 
+  const forecast = stateProps.activeDeviceType === 'METER' && stateProps.forecasting && stateProps.forecastData ? 
     [{
       name: 'Forecast',
-      data: getChartMeterData(stateProps.forecastData,
+      data: getChartMeterData(stateProps.forecastData.sessions,
                         xCategories, 
                         stateProps.time
-                       ).map(x => x && x.volume && x.volume.SUM ? 
-                         Math.round(100 * x.volume.SUM) / 100
+                       ).map(x => x && x[stateProps.filter] && x[stateProps.filter] ? 
+                         Math.round(100 * x[stateProps.filter]) / 100
                          : null),
       lineType: 'dashed',
       color: '#2d3480',

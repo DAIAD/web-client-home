@@ -4,7 +4,7 @@ const { updateOrAppendToSession } = require('../utils/sessions');
 const { thisYear } = require('../utils/time');
 
 const initialState = {
-  filter: 'difference',
+  filter: 'volume',
   timeFilter: 'year',
   sortFilter: 'timestamp',
   sortOrder: 'desc',
@@ -18,8 +18,10 @@ const initialState = {
   comparisonData: [],
   time: thisYear(),
   showerIndex: 0,
-  forecasting: true,
-  forecastData: [],
+  forecasting: false,
+  forecastData: {
+    sessions: []
+  },
 };
  
 const history = function (state = initialState, action) {

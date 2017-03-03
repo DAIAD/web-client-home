@@ -89,6 +89,7 @@ const setCache = function (cache) {
 const saveToCache = function (cacheKey, data) {
   return function (dispatch, getState) {
     const { cache } = getState().query;
+    if (!cacheKey) return;
     if (Object.keys(cache).length >= CACHE_SIZE) {
       console.warn('Cache limit exceeded, making space by emptying LRU...');
       
@@ -119,6 +120,75 @@ const fetchFromCache = function (cacheKey) {
       return Promise.resolve(data);
     }
     return Promise.reject('notFound');
+  };
+};
+
+const queryData = function (options) {
+  return function (dispatch, getState) {
+    const { time, population, source, metrics } = options;
+    
+    const data = {
+      query: {
+        time: {
+          type: 'ABSOLUTE',
+          start: time.startDate,
+          end: time.endDate,
+          granularity: getLowerGranularityPeriod(
+            convertGranularityToPeriod(time.granularity)
+          ),
+        },
+        population, 
+        source,
+        metrics,
+      },
+      csrf: getState().user.csrf,
+    };
+
+    dispatch(requestedQuery());
+
+    return dataAPI.query(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(resetSuccess());
+      
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+
+      return response;
+    })
+    .catch((error) => {
+      console.error('caught error in data query: ', error);
+      dispatch(receivedQuery(false, error));
+      throw error;
+    });
+  };
+};
+
+const queryDataCache = function (options) {
+  return function (dispatch, getState) {
+    const { time, length, index, population, source, metrics } = options;
+    const { cache } = getState().query;
+    
+    const inCache = population.filter(group => cache[group.label] != null);
+    const notInCache = population.filter(group => !inCache.includes(group));
+
+    const inCachePromise = Promise.all(inCache.map(group => dispatch(fetchFromCache(group.label))));
+
+    if (notInCache.length === 0) {
+      return inCachePromise;
+    } 
+    return dispatch(queryData({ ...options, population: notInCache }))
+    .then((response) => {
+      const data = response.meters.map(x => ({ label: x.label, sessions: x.points }));
+      data.forEach((group) => {
+        dispatch(saveToCache(group.label, group));
+      });
+      return inCachePromise.then(inCacheData => [ 
+        ...data,
+        ...inCacheData,
+      ]);
+    });
   };
 };
 
@@ -182,7 +252,8 @@ const queryDeviceSessionsCache = function (options) {
   return function (dispatch, getState) {
     const { length, deviceKey, type, index = 0 } = options;
 
-    const cacheKey = getCacheKey('AMPHIRO', length, index);
+    const userKey = getState().user.profile.key;
+    const cacheKey = getCacheKey('AMPHIRO', userKey, length, index);
     const startIndex = SHOWERS_PAGE * getShowersPagingIndex(length, index);
 
     // if item found in cache return it
@@ -305,80 +376,42 @@ const fetchLastDeviceSession = function (options) {
  */                 
 const queryMeterHistory = function (options) {
   return function (dispatch, getState) {
-    const { deviceKey, time } = options;
-    if (!deviceKey || !time || !time.startDate || !time.endDate) {
-      throw new Error(`Not sufficient data provided for meter history query: deviceKey:${deviceKey}, time: ${time.startDate}, ${time.endDate}`);
+    const { time } = options;
+    
+    if (!time || !time.startDate || !time.endDate) {
+      throw new Error(`Not sufficient data provided for meter history query: time: ${time.startDate}, ${time.endDate}`);
     }
 
-    dispatch(requestedQuery());
-    
     const data = {
-      ...time,
-      ...options,
-      csrf: getState().user.csrf,
+      time,
+      source: 'METER',
+      metrics: ['SUM'],
+      population: [
+        {
+          type: 'USER',
+          label: getCacheKey('METER', getState().user.profile.key, time),
+          users: [getState().user.profile.key],
+        },
+      ],
     };
-    return meterAPI.getHistory(data)
-      .then((response) => {
-        dispatch(receivedQuery(response.success, response.errors, response.session));
-        dispatch(resetSuccess());
-        
-        if (!response || !response.success) {
-          throwServerError(response);  
-        }
-        return response.series;
-      })
-      .catch((error) => {
-        dispatch(receivedQuery(false, error));
-        throw error;
-      });
-  };
-};
 
-/**
- * Wrapper to queryMeterHistory with cache functionality
- * @param {Object} options - The queryMeterHistory options object
- * @return {Promise} Resolve returns Object containing meter sessions data 
- * in form {data: sessionsData}, 
- * reject returns possible errors
- * 
- */
-const queryMeterHistoryCache = function (options) {
-  return function (dispatch, getState) {
-    const { deviceKey, time } = options;
-
-    const cacheKey = getCacheKey('METER', time);
-    
-    return dispatch(fetchFromCache(cacheKey))
-    .then((data) => {
-      const deviceData = filterDataByDeviceKeys(data, deviceKey);
-      return Promise.resolve(deviceData);
-    })
-    .catch((error) => {
-      // fetch all meters requested in order to save to cache 
-      const newOptions = {
-        ...options, 
-        time, 
-        deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'METER'),
-      }; 
-      return dispatch(queryMeterHistory(newOptions))
-      .then((series) => {
-        dispatch(saveToCache(cacheKey, series));
-        // return only the meters requested  
-        return filterDataByDeviceKeys(series, deviceKey);
-      });
-    });
+    return dispatch(queryDataCache(data))
+    .then(resData => resData.map(population => ({
+      ...population,
+      sessions: population.sessions.map(session => ({ ...session, volume: session.volume.SUM })),
+    })));
   };
 };
 
 const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
-    const { time } = options;
+    const { time, label } = options;
     if (!time || !time.startDate || !time.endDate || time.granularity == null) {
       throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
                       'time object with startDate, endDate and granularity');
     }
-    dispatch(requestedQuery());
-    
+    const userKey = getState().user.profile.key;
+
     const data = {
       query: {
         time: {
@@ -391,12 +424,14 @@ const queryMeterForecast = function (options) {
         },
         population: [{
           type: 'USER',
-          users: [getState().user.profile.key],
+          label,
+          users: [userKey],
         }],
       },
       csrf: getState().user.csrf,
     };
 
+    dispatch(requestedQuery());
     return meterAPI.getForecast(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
@@ -406,7 +441,13 @@ const queryMeterForecast = function (options) {
           !response.meters[0] || !response.meters[0].points) {
         throwServerError(response);  
       }
-      return response.meters[0].points;
+      return {
+        label: response.meters[0].label,
+        sessions: response.meters[0].points.map(session => ({ 
+          ...session, 
+          volume: session.volume.SUM 
+        })),
+      };
     })
     .catch((error) => {
       console.error('caught error in query meter forecast: ', error);
@@ -416,61 +457,26 @@ const queryMeterForecast = function (options) {
   };
 };
 
-const queryData = function (options) {
+const queryMeterForecastCache = function (options) {
   return function (dispatch, getState) {
-    const { time, population, source, metrics } = options;
-    /*
-    if (!time || !time.startDate || !time.endDate || time.granularity == null 
-        || !population || !source || !metrics) {
-      throw new Error('Not sufficient data provided for data query. Requires: \n' + 
-                      'time object with startDate, endDate and granularity,\n' +
-                      'population,\n' +
-                      'source,\n' +
-                      'metrics\n'
-                     );
-                     }
-    */
-    dispatch(requestedQuery());
-    
-    const data = {
-      query: {
-        time: {
-          type: 'ABSOLUTE',
-          start: time.startDate,
-          end: time.endDate,
-          granularity: getLowerGranularityPeriod(
-            convertGranularityToPeriod(time.granularity)
-          ),
-        },
-        population, 
-        source,
-        metrics,
-      },
-      csrf: getState().user.csrf,
-    };
+    const { time } = options;
+    if (!time || !time.startDate || !time.endDate || time.granularity == null) {
+      throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
+                      'time object with startDate, endDate and granularity');
+    }
+    const userKey = getState().user.profile.key;
+    const cacheKey = getCacheKey('METER', userKey, time, ',forecast');
 
-    console.log('requesting data with', data);
-
-    return dataAPI.query(data)
-    .then((response) => {
-      console.log('got: ', response);
-      dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
-      
-      if (!response || !response.success) {
-        throwServerError(response);  
-      }
-
-      return response;
-    })
-    .catch((error) => {
-      console.error('caught error in data query: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
-    });
+    return dispatch(fetchFromCache(cacheKey))
+    .then(data => Promise.resolve(data))
+    .catch(error => dispatch(queryMeterForecast(options))
+      .then((series) => {
+        dispatch(saveToCache(cacheKey, series));
+        return series;
+      })
+    );
   };
 };
-
 /**
  * Fetch data based on provided options and handle query response before returning
  * 
@@ -511,7 +517,7 @@ const fetchWidgetData = function (options) {
     let queryMeter;
     let queryDevice;
     if (cache) {
-      queryMeter = queryMeterHistoryCache;
+      queryMeter = queryMeterHistory;
       queryDevice = queryDeviceSessionsCache;
     } else {
       queryMeter = queryMeterHistory;
@@ -568,7 +574,7 @@ module.exports = {
   queryDeviceSessions,
   fetchDeviceSession,
   fetchLastDeviceSession,
-  queryMeterHistoryCache,
+  //queryMeterHistoryCache,
   queryMeterHistory,
   fetchWidgetData,
   dismissError,
@@ -579,5 +585,7 @@ module.exports = {
   setInfo,
   dismissInfo,
   queryMeterForecast,
+  queryMeterForecastCache,
   queryData,
+  queryDataCache,
 };

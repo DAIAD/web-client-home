@@ -6,7 +6,7 @@ const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general'
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { reduceMetric, getDataSessions, getShowerMeasurementsById, getSessionsCount } = require('./sessions');
+const { reduceMetric, getShowerMeasurementsById, getSessionsCount } = require('./sessions');
 
 const tip = function (widget) {
   return {
@@ -74,7 +74,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     getChartMeterCategoryLabels(getChartMeterCategories(time), time, intl);
 
   const chartData = data ? data.map((devData) => {
-    const sessions = getDataSessions(devices, devData)
+    const sessions = devData.sessions 
     .map(session => ({
       ...session,
       duration: Math.round(100 * (session.duration / 60)) / 100,
@@ -82,7 +82,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     }));
     
     return {
-      name: getDeviceNameByKey(devices, devData.deviceKey) || '', 
+      name: getDeviceNameByKey(devices, devData.deviceKey) || 'SWM', 
       data: deviceType === 'METER' ? 
         getChartMeterData(sessions, 
                           getChartMeterCategories(time),
@@ -162,24 +162,21 @@ const meterForecast = function (widget, devices, intl) {
   const xCategories = getChartMeterCategories(time);
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time, intl);
   
-  const chartData = data ? data.map((devData) => {
-    const sessions = getDataSessions(devices, devData);
-    return {
-      name: getDeviceNameByKey(devices, devData.deviceKey) || '', 
-      data: getChartMeterData(sessions, 
+  const chartData = data ? data.map(devData => ({ 
+      name: getDeviceNameByKey(devices, devData.deviceKey) || 'SWM', 
+      data: getChartMeterData(devData.sessions, 
                               xCategories,
                               time
                              ).map(x => x ? x[widget.metric] : null),
-    };
-  }) : [];
+    })) : [];
 
-  const forecastChartData = forecastData ? [{
+  const forecastChartData = forecastData && forecastData.sessions ? [{
     name: 'Forecast',
-    data: getChartMeterData(forecastData,
+    data: getChartMeterData(forecastData.sessions,
                             xCategories, 
                             time
-                           ).map(x => x && x.volume && x.volume.SUM ? 
-                             Math.round(100 * x.volume.SUM) / 100
+                           ).map(x => x && x[widget.metric] ? 
+                             Math.round(100 * x[widget.metric]) / 100
                              : null),
   }]
   : [];

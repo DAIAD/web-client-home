@@ -1,6 +1,6 @@
 module.exports = {
   color: [
-    '#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E', '#EBB7B1',
+    '#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E', '#EBB7B1', '#2d3480', '#abaecc', '#7AD3AB',
   ],
   symbol: ['emptyCircle', 'emptyRectangle', 'emptyTriangle', 'emptyDiamond', 'circle'], 
   
