@@ -38,7 +38,7 @@ function Confirm(props) {
 }
 
 function CommonsSettings(props) {
-  const { searchFilter, confirm, active, mode, myCommons, allCommons, actions, params, children, commonForm, routes, searchCommons } = props;
+  const { intl, searchFilter, confirm, active, mode, myCommons, allCommons, actions, params, children, commonForm, routes, searchCommons } = props;
   const { setSearchFilter, setConfirm, clickConfirm, resetConfirm, goTo } = actions;
 
   const COMMONS_MENU = MAIN_MENU
@@ -49,6 +49,8 @@ function CommonsSettings(props) {
 
   const activeLinks = getActiveLinks(routes);
   const activeKey = activeLinks.length > 3 ? activeLinks[3] : null;
+
+  const _t = x => intl.formatMessage({ id: x });
   return (
     <MainSection id="section.commons">
       <div className="section-row-container"> 
@@ -66,7 +68,7 @@ function CommonsSettings(props) {
               <bs.Tab 
                 key={m.name} 
                 eventKey={m.name} 
-                title={m.title} 
+                title={_t(m.title)} 
               /> 
             ))
           }

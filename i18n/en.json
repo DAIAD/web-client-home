@@ -82,7 +82,7 @@
     "forecast":"Forecast",
     "shower": "Shower",
     "shower-aggregated": "Total data",
-    "commons": "Commons",
+    "commons": "Communities",
     "notifications": "Messages",
     "search": "Search",
     "alerts": "Alerts",
@@ -92,6 +92,11 @@
     "settings": "Settings",
     "profile": "Profile",
     "devices": "Devices",
+    "commonsManage": {
+      "edit": "Manage",
+      "new": "Create new",
+      "join": "Join"
+    },
     "login": "Login",
     "reset": "Password reset"
   },
