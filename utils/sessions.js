@@ -5,14 +5,14 @@ const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, EN
 
 // Returns sessions for AMPHIRO/METER given the DATA API response
 const getDataSessions = function (devices, data) {
-  if (!data || !data.deviceKey) return [];
+  if (!data || !data.sessions) return [];
   
   const devType = getDeviceTypeByKey(devices, data.deviceKey);
   
   if (devType === 'AMPHIRO') {
     return data.sessions;
   } else if (devType === 'METER') {
-    return data.values;
+    return data.sessions;
   }
   return [];
 };
