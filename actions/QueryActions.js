@@ -18,7 +18,7 @@ const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdF
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
 const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex } = require('../utils/general');
 const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod } = require('../utils/time');
-
+const moment = require('moment');
 
 const requestedQuery = function () {
   return {
@@ -564,6 +564,83 @@ const ignoreShower = function (options) {
   };
 };
 
+const getUserComparisons = function (options) {
+  return function (dispatch, getState) {
+    const { year, month } = options;
+
+    const data = {
+      year,
+      month,
+      csrf: getState().user.csrf,
+    };
+
+    dispatch(requestedQuery());
+
+    const userKey = getState().user.profile.key;
+    console.log('requesting comparisons', data);
+    return dataAPI.getComparisons(data)
+    .then((response) => {
+      console.log('got: ', response);
+      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(resetSuccess());
+      
+      if (!response || !response.success) {
+        throwServerError(response);  
+      } else if (!response.comparison) {
+        throw new Error('noComparisons');
+      } 
+
+      return response.comparison;
+    })
+    .then((comparison) => {
+      const dailyConsumption = comparison.dailyConsumtpion.map(day => ({
+        ...day,
+        time: {
+          startDate: moment(day.date).startOf('day').valueOf(),
+          endDate: moment(day.date).endOf('day').valueOf(),
+        },
+      }));
+      
+      const weeklyConsumption = dailyConsumption.reduce((p, c) => {
+        if (p.length > 0 && c.week === p[p.length - 1].week) {
+          return [...p.filter((x, i) => i !== p.length - 1), { 
+            ...c, 
+            all: c.all + p[p.length - 1].all, 
+            nearest: c.nearest + p[p.length - 1].nearest, 
+            similar: c.similar + p[p.length - 1].similar,
+            user: c.user + p[p.length - 1].user, 
+            time: {
+              startDate: moment(c.date).startOf('isoweek').valueOf(),
+              endDate: moment(c.date).endOf('isoweek').valueOf(),
+            },
+          }];
+        }
+          return [...p, c];
+      }, []);
+      const monthlyConsumption = comparison.monthlyConsumtpion.map(cmonth => ({
+        ...cmonth,
+        time: {
+          startDate: moment(cmonth.from).startOf('day').valueOf(),
+          endDate: moment(cmonth.to).endOf('day').valueOf(),
+        },
+      }));
+
+      const response = { ...comparison, dailyConsumption, weeklyConsumption, monthlyConsumption };
+      delete response.dailyConsumtpion;
+      delete response.monthlyConsumtpion;
+      return response;
+    })
+    .then((comparison) => {
+      console.log('got: ', comparison);
+    })
+    .catch((error) => {
+      console.error('caught error in get user comparisons: ', error);
+      dispatch(receivedQuery(false, error));
+      throw error;
+    });
+  };
+};
+
 /**
  * Fetch data based on provided options and handle query response before returning
  * 
@@ -677,4 +754,5 @@ module.exports = {
   queryDataCache,
   queryDataAverageCache,
   ignoreShower,
+  getUserComparisons,
 };

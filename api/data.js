@@ -14,6 +14,9 @@ const DataAPI = {
     //return callAPI('/action/data/session/ignore');
     return Promise.reject('Not yet implemented');
   },
+  getComparisons: function ({ csrf, month, year }) {
+    return callAPI(`/action/comparison/${year}/${month}`, { csrf }, 'GET');
+  },
 };
 
 module.exports = DataAPI;

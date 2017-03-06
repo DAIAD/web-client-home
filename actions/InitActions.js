@@ -36,9 +36,8 @@ const setReady = function () {
  * @param {Object} profile - profile object as returned from server
  */
 const initHome = function (profile) {
-  return function (dispatch, getState) {
+  return function (dispatch, getState) { 
     dispatch(fetchAllMessages());
-
     if (profile.configuration) {
       const configuration = JSON.parse(profile.configuration);
       if (configuration.widgets) {
