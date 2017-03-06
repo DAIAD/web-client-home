@@ -51,13 +51,12 @@ const JoinCommons = React.createClass({
         fields={allCommonsSchema}
         data={allCommons}
         pagination={{
-            total: Math.ceil(count / COMMONS_SEARCH_PAGE),
-            active: pagingIndex,
-            onPageClick: (page) => { 
-              setCommonsQueryAndFetch({ index: page - 1 });
-            },
-          }}
-
+          total: Math.ceil(count / COMMONS_SEARCH_PAGE),
+          active: pagingIndex,
+          onPageClick: (page) => { 
+            setCommonsQueryAndFetch({ index: page - 1 });
+          },
+        }}
         onRowClick={(row) => {
           if (commonForm.key === row.key) {
             clearCommonForm();
@@ -65,6 +64,7 @@ const JoinCommons = React.createClass({
             updateCommonForm(row);
           }
         }}
+        empty={<h5>No communities found</h5>}
       />
       {
         commonForm.key && !commonForm.member ?

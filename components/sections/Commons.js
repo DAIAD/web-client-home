@@ -205,6 +205,7 @@ const CommonsDetails = React.createClass({
               addMemberToChart({ ...row, selected: selectedMembers.length + 1 });
             }
           }}
+          empty={<span />}
         />
       </div>
     );
@@ -222,7 +223,7 @@ const Commons = React.createClass({
   },
   render: function () {
     const { intl, active, myCommons, mode, searchFilter, members: { count: memberCount }, actions } = this.props;
-    const { setDataQueryAndFetch, setSearchFilter, resetConfirm, confirm, clickConfirm, goToManage } = actions;
+    const { setDataQueryAndFetch, setSearchFilter, resetConfirm, confirm, clickConfirm, goToManage, goToJoin } = actions;
     const { selected, selectedUsers } = this.props;
     return (
       <MainSection id="section.commons">
@@ -237,7 +238,7 @@ const Commons = React.createClass({
                 :
                 <div>
                   <h3 style={{ marginTop: 20, marginLeft: 40 }}>My commons</h3>
-                  <p style={{ marginLeft: 40 }}>Please select a common from the list, or join a common in Settings</p>
+                  <p style={{ marginLeft: 40 }}>Please select a community from the list, or join one in Settings</p>
                 </div>
               }
    
@@ -247,7 +248,6 @@ const Commons = React.createClass({
 
           <SidebarRight> 
             <div className="commons-right">
-              
               <div> 
                 { 
                   active && active.image ? 
@@ -276,49 +276,62 @@ const Commons = React.createClass({
                       alt="commons-default" 
                     />
                 }
-                { this.props.lala ? 
-                  <label htmlFor="select-commons"><h5 style={{ textAlign: 'center' }}>Active common</h5></label> : <span /> 
-                }
-                <bs.DropdownButton
-                  pullRight
-                  title={active ? active.name : 'Explore'}
-                  id="select-commons"
-                  value={active ? active.id : null}
-                  onSelect={(e, val) => { 
-                    setDataQueryAndFetch({ active: val });
-                  }}
-                >
-                  {
-                    myCommons.map(common => 
-                      <bs.MenuItem 
-                        key={common.key} 
-                        eventKey={common.key} 
-                        value={common.key}
-                      >
-                      { common.name || 'No name'}
-                      </bs.MenuItem>
-                    )
-                  }	
-                </bs.DropdownButton>
-                { active ? 
-                  <p>
-                    <span><i className="fa fa-info-circle" />&nbsp; {active.description}</span>
-                    <br />
-                    <span>{`${memberCount} members`}</span>
-                  </p>
-                  : <span />
-                }
                 {
-                  active && this.props.lala ?
-                    <button
-                      style={{ width: '100%', marginTop: 20 }}
-                      onClick={() => goToManage()}
-                    >
-                      Manage
-                    </button>
+                  myCommons.length === 0 ? 
+                    <div>
+                      <span>Not a member of any commmunities yet</span>
+                      <button
+                        style={{ width: '100%', marginTop: 20 }}
+                        onClick={() => goToJoin()}
+                      >
+                        Join
+                      </button>
+                    </div>
+
                     :
-                    <span />
-                 }
+                    <div>
+                      <bs.DropdownButton
+                        pullRight
+                        title={active ? active.name : 'Select'}
+                        id="select-commons"
+                        value={active ? active.id : null}
+                        onSelect={(e, val) => { 
+                          setDataQueryAndFetch({ active: val });
+                        }}
+                      >
+                        {
+                          myCommons.map(common => 
+                            <bs.MenuItem 
+                              key={common.key} 
+                              eventKey={common.key} 
+                              value={common.key}
+                            >
+                            { common.name || 'No name'}
+                            </bs.MenuItem>
+                          )
+                        }	
+                      </bs.DropdownButton>
+                      { active ? 
+                        <p>
+                          <span><i className="fa fa-info-circle" />&nbsp; {active.description}</span>
+                          <br />
+                          <span>{`${memberCount} members`}</span>
+                        </p>
+                        : <span />
+                      }
+                      {
+                        active && this.props.hide ?
+                          <button
+                            style={{ width: '100%', marginTop: 20 }}
+                            onClick={() => goToManage()}
+                          >
+                            Manage
+                          </button>
+                          :
+                          <span />
+                       }
+                     </div>
+                }
               </div>
             </div>
           </SidebarRight>

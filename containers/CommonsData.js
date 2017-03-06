@@ -26,6 +26,7 @@ function mapDispatchToProps(dispatch) {
       ...CommonsActions,
       queryMeterHistoryCache,
       goToManage: () => push('/settings/commons'),
+      goToJoin: () => push('/settings/commons/join'),
     }, dispatch);
 }
 
@@ -64,6 +65,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     active,
     members: {
       ...stateProps.members,
+      active: stateProps.members.active.map(m => stateProps.members.selected.map(s => s.key).includes(m.key) ? ({ ...m, selected: true }) : m),
       pagingIndex: stateProps.members.pagingIndex + 1, // table index is 1-based
     },
     previousPeriod: timeUtil.getPreviousPeriod(stateProps.timeFilter, stateProps.time.endDate),

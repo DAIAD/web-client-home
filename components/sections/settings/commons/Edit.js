@@ -8,7 +8,11 @@ function UpdateCommons(props) {
   const { myCommons, commonForm, actions } = props;
   const { confirmUpdate, confirmDelete, confirmLeave, updateCommonForm } = actions;
   if (myCommons.length === 0) {
-    return <span>No commons joined.</span>;
+    return (
+      <div style={{ margin: 20 }}>
+        <h5>No communities joined yet.</h5>
+      </div>
+    );
   }
   return (
     <bs.Accordion 
@@ -71,7 +75,7 @@ function UpdateCommons(props) {
                       confirmDelete();
                     }}
                   >
-                    Delete Common
+                    Delete
                   </bs.Button>
                 </div>
                 :
@@ -83,7 +87,7 @@ function UpdateCommons(props) {
                       confirmLeave();
                     }}
                   >
-                    Leave Common
+                    Leave
                   </bs.Button>
                 </div>
               }
