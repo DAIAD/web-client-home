@@ -4,7 +4,7 @@ const bs = require('react-bootstrap');
 const MainSection = require('../../../layout/MainSection');
 const { SidebarLeft, SidebarRight } = require('../../../layout/Sidebars');
 
-const { getActiveLinks } = require('../../../../utils/general');
+const { getActiveKey } = require('../../../../utils/general');
 const { MAIN_MENU } = require('../../../../constants/HomeConstants');
 
 function Confirm(props) {
@@ -47,8 +47,7 @@ function CommonsSettings(props) {
   .find(item => item.name === 'commons')
   .children;
 
-  const activeLinks = getActiveLinks(routes);
-  const activeKey = activeLinks.length > 3 ? activeLinks[3] : null;
+  const activeKey = getActiveKey(routes, 3);
 
   return (
     <MainSection id="section.commons">

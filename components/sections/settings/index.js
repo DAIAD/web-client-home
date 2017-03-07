@@ -4,7 +4,7 @@ const { Link } = require('react-router');
 
 const MainSection = require('../../layout/MainSection');
 const Topbar = require('../../layout/Topbar');
-const { getActiveLinks } = require('../../../utils/general');
+const { getActiveKey } = require('../../../utils/general');
 const { MAIN_MENU } = require('../../../constants/HomeConstants');
 
 const Settings = function (props) {
@@ -12,9 +12,7 @@ const Settings = function (props) {
   const { goTo } = actions;
 
   const SETTINGS_MENU = MAIN_MENU.find(item => item.name === 'settings').children;
-
-  const activeLinks = getActiveLinks(routes);
-  const activeKey = activeLinks.length > 2 ? activeLinks[2] : null;
+  const activeKey = getActiveKey(routes, 2);
 
   const _t = x => intl.formatMessage({ id: x });
   return (

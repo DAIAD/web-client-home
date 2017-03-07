@@ -4,15 +4,14 @@ const { Link } = require('react-router');
 
 const Header = require('../layout/Header');
 const Footer = require('../layout/Footer');
-const { debounce, getActiveLinks } = require('../../utils/general');
+const { debounce, getActiveKey } = require('../../utils/general');
 
 const { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
 
 function MainSidebar(props) {
   const { menuItems, routes = [] } = props;
+  const activeKey = getActiveKey(routes, 1);
 
-  const activeLinks = getActiveLinks(routes);
-  const activeKey = activeLinks.length > 1 ? activeLinks[1] : null;
   return (
     <aside className="main-sidebar">
       <ul className="main-menu-side">

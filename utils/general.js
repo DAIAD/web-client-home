@@ -186,7 +186,15 @@ const debounce = function (func, wait, immediate) {
 }; 
 
 const getActiveLinks = function (routes) {
-  return routes.map(route => route.path || route.default);
+  return routes.map(route => route.path || route.default); 
+};
+
+const getActiveKey = function (routes, depth) {
+  const active = getActiveLinks(routes);
+  if (active != null && active.length > 0) {
+    return active[depth].split('/')[0];
+  }
+  return null;
 };
 
 const filterObj = function (obj, included) {
@@ -226,7 +234,7 @@ module.exports = {
   getShowersPagingIndex,
   debounce,
   uploadFile,
-  getActiveLinks,
+  getActiveKey,
   filterObj,
   throwServerError,
   formatMessage,
