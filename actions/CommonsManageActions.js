@@ -9,6 +9,7 @@ const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('..
 const { showerFilterToLength, throwServerError } = require('../utils/general');
 const { flattenCommonsGroups } = require('../utils/commons');
 
+const { setConfirm, resetConfirm } = require('./FormActions');
 const QueryActions = require('./QueryActions');
 const CommonsActions = require('./CommonsActions');
 
@@ -265,30 +266,9 @@ const leaveCommon = function (key) {
   };
 };
 
-/* Confirm actions */
-
-const resetConfirm = function () {
-  return {
-    type: types.COMMONS_RESET_CONFIRM,
-  };
-};
-
-const setConfirm = function (common, mode) {
+const clickConfirmCommon = function () {
   return function (dispatch, getState) {
-    dispatch({
-      type: types.COMMONS_SET_CONFIRM,
-      mode,
-      common,
-    });
-  };
-};
-
-const clickConfirm = function () {
-  return function (dispatch, getState) {
-    const { confirm } = getState().section.settings.commons;
-    if (!confirm) { throw new Error('Oops, confirm clicked without pending confirmation'); }
-
-    const [mode, common] = confirm;
+    const { mode, item: common } = getState().forms.confirm;
 
     if (mode === 'create') {
       dispatch(createCommon(common))
@@ -317,7 +297,6 @@ const clickConfirm = function () {
       throw new Error('Unrecognized mode in click confirm', mode);
     }
     dispatch(resetConfirm());
-    dispatch(resetForm('updateCommon'));
   };
 };
 
@@ -331,9 +310,7 @@ module.exports = {
   updateCommon,
   deleteCommon,
   //confirmations
-  setConfirm,
-  clickConfirm,
-  resetConfirm,
+  clickConfirmCommon,
   setSearchFilter,
   setSearchPagingIndex,
   //fetch actions

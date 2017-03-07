@@ -101,7 +101,5 @@ module.exports = keyMirror({
   COMMONS_SET_SEARCH_FILTER: null,
   COMMONS_SET_SEARCH_PAGING_INDEX: null,
   COMMONS_SET_SEARCH_COUNT: null,
-  COMMONS_SET_CONFIRM: null,
-  COMMONS_RESET_CONFIRM: null,
 });
 
