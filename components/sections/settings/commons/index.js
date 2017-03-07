@@ -58,7 +58,7 @@ function CommonsSettings(props) {
           tabWidth={50}
           activeKey={activeKey} 
           onSelect={(val) => { 
-            goTo(`/settings/commons/${val}`); 
+            goTo(COMMONS_MENU.find(item => item.name === val).route);
           }}
         >
           {

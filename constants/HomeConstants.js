@@ -76,7 +76,7 @@ module.exports = {
           {
             name: 'edit',
             title: 'section.commonsManage.edit',
-            route: 'settings/commons/edit',
+            route: 'settings/commons',
           }, 
           {
             name: 'create',
