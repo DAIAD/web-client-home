@@ -4,6 +4,7 @@ const initialState = {
   widgetToAdd: {},
   profileForm: {},
   commonForm: {},
+  memberForm: {},
   deviceForm: {
     unit: 'METRIC',
     key: null,

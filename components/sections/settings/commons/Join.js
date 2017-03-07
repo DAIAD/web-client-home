@@ -18,7 +18,7 @@ const JoinCommons = React.createClass({
   },
   render: function () {
     const { allCommons, searchFilter, count, pagingIndex, commonForm, actions } = this.props;
-    const { updateCommonForm, clearCommonForm, searchCommons, setSearchFilter, setSearchPagingIndex, confirmJoin, setCommonsQueryAndFetch } = actions;
+    const { updateCommonForm, clearCommonForm, searchCommons, setSearchFilter, setSearchPagingIndex, confirmJoinCommon, setCommonsQueryAndFetch } = actions;
     return (
       <div style={{ margin: 20 }}>
         <form 
@@ -73,7 +73,7 @@ const JoinCommons = React.createClass({
             style={{ marginTop: 20, float: 'right' }} 
             onClick={() => {
               //setConfirm(commonForm, 'join');
-              confirmJoin();
+              confirmJoinCommon();
             }}
           >
             Join

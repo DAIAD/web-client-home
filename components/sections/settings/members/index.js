@@ -9,20 +9,20 @@ const { getActiveKey } = require('../../../../utils/general');
 const { MAIN_MENU } = require('../../../../constants/HomeConstants');
 
 
-function CommonsSettings(props) {
-  const { _t, searchFilter, confirm, active, mode, myCommons, allCommons, actions, params, children, commonForm, routes, searchCommons } = props;
-  const { setSearchFilter, setConfirm, clickConfirmCommon: clickConfirm, resetConfirm, goTo } = actions;
+function MembersSettings(props) {
+  const { _t, confirm, children, routes, actions } = props;
+  const { clickConfirmMember: clickConfirm, resetConfirm, goTo } = actions;
 
-  const COMMONS_MENU = MAIN_MENU
+  const MEMBERS_MENU = MAIN_MENU
   .find(item => item.name === 'settings')
   .children
-  .find(item => item.name === 'commons')
+  .find(item => item.name === 'members')
   .children;
 
   const activeKey = getActiveKey(routes, 3);
 
   return (
-    <MainSection id="section.commons">
+    <MainSection id="section.members">
       <div className="section-row-container"> 
       <SidebarRight>
         <bs.Tabs
@@ -30,11 +30,11 @@ function CommonsSettings(props) {
           tabWidth={50}
           activeKey={activeKey} 
           onSelect={(val) => { 
-            goTo(COMMONS_MENU.find(item => item.name === val).route);
+            goTo(MEMBERS_MENU.find(item => item.name === val).route);
           }}
         >
           {
-            COMMONS_MENU.map(m => (
+            MEMBERS_MENU.map(m => (
               <bs.Tab 
                 key={m.name} 
                 eventKey={m.name} 
@@ -52,9 +52,9 @@ function CommonsSettings(props) {
       </div>
 
       <Confirm
-        show={confirm.mode !== null && confirm.item !== null}
+        show={confirm.item !== null && confirm.mode !== null}
         confirmation={confirm}
-        message={confirm.item && confirm.mode ? `Are you sure you want to ${confirm.mode} ${confirm.item.name}?` : ''}
+        message={confirm.item && confirm.mode ? `Are you sure you want to ${confirm.mode} member ${confirm.item.name}?` : ''}
         onConfirm={clickConfirm}
         onClose={resetConfirm}
       />
@@ -63,4 +63,4 @@ function CommonsSettings(props) {
   );
 }
 
-module.exports = CommonsSettings;
+module.exports = MembersSettings;

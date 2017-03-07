@@ -24,6 +24,9 @@ const UserAPI = {
   resetPassword: function (data) {
     return callAPI('/action/user/password/reset/token/redeem', data);
   },
+  saveMembers: function (data) {
+    return callAPI('/action/household', data);
+  },
 };
 
 module.exports = UserAPI;

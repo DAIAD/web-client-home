@@ -5,9 +5,10 @@ const { push } = require('react-router-redux');
 
 //const CommonsActions = require('../actions/CommonsActions');
 const CommonsManageActions = require('../actions/CommonsManageActions');
+const MembersManageActions = require('../actions/MembersManageActions');
 const { setLocale } = require('../actions/LocaleActions');
-const { saveToProfile, fetchProfile, updateDevice } = require('../actions/UserActions');
-const { setForm, resetForm } = require('../actions/FormActions');
+const { saveToProfile, fetchProfile, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
+const { setForm, resetForm, setConfirm, resetConfirm } = require('../actions/FormActions');
 const { setError, dismissError } = require('../actions/QueryActions');
 
 const Settings = require('../components/sections/settings/');
@@ -23,10 +24,14 @@ function mapStateToProps(state) {
     errors: state.query.errors,
     locale: state.locale.locale,
     devices: state.user.profile.devices,
+    members: state.user.profile.household.members,
     profileForm: state.forms.profileForm,
+    memberForm: state.forms.memberForm,
     deviceForm: state.forms.deviceForm,
     myCommons: state.section.commons.myCommons,
     commonForm: state.forms.commonForm,
+    confirm: state.forms.confirm,
+    ...state.section.settings.members,
     ...state.section.settings.commons,
   };
 }
@@ -34,6 +39,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
       ...CommonsManageActions,
+      ...MembersManageActions,
       setLocale, 
       setForm,
       resetForm, 
@@ -41,6 +47,8 @@ function mapDispatchToProps(dispatch) {
       fetchProfile,
       setError,
       dismissError,
+      setConfirm,
+      resetConfirm,
       goTo: route => push(route),
       updateDevice,
     }, dispatch);
@@ -51,21 +59,31 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...stateProps,
     actions: {
       ...dispatchProps,
+      //profile
       updateProfileForm: data => dispatchProps.setForm('profileForm', data),
+      //members
+      updateMemberForm: data => dispatchProps.setForm('memberForm', data),
+      clearMemberForm: () => dispatchProps.resetForm('memberForm'),
+      confirmAddMember: () => dispatchProps.setConfirm('create', stateProps.memberForm),
+      confirmEditMember: () => dispatchProps.setConfirm('update', stateProps.memberForm),
+      confirmDeleteMember: () => dispatchProps.setConfirm('delete', stateProps.memberForm),
+      //devices
       updateDeviceForm: data => dispatchProps.setForm('deviceForm', data),
+      //commons    
       updateCommonForm: common => dispatchProps.setForm('commonForm', common), 
       clearCommonForm: () => dispatchProps.resetForm('commonForm'), 
       searchCommons: () => { 
         dispatchProps.searchCommons({ name: stateProps.searchFilter }); 
         dispatchProps.resetForm('commonForm');
       },
-      confirmCreate: () => dispatchProps.setConfirm(stateProps.commonForm, 'create'),
-      confirmUpdate: () => dispatchProps.setConfirm(stateProps.commonForm, 'update'),
-      confirmDelete: () => dispatchProps.setConfirm(stateProps.commonForm, 'delete'),
-      confirmJoin: () => dispatchProps.setConfirm(stateProps.commonForm, 'join'),
-      confirmLeave: () => dispatchProps.setConfirm(stateProps.commonForm, 'leave'),
+      confirmCreateCommon: () => dispatchProps.setConfirm('create', stateProps.commonForm),
+      confirmUpdateCommon: () => dispatchProps.setConfirm('update', stateProps.commonForm),
+      confirmDeleteCommon: () => dispatchProps.setConfirm('delete', stateProps.commonForm),
+      confirmJoinCommon: () => dispatchProps.setConfirm('join', stateProps.commonForm),
+      confirmLeaveCommon: () => dispatchProps.setConfirm('leave', stateProps.commonForm),
     },
     ...ownProps,
+    members: stateProps.members.filter(member => member.active),
     pagingIndex: stateProps.pagingIndex + 1, // 1-based
     _t: formatMessage(ownProps.intl),
   };

@@ -64,6 +64,23 @@ module.exports = {
         route: 'settings/profile',
       },
       {
+        name: 'members',
+        title: 'section.members',
+        route: 'settings/members',
+        children: [
+          {
+            name: 'edit',
+            title: 'section.membersManage.edit',
+            route: 'settings/members',
+          },
+          {
+            name: 'create',
+            title: 'section.membersManage.create',
+            route: 'settings/members/create',
+          },
+        ],
+      },
+      {
         name: 'devices',
         title: 'section.devices',
         route: 'settings/devices',

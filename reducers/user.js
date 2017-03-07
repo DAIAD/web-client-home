@@ -5,7 +5,10 @@ const initialState = {
   csrf: null,
   ready: false,
   profile: {
-    devices: []
+    devices: [],
+    household: {
+      members: [],
+    },
   }
 };
 
