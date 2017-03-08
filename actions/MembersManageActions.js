@@ -2,6 +2,7 @@ const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
 const userAPI = require('../api/user');
+const dataAPI = require('../api/data');
 
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
@@ -106,7 +107,7 @@ const assignToMember = function (options) {
 
     dispatch(requestedQuery());
 
-    return userAPI.assignToMember(data)
+    return dataAPI.assignToMember(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
