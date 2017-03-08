@@ -27,6 +27,11 @@ const UserAPI = {
   saveMembers: function (data) {
     return callAPI('/action/household', data);
   },
+  assignToMember: function (data) {
+    // TODO: not yet functional
+    //return callAPI('/action/data/session/member', data);
+    return Promise.reject('Not yet implemented');
+  },
 };
 
 module.exports = UserAPI;

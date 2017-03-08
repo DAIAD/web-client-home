@@ -293,6 +293,30 @@ const History = React.createClass({
                 :
                 <div />
             }
+            { this.props.memberFilters && this.props.memberFilters.length > 0 ? 
+              <div>
+                <h5 style={{ marginLeft: 20 }}>Filter by</h5>
+                <bs.Tabs 
+                  position="left" 
+                  tabWidth={20} 
+                  activeKey={this.props.memberFilter} 
+                  onSelect={(val) => {
+                    this.props.setQueryAndFetch({ memberFilter: val });
+                  }}
+                >
+                  {
+                    this.props.memberFilters.map(filter => (
+                      <bs.Tab 
+                        key={filter.id} 
+                        eventKey={filter.id}
+                        title={filter.title} 
+                      /> 
+                    ))
+                  }
+                </bs.Tabs>
+              </div>
+              : <div />
+            }
           </SidebarRight>
           <div className="primary"> 
             <div className="history-chart-area">
@@ -349,7 +373,6 @@ const History = React.createClass({
           </div>
         </div>
         <SessionData 
-          firstname={this.props.firstname}
           sessions={this.props.sessions} 
           time={this.props.time} 
         />

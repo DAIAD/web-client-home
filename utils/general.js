@@ -119,9 +119,9 @@ const getShowersPagingIndex = function (length, index) {
   return Math.floor((length * Math.abs(index)) / SHOWERS_PAGE);
 };
 
-const getAmphiroCacheKey = function (length, index) {
+const getAmphiroCacheKey = function (member, length, index) {
   const cacheIdx = -1 * getShowersPagingIndex(length, index);
-  return `AMPHIRO,${SHOWERS_PAGE},${cacheIdx}`;
+  return `AMPHIRO,${member},${SHOWERS_PAGE},${cacheIdx}`;
 };
 
 const getMeterCacheKey = function (time) {
@@ -131,7 +131,7 @@ const getMeterCacheKey = function (time) {
 const getCacheKey = function (deviceType, ...rest) {
   if (deviceType === 'AMPHIRO') {
     if (rest.length < 2) {
-      throw new Error('cant get amphiro cache key without length, index');
+      throw new Error('cant get amphiro cache key without members, length, index');
     }
     return getAmphiroCacheKey(...rest);
   } else if (deviceType === 'METER') {

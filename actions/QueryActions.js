@@ -14,7 +14,7 @@ const deviceAPI = require('../api/device');
 const meterAPI = require('../api/meter');
 const dataAPI = require('../api/data');
 
-const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, } = require('../utils/sessions');
+const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, memberFilterToMembers } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
 const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex } = require('../utils/general');
 const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod } = require('../utils/time');
@@ -125,18 +125,23 @@ const saveToCache = function (cacheKey, data) {
  */
 const queryDeviceSessions = function (options) {
   return function (dispatch, getState) {
-    const { length, deviceKey } = options;
+    const { length, deviceKey, memberFilter } = options;
     
     if (!deviceKey || !length) {
       throw new Error(`Not sufficient data provided for device sessions query: deviceKey:${deviceKey}`);
     }
-    dispatch(requestedQuery());
+    
+    const members = memberFilterToMembers(memberFilter);
     
     const data = {
       ...options,
       type: 'SLIDING', 
+      members,
       csrf: getState().user.csrf,
     };
+    
+    dispatch(requestedQuery());
+
     return deviceAPI.querySessions(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors, response.devices));
@@ -147,8 +152,10 @@ const queryDeviceSessions = function (options) {
         throwServerError(response);  
       }
       
+      // TODO: client-side filtering can lead to inaccuracies, should better be on backend
       return response.devices.map(session => ({ 
           ...session,
+          sessions: session.sessions.filter(s => memberFilter === 'default' ? s.member === null : true),
           range: session.sessions ? getShowerRange(session.sessions) : {}
         }));
     })
@@ -169,9 +176,9 @@ const queryDeviceSessions = function (options) {
 
 const queryDeviceSessionsCache = function (options) {
   return function (dispatch, getState) {
-    const { length, deviceKey, type, index = 0 } = options;
+    const { length, deviceKey, type, memberFilter, index = 0 } = options;
 
-    const cacheKey = getCacheKey('AMPHIRO', length, index);
+    const cacheKey = getCacheKey('AMPHIRO', memberFilter, length, index);
     const startIndex = SHOWERS_PAGE * getShowersPagingIndex(length, index);
 
     // if item found in cache return it
@@ -183,9 +190,9 @@ const queryDeviceSessionsCache = function (options) {
     }
     
     const newOptions = {
-      ...options, 
       length: SHOWERS_PAGE,
       startIndex,
+      memberFilter,
       deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO'),
     };
     
@@ -436,11 +443,8 @@ const queryData = function (options) {
       csrf: getState().user.csrf,
     };
 
-    console.log('requesting data with', data);
-
     return dataAPI.query(data)
     .then((response) => {
-      console.log('got: ', response);
       dispatch(receivedQuery(response.success, response.errors));
       dispatch(resetSuccess());
       

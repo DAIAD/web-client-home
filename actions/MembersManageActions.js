@@ -97,6 +97,32 @@ const clickConfirmMember = function () {
   };
 };
 
+const assignToMember = function (options) {
+  return function (dispatch, getState) {
+    const data = {
+      assignments: [options],
+      csrf: getState().user.csrf,
+    };
+
+    dispatch(requestedQuery());
+
+    return userAPI.assignToMember(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+      return response;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on assign shower to member:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
 
 module.exports = {
   saveMembers,
@@ -105,4 +131,5 @@ module.exports = {
   removeMember,
   //confirm
   clickConfirmMember,
+  assignToMember,
 };

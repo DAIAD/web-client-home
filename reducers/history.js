@@ -20,6 +20,8 @@ const initialState = {
   showerIndex: 0,
   forecasting: true,
   forecastData: [],
+  assignMember: false,
+  memberFilter: 'all',
 };
  
 const history = function (state = initialState, action) {
@@ -120,6 +122,16 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_FORECAST_DATA:
       return Object.assign({}, state, {
         forecastData: action.data,
+      });
+
+    case types.HISTORY_SET_MEMBER_FILTER:
+      return Object.assign({}, state, {
+        memberFilter: action.filter,
+      });
+
+    case types.HISTORY_SET_ASSIGN_MEMBER:
+      return Object.assign({}, state, {
+        assignMember: action.enable,
       });
 
     case types.USER_RECEIVED_LOGOUT:

@@ -83,16 +83,60 @@ function SessionInfoLine(props) {
   );
 }
 
+function SelectMember(props) {
+  const { deviceKey, sessionId, member, members, assignToMember, assignMember, enableAssignMember, disableAssignMember } = props;
+  if (!assignMember) {
+    return (
+      <div style={{ float: 'right' }}>
+        <span style={{ margin: '0 15px' }}>{member}</span>
+          &nbsp;
+          <a onClick={enableAssignMember}><i className="fa fa-pencil" /></a>
+      </div>
+    );
+  }
+  return (
+    <div style={{ float: 'right' }}>
+      <bs.DropdownButton
+        title={member}
+        id="shower-user-switcher"
+        onSelect={(e, val) => { 
+          assignToMember({ 
+            deviceKey, 
+            sessionId, 
+            memberIndex: val, 
+            timestamp: new Date().valueOf()
+          })
+          .then(() => disableAssignMember());
+        }}
+      >
+        {
+          members.map(m => 
+            <bs.MenuItem 
+              key={m.index || -1} 
+              eventKey={m.index} 
+              value={m.index}
+            >
+            { m.name }
+            </bs.MenuItem>
+            )
+        }	
+      </bs.DropdownButton>
+      &nbsp;
+      <a onClick={disableAssignMember}><i className="fa fa-times" /></a>
+  </div>
+  );
+}
+
 function SessionInfo(props) {
-  const { setSessionFilter, _t, data, firstname, activeDeviceType } = props;
+  const { _t, data, activeDeviceType, members, assignMember, setSessionFilter, assignToMember, enableAssignMember, disableAssignMember } = props;
   const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
-   
+  
   return !data ? <div /> : (
   <div className="shower-info">
     <div className="headline">
       <span className="headline-user">
         <i className="fa fa-user" />
-        {firstname}
+        <SelectMember {...{ deviceKey: data.device, sessionId: data.id, member: data.member, members, assignToMember, assignMember, enableAssignMember, disableAssignMember }} />
       </span>
       {
         activeDeviceType === 'AMPHIRO' ? 
@@ -138,7 +182,7 @@ function SessionInfo(props) {
 
 function Session(props) {
   const { _t, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
-    firstname, activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period } = props;
+    activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period, members, assignToMember, assignMember } = props;
     
   if (!data) return <div />;
   const { history, id, min, max, date } = data;
@@ -195,11 +239,7 @@ function Session(props) {
         </div>
           
         <SessionInfo
-          firstname={firstname}
-          setSessionFilter={setSessionFilter}
-          activeDeviceType={activeDeviceType}
-          _t={_t}
-          data={data} 
+          {...props}
         /> 
       </div>
     );
@@ -225,10 +265,7 @@ function Session(props) {
         </div> 
 
         <SessionInfo
-          firstname={firstname}
-          activeDeviceType={activeDeviceType}
-          _t={_t}
-          data={data} 
+          {...props}
         />
       </div> 
     );
@@ -274,10 +311,7 @@ function Session(props) {
       </div>
       
       <SessionInfo
-        firstname={firstname}
-        activeDeviceType={activeDeviceType}
-        _t={_t}
-        data={data} 
+        {...props}
       />
     </div> 
   );
