@@ -142,22 +142,6 @@ const fetchData = function () {
       }
     }
       // comparisons
-      getState().section.history.comparisons.forEach((comparison) => {
-        if (comparison.type === 'last') {
-          dispatch(QueryActions.queryMeterHistoryCache({
-            deviceKey: getState().section.history.activeDevice, 
-            time: getPreviousPeriod(getState().section.history.timeFilter, 
-                                    getState().section.history.time.startDate
-                                   ), 
-          }))
-          .then(sessions => dispatch(setComparisonSessions(sessions)))
-          .catch((error) => { 
-            dispatch(setComparisonSessions([]));
-            console.error('Caught error in history comparison query:', error); 
-          });
-        }
-      });
-      /*
       if (getState().section.history.comparison === 'last') {
         dispatch(QueryActions.queryMeterHistoryCache({
           deviceKey: getState().section.history.activeDevice, 
@@ -172,8 +156,7 @@ const fetchData = function () {
       });
       } else {
         dispatch(setComparisonSessions([]));
-        }
-      */ 
+      }
   };
 };
 
