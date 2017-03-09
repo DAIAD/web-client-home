@@ -7,7 +7,7 @@ const { push } = require('react-router-redux');
 const CommonsManageActions = require('../actions/CommonsManageActions');
 const MembersManageActions = require('../actions/MembersManageActions');
 const { setLocale } = require('../actions/LocaleActions');
-const { saveToProfile, fetchProfile, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
+const { saveToProfile, fetchProfile, changePassword, setChangePassword, resetChangePassword, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
 const { setForm, resetForm, setConfirm, resetConfirm } = require('../actions/FormActions');
 const { setError, dismissError } = require('../actions/QueryActions');
 
@@ -31,6 +31,7 @@ function mapStateToProps(state) {
     myCommons: state.section.commons.myCommons,
     commonForm: state.forms.commonForm,
     confirm: state.forms.confirm,
+    showChangePassword: state.section.settings.profile.showChangePassword,
     ...state.section.settings.members,
     ...state.section.settings.commons,
   };
@@ -45,6 +46,9 @@ function mapDispatchToProps(dispatch) {
       resetForm, 
       saveToProfile, 
       fetchProfile,
+      changePassword,
+      setChangePassword,
+      resetChangePassword,
       setError,
       dismissError,
       setConfirm,

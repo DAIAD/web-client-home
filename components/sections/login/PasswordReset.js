@@ -2,6 +2,8 @@ const React = require('react');
 const { FormattedMessage } = require('react-intl');
 const ReCAPTCHA = require('react-google-recaptcha');
 
+const { validatePassword } = require('../../../utils/general');
+
 const PasswordResetForm = React.createClass({
   componentWillMount: function () {
     this.props.dismissError();
@@ -19,14 +21,14 @@ const PasswordResetForm = React.createClass({
         className="form-login" 
         onSubmit={(e) => {
           e.preventDefault();
-          if (this.password !== this.confirmPassword) {
-            setError('passwordMismatch');
-          } else if (this.password.length < 8) {
-            setError('passwordTooShort');
-          } else {
+          validatePassword(this.password, this.confirmPassword)
+          .then(() => {
             this.props.resetPassword(this.password, this.token, this.captcha)
             .then(goToLogin);
-          }
+          })
+          .catch((error) => {
+            setError(error);
+          });
         }}
       >
         <h3><FormattedMessage id="section.reset" /></h3>
@@ -36,17 +38,17 @@ const PasswordResetForm = React.createClass({
             name="password" 
             type="password" 
             onChange={(e) => { this.password = e.target.value; }}
-            placeholder={_t('loginForm.placehoder.password')} 
+            placeholder={_t('loginForm.placeholder.password')} 
             className="form-control" 
           />
         </div>
         <div className="form-group">
           <input 
-            id="password2" 
+            id="password-confirm" 
             name="password-confirm" 
             type="password" 
             onChange={(e) => { this.confirmPassword = e.target.value; }}
-            placeholder={_t('loginForm.placehoder.password-confirm')} 
+            placeholder={_t('loginForm.placeholder.password-confirm')} 
             className="form-control" 
           />
         </div>

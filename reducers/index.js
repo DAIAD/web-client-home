@@ -11,6 +11,7 @@ const forms = require('./forms');
 const viewport = require('./viewport');
 const commons = require('./commons');
 const manageCommons = require('./manageCommons');
+const profile = require('./profile');
 
 const rootReducer = combineReducers({
   routing: routerReducer,
@@ -26,6 +27,7 @@ const rootReducer = combineReducers({
     commons,
     settings: combineReducers({
       commons: manageCommons,
+      profile,
     }),
 
   }),
