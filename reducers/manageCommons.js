@@ -6,7 +6,6 @@ const initialState = {
   pagingIndex: 0,
   searchFilter: '',
   count: 0,
-  confirm: null, 
 };
  
 const commons = function (state = initialState, action) {
@@ -27,18 +26,6 @@ const commons = function (state = initialState, action) {
       return {
         ...state,
         synced: false,
-      };
-
-    case types.COMMONS_SET_CONFIRM: 
-      return {
-        ...state,
-        confirm: [action.mode, action.common],
-      };
-
-    case types.COMMONS_RESET_CONFIRM:
-      return {
-        ...state,
-        confirm: null,
       };
 
     case types.COMMONS_SET_SEARCH_FILTER:

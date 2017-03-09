@@ -3,7 +3,6 @@ const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
 const { getTimeLabelByGranularity } = require('./chart');
 const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
-
 const getSessionsCount = function (devices, data) {
   return data.map(dev => dev.sessions.length).reduce((p, c) => p + c, 0);
 };
@@ -11,13 +10,14 @@ const getSessionsCount = function (devices, data) {
 // reduces array of devices with multiple sessions arrays
 // to single array of sessions 
 // and prepare for table presentation
-const prepareSessionsForTable = function (devices, data, user, granularity, intl) {
+const prepareSessionsForTable = function (devices, data, members, user, granularity, intl) {
   if (!devices || !data) return [];
   const sessions = data.map(device => device.sessions 
                   .map((session, idx, array) => {
                     const devType = getDeviceTypeByKey(devices, device.deviceKey);
                     const vol = 'volume'; 
                     const diff = array[idx - 1] != null ? (array[idx][vol] - array[idx - 1][vol]) : null;
+                    const member = session.member && session.member.index && Array.isArray(members) ? members.find(m => session.member.index === m.index) : null;
                     return {
                       ...session,
                       index: idx, 
@@ -37,7 +37,7 @@ const prepareSessionsForTable = function (devices, data, user, granularity, intl
                         : null,
                       hasChartData: Array.isArray(session.measurements) && 
                         session.measurements.length > 0,
-                      user,
+                      member: member ? member.name : user,
                       date: getTimeLabelByGranularity(session.timestamp, 
                                                       granularity, 
                                                       intl
@@ -276,6 +276,15 @@ const energyToPictures = function (energy) {
   };
 };
 
+const memberFilterToMembers = function (filter) {
+  if (filter === 'all' || filter === 'default') {
+    return [];
+  } else if (!isNaN(filter)) {
+    return [filter];
+  } 
+  return [];
+};
+
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
@@ -293,4 +302,5 @@ module.exports = {
   hasShowersAfter,
   volumeToPictures,
   energyToPictures,
+  memberFilterToMembers,
 };

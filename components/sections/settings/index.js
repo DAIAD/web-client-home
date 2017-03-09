@@ -4,18 +4,17 @@ const { Link } = require('react-router');
 
 const MainSection = require('../../layout/MainSection');
 const Topbar = require('../../layout/Topbar');
-const { getActiveLinks } = require('../../../utils/general');
+const { getActiveKey } = require('../../../utils/general');
 const { MAIN_MENU } = require('../../../constants/HomeConstants');
 
 const Settings = function (props) {
-  const { children, location, route, routes, actions } = props;
+  const { intl, children, location, route, routes, actions } = props;
   const { goTo } = actions;
 
   const SETTINGS_MENU = MAIN_MENU.find(item => item.name === 'settings').children;
+  const activeKey = getActiveKey(routes, 2);
 
-  const activeLinks = getActiveLinks(routes);
-  const activeKey = activeLinks.length > 2 ? activeLinks[2] : null;
-
+  const _t = x => intl.formatMessage({ id: x });
   return (
     <MainSection id="section.settings">   
       <Topbar> 
@@ -30,7 +29,7 @@ const Settings = function (props) {
               <bs.Tab 
                 key={item.name}
                 eventKey={item.name} 
-                title={item.title} 
+                title={_t(item.title)} 
               />
             ))
           } 

@@ -4,6 +4,7 @@ const initialState = {
   widgetToAdd: {},
   profileForm: {},
   commonForm: {},
+  memberForm: {},
   deviceForm: {
     unit: 'METRIC',
     key: null,
@@ -11,7 +12,10 @@ const initialState = {
     name: '',
     properties: [],
   },
-
+  confirm: {
+    mode: null,
+    item: null,
+  },
 };
 
 const form = function (state = initialState, action) {
@@ -36,4 +40,3 @@ const form = function (state = initialState, action) {
 };
 
 module.exports = form;
-

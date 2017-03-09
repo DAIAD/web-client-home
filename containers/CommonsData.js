@@ -13,6 +13,7 @@ const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 
 const { METER_PERIODS } = require('../constants/HomeConstants');
+const { formatMessage } = require('../utils/general');
 
 function mapStateToProps(state) {
   return {
@@ -25,6 +26,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
       ...CommonsActions,
       goToManage: () => push('/settings/commons'),
+      goToJoin: () => push('/settings/commons/join'),
     }, dispatch);
 }
 
@@ -83,12 +85,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     periods,
     members: {
       ...stateProps.members,
+      active: stateProps.members.active.map(m => stateProps.members.selected.map(s => s.key).includes(m.key) ? ({ ...m, selected: true }) : m),
       pagingIndex: stateProps.members.pagingIndex + 1, // table index is 1-based
     },
     previousPeriod: timeUtil.getPreviousPeriod(stateProps.timeFilter, stateProps.time.endDate),
     nextPeriod: timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.endDate),
     chartData,
     chartCategories: xCategoryLabels,
+    _t: formatMessage(ownProps.intl),
   };
 }
 

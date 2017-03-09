@@ -57,7 +57,8 @@
     "passwordMailSent": "An email has been sent to the address you provided. Please check your inbox"
   },
   "forms": {
-    "submit": "Update"
+    "submit": "Update",
+    "cancel": "Cancel"
   },
   "loginForm": {
     "login": {
@@ -82,7 +83,7 @@
     "forecast":"Forecast",
     "shower": "Shower",
     "shower-aggregated": "Total data",
-    "commons": "Commons",
+    "commons": "Communities",
     "notifications": "Messages",
     "search": "Search",
     "alerts": "Alerts",
@@ -91,7 +92,17 @@
     "insights": "Insights",
     "settings": "Settings",
     "profile": "Profile",
+    "members": "Members",
     "devices": "Devices",
+    "commonsManage": {
+      "edit": "Manage",
+      "new": "Create new",
+      "join": "Join"
+    },
+    "membersManage": {
+      "edit": "Manage",
+      "create": "Create new"
+    },
     "login": "Login",
     "reset": "Password reset"
   },
@@ -168,6 +179,13 @@
       "metric": "Metric",
       "imperial": "Imperial"
     }
+  },
+  "member": {
+    "name": "Name",
+    "age": "Age",
+    "gender": "Gender",
+    "MALE": "Male",
+    "FEMALE": "Female"
   },
   "devices": {
     "amphiro": "Amphiro",

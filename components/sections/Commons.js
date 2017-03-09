@@ -21,7 +21,7 @@ const { debounce } = require('../../utils/general');
 const { IMAGES, COMMONS_MEMBERS_PAGE, COMMONS_USER_SORT } = require('../../constants/HomeConstants');
 
 function ChartArea(props) {
-  const { handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, actions } = props;
+  const { _t, handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, actions } = props;
   const { setDataQueryAndFetch } = actions;
   const mu = 'lt';
   return (
@@ -62,11 +62,11 @@ function ChartArea(props) {
 }
 
 function MembersArea(props) {
-  const { intl, handleSortSelect, searchFilter, members, actions } = props;
+  const { _t, handleSortSelect, searchFilter, members, actions } = props;
 
   const { selected: selectedMembers, active: activeMembers, sortFilter, sortOrder, count: memberCount, pagingIndex } = members;
 
-  const { setDataQueryAndFetch, setSearchFilter, goToManage, addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData } = actions;
+  const { setDataQueryAndFetch, setSearchFilter, addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData } = actions;
 
   return (
     <div className="commons-members-area">
@@ -199,15 +199,15 @@ const Commons = React.createClass({
     this.props.actions.setDataQueryAndFetch({ deviceType: val });
   },
   render: function () {
-    const { intl, activeDeviceType, deviceTypes, active, myCommons, mode, searchFilter, periods, time, timeFilter, chartCategories, chartData, members, actions } = this.props;
+    const { _t, activeDeviceType, deviceTypes, active, myCommons, mode, searchFilter, periods, time, timeFilter, chartCategories, chartData, members, actions } = this.props;
     const { selected: selectedMembers, active: activeMembers, sortFilter, sortOrder, count: memberCount, pagingIndex } = members;
     
-    const { setDataQueryAndFetch, setSearchFilter, resetConfirm, confirm, clickConfirm, goToManage, addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData } = actions;
+    const { setDataQueryAndFetch, setSearchFilter, resetConfirm, confirm, clickConfirm, goToManage, goToJoin, addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData } = actions;
 
-    const _t = x => intl.formatMessage({ id: x });
     return (
       <MainSection id="section.commons">
         <Topbar> 
+          { active ? 
           <bs.Tabs 
             className="history-time-nav" 
             position="top" 
@@ -225,6 +225,9 @@ const Commons = React.createClass({
               ))
             } 
           </bs.Tabs>
+          : 
+          <span />
+          }
         </Topbar>
         <div className="section-row-container">
           <div className="primary"> 
@@ -245,7 +248,7 @@ const Commons = React.createClass({
                 :
                 <div>
                   <h3 style={{ marginTop: 20, marginLeft: 40 }}>My commons</h3>
-                  <p style={{ marginLeft: 40 }}>Please select a common from the list, or join a common in Settings</p>
+                  <p style={{ marginLeft: 40 }}>Please select a community from the list, or join one in Settings</p>
                 </div>
               }
    
@@ -259,10 +262,9 @@ const Commons = React.createClass({
                   active && active.image ? 
                     <img 
                       style={{ 
-                        marginTop: 20, 
                         marginBottom: 20,
-                        height: 100,
-                        width: 100,
+                        height: 120,
+                        width: 120,
                         border: '2px #2D3580 solid',
                       }} 
                       src={`data:image/png;base64,${active.image}`} 
@@ -271,10 +273,9 @@ const Commons = React.createClass({
                     :
                     <img 
                       style={{ 
-                        marginTop: 20, 
                         marginBottom: 20,
-                        height: 100,
-                        width: 100,
+                        height: 120,
+                        width: 120,
                         background: '#2D3580',
                         border: '2px #2D3580 solid',
                       }} 
@@ -282,68 +283,79 @@ const Commons = React.createClass({
                       alt="commons-default" 
                     />
                 }
-                { this.props.lala ? 
-                  <label htmlFor="select-commons"><h5 style={{ textAlign: 'center' }}>Active common</h5></label> : <span /> 
-                }
-                <bs.DropdownButton
-                  pullRight
-                  title={active ? active.name : 'Explore'}
-                  id="select-commons"
-                  value={active ? active.id : null}
-                  onSelect={(e, val) => { 
-                    setDataQueryAndFetch({ active: val });
-                  }}
-                >
-                  {
-                    myCommons.map(common => 
-                      <bs.MenuItem 
-                        key={common.key} 
-                        eventKey={common.key} 
-                        value={common.key}
+                {
+                  myCommons.length === 0 ? 
+                    <div>
+                      <span>Not a member of any commmunities yet</span>
+                      <button
+                        style={{ width: '100%', marginTop: 20 }}
+                        onClick={goToJoin}
                       >
-                      { common.name || 'No name'}
-                      </bs.MenuItem>
-                    )
-                  }	
-                </bs.DropdownButton>
-                { active ? 
-                  <p>
-                    <span><i className="fa fa-info-circle" />&nbsp; {active.description}</span>
-                    <br />
-                    <span>{`${memberCount} members`}</span>
-                  </p>
-                  : <span />
-                }
-                {
-                  active && this.props.lala ?
-                    <button
-                      style={{ width: '100%', marginTop: 20 }}
-                      onClick={() => goToManage()}
-                    >
-                      Manage
-                    </button>
+                        Join
+                      </button>
+                    </div>
+
                     :
-                    <span />
-                 }
-               </div>
-   
-               <bs.Tabs 
-                 position="left" 
-                 tabWidth={20} 
-                 activeKey={activeDeviceType} 
-                 onSelect={this.handleDeviceTypeSelect}
-               >
-                {
-                 deviceTypes.map(devType => ( 
-                   <bs.Tab 
-                     key={devType.id} 
-                     eventKey={devType.id} 
-                     title={devType.title} 
-                   /> 
-                 ))
-                }
-              </bs.Tabs>
-            </div>
+                   <div>
+                     <bs.DropdownButton
+                       className="commons-select-active"
+                       style={{ width: 120 }}
+                       pullRight
+                       title={active ? active.name : 'Select'}
+                       id="select-commons"
+                       value={active ? active.id : null}
+                       onSelect={(e, val) => { 
+                          setDataQueryAndFetch({ active: val });
+                        }}
+                     >
+                        {
+                          myCommons.map(common => 
+                            <bs.MenuItem 
+                              key={common.key} 
+                              eventKey={common.key} 
+                              value={common.key}
+                            >
+                            { common.name || 'No name'}
+                            </bs.MenuItem>
+                          )
+                        }	
+                      </bs.DropdownButton>
+                      { active ? 
+                        <p>
+                          <span><i className="fa fa-info-circle" />&nbsp; {active.description}</span>
+                          <br />
+                          <span>{`${memberCount} members`}</span>
+                        </p>
+                        :
+                        <span />
+                      }
+                     </div>
+                     }
+                   </div>
+                
+                   {
+                     active ? 
+                      <bs.Tabs 
+                        position="left" 
+                        tabWidth={20} 
+                        activeKey={activeDeviceType} 
+                        onSelect={this.handleDeviceTypeSelect}
+                      >
+                      {
+                       deviceTypes.map(devType => ( 
+                         <bs.Tab 
+                           key={devType.id} 
+                           eventKey={devType.id} 
+                           title={devType.title} 
+                         /> 
+                       ))
+                      }
+                    </bs.Tabs>
+                  :
+                  <span />
+                  }
+
+              </div>
           </SidebarRight>
 
         </div>

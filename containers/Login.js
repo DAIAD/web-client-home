@@ -5,6 +5,7 @@ const { injectIntl } = require('react-intl');
 
 const { login, requestPasswordReset, resetPassword } = require('../actions/UserActions');
 const { dismissError, setError, setInfo, dismissInfo } = require('../actions/QueryActions');
+const { formatMessage } = require('../utils/general');
 
 const Login = require('../components/sections/login/');
 
@@ -29,8 +30,17 @@ function mapDispatchToProps(dispatch) {
   }, dispatch);
 }
 
+function mergeProps(stateProps, dispatchProps, ownProps) {
+  return {
+    ...stateProps,
+    ...dispatchProps, 
+    ...ownProps,
+    _t: formatMessage(ownProps.intl),
+  };
+}
 
 const LoginData = injectIntl(connect(mapStateToProps, 
-                                     mapDispatchToProps
+                                     mapDispatchToProps,
+                                     mergeProps
                                     )(Login));
 module.exports = LoginData;

@@ -3,12 +3,17 @@ const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedDate, FormattedTime } = require('react-intl');
 
 const CommonFormFields = require('./Form');
+const { IMAGES } = require('../../../../constants/HomeConstants');
 
 function UpdateCommons(props) {
   const { myCommons, commonForm, actions } = props;
-  const { confirmUpdate, confirmDelete, confirmLeave, updateCommonForm } = actions;
+  const { confirmUpdateCommon, confirmDeleteCommon, confirmLeaveCommon, updateCommonForm } = actions;
   if (myCommons.length === 0) {
-    return <span>No commons joined.</span>;
+    return (
+      <div style={{ margin: 20 }}>
+        <h5>No communities joined yet.</h5>
+      </div>
+    );
   }
   return (
     <bs.Accordion 
@@ -20,15 +25,42 @@ function UpdateCommons(props) {
         myCommons.map(common => ( 
           <bs.Panel 
             key={common.key}
-            header={common.name || 'No name'}
             eventKey={common.key}
+            header={
+              <h3>
+                { common.image ? 
+                <img 
+                  style={{ 
+                    height: 30,
+                    width: 30,
+                    marginRight: 10,
+                    border: '1px #2d3580 solid',
+                  }} 
+                  src={`data:image/png;base64,${common.image}`} 
+                  alt="member" 
+                />
+                :
+                <img 
+                  style={{ 
+                    height: 30,
+                    width: 30,
+                    marginRight: 10,
+                    border: '1px #2d3580 solid',
+                  }} 
+                  src={`${IMAGES}/commons-menu.svg`} 
+                  alt="member" 
+                />
+                }
+                {common.name || 'No name'}
+              </h3>
+              }
           >
             <form 
               id={`form-common-update-${common.key}`}
               style={{ width: '100%' }}
               onSubmit={(e) => { 
                 e.preventDefault();
-                confirmUpdate();
+                confirmUpdateCommon();
               }}
             >
               <CommonFormFields
@@ -68,10 +100,10 @@ function UpdateCommons(props) {
                     style={{ float: 'right', marginRight: 10 }} 
                     bsStyle="danger"
                     onClick={() => { 
-                      confirmDelete();
+                      confirmDeleteCommon();
                     }}
                   >
-                    Delete Common
+                    Delete
                   </bs.Button>
                 </div>
                 :
@@ -80,10 +112,10 @@ function UpdateCommons(props) {
                     style={{ float: 'right', marginRight: 10 }} 
                     bsStyle="warning"
                     onClick={() => {
-                      confirmLeave();
+                      confirmLeaveCommon();
                     }}
                   >
-                    Leave Common
+                    Leave
                   </bs.Button>
                 </div>
               }

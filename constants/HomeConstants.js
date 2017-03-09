@@ -60,32 +60,49 @@ module.exports = {
     children: [
       {
         name: 'profile',
-        title: 'Profile',
+        title: 'section.profile',
         route: 'settings/profile',
       },
       {
+        name: 'members',
+        title: 'section.members',
+        route: 'settings/members',
+        children: [
+          {
+            name: 'edit',
+            title: 'section.membersManage.edit',
+            route: 'settings/members',
+          },
+          {
+            name: 'create',
+            title: 'section.membersManage.create',
+            route: 'settings/members/create',
+          },
+        ],
+      },
+      {
         name: 'devices',
-        title: 'Devices',
+        title: 'section.devices',
         route: 'settings/devices',
       },
       {
         name: 'commons',
-        title: 'Commons',
+        title: 'section.commons',
         route: 'settings/commons',
         children: [
           {
             name: 'edit',
-            title: 'Manage',
-            route: 'settings/commons/edit',
+            title: 'section.commonsManage.edit',
+            route: 'settings/commons',
           }, 
           {
             name: 'create',
-            title: 'Create new',
+            title: 'section.commonsManage.new',
             route: 'settings/commons/create',
           },
           {
             name: 'join',
-            title: 'Join',
+            title: 'section.commonsManage.join',
             route: 'settings/commons/join',
           },
         ],

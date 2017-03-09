@@ -60,15 +60,7 @@ const allCommons = [
   {
     id: 'member',
     name: 'Member',
-    value: value => value ? <i style={{ marginRight: 20 }} className="checkbox fa fa-check" /> : <i />,
-  },
-  {
-    id: 'selected',
-    name: '',
-    value: value => value ?
-      <i style={{ marginRight: 20 }} className="checkbox fa fa-check-square-o navy" /> 
-      : 
-      <i style={{ marginRight: 20 }} className="checkbox fa fa-check-square-o white" />,
+    value: value => value ? <div style={{ textAlign: 'left' }}><i style={{ marginRight: 20, marginTop: 0, marginBottom: 0 }} className="checkbox fa fa-check" /></div> : <i />,
   },
 ];
 
@@ -96,21 +88,24 @@ const members = [
     name: 'Member since',
     value: value => (<FormattedDate value={value} />),
   },
+  /*
   {
     id: 'consumption',
     name: 'Last month',
     //value: value => `${value} lt`,
   },
+  */
+  {
+    id: 'selected',
+    name: 'Chart',
+    value: value => value ? <div style={{ textAlign: 'left', fontSize: '0.9em' }}><i style={{ margin: 0 }} className="checkbox fa fa-check" /></div> : <i />,
+  },
+  /*
   {
     id: 'efficiency',
     name: 'Efficiency',
   },
-  {
-    id: 'showMore',
-    name: '',
-    value: () => '' 
-    //<img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
-  },
+  */
 ];
 
 

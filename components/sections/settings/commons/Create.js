@@ -10,14 +10,14 @@ const CreateCommons = React.createClass({
   },
   render: function () {
     const { commonForm, actions } = this.props;
-    const { confirmCreate, updateCommonForm } = actions;
+    const { confirmCreateCommon, updateCommonForm } = actions;
     return (
       <form 
         id="form-common-create"
-        style={{ width: '50%' }}
+        style={{ width: '50%', minWidth: 200 }}
         onSubmit={(e) => { 
           e.preventDefault();
-          confirmCreate();
+          confirmCreateCommon();
         }}
       >
         <CommonFormFields

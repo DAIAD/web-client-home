@@ -4,11 +4,10 @@ const bs = require('react-bootstrap');
 const { LOCALES } = require('../constants/HomeConstants');
 
 function LocaleSwitcher(props) {
-  const { locale, intl, id = 'language-switcher' } = props;
-  const _t = intl.formatMessage;
+  const { locale, _t, id = 'language-switcher' } = props;
   return (
     <bs.DropdownButton
-      title={_t({ id: `locale.${locale}` })}
+      title={_t(`locale.${locale}`)}
       id={id}
       defaultValue={locale}
       onSelect={(e, val) => props.setLocale(val)}
@@ -20,7 +19,7 @@ function LocaleSwitcher(props) {
             eventKey={lang} 
             value={lang}
           >
-            {_t({ id: `locale.${lang}` })}
+            {_t(`locale.${lang}`)}
           </bs.MenuItem>
         ))
       } 

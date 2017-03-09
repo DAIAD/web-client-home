@@ -11,9 +11,13 @@ const Settings = require('../containers/SettingsData');
 const Profile = require('../components/sections/settings/Profile');
 const Devices = require('../components/sections/settings/Devices');
 
+const MembersSettings = require('../components/sections/settings/members/');
+const MembersManage = require('../components/sections/settings/members/Edit');
+const MembersCreate = require('../components/sections/settings/members/Create');
+
 const CommonsSettings = require('../components/sections/settings/commons/');
 const CommonsManage = require('../components/sections/settings/commons/Edit');
-const CommonsCreate = require('../components/sections/settings/commons/Form');
+const CommonsCreate = require('../components/sections/settings/commons/Create');
 const CommonsJoin = require('../components/sections/settings/commons/Join');
 
 const Login = require('../containers/Login');
@@ -31,10 +35,13 @@ const routes = () => (
     <Route path="settings" component={Settings} onEnter={requireAuth}>
       <IndexRoute default="profile" component={Profile} />
       <Route path="profile" component={Profile} />
+      <Route path="members" component={MembersSettings}>
+        <IndexRoute default="edit" component={MembersManage} />
+        <Route path="create" component={MembersCreate} />
+      </Route>
       <Route path="devices" component={Devices} />
       <Route path="commons" component={CommonsSettings}>
         <IndexRoute default="edit" component={CommonsManage} />
-        <Route path="edit" component={CommonsManage} />
         <Route path="create" component={CommonsCreate} />
         <Route path="join" component={CommonsJoin} />
       </Route>

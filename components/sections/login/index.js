@@ -6,8 +6,7 @@ const { IMAGES } = require('../../../constants/HomeConstants');
 
 const Login = React.createClass({
   render: function () {
-    const { intl, errors, info, children } = this.props;
-    const _t = x => intl.formatMessage({ id: x });
+    const { _t, intl, errors, info, children } = this.props;
     return (
       <MainSection id="section.login">
         <div className="form-login-container">

@@ -22,6 +22,8 @@ const initialState = {
   forecastData: {
     sessions: []
   },
+  editShower: false,
+  memberFilter: 'all',
 };
  
 const history = function (state = initialState, action) {
@@ -122,6 +124,16 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_FORECAST_DATA:
       return Object.assign({}, state, {
         forecastData: action.data,
+      });
+
+    case types.HISTORY_SET_MEMBER_FILTER:
+      return Object.assign({}, state, {
+        memberFilter: action.filter,
+      });
+
+    case types.HISTORY_SET_EDIT_SHOWER:
+      return Object.assign({}, state, {
+        editShower: action.enable,
       });
 
     case types.USER_RECEIVED_LOGOUT:

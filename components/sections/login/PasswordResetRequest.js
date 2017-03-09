@@ -8,8 +8,7 @@ const PasswordResetRequestForm = React.createClass({
     this.username = null;
   },
   render: function () {
-    const { intl, goToLogin, requestPasswordReset, username } = this.props;
-    const _t = x => intl.formatMessage({ id: x });
+    const { _t, goToLogin, requestPasswordReset, username } = this.props;
     return (
       <form 
         key="login" 

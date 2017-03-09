@@ -14,11 +14,11 @@ function Picture(props) {
     <img 
       src={`${IMAGES}/${display}${iconSuffix}.svg`} 
       className={['picture', display].join(' ')}
-      title={_t({ id: 'history.inPicturesHover' },
+      title={_t('history.inPicturesHover',
         {
           number: items, 
-          metric: _t({ id: `common.${metric}` }),
-          scale: _t({ id: `history.${display}` }),
+          metric: _t(`common.${metric}`),
+          scale: _t(`history.${display}`),
         })
       }
       alt={display}
@@ -51,8 +51,7 @@ function InPictures(props) {
 }
 
 function SessionInfoLine(props) {
-  const { id, name, title, icon, data, mu } = props;
-  const _t = props.intl.formatMessage;
+  const { id, name, title, icon, data, mu, _t } = props;
   return !data ? <div /> : (
   <li className="session-item" >
     <span>
@@ -83,18 +82,99 @@ function SessionInfoLine(props) {
   </li>
   );
 }
+      
+
+function Member(props) {
+  const { deviceKey, sessionId, member, members, assignToMember, editShower, disableEditShower } = props;
+  return (
+    <div className="headline-user">
+      <i className="fa fa-user" />
+      { editShower ? 
+        <div style={{ float: 'right' }}>
+          <bs.DropdownButton
+            title={member}
+            id="shower-user-switcher"
+            onSelect={(e, val) => { 
+              assignToMember({ 
+                deviceKey, 
+                sessionId, 
+                memberIndex: val, 
+              })
+              .then(() => disableEditShower());
+            }}
+          >
+            {
+              members.map(m => 
+                <bs.MenuItem 
+                  key={m.id} 
+                  eventKey={m.index} 
+                  value={m.index}
+                >
+                { m.name }
+                </bs.MenuItem>
+                )
+            }
+          </bs.DropdownButton>
+      </div>
+      :
+      <div style={{ float: 'right' }}>
+        <span style={{ margin: '0 15px' }}>{member}</span>
+        </div>  
+      }
+    </div>
+  );
+}
 
 function SessionInfo(props) {
-  const { setSessionFilter, intl, data, firstname, activeDeviceType } = props;
+  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower } = props;
   const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
-   
+  
+  const { device: deviceKey, id: sessionId, member } = data;
   return !data ? <div /> : (
-  <div className="shower-info">
-    <div className="headline">
-      <span className="headline-user">
-        <i className="fa fa-user" />
-        {firstname}
-      </span>
+    <div className="shower-info">  
+      {
+        activeDeviceType === 'AMPHIRO' && editShower ?
+          <div className="ignore-shower">
+            <a 
+              onClick={() => ignoreShower({ 
+                deviceKey, 
+                sessionId, 
+              }).then(() => disableEditShower())}
+            >
+              Delete shower
+            </a>
+          </div>
+          :
+          <span />
+        }
+      <div className="headline"> 
+        { 
+         activeDeviceType === 'AMPHIRO' ?
+            <div className="edit-shower-control">
+            {
+               editShower ? 
+                <a onClick={disableEditShower}><i className="fa fa-times" /></a>
+                :
+                <a onClick={enableEditShower}><i className="fa fa-pencil" /></a>
+            }
+          </div> 
+          :
+            <div />
+         }
+
+      <Member 
+        {...{ 
+          deviceKey, 
+          sessionId, 
+          member, 
+          members, 
+          assignToMember, 
+          editShower, 
+          enableEditShower, 
+          disableEditShower 
+        }} 
+      /> 
+      
       {
         activeDeviceType === 'AMPHIRO' ? 
           <span className="headline-date">
@@ -115,13 +195,14 @@ function SessionInfo(props) {
             {data.date}
           </span>
       }
-    </div>
+    </div> 
+    <br />
     <ul className="sessions-list" >
       {
         metrics.map(metric => (
           <SessionInfoLine
             key={metric.id} 
-            intl={intl} 
+            _t={_t}
             icon={metric.icon} 
             sessionClick={metric.clickable ? setSessionFilter : null} 
             title={metric.title} 
@@ -132,18 +213,17 @@ function SessionInfo(props) {
           />
         ))
       }
-    </ul>
+    </ul> 
   </div>
   );
 }
 
 function Session(props) {
-  const { intl, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
-    firstname, activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period } = props;
+  const { _t, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
+    activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period, members } = props;
     
   if (!data) return <div />;
-  const { history, id, min, max, date } = data;
-  const _t = x => intl.formatMessage({ id: x });
+  const { history, id, min, max, date, device } = data;
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
   const betterStr = better ? 'better' : 'worse';
@@ -179,8 +259,7 @@ function Session(props) {
                 /> 
               ))
             }
-          </bs.Tabs>
-
+          </bs.Tabs> 
           <LineChart
             height={300}
             width={width} 
@@ -197,11 +276,7 @@ function Session(props) {
         </div>
           
         <SessionInfo
-          firstname={firstname}
-          intl={intl}
-          setSessionFilter={setSessionFilter}
-          activeDeviceType={activeDeviceType}
-          data={data} 
+          {...props}
         /> 
       </div>
     );
@@ -227,10 +302,7 @@ function Session(props) {
         </div> 
 
         <SessionInfo
-          firstname={firstname}
-          activeDeviceType={activeDeviceType}
-          intl={intl}
-          data={data} 
+          {...props}
         />
       </div> 
     );
@@ -276,10 +348,7 @@ function Session(props) {
       </div>
       
       <SessionInfo
-        firstname={firstname}
-        activeDeviceType={activeDeviceType}
-        intl={intl}
-        data={data} 
+        {...props}
       />
     </div> 
   );
@@ -303,7 +372,6 @@ const SessionModal = React.createClass({
     const { next, prev } = data;
     const disabledNext = !Array.isArray(next);
     const disabledPrevious = !Array.isArray(prev);
-    //const _t = intl.formatMessage;
     return (
       <bs.Modal 
         animation={false} 

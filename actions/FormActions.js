@@ -34,8 +34,23 @@ const resetForm = function (form) {
   };
 };
 
+/* Confirm actions */
+const resetConfirm = function () {
+  return function (dispatch, getState) {
+    dispatch(resetForm('confirm'));
+  };
+};
+
+const setConfirm = function (mode, item) {
+  return function (dispatch, getState) {
+    dispatch(setForm('confirm', { mode, item }));
+  };
+};
+
 module.exports = {
   setForm,
   resetForm,
+  setConfirm,
+  resetConfirm,
 };
 

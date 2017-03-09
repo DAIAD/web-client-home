@@ -9,7 +9,7 @@ const History = require('../components/sections/History');
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
 const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
-const { getMetricMu } = require('../utils/general');
+const { getMetricMu, formatMessage } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
 
 const { meter: meterSessionSchema, amphiro: amphiroSessionSchema } = require('../schemas/history');
@@ -20,6 +20,7 @@ function mapStateToProps(state) {
   return {
     firstname: state.user.profile.firstname,
     devices: state.user.profile.devices,
+    members: state.user.profile.household.members,
     ...state.section.history,
   };
 }
@@ -30,8 +31,11 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const devType = stateProps.activeDeviceType;  
+  const members = stateProps.members.filter(member => member.active);
+
   const sessions = sortSessions(prepareSessionsForTable(stateProps.devices, 
                                                         stateProps.data, 
+                                                        members,
                                                         stateProps.firstname, 
                                                         stateProps.time.granularity,
                                                         ownProps.intl
@@ -86,7 +90,25 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                                         ownProps.intl
                                        ),
   }]
-  : [];
+  : 
+    [];
+
+  const memberFilters = devType === 'AMPHIRO' ?
+    [{
+      id: 'all',
+      title: 'All',
+    },
+    {
+      id: 'default',
+      title: stateProps.firstname,
+    },
+    ...members.map(member => ({
+      id: member.index,
+      title: member.name,
+    })),
+    ]
+    :
+      [];
 
   return {
     ...stateProps,
@@ -102,6 +124,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     periods,
     metrics,
     comparisons,
+    memberFilters,
     sortOptions,
     sessions,
     sessionFields,
@@ -110,7 +133,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.filter)} ${getMetricMu(stateProps.filter)}`,
     hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
     hasShowersBefore: () => hasShowersBefore(stateProps.data),
-
+    _t: formatMessage(ownProps.intl),
   };
 }
 

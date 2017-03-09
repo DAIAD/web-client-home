@@ -11,9 +11,8 @@ const { COUNTRIES, TIMEZONES, SYSTEM_UNITS, PNG_IMAGES } = require('../../../con
 
 
 function ProfileForm(props) {
-  const { intl, profileForm: profile, locale, errors, actions } = props;
+  const { _t, profileForm: profile, locale, errors, actions } = props;
   const { saveToProfile, updateProfileForm, fetchProfile, setLocale, setForm, setError, dismissError } = actions;
-  const _t = x => intl.formatMessage({ id: x });
   return (
     <form 
       id="form-profile" 
@@ -206,7 +205,7 @@ function ProfileForm(props) {
         </label>
         <LocaleSwitcher
           id="locale-switcher"
-          intl={intl}
+          _t={_t}
           setLocale={(val) => { 
             setLocale(val); 
             updateProfileForm({ locale: val });

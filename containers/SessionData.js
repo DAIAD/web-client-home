@@ -7,7 +7,9 @@ const moment = require('moment');
 
 const SessionModal = require('../components/sections/Session');
 const HistoryActions = require('../actions/HistoryActions');
-const { getShowerMetricMu } = require('../utils/general');
+const { ignoreShower } = require('../actions/QueryActions');
+const { assignToMember } = require('../actions/MembersManageActions');
+const { getShowerMetricMu, formatMessage } = require('../utils/general');
 const { getLowerGranularityPeriod } = require('../utils/time');
 const { SHOWER_METRICS } = require('../constants/HomeConstants');
 
@@ -18,11 +20,18 @@ function mapStateToProps(state) {
     activeSessionFilter: state.section.history.activeSessionFilter,
     activeSession: state.section.history.activeSession,
     timeFilter: state.section.history.timeFilter,
+    user: state.user.profile,
+    members: state.user.profile.household.members,
+    editShower: state.section.history.editShower,
     width: state.viewport.width,
   };
 }
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(HistoryActions, dispatch);
+  return bindActionCreators({
+    ...HistoryActions,
+    assignToMember,
+    ignoreShower,
+  }, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
@@ -34,12 +43,21 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       
   const chartFormatter = t => moment(t).format('hh:mm');
   const measurements = data && data.measurements ? data.measurements : [];
+
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
     data,
     chartFormatter,
+    members: [{ 
+      id: 'default', 
+      index: null, 
+      name: stateProps.user.firstname 
+    }, 
+    ...stateProps.members
+    .filter(member => member.active)
+    ],
     chartCategories: measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss')),
     chartData: measurements.map(measurement => measurement ? 
                                 measurement[stateProps.activeSessionFilter]
@@ -49,6 +67,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
     mu: getShowerMetricMu(stateProps.activeSessionFilter),
     period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',
+    _t: formatMessage(ownProps.intl),
   };
 }
 

@@ -135,7 +135,7 @@ const getMeterCacheKey = function (key, time, extra = '') {
 const getCacheKey = function (deviceType, key, ...rest) {
   if (deviceType === 'AMPHIRO') {
     if (rest.length < 2) {
-      throw new Error('cant get amphiro cache key without length, index');
+      throw new Error('cant get amphiro cache key without members, length, index');
     }
     return getAmphiroCacheKey(key, ...rest);
   } else if (deviceType === 'AMPHIRO_TIME') {
@@ -192,7 +192,15 @@ const debounce = function (func, wait, immediate) {
 }; 
 
 const getActiveLinks = function (routes) {
-  return routes.map(route => route.path || route.default);
+  return routes.map(route => route.path || route.default); 
+};
+
+const getActiveKey = function (routes, depth) {
+  const active = getActiveLinks(routes);
+  if (active != null && active.length > 0) {
+    return active[depth].split('/')[0];
+  }
+  return null;
 };
 
 const filterObj = function (obj, included) {
@@ -214,6 +222,12 @@ const throwServerError = function (response) {
   throw new Error('unknownError');
 };
 
+const formatMessage = function (intl) {
+  return function (x, rest) {
+    return intl.formatMessage({ id: x }, rest);
+  };
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -226,7 +240,8 @@ module.exports = {
   getShowersPagingIndex,
   debounce,
   uploadFile,
-  getActiveLinks,
+  getActiveKey,
   filterObj,
   throwServerError,
+  formatMessage,
 };
