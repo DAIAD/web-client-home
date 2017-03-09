@@ -296,18 +296,16 @@ const resetPassword = function (password, token, captcha) {
     return userAPI.resetPassword(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      if (response.success) {
-        dispatch(dismissError());
-        setTimeout(() => { 
-          dispatch(resetSuccess()); 
-          dispatch(push('/login'));
-        }, SUCCESS_SHOW_TIMEOUT);
-      }
 
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      return response;
+      
+      dispatch(dismissError()); 
+      return new Promise((resolve, reject) => setTimeout(() => { 
+          dispatch(resetSuccess()); 
+          return resolve(response);
+        }, SUCCESS_SHOW_TIMEOUT));
     }) 
     .catch((errors) => {
       console.error('Error caught on resetPassword:', errors);
@@ -316,6 +314,7 @@ const resetPassword = function (password, token, captcha) {
     });
   };
 };
+
 
 module.exports = {
   login,

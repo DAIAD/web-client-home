@@ -24,7 +24,8 @@ const PasswordResetForm = React.createClass({
           } else if (this.password.length < 8) {
             setError('passwordTooShort');
           } else {
-            this.props.resetPassword(this.password, this.token, this.captcha);
+            this.props.resetPassword(this.password, this.token, this.captcha)
+            .then(goToLogin);
           }
         }}
       >
