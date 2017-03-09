@@ -6,6 +6,7 @@ const { Link } = require('react-router');
 const { LineChart, BarChart } = require('react-echarts');
 
 const MainSection = require('../layout/MainSection');
+const Topbar = require('../layout/Topbar');
 
 const Table = require('../helpers/Table');
 const { TimeNavigator, CustomTimeNavigator } = require('../helpers/Navigators');
@@ -17,13 +18,174 @@ const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSc
 const timeUtil = require('../../utils/time');
 const { debounce } = require('../../utils/general');
 
-const { IMAGES, METER_PERIODS, COMMONS_MEMBERS_PAGE, COMMONS_USER_SORT } = require('../../constants/HomeConstants');
+const { IMAGES, COMMONS_MEMBERS_PAGE, COMMONS_USER_SORT } = require('../../constants/HomeConstants');
 
-const CommonsDetails = React.createClass({
+function ChartArea(props) {
+  const { handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, actions } = props;
+  const { setDataQueryAndFetch } = actions;
+  const mu = 'lt';
+  return (
+    <div className="history-chart-area">
+      { 
+        timeFilter === 'custom' ?  
+          <CustomTimeNavigator 
+            updateTime={(newTime) => { 
+               setDataQueryAndFetch({ time: newTime });
+            }}
+            time={time}
+          />
+          :
+          <TimeNavigator 
+            handlePrevious={handlePrevious} 
+            handleNext={handleNext}
+            time={time}
+          />
+      }
+      <LineChart 
+        width="100%"
+        height={380}
+        theme={theme}
+        xAxis={{
+          data: chartCategories,
+          boundaryGap: true,
+        }}
+        yAxis={{
+          formatter: y => `${y} ${mu}`,
+        }}
+        colors={theme.colors}
+        series={chartData.map(s => ({
+          ...s,
+        }))}
+      />
+    </div>
+  );
+}
+
+function MembersArea(props) {
+  const { intl, handleSortSelect, searchFilter, members, actions } = props;
+
+  const { selected: selectedMembers, active: activeMembers, sortFilter, sortOrder, count: memberCount, pagingIndex } = members;
+
+  const { setDataQueryAndFetch, setSearchFilter, goToManage, addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData } = actions;
+
+  return (
+    <div className="commons-members-area">
+      <div style={{ marginTop: 20, marginBottom: 0, marginLeft: 20 }}>
+        <h5>
+          <FormattedMessage id="commons.members" />
+        </h5>
+      </div>
+      <div className="members-search" style={{ float: 'left', marginLeft: 20 }}>
+        <form 
+          className="search-field" 
+          onSubmit={(e) => { 
+            e.preventDefault(); 
+            setMemberQueryAndFetch({ index: 0 }); 
+          }}
+        >
+          <input 
+            type="text"
+            placeholder="Search member..."
+            onChange={(e) => { 
+              setMemberSearchFilter(e.target.value);
+              debounce(() => { 
+                setMemberQueryAndFetch({ index: 0 }); 
+              }, 300)();
+            }}
+            value={searchFilter}
+          />
+          <button 
+            className="clear-button" 
+            type="reset" 
+            onClick={(e) => { setMemberQueryAndFetch({ index: 0, name: '' }); }} 
+          />
+        </form>
+      </div>
+
+      <div className="members-sort" style={{ float: 'right', marginRight: 10 }}> 
+        <h5 style={{ float: 'left', marginTop: 5 }}>Sort by:</h5>
+        <div 
+          className="sort-options" 
+          style={{ float: 'right', marginLeft: 10, textAlign: 'right' }}
+        >
+          <bs.DropdownButton
+            title={COMMONS_USER_SORT.find(sort => sort.id === sortFilter) ? 
+              COMMONS_USER_SORT.find(sort => sort.id === sortFilter).title
+              : 'Last name'}
+            id="sort-by"
+            defaultValue={sortFilter}
+            onSelect={handleSortSelect}
+          >
+            {
+              COMMONS_USER_SORT.map(sort =>
+                <bs.MenuItem
+                  key={sort.id}
+                  eventKey={sort.id}
+                  value={sort.id}
+                >
+                  {sort.title}
+                </bs.MenuItem>
+              )
+            }
+          </bs.DropdownButton>
+          <div style={{ float: 'right', marginLeft: 20 }}>
+            {
+              sortOrder === 'asc' ? 
+                <a onClick={() => setMemberQueryAndFetch({ sortOrder: 'desc' })}>
+                  <i className="fa fa-arrow-up" />
+                </a>
+               :
+               <a onClick={() => setMemberQueryAndFetch({ sortOrder: 'asc' })}>
+                 <i className="fa fa-arrow-down" />
+               </a>
+            }
+          </div>
+        </div>
+      </div>
+      
+      <br />
+      <div>
+        <p style={{ marginLeft: 20 }}><b>Found:</b> {memberCount}</p>
+        <p style={{ marginLeft: 20 }}><i className="fa fa-info-circle" />&nbsp;<i>Click on up to 3 members to compare against</i></p>
+      </div>
+
+      <Table
+        className="session-list"
+        rowClassName={row => selectedMembers.find(m => m.key === row.key) ? 'session-list-item selected' : 'session-list-item'}
+        fields={membersSchema}
+        data={activeMembers}
+        pagination={{
+          total: Math.ceil(memberCount / COMMONS_MEMBERS_PAGE),
+          active: pagingIndex,
+          onPageClick: (page) => { 
+            setMemberQueryAndFetch({ index: page - 1 });
+          },
+        }}
+        onRowClick={(row) => {
+          if (selectedMembers.map(u => u.key).includes(row.key)) {
+            removeMemberFromChart(row);
+          } else if (selectedMembers.length < 3) {
+            addMemberToChart({ ...row, selected: selectedMembers.length + 1 });
+          }
+        }}
+      />
+    </div>
+  );
+}
+
+const Commons = React.createClass({
+  componentWillMount: function () {
+    if (!this.props.synced) {
+      this.props.actions.fetchData();
+    } 
+    if (this.props.active) {
+      this.props.actions.searchCommonMembers();
+    }
+  },
   handlePeriodSelect: function (key) {
     const time = timeUtil.getTimeByPeriod(key);
     if (time) this.props.actions.setDataQueryAndFetch({ timeFilter: key, time });
-  },
+  }, 
   handlePrevious: function () { 
     this.props.actions.setDataQueryAndFetch({ time: this.props.previousPeriod });
   },
@@ -33,211 +195,53 @@ const CommonsDetails = React.createClass({
   handleSortSelect: function (e, val) {
     this.props.actions.setMemberQueryAndFetch({ sortBy: val });
   },
-  render: function () {
-    const { active, intl, time, timeFilter, chartCategories, chartData, members, actions } = this.props;
-    const { selected: selectedMembers, active: activeMembers, sortFilter, sortOrder, searchFilter, count: memberCount, pagingIndex } = members;
-    const { addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData, setDataQueryAndFetch } = actions;
-    if (!active) {
-      return (
-        <div>
-          <h5 style={{ marginLeft: 30 }}>Select a commons from the list to see more</h5>
-        </div>
-      );
-    }
-    const { name, owned } = active;
-
-    const periods = METER_PERIODS
-    .filter(period => period.id !== 'day');
-    const mu = 'lt';
-    const _t = x => intl.formatMessage({ id: x }); 
-
-    return (
-      <div>       
-        <bs.Tabs 
-          className="history-time-nav" 
-          position="top" 
-          tabWidth={3} 
-          activeKey={timeFilter} 
-          onSelect={this.handlePeriodSelect}
-        >
-          {
-            periods.map(period => (
-              <bs.Tab 
-                key={period.id} 
-                eventKey={period.id} 
-                title={_t(period.title)} 
-              />
-            ))
-          } 
-        </bs.Tabs>
-        
-        <div className="history-chart-area">
-          { 
-            timeFilter === 'custom' ?  
-              <CustomTimeNavigator 
-                updateTime={(newTime) => { 
-                   this.props.actions.setDataQueryAndFetch({ time: newTime });
-                }}
-                time={time}
-              />
-              :
-              <TimeNavigator 
-                handlePrevious={this.handlePrevious} 
-                handleNext={this.handleNext}
-                time={time}
-              />
-          }
-          <LineChart 
-            width="100%"
-            height={380}
-            theme={theme}
-            xAxis={{
-              data: chartCategories,
-              boundaryGap: true,
-            }}
-            yAxis={{
-              formatter: y => `${y} ${mu}`,
-            }}
-            colors={theme.colors}
-            series={chartData.map(s => ({
-              ...s,
-            }))}
-          />
-          <br />
-        </div>
-
-        <div style={{ marginTop: 20, marginBottom: 0, marginLeft: 20 }}>
-          <h5>
-            <FormattedMessage id="commons.members" />
-          </h5>
-        </div>
-        
-        <div>
-        <div style={{ float: 'left', marginLeft: 20 }}>
-          <form 
-            className="search-field" 
-            onSubmit={(e) => { 
-              e.preventDefault(); 
-              setMemberQueryAndFetch({ index: 0 }); 
-            }}
-          >
-            <input 
-              type="text"
-              placeholder="Search member..."
-              onChange={(e) => { 
-                setMemberSearchFilter(e.target.value);
-                debounce(() => { 
-                  setMemberQueryAndFetch({ index: 0 }); 
-                }, 300)();
-              }}
-              value={searchFilter}
-            />
-            <button 
-              className="clear-button" 
-              type="reset" 
-              onClick={(e) => { setMemberQueryAndFetch({ index: 0, name: '' }); }} 
-            />
-          </form>
-
-        </div>
-
-        <div style={{ float: 'right', marginRight: 10 }}> 
-          <h5 style={{ float: 'left', marginTop: 5 }}>Sort by:</h5>
-          <div 
-            className="sort-options" 
-            style={{ float: 'right', marginLeft: 10, textAlign: 'right' }}
-          >
-            <bs.DropdownButton
-              title={COMMONS_USER_SORT.find(sort => sort.id === sortFilter) ? 
-                COMMONS_USER_SORT.find(sort => sort.id === sortFilter).title
-                : 'Last name'}
-              id="sort-by"
-              defaultValue={sortFilter}
-              onSelect={this.handleSortSelect}
-            >
-              {
-                COMMONS_USER_SORT.map(sort =>
-                  <bs.MenuItem
-                    key={sort.id}
-                    eventKey={sort.id}
-                    value={sort.id}
-                  >
-                    {sort.title}
-                  </bs.MenuItem>
-                )
-              }
-            </bs.DropdownButton>
-
-            <div style={{ float: 'right', marginLeft: 20 }}>
-              {
-                sortOrder === 'asc' ? 
-                  <a onClick={() => setMemberQueryAndFetch({ sortOrder: 'desc' })}>
-                    <i className="fa fa-arrow-up" />
-                  </a>
-                 :
-                 <a onClick={() => setMemberQueryAndFetch({ sortOrder: 'asc' })}>
-                   <i className="fa fa-arrow-down" />
-                 </a>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <br />
-      <br />
-        <span style={{ marginLeft: 20 }}><b>Found:</b> {memberCount}</span>
-        <p style={{ marginLeft: 20 }}><i className="fa fa-info-circle" />&nbsp;<i>Click on up to 3 members to compare against</i></p>
-        <Table
-          className="session-list"
-          rowClassName={row => selectedMembers.find(m => m.key === row.key) ? 'session-list-item selected' : 'session-list-item'}
-          fields={membersSchema}
-          data={activeMembers}
-          pagination={{
-            total: Math.ceil(memberCount / COMMONS_MEMBERS_PAGE),
-            active: pagingIndex,
-            onPageClick: (page) => { 
-              setMemberQueryAndFetch({ index: page - 1 });
-            },
-          }}
-          onRowClick={(row) => {
-            if (selectedMembers.map(u => u.key).includes(row.key)) {
-              removeMemberFromChart(row);
-            } else if (selectedMembers.length < 3) {
-              addMemberToChart({ ...row, selected: selectedMembers.length + 1 });
-            }
-          }}
-        />
-      </div>
-    );
-  }
-});
-
-const Commons = React.createClass({
-  componentWillMount: function () {
-    console.log('commons will mount');
-    if (!this.props.synced) {
-      console.log('fetching');
-      this.props.actions.fetchData();
-    } 
-    if (this.props.active) {
-      this.props.actions.searchCommonMembers();
-    }
+  handleDeviceTypeSelect: function (val) {
+    this.props.actions.setDataQueryAndFetch({ deviceType: val });
   },
   render: function () {
-    const { intl, active, myCommons, mode, searchFilter, members: { count: memberCount }, actions } = this.props;
-    const { setDataQueryAndFetch, setSearchFilter, resetConfirm, confirm, clickConfirm, goToManage } = actions;
-    const { selected, selectedUsers } = this.props;
+    const { intl, activeDeviceType, deviceTypes, active, myCommons, mode, searchFilter, periods, time, timeFilter, chartCategories, chartData, members, actions } = this.props;
+    const { selected: selectedMembers, active: activeMembers, sortFilter, sortOrder, count: memberCount, pagingIndex } = members;
+    
+    const { setDataQueryAndFetch, setSearchFilter, resetConfirm, confirm, clickConfirm, goToManage, addMemberToChart, removeMemberFromChart, setMemberSortFilter, setMemberSortOrder, setMemberSearchFilter, searchCommonMembers, setMemberQueryAndFetch, fetchData } = actions;
+
+    const _t = x => intl.formatMessage({ id: x });
     return (
       <MainSection id="section.commons">
+        <Topbar> 
+          <bs.Tabs 
+            className="history-time-nav" 
+            position="top" 
+            tabWidth={3} 
+            activeKey={timeFilter} 
+            onSelect={this.handlePeriodSelect}
+          >
+            {
+              periods.map(period => (
+                <bs.Tab 
+                  key={period.id} 
+                  eventKey={period.id} 
+                  title={_t(period.title)} 
+                />
+              ))
+            } 
+          </bs.Tabs>
+        </Topbar>
         <div className="section-row-container">
           <div className="primary"> 
             <div className="commons-details"> 
               { 
                 active ? 
-                  <CommonsDetails
-                    {...this.props}
-                  />
+                  <div> 
+                    <ChartArea 
+                      handlePrevious={this.handlePrevious}
+                      handleNext={this.handleNext}
+                      {...this.props} 
+                    />
+                    <MembersArea 
+                      handleSortSelect={this.handleSortSelect}
+                      {...this.props} 
+                    />
+                  </div>
                 :
                 <div>
                   <h3 style={{ marginTop: 20, marginLeft: 40 }}>My commons</h3>
@@ -248,11 +252,9 @@ const Commons = React.createClass({
               <div style={{ marginBottom: 50 }} />
             </div>
           </div>
-
           <SidebarRight> 
             <div className="commons-right">
-              
-              <div> 
+              <div style={{ padding: 20 }}> 
                 { 
                   active && active.image ? 
                     <img 
@@ -323,7 +325,24 @@ const Commons = React.createClass({
                     :
                     <span />
                  }
-              </div>
+               </div>
+   
+               <bs.Tabs 
+                 position="left" 
+                 tabWidth={20} 
+                 activeKey={activeDeviceType} 
+                 onSelect={this.handleDeviceTypeSelect}
+               >
+                {
+                 deviceTypes.map(devType => ( 
+                   <bs.Tab 
+                     key={devType.id} 
+                     eventKey={devType.id} 
+                     title={devType.title} 
+                   /> 
+                 ))
+                }
+              </bs.Tabs>
             </div>
           </SidebarRight>
 

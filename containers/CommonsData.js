@@ -9,11 +9,14 @@ const Commons = require('../components/sections/Commons');
 const CommonsActions = require('../actions/CommonsActions');
 const timeUtil = require('../utils/time');
 const { getLastShowerIdFromMultiple } = require('../utils/sessions');
+const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 
+const { METER_PERIODS } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
+    devices: state.user.profile.devices,
     ...state.section.commons,
   };
 }
@@ -26,17 +29,38 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
+  let deviceTypes = [{
+    id: 'METER', 
+    title: 'Water meter', 
+    image: 'water-meter.svg',
+  }, {
+    id: 'AMPHIRO', 
+    title: 'Shower devices', 
+    image: 'amphiro_small.svg',
+  }];
+
+  const amphiros = getAvailableDevices(stateProps.devices); 
+  const meterCount = getMeterCount(stateProps.devices);
+  const deviceCount = getDeviceCount(stateProps.devices);
+
+  if (meterCount === 0) {
+    deviceTypes = deviceTypes.filter(x => x.id !== 'METER');
+  }
+  
+  if (deviceCount === 0) {
+    deviceTypes = deviceTypes.filter(x => x.id !== 'AMPHIRO');
+  }
+  
+  const periods = METER_PERIODS
+  .filter(period => period.id !== 'day');
+
   const active = stateProps.myCommons.find(common => common.key === stateProps.activeKey);
 
   const members = active ? active.members : [];
   
-  const xCategories = stateProps.activeDeviceType === 'METER' ? 
-    getChartMeterCategories(stateProps.time) : 
-      getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
+  const xCategories = getChartMeterCategories(stateProps.time);
       
-  const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
-    getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
-     : xCategories;
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl);
 
   const chartData = stateProps.data.map((data, i) => ({
     name: data.label || '', 
@@ -55,6 +79,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     },
     ...ownProps,
     active,
+    deviceTypes,
+    periods,
     members: {
       ...stateProps.members,
       pagingIndex: stateProps.members.pagingIndex + 1, // table index is 1-based

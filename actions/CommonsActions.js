@@ -104,7 +104,6 @@ const setActiveDeviceType = function (deviceType) {
     // set default options when switching
     if (deviceType === 'AMPHIRO') {
       dispatch(setMetricFilter('volume'));
-      dispatch(setTimeFilter('ten'));
     } else if (deviceType === 'METER') {
       dispatch(setMetricFilter('volume'));
       dispatch(setTimeFilter('year'));
@@ -274,7 +273,7 @@ const fetchData = function () {
     const common = {
       type: 'GROUP',
       name: active.name,
-      label: getCacheKey(activeDeviceType, active.key, time),
+      label: getCacheKey(devType, active.key, time),
       group: active.key,
     };
 
