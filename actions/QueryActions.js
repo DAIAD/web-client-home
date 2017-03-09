@@ -129,6 +129,7 @@ const queryData = function (options) {
     
     const data = {
       query: {
+        //datetime: 'Europe/Madrid',
         time: {
           type: 'ABSOLUTE',
           start: time.startDate,
@@ -154,8 +155,13 @@ const queryData = function (options) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
-
-      return response;
+      const meters = response.meters || [];
+      const devices = response.devices || [];
+      return {
+        ...response,
+        meters: meters.map(m => ({ ...m, source: 'METER' })),
+        devices: devices.map(d => ({ ...d, source: 'AMPHIRO' })),
+      };
     })
     .catch((error) => {
       console.error('caught error in data query: ', error);
@@ -176,18 +182,28 @@ const queryDataCache = function (options) {
     const inCachePromise = Promise.all(inCache.map(group => dispatch(fetchFromCache(group.label))));
 
     if (notInCache.length === 0) {
-      return inCachePromise;
+      return inCachePromise
+      .then(inCacheData => ({
+        devices: inCacheData.filter(d => d.source === 'AMPHIRO'),
+        meters: inCacheData.filter(d => d.source === 'METER'),
+      }));
     } 
     return dispatch(queryData({ ...options, population: notInCache }))
     .then((response) => {
-      const data = response.meters.map(x => ({ label: x.label, sessions: x.points }));
-      data.forEach((group) => {
-        dispatch(saveToCache(group.label, group));
+      [...response.meters, ...response.devices].forEach((device) => {
+        dispatch(saveToCache(device.label, device));
       });
-      return inCachePromise.then(inCacheData => [ 
-        ...data,
-        ...inCacheData,
-      ]);
+      return inCachePromise.then(inCacheData => ({
+          ...response,
+          devices: [
+            ...response.devices,
+            ...inCacheData.filter(d => d.source === 'AMPHIRO'),
+          ],
+          meters: [
+            ...response.meters,
+            ...inCacheData.filter(d => d.source === 'METER'),
+          ],
+        }));
     });
   };
 };
@@ -396,9 +412,12 @@ const queryMeterHistory = function (options) {
     };
 
     return dispatch(queryDataCache(data))
-    .then(resData => resData.map(population => ({
-      ...population,
-      sessions: population.sessions.map(session => ({ ...session, volume: session.volume.SUM })),
+    .then(response => response.meters.map(meter => ({
+        ...meter,
+        sessions: meter.points.map(point => ({ 
+          ...point, 
+          volume: point.volume.SUM 
+        })),
     })));
   };
 };

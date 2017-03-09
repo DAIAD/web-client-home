@@ -124,6 +124,10 @@ const getAmphiroCacheKey = function (key, length, index) {
   return `AMPHIRO,${key},${SHOWERS_PAGE},${cacheIdx}`;
 };
 
+const getAmphiroByTimeCacheKey = function (key, time, extra = '') {
+  return `AMPHIRO_TIME,${key},${time.startDate},${time.endDate}${extra}`;
+};
+
 const getMeterCacheKey = function (key, time, extra = '') {
   return `METER,${key},${time.startDate},${time.endDate}${extra}`;
 };
@@ -134,6 +138,8 @@ const getCacheKey = function (deviceType, key, ...rest) {
       throw new Error('cant get amphiro cache key without length, index');
     }
     return getAmphiroCacheKey(key, ...rest);
+  } else if (deviceType === 'AMPHIRO_TIME') {
+    return getAmphiroByTimeCacheKey(key, ...rest);
   } else if (deviceType === 'METER') {
     return getMeterCacheKey(key, ...rest);
   }

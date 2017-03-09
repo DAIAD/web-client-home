@@ -267,7 +267,8 @@ const fetchData = function () {
 
     const { selected: selectedMembers } = members;
     const active = myCommons.find(common => common.key === activeKey);
-    
+
+    const devType = activeDeviceType === 'AMPHIRO' ? 'AMPHIRO_TIME' : activeDeviceType;
     if (!active) return;
 
     const common = {
@@ -280,14 +281,14 @@ const fetchData = function () {
     const myself = {
       type: 'USER',
       name: 'Me',
-      label: getCacheKey('METER', getState().user.profile.key, time),
+      label: getCacheKey(devType, getState().user.profile.key, time),
       users: [getState().user.profile.key],
     };
 
     const selected = selectedMembers.map(user => ({
       type: 'USER',
       name: `${user.firstname} ${user.lastname}`,
-      label: getCacheKey('METER', user.key, time),
+      label: getCacheKey(devType, user.key, time),
       users: [user.key],
     }));
 
@@ -307,19 +308,13 @@ const fetchData = function () {
         metrics: ['AVERAGE', 'SUM'],
       }))
       .then((dataRes) => { 
-        const sessions = dataRes.map((data, idx) => {
-          const requested = populations.find(p => p.label === data.label);
-          if (requested) {
-            return {
-              sessions: data.sessions.map(session => ({ 
-                ...session, 
-                volume: session.volume.AVERAGE || session.volume.SUM 
-              })),
-              label: requested.name,
-            };
-          }
-          return data;
-        });
+        const sessions = [...dataRes.meters, ...dataRes.devices].map(x => ({ 
+          label: populations.find(p => p.label === x.label) ? populations.find(p => p.label === x.label).name : '', 
+          sessions: x.points.map(y => ({ 
+            ...y, 
+            volume: y.volume.AVERAGE || y.volume.SUM 
+          })),
+        }));
         dispatch(appendSessions(sessions));
         dispatch(setDataSynced());
       })
