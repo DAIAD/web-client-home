@@ -34,6 +34,9 @@ const form = function (state = initialState, action) {
       return newState;
     }
 
+    case types.USER_RECEIVED_LOGOUT:
+      return { ...initialState };
+
     default:
       return state;
   }

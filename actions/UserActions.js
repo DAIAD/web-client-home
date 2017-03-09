@@ -35,6 +35,20 @@ const setCsrf = function (csrf) {
   };
 };
 
+const setChangePassword = function () {
+  return {
+    type: types.SETTINGS_SET_CHANGE_PASSWORD,
+    enable: true,
+  };
+};
+
+const resetChangePassword = function () {
+  return {
+    type: types.SETTINGS_SET_CHANGE_PASSWORD,
+    enable: false,
+  };
+};
+
 /**
  * Action that is dispatched after authentication success
  * for optimization purposes 
@@ -296,21 +310,48 @@ const resetPassword = function (password, token, captcha) {
     return userAPI.resetPassword(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      if (response.success) {
-        dispatch(dismissError());
-        setTimeout(() => { 
-          dispatch(resetSuccess()); 
-          dispatch(push('/login'));
-        }, SUCCESS_SHOW_TIMEOUT);
-      }
 
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      return response;
+      
+      dispatch(dismissError()); 
+      return new Promise((resolve, reject) => setTimeout(() => { 
+          dispatch(resetSuccess()); 
+          return resolve(response);
+        }, SUCCESS_SHOW_TIMEOUT));
     }) 
     .catch((errors) => {
       console.error('Error caught on resetPassword:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
+
+const changePassword = function (password, captcha) {
+  return function (dispatch, getState) {
+    const data = {
+      password,
+      captcha,
+      csrf: getState().user.csrf,
+    };
+
+    dispatch(requestedQuery());
+
+    return userAPI.changePassword(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+      return response;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on changePassword:', errors);
       dispatch(receivedQuery(false, errors));
       return errors;
     });
@@ -327,4 +368,7 @@ module.exports = {
   letTheRightOneIn,
   requestPasswordReset,
   resetPassword,
+  changePassword,
+  setChangePassword,
+  resetChangePassword,
 };

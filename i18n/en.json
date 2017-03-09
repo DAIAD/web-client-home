@@ -48,6 +48,7 @@
     "fileWrongType": "Wrong file type. Only png, jpeg supported",
     "fileExceedSize": "File size too large. Up to 2MB allowed",
     "fileUploadError": "File upload error.",
+    "noPassword": "No password provided.",
     "passwordMismatch": "Password mismatch. Please make sure you entered the same password twice",
     "passwordTooShort": "The password is too short. At least 8 characters required",
     "Error: CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Captcha verification failed. Please confirm you are a human being",
@@ -70,7 +71,7 @@
       "reset-request": "Reset",
       "reset-submit": "Submit"
     },
-    "placehoder": {
+    "placeholder": {
       "username":"Username",
       "password":"Password",
       "password-confirm": "Confirm password"

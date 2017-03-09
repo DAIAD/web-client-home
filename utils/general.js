@@ -228,6 +228,17 @@ const formatMessage = function (intl) {
   };
 };
 
+const validatePassword = function (password, confirmPassword) {
+  if (!password) {
+    return Promise.reject('noPassword');
+  } else if (password !== confirmPassword) {
+     return Promise.reject('passwordMismatch');
+  } else if (password.length < 8) {
+     return Promise.reject('passwordTooShort');
+  } 
+  return Promise.resolve();
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -244,4 +255,5 @@ module.exports = {
   filterObj,
   throwServerError,
   formatMessage,
+  validatePassword,
 };

@@ -1,24 +1,95 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
+const ReCAPTCHA = require('react-google-recaptcha');
 
 const MainSection = require('../../layout/MainSection');
 const LocaleSwitcher = require('../../LocaleSwitcher');
 
-const { uploadFile } = require('../../../utils/general');
+const { uploadFile, validatePassword } = require('../../../utils/general');
 
 const { COUNTRIES, TIMEZONES, SYSTEM_UNITS, PNG_IMAGES } = require('../../../constants/HomeConstants');
 
 
+function ChangePassword(props) {
+  const { _t, profileForm: profile, showChangePassword, actions } = props;
+  const { setError, updateProfileForm, changePassword, resetChangePassword } = actions;
+  const { password, confirmPassword, captcha } = profile;
+  return (
+    <bs.Modal 
+      animation={false} 
+      backdrop="static"
+      show={showChangePassword}
+      onHide={resetChangePassword} 
+      dialogClassName="password-change-modal"
+      bsSize="md"
+    >
+      <form
+        id="form-change-password"
+        onSubmit={(e) => {
+          e.preventDefault();
+          
+          validatePassword(password, confirmPassword)
+          .then(() => {
+            changePassword(password, captcha)
+            .then(resetChangePassword);
+          })
+          .catch((error) => {
+            setError(error);
+          });
+        }}
+      >
+        <bs.Modal.Header closeButton>
+          <bs.Modal.Title>
+           Change Password
+          </bs.Modal.Title>
+        </bs.Modal.Header>
+        <bs.Modal.Body>
+          <div>
+            <bs.Input 
+              id="password"
+              type="password" 
+              label={_t('loginForm.placeholder.password')} 
+              value={profile.password} 
+              onChange={e => updateProfileForm({ password: e.target.value })} 
+            />
+            <bs.Input 
+              id="password-confirm"
+              type="password" 
+              label={_t('loginForm.placeholder.password-confirm')} 
+              value={profile.confirmPassword}
+              onChange={e => updateProfileForm({ confirmPassword: e.target.value })} 
+            />
+
+            <div className="form-group form-captcha">
+              <ReCAPTCHA 
+                sitekey={properties.captchaKey}
+                theme="light"
+                onChange={value => updateProfileForm({ captcha: value })}
+              />
+            </div>
+
+          </div>
+
+        </bs.Modal.Body>
+        <bs.Modal.Footer>
+          <bs.Button style={{ marginRight: 20 }} onClick={resetChangePassword}>Cancel</bs.Button>
+          <bs.Button type="submit">Update</bs.Button>
+        </bs.Modal.Footer>
+      </form>
+    </bs.Modal> 
+  );
+}
+
 function ProfileForm(props) {
   const { _t, profileForm: profile, locale, errors, actions } = props;
-  const { saveToProfile, updateProfileForm, fetchProfile, setLocale, setForm, setError, dismissError } = actions;
+  const { saveToProfile, updateProfileForm, fetchProfile, setLocale, setForm, setError, dismissError, changePassword, setChangePassword } = actions;
   return (
     <form 
       id="form-profile" 
       style={{ width: 400 }} 
       onSubmit={(e) => { 
-        e.preventDefault();
+        e.preventDefault(); 
         saveToProfile(JSON.parse(JSON.stringify(profile)))
         .then((p) => {
           fetchProfile();
@@ -74,6 +145,13 @@ function ProfileForm(props) {
         defaultValue={profile.username} 
         readOnly 
       />
+
+      <bs.Button onClick={setChangePassword}>
+        Change password
+      </bs.Button>
+      <br />
+      <br />
+
       <bs.Input 
         type="text" 
         label={_t('profile.firstname')} 
@@ -222,8 +300,12 @@ function ProfileForm(props) {
           value={_t('forms.submit')} 
         />
       </div>
-    </form>
 
+      <ChangePassword
+        {...props}
+      />
+
+    </form>
   );
 }
 
@@ -234,7 +316,7 @@ function Profile(props) {
         <ProfileForm 
           {...props} 
         /> 
-      </div>
+    </div>
     </MainSection>
   );
 }
