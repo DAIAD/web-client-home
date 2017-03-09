@@ -400,10 +400,10 @@ const updateTime = function (time) {
  * last (compare with user data from last period) 
  * @param {Bool} query=true - If true performs query based on active filters to update data
  */
-const setComparisons = function (comparisons) {
+const setComparisons = function (comparison) {
   return {
-    type: types.HISTORY_SET_COMPARISONS,
-    comparisons,
+    type: types.HISTORY_SET_COMPARISON,
+    comparison,
   };
     //if (comparison == null) dispatch(setComparisonSessions([]));
 };
@@ -463,7 +463,7 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparisons, data, forecastData, memberFilter } = query;
+    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, data, forecastData, memberFilter } = query;
 
     dispatch(setDataUnsynced());
 
@@ -479,7 +479,7 @@ const setQuery = function (query) {
     if (forecasting === true) dispatch(enableForecasting());
     else if (forecasting === false) dispatch(disableForecasting());
 
-    if (comparisons) dispatch(setComparisons(comparisons));
+    if (comparison) dispatch(setComparisons(comparison));
     //else if (comparison === null) dispatch(setComparison(null));
 
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
