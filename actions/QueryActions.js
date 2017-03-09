@@ -462,6 +462,35 @@ const queryData = function (options) {
   };
 };
 
+const ignoreShower = function (options) {
+  return function (dispatch, getState) {
+    const data = {
+      sessions: [{
+        ...options,
+        timestamp: new Date().valueOf(),
+      }],
+      csrf: getState().user.csrf,
+    };  
+    dispatch(requestedQuery());
+
+    return dataAPI.ignoreShower(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+      return response;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on assign shower to member:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
+
 /**
  * Fetch data based on provided options and handle query response before returning
  * 
@@ -571,4 +600,5 @@ module.exports = {
   dismissInfo,
   queryMeterForecast,
   queryData,
+  ignoreShower,
 };

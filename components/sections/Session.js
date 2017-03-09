@@ -126,22 +126,49 @@ function Member(props) {
 }
 
 function SessionInfo(props) {
-  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower } = props;
+  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower } = props;
   const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
   
   const { device: deviceKey, id: sessionId, member } = data;
   return !data ? <div /> : (
     <div className="shower-info">  
+      {
+        editShower ?
+          <div className="ignore-shower">
+            <a 
+              onClick={() => ignoreShower({ 
+                deviceKey, 
+                sessionId, 
+              }).then(() => disableEditShower())}
+            >
+              Delete shower
+            </a>
+          </div>
+          :
+          <span />
+        }
       <div className="headline"> 
-        <div className="edit-shower-control" style={{ float: 'right', marginLeft: 10 }}>
+        <div className="edit-shower-control">
         {
           editShower ? 
             <a onClick={disableEditShower}><i className="fa fa-times" /></a>
             :
             <a onClick={enableEditShower}><i className="fa fa-pencil" /></a>
         }
-        </div>
-        <Member {...{ deviceKey, sessionId, member, members, assignToMember, editShower, enableEditShower, disableEditShower }} /> 
+      </div> 
+
+      <Member 
+        {...{ 
+          deviceKey, 
+          sessionId, 
+          member, 
+          members, 
+          assignToMember, 
+          editShower, 
+          enableEditShower, 
+          disableEditShower 
+        }} 
+      /> 
       
       {
         activeDeviceType === 'AMPHIRO' ? 
@@ -163,7 +190,8 @@ function SessionInfo(props) {
             {data.date}
           </span>
       }
-    </div>
+    </div> 
+    <br />
     <ul className="sessions-list" >
       {
         metrics.map(metric => (
@@ -180,7 +208,7 @@ function SessionInfo(props) {
           />
         ))
       }
-    </ul>
+    </ul> 
   </div>
   );
 }
@@ -190,7 +218,7 @@ function Session(props) {
     activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period, members } = props;
     
   if (!data) return <div />;
-  const { history, id, min, max, date } = data;
+  const { history, id, min, max, date, device } = data;
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
   const betterStr = better ? 'better' : 'worse';
@@ -226,8 +254,7 @@ function Session(props) {
                 /> 
               ))
             }
-          </bs.Tabs>
-
+          </bs.Tabs> 
           <LineChart
             height={300}
             width={width} 

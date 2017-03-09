@@ -101,7 +101,10 @@ const clickConfirmMember = function () {
 const assignToMember = function (options) {
   return function (dispatch, getState) {
     const data = {
-      assignments: [options],
+      assignments: [{
+        ...options,
+        timestamp: new Date().valueOf(),
+      }],
       csrf: getState().user.csrf,
     };
 

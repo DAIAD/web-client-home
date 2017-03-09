@@ -7,6 +7,7 @@ const moment = require('moment');
 
 const SessionModal = require('../components/sections/Session');
 const HistoryActions = require('../actions/HistoryActions');
+const { ignoreShower } = require('../actions/QueryActions');
 const { assignToMember } = require('../actions/MembersManageActions');
 const { getShowerMetricMu, formatMessage } = require('../utils/general');
 const { getLowerGranularityPeriod } = require('../utils/time');
@@ -29,6 +30,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...HistoryActions,
     assignToMember,
+    ignoreShower,
   }, dispatch);
 }
 
