@@ -56,16 +56,16 @@ const setForecastData = function (data) {
   };
 };
 
-const enableAssignMember = function () {
+const enableEditShower = function () {
   return {
-    type: types.HISTORY_SET_ASSIGN_MEMBER,
+    type: types.HISTORY_SET_EDIT_SHOWER,
     enable: true,
   };
 };
 
-const disableAssignMember = function () {
+const disableEditShower = function () {
   return {
-    type: types.HISTORY_SET_ASSIGN_MEMBER,
+    type: types.HISTORY_SET_EDIT_SHOWER,
     enable: false,
   };
 };
@@ -536,7 +536,7 @@ module.exports = {
   enableForecasting,
   disableForecasting,
   setQueryAndFetch,
-  enableAssignMember,
-  disableAssignMember,
+  enableEditShower,
+  disableEditShower,
   setMemberFilter,
 };

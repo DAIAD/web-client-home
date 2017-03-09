@@ -20,7 +20,7 @@ const initialState = {
   showerIndex: 0,
   forecasting: true,
   forecastData: [],
-  assignMember: false,
+  editShower: false,
   memberFilter: 'all',
 };
  
@@ -129,9 +129,9 @@ const history = function (state = initialState, action) {
         memberFilter: action.filter,
       });
 
-    case types.HISTORY_SET_ASSIGN_MEMBER:
+    case types.HISTORY_SET_EDIT_SHOWER:
       return Object.assign({}, state, {
-        assignMember: action.enable,
+        editShower: action.enable,
       });
 
     case types.USER_RECEIVED_LOGOUT:

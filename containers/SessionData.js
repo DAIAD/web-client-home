@@ -21,7 +21,7 @@ function mapStateToProps(state) {
     timeFilter: state.section.history.timeFilter,
     user: state.user.profile,
     members: state.user.profile.household.members,
-    assignMember: state.section.history.assignMember,
+    editShower: state.section.history.editShower,
     width: state.viewport.width,
   };
 }

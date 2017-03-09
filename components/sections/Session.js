@@ -82,62 +82,67 @@ function SessionInfoLine(props) {
   </li>
   );
 }
+      
 
-function SelectMember(props) {
-  const { deviceKey, sessionId, member, members, assignToMember, assignMember, enableAssignMember, disableAssignMember } = props;
-  if (!assignMember) {
-    return (
+function Member(props) {
+  const { deviceKey, sessionId, member, members, assignToMember, editShower, disableEditShower } = props;
+  return (
+    <div className="headline-user">
+      <i className="fa fa-user" />
+      { editShower ? 
+        <div style={{ float: 'right' }}>
+          <bs.DropdownButton
+            title={member}
+            id="shower-user-switcher"
+            onSelect={(e, val) => { 
+              assignToMember({ 
+                deviceKey, 
+                sessionId, 
+                memberIndex: val, 
+              })
+              .then(() => disableEditShower());
+            }}
+          >
+            {
+              members.map(m => 
+                <bs.MenuItem 
+                  key={m.id} 
+                  eventKey={m.index} 
+                  value={m.index}
+                >
+                { m.name }
+                </bs.MenuItem>
+                )
+            }
+          </bs.DropdownButton>
+      </div>
+      :
       <div style={{ float: 'right' }}>
         <span style={{ margin: '0 15px' }}>{member}</span>
-          &nbsp;
-          <a onClick={enableAssignMember}><i className="fa fa-pencil" /></a>
-      </div>
-    );
-  }
-  return (
-    <div style={{ float: 'right' }}>
-      <bs.DropdownButton
-        title={member}
-        id="shower-user-switcher"
-        onSelect={(e, val) => { 
-          assignToMember({ 
-            deviceKey, 
-            sessionId, 
-            memberIndex: val, 
-            timestamp: new Date().valueOf()
-          })
-          .then(() => disableAssignMember());
-        }}
-      >
-        {
-          members.map(m => 
-            <bs.MenuItem 
-              key={m.id} 
-              eventKey={m.index} 
-              value={m.index}
-            >
-            { m.name }
-            </bs.MenuItem>
-            )
-        }	
-      </bs.DropdownButton>
-      &nbsp;
-      <a onClick={disableAssignMember}><i className="fa fa-times" /></a>
-  </div>
+        </div>  
+      }
+    </div>
   );
 }
 
 function SessionInfo(props) {
-  const { _t, data, activeDeviceType, members, assignMember, setSessionFilter, assignToMember, enableAssignMember, disableAssignMember } = props;
+  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower } = props;
   const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
   
+  const { device: deviceKey, id: sessionId, member } = data;
   return !data ? <div /> : (
-  <div className="shower-info">
-    <div className="headline">
-      <span className="headline-user">
-        <i className="fa fa-user" />
-        <SelectMember {...{ deviceKey: data.device, sessionId: data.id, member: data.member, members, assignToMember, assignMember, enableAssignMember, disableAssignMember }} />
-      </span>
+    <div className="shower-info">  
+      <div className="headline"> 
+        <div className="edit-shower-control" style={{ float: 'right', marginLeft: 10 }}>
+        {
+          editShower ? 
+            <a onClick={disableEditShower}><i className="fa fa-times" /></a>
+            :
+            <a onClick={enableEditShower}><i className="fa fa-pencil" /></a>
+        }
+        </div>
+        <Member {...{ deviceKey, sessionId, member, members, assignToMember, editShower, enableEditShower, disableEditShower }} /> 
+      
       {
         activeDeviceType === 'AMPHIRO' ? 
           <span className="headline-date">
@@ -182,7 +187,7 @@ function SessionInfo(props) {
 
 function Session(props) {
   const { _t, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
-    activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period, members, assignToMember, assignMember } = props;
+    activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period, members } = props;
     
   if (!data) return <div />;
   const { history, id, min, max, date } = data;
