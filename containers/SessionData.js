@@ -48,7 +48,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...ownProps,
     data,
     chartFormatter,
-    members: stateProps.members.filter(member => member.active),
+    members: [{ 
+      id: 'default', 
+      index: null, 
+      name: stateProps.user.firstname 
+    }, 
+    ...stateProps.members
+    .filter(member => member.active)
+    ],
     chartCategories: measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss')),
     chartData: measurements.map(measurement => measurement ? 
                                 measurement[stateProps.activeSessionFilter]

@@ -112,7 +112,7 @@ function SelectMember(props) {
         {
           members.map(m => 
             <bs.MenuItem 
-              key={m.index || -1} 
+              key={m.id} 
               eventKey={m.index} 
               value={m.index}
             >
