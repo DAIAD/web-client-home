@@ -55,7 +55,7 @@ function TableBody(props) {
           <TableRow 
             key={idx}
             className={typeof rowClassName === 'function' ? 
-              rowClassName(row) 
+              rowClassName(row, idx) 
                 : rowClassName
             }
             onRowClick={onRowClick}
@@ -123,7 +123,7 @@ function TableRow(props) {
             columnIdx={idx} 
             field={field}
             item={field.value ? 
-              field.value(row[field.id], field, row) 
+              field.value(row[field.id], row) 
               : 
               row[field.id]
             } 

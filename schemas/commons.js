@@ -73,7 +73,7 @@ const members = [
   {
     id: 'ranking',
     name: 'Ranking',
-    //value: (value, field, row) => `#${value}`, 
+    //value: (value, row) => `#${value}`, 
   },
   {
     id: 'firstname',
