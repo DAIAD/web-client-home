@@ -21,6 +21,8 @@ const initialState = {
   forecastData: {
     sessions: []
   },
+  pricing: true,
+  forecastData: [],
   editShower: false,
   memberFilter: 'all',
 };
@@ -133,6 +135,11 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_FORECASTING:
       return Object.assign({}, state, {
         forecasting: action.enable,
+      });
+
+    case types.HISTORY_SET_PRICING:
+      return Object.assign({}, state, {
+        pricing: action.enable,
       });
 
     case types.HISTORY_SET_FORECAST_DATA:

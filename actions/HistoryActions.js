@@ -259,6 +259,21 @@ const disableForecasting = function () {
   };
 };
 
+const enablePricing = function () {
+  return {
+    type: types.HISTORY_SET_PRICING,
+    enable: true,
+  };
+};
+
+const disablePricing = function () {
+  return {
+    type: types.HISTORY_SET_PRICING,
+    enable: false,
+  };
+};
+
+
 /**
  * Resets active session to null. 
  */
@@ -524,7 +539,7 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, clearComparisons, data, forecastData, memberFilter } = query;
+    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, clearComparisons, data, memberFilter } = query;
 
     dispatch(setDataUnsynced());
 
@@ -549,6 +564,8 @@ const setQuery = function (query) {
     if (clearComparisons) {
       dispatch(resetComparisons());
     }
+    if (pricing === true) dispatch(enablePricing());
+    else if (pricing === false) dispatch(disablePricing());
 
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
 
@@ -604,6 +621,8 @@ module.exports = {
   decreaseShowerIndex,
   enableForecasting,
   disableForecasting,
+  enablePricing,
+  disablePricing,
   setQueryAndFetch,
   enableEditShower,
   disableEditShower,

@@ -105,6 +105,21 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     :
       [];
 
+  const reducedMetric = reduceMetric(stateProps.devices, stateProps.data, stateProps.filter);
+  let info = null;
+  if (stateProps.timeFilter === 'month' && stateProps.pricing) {
+    if (reducedMetric < 9000) {
+      info = 'You are in the lowest price bracket so far this month. ' +
+        `There are ${9000 - reducedMetric} lt left to remain in the same category`;
+    } else if (reducedMetric < 30000) { 
+      info = 'You have reached the middle price bracket. ' +
+        `There are ${30000 - reducedMetric} lt left to remain in the same category`;
+    } else {
+      info = 'This month\'s consumption so far is in the highest price bracket. ' +
+        'Be careful next month!';
+    }
+  }
+
   return {
     ...stateProps,
     ...dispatchProps,
@@ -125,7 +140,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFields,
     deviceTypes,
     csvData,
-    reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.filter)} ${getMetricMu(stateProps.filter)}`,
+    extraInfo: info,
+    reducedMetric: `${reducedMetric} ${getMetricMu(stateProps.filter)}`,
     hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
     hasShowersBefore: () => hasShowersBefore(stateProps.data),
     _t: formatMessage(ownProps.intl),

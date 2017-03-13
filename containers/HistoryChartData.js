@@ -24,6 +24,7 @@ function mapStateToProps(state) {
     comparisons: state.section.history.comparisons,
     width: state.viewport.width,
     forecasting: state.section.history.forecasting,
+    pricing: state.section.history.pricing,
     forecastData: state.section.history.forecastData,
     myCommons: state.section.commons.myCommons,
     favoriteCommon: state.section.settings.commons.favorite,
@@ -104,6 +105,36 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     }]
     : [];
 
+  const priceBrackets = stateProps.timeFilter === 'year' && stateProps.pricing ? [
+    {
+      name: 'Up to 9m^3\n 0.02E/m^3',
+      data: xCategories.map(() => 9000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'green',
+      fill: 0,
+    },
+    {
+      name: 'Up to 30m^3\n 0.55E/m^3',
+      data: xCategories.map(() => 30000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'orange',
+      fill: 0,
+    },
+    {
+      name: 'Up to 60m^3\n 1.85E/m^3',
+      data: xCategories.map(() => 60000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'red',
+      fill: 0,
+    },
+  ] : [];
+
   return {
     ...stateProps,
     ...dispatchProps,
@@ -114,6 +145,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       ...chartData,
       ...forecast,
       ...comparisons,
+      ...priceBrackets,
     ],
     //chart width = viewport width - main menu - sidebar left - sidebar right - padding
     width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),

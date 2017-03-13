@@ -133,8 +133,12 @@ const History = React.createClass({
     this.props.setQueryAndFetch({ device: vals, ...switchDevType });
   },
   handleForecastingChanged: function (vals) {
-    const forecasting = (vals.length > 0 && vals[0] === 'enabled');
+    const forecasting = (vals.length > 0 && vals[0] === 'forecasting');
     this.props.setQueryAndFetch({ forecasting });
+  },
+  handlePricingChanged: function (vals) {
+    const pricing = (vals.length > 0 && vals[0] === 'pricing');
+    this.props.setQueryAndFetch({ pricing });
   },
   handleComparisonSelect: function (val) {
     this.props.setQueryAndFetch({ comparison: val });
@@ -145,7 +149,7 @@ const History = React.createClass({
   render: function () {
     const { _t, amphiros, activeDevice, activeDeviceType, timeFilter, 
       time, metrics, periods, comparisons, deviceTypes, data, 
-      hasShowersBefore, hasShowersAfter, forecasting } = this.props;
+      hasShowersBefore, hasShowersAfter, forecasting, pricing } = this.props;
     return (
       <MainSection id="section.history">
         <Topbar> 
@@ -234,26 +238,48 @@ const History = React.createClass({
             </CheckboxGroup>
             <br />
             { activeDeviceType === 'METER' ?
-              <CheckboxGroup 
-                name="forecasting" 
-                value={forecasting ? ['enabled'] : []}
-                onChange={this.handleForecastingChanged}
-              >
-                {
-                  Checkbox => (
-                    <div className="shower-devices">
-                      <label key="enable" htmlFor="enable">
-                        <Checkbox 
-                          id="enable"
-                          value="enabled"
-                        />
-                        <label htmlFor="enable" />
-                        Forecasting
-                      </label>
-                    </div>
-                    )
-                }
-              </CheckboxGroup>
+              <div>
+                <CheckboxGroup 
+                  name="forecasting" 
+                  value={forecasting ? ['forecasting'] : []}
+                  onChange={this.handleForecastingChanged}
+                >
+                  {
+                    Checkbox => (
+                      <div className="shower-devices">
+                        <label key="forecasting" htmlFor="forecasting">
+                          <Checkbox 
+                            id="forecasting"
+                            value="forecasting"
+                          />
+                          <label htmlFor="forecasting" />
+                          Forecasting
+                        </label>
+                      </div>
+                      )
+                  }
+                </CheckboxGroup>
+                <CheckboxGroup 
+                  name="pricing" 
+                  value={pricing ? ['pricing'] : []}
+                  onChange={this.handlePricingChanged}
+                >
+                  {
+                    Checkbox => (
+                      <div className="shower-devices">
+                        <label key="pricing" htmlFor="pricing">
+                          <Checkbox 
+                            id="pricing"
+                            value="pricing"
+                          />
+                          <label htmlFor="pricing" />
+                          Pricing
+                        </label>
+                      </div>
+                      )
+                  }
+                </CheckboxGroup>
+              </div>
               : <div />
             }
 
@@ -370,6 +396,16 @@ const History = React.createClass({
               </div>
               
             </div>        
+            <br />
+            { this.props.extraInfo ? 
+              <span>
+                <img src={`${IMAGES}/warning.svg`} alt="info" />
+                &nbsp;
+                <span style={{ fontSize: '1.2em' }}>{this.props.extraInfo}</span>
+              </span>
+              :
+               <div />
+            }
 
             <SessionsList 
               handleSortSelect={this.handleSortSelect}
