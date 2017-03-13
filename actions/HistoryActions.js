@@ -174,6 +174,21 @@ const disableForecasting = function () {
   };
 };
 
+const enablePricing = function () {
+  return {
+    type: types.HISTORY_SET_PRICING,
+    enable: true,
+  };
+};
+
+const disablePricing = function () {
+  return {
+    type: types.HISTORY_SET_PRICING,
+    enable: false,
+  };
+};
+
+
 /**
  * Resets active session to null. 
  */
@@ -280,6 +295,7 @@ const setActiveDevice = function (deviceKey) {
  * One of 0: minute, 1: hour, 2: day, 3: week, 4: month
  * @param {Bool} query=true - If true performs query based on active filters to update data
  */
+
 const setTime = function (time) {
   return {
     type: types.HISTORY_SET_TIME,
@@ -287,6 +303,29 @@ const setTime = function (time) {
   };
 };
 
+const setMode = function (mode) {
+  return {
+    type: types.HISTORY_SET_MODE,
+    mode,
+  };
+};
+
+const switchMode = function (mode) {
+  return function (dispatch, getState) {
+    dispatch(setMode(mode));
+    dispatch(disableForecasting());
+    dispatch(disablePricing());
+    if (mode === 'pricing') {
+      dispatch(setTimeFilter('month'));
+      dispatch(setTime(getTimeByPeriod('month')));
+      dispatch(enablePricing());
+    } else if (mode === 'forecasting') {
+      dispatch(setTimeFilter('year'));
+      dispatch(setTime(getTimeByPeriod('year')));
+      dispatch(enableForecasting());
+    }
+  };
+};
 const setActiveDeviceType = function (deviceType) {
   return {
     type: types.HISTORY_SET_ACTIVE_DEVICE_TYPE,
@@ -314,6 +353,7 @@ const switchActiveDeviceType = function (deviceType) {
       dispatch(setTimeFilter('ten'));
       dispatch(setSortFilter('id'));
       dispatch(setShowerIndex(0));
+      dispatch(switchMode('stats'));
     } else if (deviceType === 'METER') {
       dispatch(setMetricFilter('difference'));
       dispatch(setTimeFilter('year'));
@@ -463,10 +503,11 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, data, forecastData, memberFilter } = query;
+    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparison, clearComparisons, data, forecastData, memberFilter, mode } = query;
 
     dispatch(setDataUnsynced());
 
+    if (mode) dispatch(switchMode(mode));
     if (deviceType) dispatch(switchActiveDeviceType(deviceType));
     if (device) dispatch(setActiveDevice(device));
     if (metric) dispatch(setMetricFilter(metric));
@@ -475,12 +516,8 @@ const setQuery = function (query) {
     if (time) dispatch(updateTime(time));
     if (increaseIndex === true) dispatch(increaseShowerIndex());
     if (decreaseIndex === true) dispatch(decreaseShowerIndex());
-    
-    if (forecasting === true) dispatch(enableForecasting());
-    else if (forecasting === false) dispatch(disableForecasting());
-
-    if (comparison) dispatch(setComparisons(comparison));
-    //else if (comparison === null) dispatch(setComparison(null));
+     
+   if (comparison !== undefined) dispatch(setComparisons(comparison));
 
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
 
@@ -535,6 +572,8 @@ module.exports = {
   decreaseShowerIndex,
   enableForecasting,
   disableForecasting,
+  enablePricing,
+  disablePricing,
   setQueryAndFetch,
   enableEditShower,
   disableEditShower,

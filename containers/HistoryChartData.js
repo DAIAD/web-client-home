@@ -24,6 +24,7 @@ function mapStateToProps(state) {
     comparisonData: state.section.history.comparisonData,
     width: state.viewport.width,
     forecasting: state.section.history.forecasting,
+    pricing: state.section.history.pricing,
     forecastData: state.section.history.forecastData,
   };
 }
@@ -51,9 +52,11 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       : 
       getChartAmphiroData(sessions, xCategories);
 
+    const chartXData = xData.map(x => x ? x[stateProps.filter] : null);
+
     return ({
       name: getDeviceNameByKey(stateProps.devices, devData.deviceKey), 
-      data: xData.map(x => x ? x[stateProps.filter] : null),
+      data: chartXData,
       metadata: {
         device: devData.deviceKey,
         ids: xData.map(val => val ? [val.id, val.timestamp] : [null, null])
@@ -103,6 +106,36 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     }]
     : [];
 
+  const priceBrackets = stateProps.timeFilter === 'month' && stateProps.pricing ? [
+    {
+      name: 'Up to 9m^3\n 0.02E/m^3',
+      data: xCategories.map(() => 9000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'green',
+      fill: 0,
+    },
+    {
+      name: 'Up to 30m^3\n 0.55E/m^3',
+      data: xCategories.map(() => 30000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'orange',
+      fill: 0,
+    },
+    {
+      name: 'Up to 60m^3\n 1.85E/m^3',
+      data: xCategories.map(() => 60000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'red',
+      fill: 0,
+    },
+  ] : [];
+
   return {
     ...stateProps,
     ...dispatchProps,
@@ -113,6 +146,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       ...chartData,
       ...forecast,
       ...comparison,
+      ...priceBrackets,
     ],
     //chart width = viewport width - main menu - sidebar left - sidebar right - padding
     width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),

@@ -18,10 +18,12 @@ const initialState = {
   comparisonData: [],
   time: thisYear(),
   showerIndex: 0,
-  forecasting: true,
+  forecasting: false,
+  pricing: false,
   forecastData: [],
   editShower: false,
   memberFilter: 'all',
+  mode: 'stats',
 };
  
 const history = function (state = initialState, action) {
@@ -119,6 +121,11 @@ const history = function (state = initialState, action) {
         forecasting: action.enable,
       });
 
+    case types.HISTORY_SET_PRICING:
+      return Object.assign({}, state, {
+        pricing: action.enable,
+      });
+
     case types.HISTORY_SET_FORECAST_DATA:
       return Object.assign({}, state, {
         forecastData: action.data,
@@ -132,6 +139,11 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_EDIT_SHOWER:
       return Object.assign({}, state, {
         editShower: action.enable,
+      });
+
+    case types.HISTORY_SET_MODE:
+      return Object.assign({}, state, {
+        mode: action.mode,
       });
 
     case types.USER_RECEIVED_LOGOUT:

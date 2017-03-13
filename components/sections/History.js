@@ -128,13 +128,13 @@ const History = React.createClass({
   handleDeviceTypeSelect: function (val) {
     this.props.setQueryAndFetch({ deviceType: val });
   },
+  handleModeSelect: function (val) {
+    console.log('select', val);
+    this.props.setQueryAndFetch({ mode: val });
+  },
   handleActiveDevicesChanged: function (vals) {
     const switchDevType = this.props.activeDeviceType === 'METER' ? { deviceType: 'AMPHIRO' } : {};
     this.props.setQueryAndFetch({ device: vals, ...switchDevType });
-  },
-  handleForecastingChanged: function (vals) {
-    const forecasting = (vals.length > 0 && vals[0] === 'enabled');
-    this.props.setQueryAndFetch({ forecasting });
   },
   handleComparisonSelect: function (val) {
     this.props.setQueryAndFetch({ comparison: val });
@@ -145,7 +145,7 @@ const History = React.createClass({
   render: function () {
     const { _t, amphiros, activeDevice, activeDeviceType, timeFilter, 
       time, metrics, periods, comparisons, deviceTypes, data, 
-      hasShowersBefore, hasShowersAfter, forecasting } = this.props;
+      hasShowersBefore, hasShowersAfter, forecasting, pricing } = this.props;
     return (
       <MainSection id="section.history">
         <Topbar> 
@@ -181,6 +181,24 @@ const History = React.createClass({
                     key={metric.id} 
                     eventKey={metric.id} 
                     title={metric.title} 
+                  /> 
+                ))
+              }
+            </bs.Tabs>
+            <br />
+            <br />
+            <bs.Tabs 
+              position="left" 
+              tabWidth={20} 
+              activeKey={this.props.mode} 
+              onSelect={this.handleModeSelect}
+            >
+              {
+                this.props.modes.map(mode => (
+                  <bs.Tab 
+                    key={mode.id} 
+                    eventKey={mode.id} 
+                    title={mode.title} 
                   /> 
                 ))
               }
@@ -233,31 +251,8 @@ const History = React.createClass({
               }
             </CheckboxGroup>
             <br />
-            { activeDeviceType === 'METER' ?
-              <CheckboxGroup 
-                name="forecasting" 
-                value={forecasting ? ['enabled'] : []}
-                onChange={this.handleForecastingChanged}
-              >
-                {
-                  Checkbox => (
-                    <div className="shower-devices">
-                      <label key="enable" htmlFor="enable">
-                        <Checkbox 
-                          id="enable"
-                          value="enabled"
-                        />
-                        <label htmlFor="enable" />
-                        Forecasting
-                      </label>
-                    </div>
-                    )
-                }
-              </CheckboxGroup>
-              : <div />
-            }
-
             <br />
+
             { 
               comparisons && comparisons.length > 0 ?
                 <h5 style={{ marginLeft: 20 }}>Compare with</h5>
@@ -364,6 +359,7 @@ const History = React.createClass({
               </div>
               
             </div>        
+            <br />
 
             <SessionsList 
               handleSortSelect={this.handleSortSelect}

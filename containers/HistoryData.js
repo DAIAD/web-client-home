@@ -78,7 +78,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const metrics = devType === 'AMPHIRO' ? DEV_METRICS : METER_METRICS;
 
-  const periods = devType === 'AMPHIRO' ? DEV_PERIODS : METER_PERIODS;
+  //const periods = devType === 'AMPHIRO' ? DEV_PERIODS : METER_PERIODS;
   
   const sortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
 
@@ -110,6 +110,47 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     :
       [];
 
+  const reducedMetric = reduceMetric(stateProps.devices, stateProps.data, stateProps.filter);
+  /*
+  let info = null;
+  if (stateProps.timeFilter === 'month' && stateProps.pricing) {
+    if (reducedMetric < 9000) {
+      info = 'You are in the lowest price bracket so far this month. ' +
+        `There are ${9000 - reducedMetric} lt left to remain in the same category`;
+    } else if (reducedMetric < 30000) { 
+      info = 'You have reached the middle price bracket. ' +
+        `There are ${30000 - reducedMetric} lt left to remain in the same category`;
+    } else {
+      info = 'This month\'s consumption so far is in the highest price bracket. ' +
+        'Be careful next month!';
+    }
+    }
+    */
+  const AMPHIRO_MODES = [{ 
+    id: 'stats', 
+    title: 'Statistics',
+    periods: DEV_PERIODS, 
+  }];
+  const METER_MODES = [{ 
+    id: 'stats', 
+    title: 'Statistics',
+    periods: METER_PERIODS,
+  },
+  {
+    id: 'forecasting',
+    title: 'Forecasting',
+    periods: METER_PERIODS.filter(p => p.id !== 'custom'),
+  },
+  {
+    id: 'pricing',
+    title: 'Pricing',
+    periods: METER_PERIODS.filter(p => p.id === 'month'),
+  },
+  ];
+
+  const modes = devType === 'AMPHIRO' ? AMPHIRO_MODES : METER_MODES;
+  const periods = modes.find(m => m.id === stateProps.mode) ? modes.find(m => m.id === stateProps.mode).periods : [];
+
   return {
     ...stateProps,
     ...dispatchProps,
@@ -122,6 +163,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                                                                 ) : {},
     amphiros,
     periods,
+    modes,
     metrics,
     comparisons,
     memberFilters,
@@ -130,7 +172,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFields,
     deviceTypes,
     csvData,
-    reducedMetric: `${reduceMetric(stateProps.devices, stateProps.data, stateProps.filter)} ${getMetricMu(stateProps.filter)}`,
+    //extraInfo: info,
+    reducedMetric: `${reducedMetric} ${getMetricMu(stateProps.filter)}`,
     hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
     hasShowersBefore: () => hasShowersBefore(stateProps.data),
     _t: formatMessage(ownProps.intl),
