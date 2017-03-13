@@ -73,11 +73,11 @@ function SessionsList(props) {
               {
                 sortOrder === 'asc' ? 
                   <a onClick={() => setSortOrder('desc')}>
-                    <i className="fa fa-arrow-down" />
+                    <i className="fa fa-arrow-up" />
                   </a>
                  :
                  <a onClick={() => setSortOrder('asc')}>
-                   <i className="fa fa-arrow-up" />
+                   <i className="fa fa-arrow-down" />
                  </a>
               }
             </div>
