@@ -10,6 +10,7 @@ const LocaleActions = require('./LocaleActions');
 const DashboardActions = require('./DashboardActions');
 const HistoryActions = require('./HistoryActions');
 const CommonsActions = require('./CommonsActions');
+const CommonsManageActions = require('./CommonsManageActions');
 const FormActions = require('./FormActions');
 const { letTheRightOneIn } = require('./UserActions');
 const { fetchInitial: fetchAllMessages } = require('./MessageActions');
@@ -46,8 +47,11 @@ const initHome = function (profile) {
       if (configuration.layout) {
         dispatch(DashboardActions.updateLayout(configuration.layout, false));
       }
+      if (configuration.favoriteCommon) {
+        dispatch(CommonsManageActions.setFavorite(configuration.favoriteCommon));
+      }
     }
-     
+
     if (getMeterCount(profile.devices) === 0) {
       dispatch(HistoryActions.switchActiveDeviceType('AMPHIRO'));
       dispatch(DashboardActions.setDeviceType('AMPHIRO'));

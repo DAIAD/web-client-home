@@ -178,6 +178,10 @@ const Commons = React.createClass({
     if (!this.props.synced) {
       this.props.actions.fetchData();
     } 
+    if (this.props.favorite) {
+      this.props.actions.setDataQueryAndFetch({ active: this.props.favorite });
+    }
+
     if (this.props.active) {
       this.props.actions.searchCommonMembers();
     }

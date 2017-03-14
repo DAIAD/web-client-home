@@ -18,6 +18,7 @@ const { formatMessage } = require('../utils/general');
 function mapStateToProps(state) {
   return {
     devices: state.user.profile.devices,
+    favorite: state.section.settings.commons.favorite,
     ...state.section.commons,
   };
 }

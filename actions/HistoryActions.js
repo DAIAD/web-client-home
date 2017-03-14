@@ -540,4 +540,6 @@ module.exports = {
   enableEditShower,
   disableEditShower,
   setMemberFilter,
+  setDataSynced,
+  setDataUnsynced,
 };

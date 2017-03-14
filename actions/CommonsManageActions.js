@@ -55,6 +55,13 @@ const setAllCommonsUnsynced = function () {
   };
 };
 
+const setFavorite = function (key) {
+  return {
+    type: types.COMMONS_SET_FAVORITE,
+    key,
+  };
+};
+
 const searchCommons = function () {
   return function (dispatch, getState) {
     const { pagingIndex: pageIndex, searchFilter: name } = getState().section.settings.commons;
@@ -315,5 +322,6 @@ module.exports = {
   setSearchPagingIndex,
   //fetch actions
   searchCommons,
+  setFavorite,
   setCommonsQueryAndFetch,
 };

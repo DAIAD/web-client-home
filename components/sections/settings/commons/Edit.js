@@ -6,8 +6,8 @@ const CommonFormFields = require('./Form');
 const { IMAGES } = require('../../../../constants/HomeConstants');
 
 function UpdateCommons(props) {
-  const { myCommons, commonForm, actions } = props;
-  const { confirmUpdateCommon, confirmDeleteCommon, confirmLeaveCommon, updateCommonForm } = actions;
+  const { myCommons, commonForm, favorite, actions } = props;
+  const { confirmUpdateCommon, confirmDeleteCommon, confirmLeaveCommon, updateCommonForm, saveFavoriteCommon } = actions;
   if (myCommons.length === 0) {
     return (
       <div style={{ margin: 20 }}>
@@ -63,6 +63,29 @@ function UpdateCommons(props) {
                 confirmUpdateCommon();
               }}
             >
+            { favorite === common.key ?
+              <a 
+                style={{ float: 'right' }}
+                onClick={() => {
+                  saveFavoriteCommon(null);
+              }}
+              >
+                <i style={{ float: 'right' }} className="fa fa-star" />
+                <br />
+                <span>Reset Favorite</span>
+              </a>
+              :
+              <a 
+                style={{ float: 'right' }}
+                onClick={() => {
+                  saveFavoriteCommon(common.key);
+              }}
+              >
+                <i style={{ float: 'right' }} className="fa fa-star-o" />
+                <br />
+                <span>Set Favorite</span>
+              </a>
+             }
               <CommonFormFields
                 values={commonForm}
                 onChange={updateCommonForm}
