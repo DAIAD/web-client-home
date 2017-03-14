@@ -4,7 +4,7 @@ const { connect } = require('react-redux');
 
 const DashboardActions = require('../actions/DashboardActions');
 const { linkToHistory } = require('../actions/HistoryActions');
-const { saveToProfile } = require('../actions/UserActions');
+const { saveConfiguration } = require('../actions/UserActions');
 const { setForm } = require('../actions/FormActions');
 
 const Dashboard = require('../components/sections/Dashboard');
@@ -34,7 +34,7 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
     ...DashboardActions, 
     linkToHistory, 
-    saveToProfile, 
+    saveConfiguration, 
     setForm, 
   }, dispatch);
 }
@@ -97,7 +97,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       prepareWidget(widget, stateProps.devices, ownProps.intl)),   
     deviceCount: getDeviceCount(stateProps.devices),
     meterCount: getMeterCount(stateProps.devices),
-    saveToProfile: () => dispatchProps.saveToProfile({ configuration: JSON.stringify(newWidgetState) }),
+    saveToProfile: () => dispatchProps.saveConfiguration(newWidgetState),
     deviceTypes,
     widgetTypes,
     setWidgetToAdd,
