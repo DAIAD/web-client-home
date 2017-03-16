@@ -172,24 +172,6 @@ const History = React.createClass({
             <bs.Tabs 
               position="left" 
               tabWidth={20} 
-              activeKey={this.props.filter} 
-              onSelect={this.handleTypeSelect}
-            >
-              {
-                metrics.map(metric => (
-                  <bs.Tab 
-                    key={metric.id} 
-                    eventKey={metric.id} 
-                    title={metric.title} 
-                  /> 
-                ))
-              }
-            </bs.Tabs>
-            <br />
-            <br />
-            <bs.Tabs 
-              position="left" 
-              tabWidth={20} 
               activeKey={this.props.mode} 
               onSelect={this.handleModeSelect}
             >
@@ -199,6 +181,26 @@ const History = React.createClass({
                     key={mode.id} 
                     eventKey={mode.id} 
                     title={mode.title} 
+                  /> 
+                ))
+              }
+            </bs.Tabs>
+            <br />
+            <br />
+            <br />
+            <br />
+            <bs.Tabs 
+              position="left" 
+              tabWidth={20} 
+              activeKey={this.props.filter} 
+              onSelect={this.handleTypeSelect}
+            >
+              {
+                metrics.map(metric => (
+                  <bs.Tab 
+                    key={metric.id} 
+                    eventKey={metric.id} 
+                    title={metric.title} 
                   /> 
                 ))
               }

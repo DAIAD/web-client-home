@@ -402,12 +402,15 @@ const switchMode = function (mode) {
     dispatch(disablePricing());
     if (mode === 'pricing') {
       dispatch(setTimeFilter('month'));
-      dispatch(setTime(getTimeByPeriod('month')));
+      dispatch(setTime({ ...getTimeByPeriod('month'), granularity: 2 }));
       dispatch(enablePricing());
     } else if (mode === 'forecasting') {
       dispatch(setTimeFilter('year'));
       dispatch(setTime(getTimeByPeriod('year')));
       dispatch(enableForecasting());
+    } else {
+      dispatch(setTimeFilter('month'));
+      dispatch(setTime(getTimeByPeriod('month')));
     }
   };
 };
@@ -436,14 +439,15 @@ const switchActiveDeviceType = function (deviceType) {
     // TODO: reset with action to initial state
     if (deviceType === 'AMPHIRO') {
       dispatch(setMetricFilter('volume'));
+      dispatch(switchMode('stats'));
       dispatch(setTimeFilter('ten'));
       dispatch(setSortFilter('id'));
       dispatch(setShowerIndex(0));
-      dispatch(switchMode('stats'));
+      dispatch(resetComparisons());
     } else if (deviceType === 'METER') {
       dispatch(setMetricFilter('volume'));
-      dispatch(setTimeFilter('year'));
-      dispatch(setTime(getTimeByPeriod('year')));
+      dispatch(setTimeFilter('month'));
+      dispatch(setTime(getTimeByPeriod('month')));
       dispatch(setSortFilter('timestamp'));
     }
   };
@@ -586,7 +590,6 @@ const setQuery = function (query) {
     if (clearComparisons) {
       dispatch(resetComparisons());
     }
-
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
 
     if (device != null && showerId != null) { 

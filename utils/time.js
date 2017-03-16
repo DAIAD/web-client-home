@@ -82,7 +82,7 @@ const getPeriod = function (period, timestamp = moment().valueOf()) {
 };
 
 // get Start or End of iso week instead of week to start from monday
-const getNextPeriod = function (period, timestamp = moment().valueOf()) {
+const getNextPeriod = function (period, granularity, timestamp = moment().valueOf()) {
   const sPeriod = period === 'week' ? 'isoweek' : period;
   return {
     startDate: moment(timestamp)
@@ -91,11 +91,11 @@ const getNextPeriod = function (period, timestamp = moment().valueOf()) {
     endDate: moment(timestamp)
     .endOf(sPeriod)
     .add(1, period).valueOf(),
-    granularity: convertPeriodToGranularity(period),
+    granularity: granularity || convertPeriodToGranularity(period),
   };
 };
 
-const getPreviousPeriod = function (period, timestamp = moment().valueOf()) {
+const getPreviousPeriod = function (period, granularity, timestamp = moment().valueOf()) {
   const sPeriod = period === 'week' ? 'isoweek' : period;
   return {
     startDate: moment(timestamp)
@@ -104,7 +104,7 @@ const getPreviousPeriod = function (period, timestamp = moment().valueOf()) {
     endDate: moment(timestamp)
     .subtract(1, period)
     .endOf(sPeriod).valueOf(),
-    granularity: convertPeriodToGranularity(period),
+    granularity: granularity || convertPeriodToGranularity(period),
   };
 };
 

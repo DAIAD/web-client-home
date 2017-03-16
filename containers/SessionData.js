@@ -10,7 +10,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const { ignoreShower } = require('../actions/QueryActions');
 const { assignToMember } = require('../actions/MembersManageActions');
 const { getShowerMetricMu, formatMessage } = require('../utils/general');
-const { getLowerGranularityPeriod } = require('../utils/time');
+const { convertGranularityToPeriod, getLowerGranularityPeriod } = require('../utils/time');
 const { SHOWER_METRICS } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
@@ -19,6 +19,7 @@ function mapStateToProps(state) {
     data: state.section.history.data,
     activeSessionFilter: state.section.history.activeSessionFilter,
     activeSession: state.section.history.activeSession,
+    time: state.section.history.time,
     timeFilter: state.section.history.timeFilter,
     user: state.user.profile,
     members: state.user.profile.household.members,
@@ -66,7 +67,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFilters: SHOWER_METRICS
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
     mu: getShowerMetricMu(stateProps.activeSessionFilter),
-    period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',
+    period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(convertGranularityToPeriod(stateProps.time.granularity)) : '',
     _t: formatMessage(ownProps.intl),
   };
 }

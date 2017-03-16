@@ -25,6 +25,7 @@ function mapStateToProps(state) {
     width: state.viewport.width,
     forecasting: state.section.history.forecasting,
     pricing: state.section.history.pricing,
+    mode: state.section.history.mode,
     forecastData: state.section.history.forecastData,
     myCommons: state.section.commons.myCommons,
     favoriteCommon: state.section.settings.commons.favorite,
@@ -41,7 +42,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
 
   const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
-    getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
+    getChartMeterCategoryLabels(xCategories, stateProps.time.granularity, stateProps.timeFilter, ownProps.intl)
      : xCategories;
    
   const favoriteCommonName = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon).name : '';
@@ -54,6 +55,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                           xCategories, 
                           stateProps.time,
                           stateProps.filter,
+                          stateProps.mode === 'pricing'
                          ),
         metadata: {
           ids: mapMeterDataToChart(devData.sessions, xCategories, stateProps.time).map(val => val ? [val.id, val.timestamp] : [null, null]),
@@ -85,7 +87,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       data: getChartMeterData(sessions, 
                               xCategories, 
                               stateProps.time, 
-                              stateProps.filter),
+                              stateProps.filter,
+                              stateProps.mode === 'pricing'
+                             ),
       fill: 0.1,
     });
   });

@@ -25,30 +25,35 @@ const getTimeLabelByGranularity = function (timestamp, granularity, intl) {
     moment(timestamp).format('DD/ MM/ YYYY hh:mm a');
 };
 
-const getTimeLabelByGranularityShort = function (timestamp, granularity, intl) {
+const getTimeLabelByGranularityShort = function (timestamp, granularity, period, intl) {
   if (granularity === 4) {
     return intl.formatMessage({ 
       id: `months.${moment(timestamp).get('month')}`,
-    }); 
-  } else if (granularity === 3) {
+    });
+  } else if (granularity === 3 && period === 'month') {
     return intl.formatMessage({ id: 'periods.week' }) + 
       ' ' +
       moment(timestamp).get('isoweek');
+  } else if (granularity === 2 && period === 'month') {
+    return moment(timestamp).format('DD/MM');
   } else if (granularity === 2) {
     return intl.formatMessage({ 
       id: `weekdays.${moment(timestamp).get('day')}`,
     });
-  } 
-  return moment(timestamp).format('hh:mm');
+  } else if (granularity === 1) { 
+    return moment(timestamp).format('hh:mm');
+  }
+  return null;
 };
 
 const getChartMeterCategories = function (time) {
   return timeToBuckets(time);
 };
 
-const getChartMeterCategoryLabels = function (xData, time, intl) {
-  if (!time || time.granularity == null || !intl) return [];
-  return xData.map(t => getTimeLabelByGranularityShort(t, time.granularity, intl));
+const getChartMeterCategoryLabels = function (xData, granularity, period, intl) {
+  //if (!time || time.granularity == null || !intl) return [];
+  //return xData.map(t => getTimeLabelByGranularityShort(t, time.granularity, intl));
+  return xData.map(t => getTimeLabelByGranularityShort(t, granularity, period, intl));
 };
 
 const getChartAmphiroCategories = function (period, last) {
@@ -115,10 +120,15 @@ const mapMeterDataToChart = function (sessions, categories, time) {
   });
 };
 
-const getChartMeterData = function (sessions, categories, time, filter) {
-  return mapMeterDataToChart(sessions, categories, time)
-  .map(x => x && x[filter] && x[filter] ? 
-       Math.round(100 * x[filter]) / 100 : null);
+const getChartMeterData = function (sessions, categories, time, filter, augmental = false) {
+  const mapped = mapMeterDataToChart(sessions, categories, time)
+  .map(x => x && x[filter] !== null ? 
+         Math.round(100 * x[filter]) / 100 : null);
+
+  return augmental ? 
+    mapped.map((x, i, arr) => x !== null ? arr.filter((y, j) => j <= i).reduce((p, c) => p + c, 0) : null)
+    :
+    mapped;
 };
 
 module.exports = {

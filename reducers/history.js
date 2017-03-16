@@ -1,11 +1,12 @@
 const types = require('../constants/ActionTypes');
 
 const { updateOrAppendToSession } = require('../utils/sessions');
-const { thisYear } = require('../utils/time');
+const { thisMonth } = require('../utils/time');
 
 const initialState = {
   filter: 'volume',
-  timeFilter: 'year',
+  timeFilter: 'month',
+  time: thisMonth(),
   sortFilter: 'timestamp',
   sortOrder: 'desc',
   activeDevice: [],
@@ -15,7 +16,6 @@ const initialState = {
   synced: false,
   comparisons: [],
   data: [],
-  time: thisYear(),
   showerIndex: 0,
   forecasting: false,
   pricing: false,

@@ -86,7 +86,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
 
-  const compareAgainst = getComparisons(devType, stateProps.time, favoriteCommon.name, ownProps.intl);
+  const availableComparisons = getComparisons(devType, stateProps.time, favoriteCommon.name, ownProps.intl);
 
   const memberFilters = devType === 'AMPHIRO' ?
     [{
@@ -111,35 +111,43 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     id: 'stats', 
     title: 'Statistics',
     periods: DEV_PERIODS, 
+    comparisons: availableComparisons,
   }];
   const METER_MODES = [{ 
     id: 'stats', 
     title: 'Statistics',
     periods: METER_PERIODS,
+    comparisons: availableComparisons.filter(c => stateProps.timeFilter === 'custom' ? c.id !== 'last' : true),
   },
   {
     id: 'forecasting',
     title: 'Forecasting',
     periods: METER_PERIODS.filter(p => p.id !== 'custom'),
+    comparisons: availableComparisons.filter(c => c.id !== 'last'),
   },
   {
     id: 'pricing',
     title: 'Pricing',
     periods: METER_PERIODS.filter(p => p.id === 'month'),
+    comparisons: availableComparisons.filter(c => c.id !== 'last'),
   },
   ];
 
   const modes = devType === 'AMPHIRO' ? AMPHIRO_MODES : METER_MODES;
-  const periods = modes.find(m => m.id === stateProps.mode) ? modes.find(m => m.id === stateProps.mode).periods : [];
+  const activeMode = modes.find(m => m.id === stateProps.mode);
+  const periods = activeMode ? activeMode.periods : [];
+  const compareAgainst = activeMode ? activeMode.comparisons : [];
 
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
     nextPeriod: stateProps.time ? timeUtil.getNextPeriod(stateProps.timeFilter, 
+                                                         stateProps.time.granularity,
                                                          stateProps.time.startDate
                                                         ) : {}, 
     previousPeriod: stateProps.time ? timeUtil.getPreviousPeriod(stateProps.timeFilter, 
+                                                                 stateProps.time.granularity,
                                                                  stateProps.time.endDate
                                                                 ) : {},
     amphiros,
