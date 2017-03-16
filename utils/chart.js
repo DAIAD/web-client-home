@@ -70,20 +70,24 @@ const getChartAmphiroCategories = function (period, last) {
   return Array.from({ length }, (v, i) => `${i + 1}`);
 };
 
-// TODO: have to make sure data is ALWAYS fetched in order of ascending ids 
-// for amphiro, ascending timestamps for meters
-
-const getChartAmphiroData = function (sessions, categories, filter) {
+const mapAmphiroDataToChart = function (sessions, categories, filter) {
   if (!Array.isArray(sessions) || !Array.isArray(categories)) {
     throw new Error('Cant\'t create chart. Check provided data and category', sessions, categories);
   }
   if (sessions.length === 0) return [sessions[0]];
-  //return categories.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
+  
   const sessionsNormalized = [
     ...Array.from({ length: categories.length - sessions.length }), 
     ...sessions
   ];
-  return categories.map((v, i) => sessionsNormalized[i])
+  return categories.map((v, i) => sessionsNormalized[i]);
+};
+
+// TODO: have to make sure data is ALWAYS fetched in order of ascending ids 
+// for amphiro, ascending timestamps for meters
+
+const getChartAmphiroData = function (sessions, categories, filter) {
+  return mapAmphiroDataToChart(sessions, categories, filter)
   .map(x => x ? x[filter] : null)
   .map((x) => {
     if (filter === 'duration') {
@@ -133,6 +137,7 @@ const getChartMeterData = function (sessions, categories, time, filter, augmenta
 
 module.exports = {
   mapMeterDataToChart,
+  mapAmphiroDataToChart,
   getChartAmphiroData,
   getChartMeterData,
   getChartMeterCategories,

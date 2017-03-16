@@ -7,7 +7,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const HistoryChart = require('../components/sections/HistoryChart');
 
 const { bringPastSessionsToPresent } = require('../utils/time');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart } = require('../utils/chart');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart } = require('../utils/chart');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('../utils/device');
 const { getLastShowerIdFromMultiple, getComparisons, getComparisonTitle } = require('../utils/sessions');
 const { getMetricMu } = require('../utils/general');
@@ -67,7 +67,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
         data: getChartAmphiroData(devData.sessions, xCategories, stateProps.filter),
         metadata: {
           device: devData.deviceKey,
-          ids: devData.sessions.map(val => val ? [val.id, val.timestamp] : [null, null])
+          ids: mapAmphiroDataToChart(devData.sessions, xCategories, stateProps.time).map(val => val ? [val.id, val.timestamp] : [null, null]),
         },
       };
     }
