@@ -395,12 +395,12 @@ const fetchLastDeviceSession = function (options) {
     } else {
       querySessions = queryDeviceSessions;
     }
-    return dispatch(querySessions({ ...options, length: 1 }))
+    return dispatch(querySessions({ ...options, length: 10 }))
     .then((response) => {
       const reduced = response.reduce((p, c) => [...p, ...c.sessions.map(s => ({ ...s, device: c.deviceKey }))], []);
       // find last
       const lastSession = reduced.reduce((curr, prev) => 
-        ((curr.timestamp > prev.timestamp) ? curr : prev), {}); 
+        ((curr.id > prev.id) ? curr : prev), {}); 
 
       const { device, id, index, timestamp } = lastSession;
 
