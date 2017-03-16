@@ -63,16 +63,15 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   
   const xCategories = getChartMeterCategories(stateProps.time);
       
-  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl);
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, stateProps.time.granularity, stateProps.timeFilter, ownProps.intl);
 
   const chartData = stateProps.data.map((data, i) => ({
     name: data.label || '', 
     data: getChartMeterData(data.sessions,
                             xCategories, 
-                            stateProps.time
-                           ).map(x => x && x[stateProps.filter] ? 
-                             x[stateProps.filter] 
-                             : null) || [],
+                            stateProps.time,
+                            stateProps.filter
+                           ),
   }));
 
   return {
