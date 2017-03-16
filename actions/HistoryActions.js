@@ -169,6 +169,28 @@ const fetchComparisonData = function () {
   };
 };
 
+const fetchForecastData = function () {
+  return function (dispatch, getState) {
+    const { time } = getState().section.history;
+    dispatch(QueryActions.queryMeterForecastCache({
+      time,
+    }))
+    .then((forecastingData) => {
+      const sessions = forecastingData.sessions;
+      const sortedByTime = sessions.sort((a, b) => {
+        if (a.timestamp < b.timestamp) return -1;
+        else if (a.timestamp > b.timestamp) return 1;
+        return 0;
+      });
+      dispatch(setForecastData({ ...forecastingData, sessions: sortedByTime }));
+    })
+    .catch((error) => {
+      dispatch(setForecastData({}));
+      console.error('Caught error in history forecast query:', error);
+    });
+  };
+};
+
 /**
  * Performs query based on selected history section filters and saves data
  */
@@ -211,26 +233,11 @@ const fetchData = function () {
         console.error('Caught error in history meter query:', error); 
         dispatch(setSessions([]));
         dispatch(setDataSynced());
-      });
-
+      }); 
+      
       // forecasting
       if (getState().section.history.forecasting) {
-        dispatch(QueryActions.queryMeterForecastCache({
-          time: getState().section.history.time,
-        }))
-        .then((forecastingData) => {
-          const sessions = forecastingData.sessions;
-          const sortedByTime = sessions.sort((a, b) => {
-            if (a.timestamp < b.timestamp) return -1;
-            else if (a.timestamp > b.timestamp) return 1;
-            return 0;
-          });
-          dispatch(setForecastData({ ...forecastingData, sessions: sortedByTime }));
-        })
-        .catch((error) => {
-          dispatch(setForecastData({}));
-          console.error('Caught error in history forecast query:', error);
-        });
+        dispatch(fetchForecastData());
       }
     }
     // comparisons
