@@ -27,7 +27,7 @@ const thisMonth = function () {
   return {
     startDate: moment().startOf('month').valueOf(),
     endDate: moment().endOf('month').valueOf(),
-    granularity: 3,
+    granularity: 2,
   };
 };
 
@@ -41,7 +41,7 @@ const thisYear = function () {
 
 const convertPeriodToGranularity = function (period) {
   if (period === 'year') return 4;
-  else if (period === 'month') return 3;
+  else if (period === 'month') return 2;
   else if (period === 'week') return 2;
   else if (period === 'day') return 0;
   return 0;
@@ -57,7 +57,7 @@ const convertGranularityToPeriod = function (granularity) {
 
 const getLowerGranularityPeriod = function (period) {
   if (period === 'year') return 'month';
-  else if (period === 'month') return 'week';
+  else if (period === 'month') return 'day';
   else if (period === 'week') return 'day';
   else if (period === 'day') return 'hour';
   console.error('error in lower granularity period');
