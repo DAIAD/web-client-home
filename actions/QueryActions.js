@@ -208,6 +208,23 @@ const queryDataCache = function (options) {
   };
 };
 
+const queryDataAverageCache = function (options) {
+  return function (dispatch, getState) {
+    const { time, population, source } = options;
+    return dispatch(queryDataCache({
+      time,
+      population,
+      source,
+      metrics: ['AVERAGE'],
+    }))
+    .then(response => source === 'METER' ? response.meters : response.devices)
+    .then(sessions => sessions.map(session => session.points.map(p => ({ 
+      ...p, 
+      volume: p.volume.AVERAGE || p.volume.SUM, 
+    }))));
+  };
+};
+
 /**
  * Query Device sessions
  * @param {Object} options - Query options
@@ -438,13 +455,9 @@ const queryMeterHistory = function (options) {
       ],
     };
 
-    return dispatch(queryDataCache(data))
-    .then(response => response.meters.map(meter => ({
-        ...meter,
-        sessions: meter.points.map(point => ({ 
-          ...point, 
-          volume: point.volume.SUM 
-        })),
+    return dispatch(queryDataAverageCache(data))
+    .then(meters => meters.map(sessions => ({
+      sessions,
     })));
   };
 };
@@ -664,5 +677,6 @@ module.exports = {
   queryMeterForecastCache,
   queryData,
   queryDataCache,
+  queryDataAverageCache,
   ignoreShower,
 };
