@@ -53,7 +53,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     chartFormatter,
     members: [{ 
       id: 'default', 
-      index: null, 
+      index: 0, 
       name: stateProps.user.firstname 
     }, 
     ...stateProps.members
