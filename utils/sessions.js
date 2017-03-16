@@ -291,8 +291,10 @@ const energyToPictures = function (energy) {
 };
 
 const memberFilterToMembers = function (filter) {
-  if (filter === 'all' || filter === 'default') {
+  if (filter === 'all') {
     return [];
+  } else if (filter === 'default') {
+    return [0];
   } else if (!isNaN(filter)) {
     return [filter];
   } 

@@ -152,10 +152,8 @@ const queryDeviceSessions = function (options) {
         throwServerError(response);  
       }
       
-      // TODO: client-side filtering can lead to inaccuracies, should better be on backend
       return response.devices.map(session => ({ 
           ...session,
-          sessions: session.sessions.filter(s => memberFilter === 'default' ? s.member === null : true),
           range: session.sessions ? getShowerRange(session.sessions) : {}
         }));
     })
