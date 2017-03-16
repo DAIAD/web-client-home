@@ -33,6 +33,7 @@ const amphiroLastShower = function (widget, devices, intl) {
     chartCategories,
     chartData,
     highlight,
+    mode: 'stats',
     mu,
   };
 };
@@ -105,9 +106,9 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     mu,
     better,
     comparePercentage,
-    forecasting: false,
     chartCategories,
     chartData,
+    mode: 'stats',
   };
 };
 
@@ -146,6 +147,7 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
     highlight,
     better,
     comparePercentage,
+    mode: 'stats',
   };
 };
 
@@ -186,7 +188,6 @@ const meterForecast = function (widget, devices, intl) {
 
   return {
     ...widget,
-    forecasting: true,
     chartType: 'bar',
     time,
     periods,
@@ -194,6 +195,7 @@ const meterForecast = function (widget, devices, intl) {
     chartData: [...chartData, ...forecastChartData],
     chartColors,
     mu,
+    mode: 'forecasting',
   };
 };
 
