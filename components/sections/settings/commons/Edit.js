@@ -65,25 +65,23 @@ function UpdateCommons(props) {
             >
             { favorite === common.key ?
               <a 
+                title="Reset favorite community"
                 style={{ float: 'right' }}
                 onClick={() => {
                   saveFavoriteCommon(null);
               }}
               >
                 <i style={{ float: 'right' }} className="fa fa-star" />
-                <br />
-                <span>Reset Favorite</span>
               </a>
               :
               <a 
+                title="Set favorite community"
                 style={{ float: 'right' }}
                 onClick={() => {
                   saveFavoriteCommon(common.key);
               }}
               >
                 <i style={{ float: 'right' }} className="fa fa-star-o" />
-                <br />
-                <span>Set Favorite</span>
               </a>
              }
               <CommonFormFields
