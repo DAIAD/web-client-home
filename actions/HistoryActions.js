@@ -401,17 +401,24 @@ const switchMode = function (mode) {
     dispatch(disableForecasting());
     dispatch(disablePricing());
     if (mode === 'pricing') {
-      dispatch(setTimeFilter('month'));
-      dispatch(setTime({ ...getTimeByPeriod('month'), granularity: 2 }));
       dispatch(enablePricing());
+      if (getState().section.history.timeFilter !== 'month') {
+        dispatch(setTimeFilter('month'));
+        dispatch(setTime(getTimeByPeriod('month')));
+      }
+      if (getState().section.history.comparisons.find(c => c.id === 'last')) {
+        dispatch(removeComparison('last'));
+      }
     } else if (mode === 'forecasting') {
-      dispatch(setTimeFilter('year'));
-      dispatch(setTime(getTimeByPeriod('year')));
       dispatch(enableForecasting());
-    } else {
-      dispatch(setTimeFilter('month'));
-      dispatch(setTime(getTimeByPeriod('month')));
-    }
+      if (getState().section.history.timeFilter !== 'month') {
+        dispatch(setTimeFilter('month'));
+        dispatch(setTime(getTimeByPeriod('month')));
+      }
+      if (getState().section.history.comparisons.find(c => c.id === 'last')) {
+        dispatch(removeComparison('last'));
+      }
+    } 
   };
 };
 const setActiveDeviceType = function (deviceType) {
