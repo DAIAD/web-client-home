@@ -6,10 +6,10 @@ const HistoryActions = require('../actions/HistoryActions');
 
 const HistoryChart = require('../components/sections/HistoryChart');
 
-const { bringPastSessionsToPresent } = require('../utils/time');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
-const { getDeviceNameByKey } = require('../utils/device');
-const { getLastShowerIdFromMultiple } = require('../utils/sessions');
+const { bringPastSessionsToPresent, getComparisonPeriod } = require('../utils/time');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart } = require('../utils/chart');
+const { getDeviceNameByKey, getDeviceKeysByType } = require('../utils/device');
+const { getLastShowerIdFromMultiple, getComparisons, getComparisonTitle } = require('../utils/sessions');
 const { getMetricMu } = require('../utils/general');
 
 
@@ -21,10 +21,12 @@ function mapStateToProps(state) {
     activeDeviceType: state.section.history.activeDeviceType,
     timeFilter: state.section.history.timeFilter,
     data: state.section.history.data,
-    comparisonData: state.section.history.comparisonData,
+    comparisons: state.section.history.comparisons,
     width: state.viewport.width,
     forecasting: state.section.history.forecasting,
     forecastData: state.section.history.forecastData,
+    myCommons: state.section.commons.myCommons,
+    favoriteCommon: state.section.settings.commons.favorite,
   };
 }
 
@@ -36,61 +38,54 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const xCategories = stateProps.activeDeviceType === 'METER' ? 
     getChartMeterCategories(stateProps.time) : 
       getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
+    
+  const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
+    getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
+     : xCategories;
+   
+  const favoriteCommonName = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon).name : '';
 
   const chartData = stateProps.data.map((devData) => {  
     if (stateProps.activeDeviceType === 'METER') {
-      const xData = getChartMeterData(devData.sessions,
-                          xCategories, 
-                          stateProps.time
-                         ).map(x => x && x[stateProps.filter] && x[stateProps.filter] ? 
-                           Math.round(100 * x[stateProps.filter]) / 100
-                           : null);
       return {
         name: 'SWM',
-        data: xData,
+        data: getChartMeterData(devData.sessions,
+                          xCategories, 
+                          stateProps.time,
+                          stateProps.filter,
+                         ),
         metadata: {
-          device: devData.deviceKey,
-          ids: xData.map(val => val ? [val.id, val.timestamp] : [null, null])
+          ids: mapMeterDataToChart(devData.sessions, xCategories, stateProps.time).map(val => val ? [val.id, val.timestamp] : [null, null]),
         },
       };
     } else if (stateProps.activeDeviceType === 'AMPHIRO') {
-      const sessions = devData.sessions 
-      .map(session => ({
-        ...session,
-        duration: Math.round(100 * (session.duration / 60)) / 100,
-        energy: Math.round(session.energy / 10) / 100,
-      }));
-      const xData = getChartAmphiroData(sessions, xCategories);
       return {
         name: getDeviceNameByKey(stateProps.devices, devData.deviceKey) || '', 
-        data: xData.map(x => x ? x[stateProps.filter] : null),
+        data: getChartAmphiroData(devData.sessions, xCategories, stateProps.filter),
         metadata: {
           device: devData.deviceKey,
-          ids: xData.map(val => val ? [val.id, val.timestamp] : [null, null])
+          ids: devData.sessions.map(val => val ? [val.id, val.timestamp] : [null, null])
         },
       };
     }
     return [];
   });
 
-  const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
-    getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
-     : xCategories;
-
-  const comparison = stateProps.comparisonData.map((devData) => {
-    const xData = stateProps.activeDeviceType === 'METER' ? 
-        getChartMeterData(bringPastSessionsToPresent(devData.sessions, stateProps.timeFilter),
-                          xCategories, 
-                          stateProps.time
-                         ).map(x => x && x[stateProps.filter] && x[stateProps.filter] ? 
-                           Math.round(100 * x[stateProps.filter]) / 100
-                           : null)
-       : 
-         [];
+  const comparisons = stateProps.comparisons.map((comparison) => {
+    const sessions = comparison.id === 'last' ? 
+      bringPastSessionsToPresent(comparison.sessions, stateProps.timeFilter) 
+      : 
+      comparison.sessions;
     return ({
-      name: 'SWM' +
-         ` (previous ${stateProps.timeFilter})`,
-      data: xData,
+      name: getComparisonTitle(comparison.id, 
+                               stateProps.time, 
+                               favoriteCommonName, 
+                               ownProps.intl),
+      data: getChartMeterData(sessions, 
+                              xCategories, 
+                              stateProps.time, 
+                              stateProps.filter),
+      fill: 0.1,
     });
   });
   
@@ -99,10 +94,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       name: 'Forecast',
       data: getChartMeterData(stateProps.forecastData.sessions,
                         xCategories, 
-                        stateProps.time
-                       ).map(x => x && x[stateProps.filter] && x[stateProps.filter] ? 
-                         Math.round(100 * x[stateProps.filter]) / 100
-                         : null),
+                        stateProps.time,
+                        stateProps.filter
+                       ),
       lineType: 'dashed',
       color: '#2d3480',
       fill: 0.1,
@@ -119,7 +113,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     chartData: [
       ...chartData,
       ...forecast,
-      ...comparison,
+      ...comparisons,
     ],
     //chart width = viewport width - main menu - sidebar left - sidebar right - padding
     width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),

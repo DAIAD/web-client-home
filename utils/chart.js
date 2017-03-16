@@ -68,7 +68,7 @@ const getChartAmphiroCategories = function (period, last) {
 // TODO: have to make sure data is ALWAYS fetched in order of ascending ids 
 // for amphiro, ascending timestamps for meters
 
-const getChartAmphiroData = function (sessions, categories) {
+const getChartAmphiroData = function (sessions, categories, filter) {
   if (!Array.isArray(sessions) || !Array.isArray(categories)) {
     throw new Error('Cant\'t create chart. Check provided data and category', sessions, categories);
   }
@@ -78,10 +78,19 @@ const getChartAmphiroData = function (sessions, categories) {
     ...Array.from({ length: categories.length - sessions.length }), 
     ...sessions
   ];
-  return categories.map((v, i) => sessionsNormalized[i]);
+  return categories.map((v, i) => sessionsNormalized[i])
+  .map(x => x ? x[filter] : null)
+  .map((x) => {
+    if (filter === 'duration') {
+      return Math.round(100 * (x / 60)) / 100;
+    } else if (filter === 'energy') {
+      return Math.round((100 * x) / 10) / 100;
+    } 
+    return Math.round(100 * x) / 100;
+  });
 };
 
-const getChartMeterData = function (sessions, categories, time) {
+const mapMeterDataToChart = function (sessions, categories, time) {
   const period = getLowerGranularityPeriod(convertGranularityToPeriod(time.granularity));
   return categories.map((t) => {
     const bucketSession = sessions.find((session) => {
@@ -106,7 +115,14 @@ const getChartMeterData = function (sessions, categories, time) {
   });
 };
 
+const getChartMeterData = function (sessions, categories, time, filter) {
+  return mapMeterDataToChart(sessions, categories, time)
+  .map(x => x && x[filter] && x[filter] ? 
+       Math.round(100 * x[filter]) / 100 : null);
+};
+
 module.exports = {
+  mapMeterDataToChart,
   getChartAmphiroData,
   getChartMeterData,
   getChartMeterCategories,

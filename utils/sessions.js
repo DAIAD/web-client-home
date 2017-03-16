@@ -1,6 +1,8 @@
 const { getFriendlyDuration, getEnergyClass, energyToPower } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
 const { getTimeLabelByGranularity } = require('./chart');
+const { getComparisonPeriod } = require('./time');
+
 const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 const getSessionsCount = function (devices, data) {
@@ -285,6 +287,36 @@ const memberFilterToMembers = function (filter) {
   return [];
 };
 
+const getComparisonTitle = function (comparison, time, favCommon, intl) {
+  if (comparison === 'last') {
+    return getComparisonPeriod(time.startDate, time.granularity, intl);
+  } else if (comparison === 'all') {
+    return 'Everyone';
+  } else if (comparison === 'common') {
+    return favCommon;
+  }
+  return '';
+};
+
+const getComparisons = function (devType, time, favCommon, intl) {
+   if (devType === 'METER') {
+    return [{
+      id: 'last',
+      title: getComparisonTitle('last', time, favCommon, intl),
+    },
+    {
+      id: 'all',
+      title: getComparisonTitle('all', time, favCommon, intl),
+    },
+    {
+      id: 'common',
+      title: getComparisonTitle('common', time, favCommon, intl)
+    },
+    ].filter(c => favCommon == null ? c.id !== 'common' : true);
+  }
+  return [];
+};
+
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
@@ -303,4 +335,6 @@ module.exports = {
   volumeToPictures,
   energyToPictures,
   memberFilterToMembers,
+  getComparisons,
+  getComparisonTitle,
 };

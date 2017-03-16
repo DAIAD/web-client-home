@@ -259,34 +259,40 @@ const History = React.createClass({
 
             <br />
             { 
-              comparisons && comparisons.length > 0 ?
-                <h5 style={{ marginLeft: 20 }}>Compare with</h5>
+              this.props.compareAgainst && this.props.compareAgainst.length > 0 ?
+                <h5 style={{ marginLeft: 20 }}>Compare against</h5>
                 :
                 <span />
             }
             {
-              <bs.Tabs 
-                position="left" 
-                tabWidth={20} 
-                activeKey={this.props.comparison} 
-                onSelect={this.handleComparisonSelect}
-              >
-                {
-                  comparisons.map(comparison => 
-                    <bs.Tab 
-                      key={comparison.id} 
-                      eventKey={comparison.id} 
-                      title={comparison.title} 
-                    />
-                    )
-                }
-              </bs.Tabs>
+              <div className="clearfix">
+                <ul className="col-xs-20 nav nav-pills nav-stacked">
+                  {
+                    this.props.compareAgainst.map((comparison, i) => (
+                      <li 
+                        key={comparison.id} 
+                        role="presentation" 
+                        className={this.props.comparisons.find(c => c.id === comparison.id) ? 'active' : ''}
+                      >
+                      <a onClick={() => this.handleComparisonSelect(comparison.id)}>{comparison.title}
+                      {
+                        this.props.comparisons.find(c => c.id === comparison.id) ?
+                          <i style={{ float: 'right', marginRight: -5, marginTop: 5 }} className="fa fa-times" />
+                          :
+                          <i />
+                          }
+                        </a>
+                    </li>
+                    ))
+                  }
+                </ul>
+              </div>
             }
             {
-              this.props.comparison ?
+              this.props.comparisons.length > 0 ?
                 <a 
-                  style={{ marginLeft: 20, marginTop: 20 }} 
-                  onClick={() => this.handleComparisonSelect(null)}
+                  style={{ float: 'right', marginTop: 10, marginRight: 20 }} 
+                  onClick={() => this.props.setQueryAndFetch({ clearComparisons: true })}
                 >
                   Clear
                 </a>

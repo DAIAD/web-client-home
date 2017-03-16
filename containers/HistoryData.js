@@ -7,7 +7,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const History = require('../components/sections/History');
 
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
+const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu, formatMessage } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
@@ -20,6 +20,8 @@ function mapStateToProps(state) {
   return {
     firstname: state.user.profile.firstname,
     devices: state.user.profile.devices,
+    myCommons: state.section.commons.myCommons,
+    favoriteCommon: state.section.settings.commons.favorite,
     members: state.user.profile.household.members,
     ...state.section.history,
   };
@@ -82,16 +84,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   
   const sortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
 
-  const comparisons = stateProps.timeFilter !== 'custom' && devType !== 'AMPHIRO' ?
-  [{
-    id: 'last', 
-    title: timeUtil.getComparisonPeriod(stateProps.time.startDate, 
-                                        stateProps.time.granularity, 
-                                        ownProps.intl
-                                       ),
-  }]
-  : 
-    [];
+  const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
+
+  const compareAgainst = getComparisons(devType, stateProps.time, favoriteCommon.name, ownProps.intl);
 
   const memberFilters = devType === 'AMPHIRO' ?
     [{
@@ -123,7 +118,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     amphiros,
     periods,
     metrics,
-    comparisons,
+    compareAgainst,
     memberFilters,
     sortOptions,
     sessions,

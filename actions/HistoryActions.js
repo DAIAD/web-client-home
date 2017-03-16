@@ -23,13 +23,6 @@ const setSessions = function (sessions) {
   };
 };
 
-const setComparisonSessions = function (sessions) {
-  return {
-    type: types.HISTORY_SET_COMPARISON_SESSIONS,
-    sessions,
-  };
-};
-
 const setSession = function (session) {
   return {
     type: types.HISTORY_SET_SESSION,
@@ -74,6 +67,105 @@ const setMemberFilter = function (filter) {
   return {
     type: types.HISTORY_SET_MEMBER_FILTER,
     filter,
+  };
+};
+
+
+/**
+ * Sets comparison filter. Currently active only for deviceType METER
+ *
+ * @param {String} comparison - Comparison filter. One of: 
+ * last (compare with user data from last period) 
+ * @param {Bool} query=true - If true performs query based on active filters to update data
+ */
+const setComparisons = function (comparisons) {
+  return {
+    type: types.HISTORY_SET_COMPARISONS,
+    comparisons,
+  };
+};
+
+const resetComparisons = function () {
+  return {
+    type: types.HISTORY_CLEAR_COMPARISONS,
+  };
+};
+
+const addComparison = function (id) {
+  return {
+    type: types.HISTORY_ADD_COMPARISON,
+    id,
+  };
+};
+const removeComparison = function (id) {
+  return {
+    type: types.HISTORY_REMOVE_COMPARISON,
+    id,
+  };
+};
+
+const setComparisonSessions = function (id, sessions) {
+  return {
+    type: types.HISTORY_SET_COMPARISON_SESSIONS,
+    id,
+    sessions,
+  };
+};
+
+const fetchComparison = function (id, query) {
+  return function (dispatch, getState) {
+    if (!Array.isArray(query.population) || query.population.length !== 1) {
+      console.error('must provide only one population item for comparison');
+      return Promise.reject();
+    }
+    return dispatch(QueryActions.queryDataAverageCache(query))
+    .then(populations => Array.isArray(populations) && populations.length > 0 ? 
+          populations[0] : [])
+    .then(common => dispatch(setComparisonSessions(id, common)));
+  };
+};
+
+const fetchComparisonData = function () {
+  return function (dispatch, getState) {
+    const { comparisons, activeDeviceType, timeFilter, time } = getState().section.history;
+    const userKey = getState().user.profile.key;
+    const utilityKey = getState().user.profile.utility.key;
+    const commonKey = getState().section.settings.commons.favorite;
+
+    comparisons.forEach((comparison) => {
+      if (comparison.id === 'last') {
+        const prevTime = getPreviousPeriod(timeFilter, time.startDate);
+        dispatch(fetchComparison('last', {
+          time: prevTime, 
+          source: activeDeviceType,
+          population: [{ 
+            type: 'USER',
+            label: getCacheKey('METER', userKey, prevTime),
+            users: [userKey],
+          }],
+        }));
+      } else if (comparison.id === 'all') {
+        dispatch(fetchComparison('all', {
+          time,
+          source: activeDeviceType,
+          population: [{ 
+            type: 'UTILITY',
+            label: getCacheKey('METER', utilityKey, time),
+            utility: utilityKey,
+          }],
+        }));
+      } else if (comparison.id === 'common') {
+        dispatch(fetchComparison('common', {
+          time,
+          source: activeDeviceType,
+          population: [{ 
+            type: 'GROUP',
+            label: getCacheKey('METER', commonKey, time),
+            group: commonKey,
+          }],
+        }));
+      }
+    });
   };
 };
 
@@ -141,22 +233,8 @@ const fetchData = function () {
         });
       }
     }
-      // comparisons
-      if (getState().section.history.comparison === 'last') {
-        dispatch(QueryActions.queryMeterHistoryCache({
-          deviceKey: getState().section.history.activeDevice, 
-          time: getPreviousPeriod(getState().section.history.timeFilter, 
-                                  getState().section.history.time.startDate
-                                 ), 
-        }))
-        .then(sessions => dispatch(setComparisonSessions(sessions)))
-      .catch((error) => { 
-        dispatch(setComparisonSessions([]));
-        console.error('Caught error in history comparison query:', error); 
-      });
-      } else {
-        dispatch(setComparisonSessions([]));
-      }
+    // comparisons
+    dispatch(fetchComparisonData());  
   };
 };
 
@@ -315,6 +393,7 @@ const switchActiveDeviceType = function (deviceType) {
       dispatch(setTimeFilter('ten'));
       dispatch(setSortFilter('id'));
       dispatch(setShowerIndex(0));
+      dispatch(resetComparisons());
     } else if (deviceType === 'METER') {
       dispatch(setMetricFilter('volume'));
       dispatch(setTimeFilter('year'));
@@ -394,32 +473,6 @@ const updateTime = function (time) {
   };
 };
 
-/**
- * Sets comparison filter. Currently active only for deviceType METER
- *
- * @param {String} comparison - Comparison filter. One of: 
- * last (compare with user data from last period) 
- * @param {Bool} query=true - If true performs query based on active filters to update data
- */
-const setComparisons = function (comparison) {
-  return {
-    type: types.HISTORY_SET_COMPARISON,
-    comparison,
-  };
-    //if (comparison == null) dispatch(setComparisonSessions([]));
-};
-
-const addComparison = function (comparison) {
-  return function (dispatch, getState) {
-    dispatch(setComparisons([...getState().section.history.comparisons, comparison]));
-  };
-};
-const removeComparison = function (comparison) {
-  return function (dispatch, getState) {
-    dispatch(setComparisons(getState().section.history.comparisons.filter(c => c.id !== comparison.id)));
-  };
-};
-
 const increaseShowerIndex = function () {
   return function (dispatch, getState) {
     const index = getState().section.history.showerIndex;
@@ -464,7 +517,7 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, data, forecastData, memberFilter } = query;
+    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, clearComparisons, data, forecastData, memberFilter } = query;
 
     dispatch(setDataUnsynced());
 
@@ -480,8 +533,15 @@ const setQuery = function (query) {
     if (forecasting === true) dispatch(enableForecasting());
     else if (forecasting === false) dispatch(disableForecasting());
 
-    if (comparison) dispatch(setComparisons(comparison));
-    //else if (comparison === null) dispatch(setComparison(null));
+    if (getState().section.history.comparisons.find(c => c.id === comparison)) {
+      dispatch(removeComparison(comparison));
+    } else if (comparison) {
+      dispatch(addComparison(comparison));
+    }
+
+    if (clearComparisons) {
+      dispatch(resetComparisons());
+    }
 
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
 
@@ -520,8 +580,9 @@ module.exports = {
   setTime,
   updateTime,
   setComparisons,
-  addComparison,
-  removeComparison,
+  resetComparisons,
+  //addComparison,
+  //removeComparison,
   setActiveDevice,
   switchActiveDeviceType,
   setActiveSession,

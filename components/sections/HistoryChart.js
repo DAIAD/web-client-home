@@ -17,6 +17,7 @@ function HistoryChart(props) {
       }}
       yAxis={{
         formatter: y => `${y} ${mu}`,
+        min: 0,
       }}
       onPointClick={onPointClick}
       series={chartData.map((s, i) => ({

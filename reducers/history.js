@@ -13,9 +13,8 @@ const initialState = {
   activeSessionFilter: 'volume',
   activeSession: null,
   synced: false,
-  comparison: null,
+  comparisons: [],
   data: [],
-  comparisonData: [],
   time: thisYear(),
   showerIndex: 0,
   forecasting: false,
@@ -32,10 +31,30 @@ const history = function (state = initialState, action) {
       return Object.assign({}, state, {
         data: action.sessions
       });
-    
+
+    case types.HISTORY_SET_COMPARISONS:
+      return Object.assign({}, state, {
+        comparisons: action.comparisons
+      });
+
+    case types.HISTORY_CLEAR_COMPARISONS:
+      return Object.assign({}, state, {
+        comparisons: [], 
+      });
+
+    case types.HISTORY_ADD_COMPARISON: 
+      return Object.assign({}, state, {
+        comparisons: [...state.comparisons, { id: action.id, sessions: [] }],
+      });
+
+    case types.HISTORY_REMOVE_COMPARISON:
+      return Object.assign({}, state, {
+        comparisons: state.comparisons.filter(comparison => comparison.id !== action.id),
+      });
+  
     case types.HISTORY_SET_COMPARISON_SESSIONS:
       return Object.assign({}, state, {
-        comparisonData: action.sessions
+        comparisons: state.comparisons.map(comparison => comparison.id === action.id ? { ...comparison, sessions: action.sessions } : comparison),
       });
 
     case types.HISTORY_SET_SESSION: {
@@ -95,12 +114,7 @@ const history = function (state = initialState, action) {
       return Object.assign({}, state, {
         activeSession: null
       });
-
-    case types.HISTORY_SET_COMPARISON:
-      return Object.assign({}, state, {
-        comparison: action.comparison
-      });
-    
+   
     case types.HISTORY_SET_SORT_FILTER:
       return Object.assign({}, state, {
         sortFilter: action.filter
