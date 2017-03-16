@@ -86,7 +86,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
 
-  const availableComparisons = getComparisons(devType, stateProps.time, favoriteCommon.name, ownProps.intl);
+  const availableComparisons = getComparisons(devType, stateProps.time.startDate, stateProps.timeFilter, favoriteCommon.name, ownProps.intl);
 
   const memberFilters = devType === 'AMPHIRO' ?
     [{
@@ -143,11 +143,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...dispatchProps,
     ...ownProps,
     nextPeriod: stateProps.time ? timeUtil.getNextPeriod(stateProps.timeFilter, 
-                                                         stateProps.time.granularity,
                                                          stateProps.time.startDate
                                                         ) : {}, 
     previousPeriod: stateProps.time ? timeUtil.getPreviousPeriod(stateProps.timeFilter, 
-                                                                 stateProps.time.granularity,
                                                                  stateProps.time.endDate
                                                                 ) : {},
     amphiros,

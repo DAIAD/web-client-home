@@ -287,9 +287,9 @@ const memberFilterToMembers = function (filter) {
   return [];
 };
 
-const getComparisonTitle = function (comparison, time, favCommon, intl) {
+const getComparisonTitle = function (comparison, start, period, favCommon, intl) {
   if (comparison === 'last') {
-    return getComparisonPeriod(time.startDate, time.granularity, intl);
+    return getComparisonPeriod(start, period, intl);
   } else if (comparison === 'all') {
     return 'Everyone';
   } else if (comparison === 'common') {
@@ -298,19 +298,19 @@ const getComparisonTitle = function (comparison, time, favCommon, intl) {
   return '';
 };
 
-const getComparisons = function (devType, time, favCommon, intl) {
+const getComparisons = function (devType, start, period, favCommon, intl) {
    if (devType === 'METER') {
     return [{
       id: 'last',
-      title: getComparisonTitle('last', time, favCommon, intl),
+      title: getComparisonTitle('last', start, period, favCommon, intl),
     },
     {
       id: 'all',
-      title: getComparisonTitle('all', time, favCommon, intl),
+      title: getComparisonTitle('all', start, period, favCommon, intl),
     },
     {
       id: 'common',
-      title: getComparisonTitle('common', time, favCommon, intl)
+      title: getComparisonTitle('common', start, period, favCommon, intl)
     },
     ].filter(c => favCommon == null ? c.id !== 'common' : true);
   }

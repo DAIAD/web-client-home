@@ -6,7 +6,7 @@ const HistoryActions = require('../actions/HistoryActions');
 
 const HistoryChart = require('../components/sections/HistoryChart');
 
-const { bringPastSessionsToPresent, getComparisonPeriod } = require('../utils/time');
+const { bringPastSessionsToPresent } = require('../utils/time');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart } = require('../utils/chart');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('../utils/device');
 const { getLastShowerIdFromMultiple, getComparisons, getComparisonTitle } = require('../utils/sessions');
@@ -81,7 +81,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       comparison.sessions;
     return ({
       name: getComparisonTitle(comparison.id, 
-                               stateProps.time, 
+                               stateProps.time.startDate,
+                               stateProps.timeFilter, 
                                favoriteCommonName, 
                                ownProps.intl),
       data: getChartMeterData(sessions, 

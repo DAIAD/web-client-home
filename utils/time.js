@@ -82,7 +82,7 @@ const getPeriod = function (period, timestamp = moment().valueOf()) {
 };
 
 // get Start or End of iso week instead of week to start from monday
-const getNextPeriod = function (period, granularity, timestamp = moment().valueOf()) {
+const getNextPeriod = function (period, timestamp = moment().valueOf()) {
   const sPeriod = period === 'week' ? 'isoweek' : period;
   return {
     startDate: moment(timestamp)
@@ -91,11 +91,12 @@ const getNextPeriod = function (period, granularity, timestamp = moment().valueO
     endDate: moment(timestamp)
     .endOf(sPeriod)
     .add(1, period).valueOf(),
-    granularity: granularity || convertPeriodToGranularity(period),
+    //granularity: granularity || convertPeriodToGranularity(period),
+    granularity: convertPeriodToGranularity(period),
   };
 };
 
-const getPreviousPeriod = function (period, granularity, timestamp = moment().valueOf()) {
+const getPreviousPeriod = function (period, timestamp = moment().valueOf()) {
   const sPeriod = period === 'week' ? 'isoweek' : period;
   return {
     startDate: moment(timestamp)
@@ -104,7 +105,8 @@ const getPreviousPeriod = function (period, granularity, timestamp = moment().va
     endDate: moment(timestamp)
     .subtract(1, period)
     .endOf(sPeriod).valueOf(),
-    granularity: granularity || convertPeriodToGranularity(period),
+    //granularity: granularity || convertPeriodToGranularity(period),
+    granularity: convertPeriodToGranularity(period),
   };
 };
 
@@ -150,16 +152,18 @@ const getLastPeriod = function (period, timestamp) {
   return moment(timestamp).subtract(period, 1).valueOf();
 };
 
-const getComparisonPeriod = function (timestamp, granularity, intl) {
-  const last = getLastPeriod(convertGranularityToPeriod(granularity), timestamp);
-  if (granularity === 4) {
+const getComparisonPeriod = function (timestamp, period, intl) {
+  const last = getLastPeriod(period, timestamp);
+  if (period === 'year') {
     return moment(last).get('year').toString();
-  } else if (granularity === 3) {
+  } else if (period === 'month') {
     return intl.formatMessage({ id: `months.${moment(last).get('month')}` }); 
-  } else if (granularity === 2) {
+  } else if (period === 'week') {
     return `${intl.formatMessage({ id: 'periods.week' })} ${moment(last).get('isoweek')}`;
+  } else if (period === 'day') {
+    return intl.formatMessage({ id: `weekdays.${moment(last).get('day')}` });
   }
-  return intl.formatMessage({ id: `weekdays.${moment(last).get('day')}` });
+  return null;
 };
 
 const getLastShowerTime = function () {
