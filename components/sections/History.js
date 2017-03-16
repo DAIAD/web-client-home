@@ -73,11 +73,11 @@ function SessionsList(props) {
               {
                 sortOrder === 'asc' ? 
                   <a onClick={() => setSortOrder('desc')}>
-                    <i className="fa fa-arrow-down" />
+                    <i className="fa fa-arrow-up" />
                   </a>
                  :
                  <a onClick={() => setSortOrder('asc')}>
-                   <i className="fa fa-arrow-up" />
+                   <i className="fa fa-arrow-down" />
                  </a>
               }
             </div>
@@ -128,17 +128,13 @@ const History = React.createClass({
   handleDeviceTypeSelect: function (val) {
     this.props.setQueryAndFetch({ deviceType: val });
   },
+  handleModeSelect: function (val) {
+    console.log('select', val);
+    this.props.setQueryAndFetch({ mode: val });
+  },
   handleActiveDevicesChanged: function (vals) {
     const switchDevType = this.props.activeDeviceType === 'METER' ? { deviceType: 'AMPHIRO' } : {};
     this.props.setQueryAndFetch({ device: vals, ...switchDevType });
-  },
-  handleForecastingChanged: function (vals) {
-    const forecasting = (vals.length > 0 && vals[0] === 'forecasting');
-    this.props.setQueryAndFetch({ forecasting });
-  },
-  handlePricingChanged: function (vals) {
-    const pricing = (vals.length > 0 && vals[0] === 'pricing');
-    this.props.setQueryAndFetch({ pricing });
   },
   handleComparisonSelect: function (val) {
     this.props.setQueryAndFetch({ comparison: val });
@@ -185,6 +181,24 @@ const History = React.createClass({
                     key={metric.id} 
                     eventKey={metric.id} 
                     title={metric.title} 
+                  /> 
+                ))
+              }
+            </bs.Tabs>
+            <br />
+            <br />
+            <bs.Tabs 
+              position="left" 
+              tabWidth={20} 
+              activeKey={this.props.mode} 
+              onSelect={this.handleModeSelect}
+            >
+              {
+                this.props.modes.map(mode => (
+                  <bs.Tab 
+                    key={mode.id} 
+                    eventKey={mode.id} 
+                    title={mode.title} 
                   /> 
                 ))
               }
@@ -237,53 +251,7 @@ const History = React.createClass({
               }
             </CheckboxGroup>
             <br />
-            { activeDeviceType === 'METER' ?
-              <div>
-                <CheckboxGroup 
-                  name="forecasting" 
-                  value={forecasting ? ['forecasting'] : []}
-                  onChange={this.handleForecastingChanged}
-                >
-                  {
-                    Checkbox => (
-                      <div className="shower-devices">
-                        <label key="forecasting" htmlFor="forecasting">
-                          <Checkbox 
-                            id="forecasting"
-                            value="forecasting"
-                          />
-                          <label htmlFor="forecasting" />
-                          Forecasting
-                        </label>
-                      </div>
-                      )
-                  }
-                </CheckboxGroup>
-                <CheckboxGroup 
-                  name="pricing" 
-                  value={pricing ? ['pricing'] : []}
-                  onChange={this.handlePricingChanged}
-                >
-                  {
-                    Checkbox => (
-                      <div className="shower-devices">
-                        <label key="pricing" htmlFor="pricing">
-                          <Checkbox 
-                            id="pricing"
-                            value="pricing"
-                          />
-                          <label htmlFor="pricing" />
-                          Pricing
-                        </label>
-                      </div>
-                      )
-                  }
-                </CheckboxGroup>
-              </div>
-              : <div />
-            }
 
-            <br />
             { 
               this.props.compareAgainst && this.props.compareAgainst.length > 0 ?
                 <h5 style={{ marginLeft: 20 }}>Compare against</h5>
@@ -397,15 +365,6 @@ const History = React.createClass({
               
             </div>        
             <br />
-            { this.props.extraInfo ? 
-              <span>
-                <img src={`${IMAGES}/warning.svg`} alt="info" />
-                &nbsp;
-                <span style={{ fontSize: '1.2em' }}>{this.props.extraInfo}</span>
-              </span>
-              :
-               <div />
-            }
 
             <SessionsList 
               handleSortSelect={this.handleSortSelect}

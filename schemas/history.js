@@ -1,11 +1,12 @@
 const React = require('react');
+const { FormattedDate } = require('react-intl');
 const { IMAGES } = require('../constants/HomeConstants');
 
 const meter = [
   {
     id: 'volume',
     name: 'Volume',
-    value: (value, field, row) => 
+    value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
         {value}
         <span style={{ fontSize: '0.6em' }}> lt</span>
@@ -14,7 +15,7 @@ const meter = [
   {
     id: 'comparison',
     name: '',
-    value: (value, field, row) => {
+    value: (value, row) => {
       const { min, max } = row;
       if (row.percentDiff == null) {
         return (
@@ -44,7 +45,7 @@ const meter = [
     },
   },
   {
-    id: 'user',
+    id: 'member',
     name: 'User',
     icon: 'user',
   },
@@ -66,7 +67,7 @@ const amphiro = [
   {
     id: 'volume',
     name: 'Volume',
-    value: (value, field, row) => 
+    value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
         {value}
         <span style={{ fontSize: '0.6em' }}> lt</span>
@@ -75,7 +76,7 @@ const amphiro = [
   {
     id: 'comparison',
     name: '',
-    value: (value, field, row) => {
+    value: (value, row) => {
       if (row.percentDiff == null) {
         return <i className="dash" />;
       } else if (row.percentDiff < 0) {
@@ -85,14 +86,15 @@ const amphiro = [
     },
   },
   {
-    id: 'user',
+    id: 'member',
     name: 'User',
     icon: 'user',
   },
   {
-    id: 'date',
+    id: 'timestamp',
     name: 'Date',
     icon: 'calendar',
+    value: value => <FormattedDate value={value} />,
   },
   {
     id: 'devName',
@@ -112,12 +114,12 @@ const amphiro = [
     id: 'temperature',
     name: 'Temp',
     icon: 'temperature',
-    value: (value, field, row) => `${value} ºC`
+    value: (value, row) => `${value} ºC`
   },
   {
     id: 'realtime',
     name: 'Real',
-    value: (value, field, row) => row.history ? 
+    value: (value, row) => row.history ? 
       <i />
       :
       <i className="fa fa-check" />,
@@ -125,7 +127,7 @@ const amphiro = [
   {
     id: 'id',
     name: 'Id',
-    //value: (value, field, row) => `${value}`,
+    //value: (value, row) => `${value}`,
   },
   {
     id: 'showMore',

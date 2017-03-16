@@ -39,7 +39,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const xCategories = stateProps.activeDeviceType === 'METER' ? 
     getChartMeterCategories(stateProps.time) : 
       getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
-    
+
   const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
     getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
      : xCategories;
@@ -105,7 +105,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     }]
     : [];
 
-  const priceBrackets = stateProps.timeFilter === 'year' && stateProps.pricing ? [
+  const priceBrackets = stateProps.timeFilter === 'month' && stateProps.pricing ? [
     {
       name: 'Up to 9m^3\n 0.02E/m^3',
       data: xCategories.map(() => 9000),
