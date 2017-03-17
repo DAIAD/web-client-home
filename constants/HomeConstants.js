@@ -421,6 +421,15 @@ module.exports = {
       period: 'month',
     },
     {
+      id: 'pricing', 
+      title: 'Pricing', 
+      description: 'A chart widget showing your monthly consumption within the price ranges', 
+      type: 'pricing', 
+      metric: 'volume', 
+      display: 'chart',
+      period: 'month',
+    },
+    {
       id: 'comparison', 
       title: 'Comparison', 
       description: 'A widget showing your consumption in comparison to others, like your neighbors or your city average for the last month. You can later change this to see comparison data for the current day, week, or year.', 

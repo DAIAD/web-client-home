@@ -10,7 +10,7 @@ const { bringPastSessionsToPresent } = require('../utils/time');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart } = require('../utils/chart');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('../utils/device');
 const { getLastShowerIdFromMultiple, getComparisons, getComparisonTitle } = require('../utils/sessions');
-const { getMetricMu } = require('../utils/general');
+const { getMetricMu, getPriceBrackets } = require('../utils/general');
 
 
 function mapStateToProps(state) {
@@ -110,35 +110,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     }]
     : [];
 
-  const priceBrackets = stateProps.timeFilter === 'month' && stateProps.pricing ? [
-    {
-      name: 'Up to 9m^3\n 0.02E/m^3',
-      data: xCategories.map(() => 9000),
-      label: false,
-      lineType: 'dashed',
-      symbol: 'none',
-      color: 'green',
-      fill: 0,
-    },
-    {
-      name: 'Up to 30m^3\n 0.55E/m^3',
-      data: xCategories.map(() => 30000),
-      label: false,
-      lineType: 'dashed',
-      symbol: 'none',
-      color: 'orange',
-      fill: 0,
-    },
-    {
-      name: 'Up to 60m^3\n 1.85E/m^3',
-      data: xCategories.map(() => 60000),
-      label: false,
-      lineType: 'dashed',
-      symbol: 'none',
-      color: 'red',
-      fill: 0,
-    },
-  ] : [];
+    
+  const priceBrackets = stateProps.timeFilter === 'month' && stateProps.pricing ? getPriceBrackets(xCategories, ownProps.intl) : [];
 
   return {
     ...stateProps,

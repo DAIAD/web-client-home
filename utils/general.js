@@ -239,6 +239,38 @@ const validatePassword = function (password, confirmPassword) {
   return Promise.resolve();
 };
 
+const getPriceBrackets = function (xCategories, intl) {
+  return [
+    {
+      name: 'Up to 9m^3\n 0.02E/m^3',
+      data: xCategories.map(() => 9000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'green',
+      fill: 0,
+    },
+    {
+      name: 'Up to 30m^3\n 0.55E/m^3',
+      data: xCategories.map(() => 30000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'orange',
+      fill: 0,
+    },
+    {
+      name: 'Up to 60m^3\n 1.85E/m^3',
+      data: xCategories.map(() => 60000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: 'red',
+      fill: 0,
+    },
+  ];
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -256,4 +288,5 @@ module.exports = {
   throwServerError,
   formatMessage,
   validatePassword,
+  getPriceBrackets,
 };

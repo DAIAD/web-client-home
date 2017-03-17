@@ -2,7 +2,7 @@ const moment = require('moment');
 
 const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_PERIODS, METER_PERIODS } = require('../constants/HomeConstants');
 
-const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
+const { getFriendlyDuration, getEnergyClass, getMetricMu, getPriceBrackets } = require('./general');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
@@ -199,6 +199,47 @@ const meterForecast = function (widget, devices, intl) {
   };
 };
 
+const meterPricing = function (widget, devices, intl) {
+  const { data, period, deviceType, metric, previous } = widget;
+  
+  console.log('meterprice', widget);
+  if (deviceType !== 'METER') {
+    console.error('only meter pricing supported');
+  } else if (period !== 'month') {
+    console.error('only monthly pricing supported');
+  }
+  const time = widget.time ? widget.time : getTimeByPeriod(period);
+  const periods = [];
+
+  const device = getDeviceKeysByType(devices, deviceType);
+  
+  const mu = getMetricMu(metric);
+  const xCategories = getChartMeterCategories(time);
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
+
+  const priceBrackets = getPriceBrackets(xCategories, intl);
+
+  const chartData = data ? data.map(devData => ({ 
+      name: 'Consumption', 
+      data: getChartMeterData(devData.sessions, 
+                              xCategories,
+                              time,
+                              metric,
+                              true // augmental
+                             ),
+    })) : [];
+
+  return {
+    ...widget,
+    chartType: 'line',
+    time,
+    periods,
+    chartCategories: xCategoryLabels,
+    chartData: [...chartData, ...priceBrackets],
+    mu,
+    mode: 'pricing',
+  };
+};
 const meterBreakdown = function (widget, devices, intl) {
   const { data, period, deviceType, metric, previous } = widget;
   
@@ -333,6 +374,8 @@ const prepareWidget = function (widget, devices, intl) {
       return amphiroEnergyEfficiency(widget, devices, intl); 
     case 'forecast':
       return meterForecast(widget, devices, intl); 
+    case 'pricing':
+      return meterPricing(widget, devices, intl); 
     case 'breakdown':
       return meterBreakdown(widget, devices, intl);  
     case 'comparison':
