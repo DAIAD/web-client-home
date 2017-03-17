@@ -34,16 +34,16 @@ const getTimeLabelByGranularityShort = function (timestamp, granularity, period,
     return intl.formatMessage({ id: 'periods.week' }) + 
       ' ' +
       moment(timestamp).get('isoweek');
-  } else if (granularity === 2 && period === 'month') {
+  } else if (granularity === 2 && (period === 'month' || period === 'custom')) {
     return moment(timestamp).format('DD/MM');
   } else if (granularity === 2) {
     return intl.formatMessage({ 
       id: `weekdays.${moment(timestamp).get('day')}`,
     });
-  } else if (granularity === 1) { 
+  } else if (granularity === 1 || granularity === 0) { 
     return moment(timestamp).format('hh:mm');
   }
-  return null;
+  return ' ';
 };
 
 const getChartMeterCategories = function (time) {
@@ -51,8 +51,6 @@ const getChartMeterCategories = function (time) {
 };
 
 const getChartMeterCategoryLabels = function (xData, granularity, period, intl) {
-  //if (!time || time.granularity == null || !intl) return [];
-  //return xData.map(t => getTimeLabelByGranularityShort(t, time.granularity, intl));
   return xData.map(t => getTimeLabelByGranularityShort(t, granularity, period, intl));
 };
 

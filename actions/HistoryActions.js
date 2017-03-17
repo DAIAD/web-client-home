@@ -523,7 +523,7 @@ const updateTime = function (time) {
     const { 
       startDate = stateTime.startDate, 
       endDate = stateTime.endDate, 
-        granularity = getGranularityByDiff(startDate, endDate) 
+      granularity = getGranularityByDiff(startDate, endDate) 
     } = time;
 
     dispatch(setTime({ startDate, endDate, granularity }));

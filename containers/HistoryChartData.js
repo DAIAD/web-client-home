@@ -55,7 +55,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                           xCategories, 
                           stateProps.time,
                           stateProps.filter,
-                          stateProps.mode === 'pricing'
+                          stateProps.pricing
                          ),
         metadata: {
           ids: mapMeterDataToChart(devData.sessions, xCategories, stateProps.time).map(val => val ? [val.id, val.timestamp] : [null, null]),
@@ -89,7 +89,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                               xCategories, 
                               stateProps.time, 
                               stateProps.filter,
-                              stateProps.mode === 'pricing'
+                              stateProps.pricing
                              ),
       fill: 0.1,
     });

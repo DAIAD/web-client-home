@@ -91,7 +91,6 @@ const getNextPeriod = function (period, timestamp = moment().valueOf()) {
     endDate: moment(timestamp)
     .endOf(sPeriod)
     .add(1, period).valueOf(),
-    //granularity: granularity || convertPeriodToGranularity(period),
     granularity: convertPeriodToGranularity(period),
   };
 };
@@ -105,7 +104,6 @@ const getPreviousPeriod = function (period, timestamp = moment().valueOf()) {
     endDate: moment(timestamp)
     .subtract(1, period)
     .endOf(sPeriod).valueOf(),
-    //granularity: granularity || convertPeriodToGranularity(period),
     granularity: convertPeriodToGranularity(period),
   };
 };
@@ -181,10 +179,9 @@ const getGranularityByDiff = function (start, end) {
   const months = diff.months();
   const days = diff.days();
 
-  if (years > 0 || months > 6) return 4;
-  else if (months > 0) return 3;
-  else if (days > 0) return 2;
-  return 0;
+  if (years > 0 || months > 5) return 4;
+  else if (days > 1) return 2;
+  return 1;
 };
 
 const timeToBuckets = function (time) {
