@@ -36,7 +36,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const data = ownProps.sessions && stateProps.activeSession != null ?
+  const data = ownProps.sessions && Array.isArray(ownProps.sessions) && stateProps.activeSession != null ?
     ownProps.sessions.find(s => s.device === stateProps.activeSession[0] 
                                 && (s.id === stateProps.activeSession[1] 
                                 || s.timestamp === stateProps.activeSession[1]))
