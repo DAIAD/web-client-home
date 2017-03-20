@@ -436,17 +436,11 @@ const switchMode = function (mode) {
         dispatch(setTimeFilter('month'));
         dispatch(setTime(getTimeByPeriod('month')));
       }
-      if (getState().section.history.comparisons.find(c => c.id === 'last')) {
-        dispatch(removeComparison('last'));
-      }
     } else if (mode === 'forecasting') {
       dispatch(enableForecasting());
       if (getState().section.history.timeFilter !== 'month') {
         dispatch(setTimeFilter('month'));
         dispatch(setTime(getTimeByPeriod('month')));
-      }
-      if (getState().section.history.comparisons.find(c => c.id === 'last')) {
-        dispatch(removeComparison('last'));
       }
     } else if (mode === 'wateriq') {
       dispatch(resetComparisons());

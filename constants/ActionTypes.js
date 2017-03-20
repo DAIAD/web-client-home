@@ -59,6 +59,7 @@ module.exports = keyMirror({
   HISTORY_SET_PRICING: null,
   HISTORY_SET_FORECASTING: null,
   HISTORY_SET_MODE: null,
+  HISTORY_SET_WATERIQ_SESSIONS: null,
 
   DASHBOARD_SWITCH_MODE: null,
   DASHBOARD_SET_DIRTY: null,

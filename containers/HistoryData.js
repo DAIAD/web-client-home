@@ -123,13 +123,13 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     id: 'forecasting',
     title: 'Forecasting',
     periods: METER_PERIODS.filter(p => p.id !== 'custom'),
-    comparisons: availableComparisons.filter(c => c.id !== 'last'),
+    comparisons: availableComparisons,
   },
   {
     id: 'pricing',
     title: 'Pricing',
     periods: METER_PERIODS.filter(p => p.id === 'month'),
-    comparisons: availableComparisons.filter(c => c.id !== 'last'),
+    comparisons: availableComparisons,
   },
   ];
 
