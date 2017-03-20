@@ -296,6 +296,10 @@ const getComparisonTitle = function (comparison, start, period, favCommon, intl)
     return 'Everyone';
   } else if (comparison === 'common') {
     return favCommon;
+  } else if (comparison === 'nearest') {
+    return 'Neighbours';
+  } else if (comparison === 'similar') {
+    return 'Similar';
   }
   return '';
 };
@@ -314,6 +318,17 @@ const getComparisons = function (devType, start, period, favCommon, intl) {
       id: 'common',
       title: getComparisonTitle('common', start, period, favCommon, intl)
     },
+    // TODO: allow when backend computation fixed to compute average instead of sum
+    /*
+    {
+      id: 'nearest',
+      title: getComparisonTitle('nearest', start, period, favCommon, intl),
+    },
+    {
+      id: 'similar',
+      title: getComparisonTitle('similar', start, period, favCommon, intl),
+      },
+    */
     ].filter(c => favCommon == null ? c.id !== 'common' : true);
   }
   return [];
