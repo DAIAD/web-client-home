@@ -112,6 +112,13 @@ const setComparisonSessions = function (id, sessions) {
   };
 };
 
+const setWaterIQSessions = function (sessions) {
+  return {
+    type: types.HISTORY_SET_WATERIQ_SESSIONS,
+    sessions,
+  };
+};
+
 const fetchComparison = function (id, query) {
   return function (dispatch, getState) {
     if (!Array.isArray(query.population) || query.population.length !== 1) {
@@ -164,6 +171,12 @@ const fetchComparisonData = function () {
             group: commonKey,
           }],
         }));
+      } else if (comparison.id === 'nearest') {
+        dispatch(QueryActions.fetchUserComparison('nearest', time))
+        .then(nearest => dispatch(setComparisonSessions('nearest', nearest)));
+      } else if (comparison.id === 'similar') {
+        dispatch(QueryActions.fetchUserComparison('similar', time))
+        .then(nearest => dispatch(setComparisonSessions('similar', nearest)));
       }
     });
   };
@@ -191,6 +204,21 @@ const fetchForecastData = function () {
   };
 };
 
+const fetchWaterIQData = function () {
+  return function (dispatch, getState) {
+    const { time } = getState().section.history;
+    return dispatch(QueryActions.fetchWaterIQ({
+      time, 
+    }))
+    .then((waterIQData) => {
+      dispatch(setWaterIQSessions(waterIQData));
+    })
+    .catch((error) => {
+      dispatch(setWaterIQSessions([]));
+      console.error('Caught error in history water iq query:', error);
+    });
+  };
+};
 /**
  * Performs query based on selected history section filters and saves data
  */
@@ -222,24 +250,26 @@ const fetchData = function () {
       });
       // SWM
     } else if (activeDeviceType === 'METER') {
-      dispatch(QueryActions.queryMeterHistory({
-        time,
-      }))
-      .then((meterData) => {
-        dispatch(setSessions(meterData));
-        dispatch(setDataSynced());
-      })
-      .catch((error) => { 
-        console.error('Caught error in history meter query:', error); 
-        dispatch(setSessions([]));
-        dispatch(setDataSynced());
-      }); 
+        dispatch(fetchWaterIQData());
+        dispatch(QueryActions.queryMeterHistory({
+          time,
+        }))
+        .then((meterData) => {
+          dispatch(setSessions(meterData));
+          dispatch(setDataSynced());
+        })
+        .catch((error) => { 
+          console.error('Caught error in history meter query:', error); 
+          dispatch(setSessions([]));
+          dispatch(setDataSynced());
+        }); 
       
-      // forecasting
-      if (getState().section.history.forecasting) {
-        dispatch(fetchForecastData());
-      }
+        // forecasting
+        if (getState().section.history.forecasting) {
+          dispatch(fetchForecastData());
+        }
     }
+
     // comparisons
     dispatch(fetchComparisonData());  
   };
@@ -418,7 +448,11 @@ const switchMode = function (mode) {
       if (getState().section.history.comparisons.find(c => c.id === 'last')) {
         dispatch(removeComparison('last'));
       }
-    } 
+    } else if (mode === 'wateriq') {
+      dispatch(resetComparisons());
+      dispatch(setTimeFilter('year'));
+      dispatch(setTime(getTimeByPeriod('year')));
+    }
   };
 };
 const setActiveDeviceType = function (deviceType) {

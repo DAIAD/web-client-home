@@ -54,9 +54,7 @@ const initHome = function (profile) {
     if (getMeterCount(profile.devices) === 0) {
       dispatch(HistoryActions.switchActiveDeviceType('AMPHIRO'));
       dispatch(DashboardActions.setDeviceType('AMPHIRO'));
-    } else {
-      dispatch(HistoryActions.switchActiveDeviceType('METER'));
-    }
+    } 
 
     const profileForm = filterObj(profile, [
       'firstname', 
