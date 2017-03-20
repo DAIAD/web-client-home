@@ -4,9 +4,15 @@ const lineTheme = require('../chart/themes/default');
 const horizontalBarTheme = require('../chart/themes/horizontal-bar');
 const verticalBarTheme = require('../chart/themes/vertical-bar');
 
+function defaultFormatter(mu) {
+  return function (y) {
+    return `${y} ${mu}`;
+  };
+}
 
 function LineChartWidget(props) {
   const { chartData, chartCategories, chartFormatter, mu, width, height } = props;
+  const formatter = props.formatter || defaultFormatter(mu);
   return (
     <LineChart
       height={height || 240}
@@ -19,7 +25,8 @@ function LineChartWidget(props) {
         boundaryGap: true,
       }}
       yAxis={{
-        formatter: y => `${y} ${mu}`,
+        min: 0,
+        formatter,
       }}
       series={chartData.map(s => ({
         fill: 0.55,
@@ -31,6 +38,7 @@ function LineChartWidget(props) {
 
 function BarChartWidget(props) {
   const { chartData, chartCategories, chartFormatter, chartColors = [], mu, width, height } = props;
+  const formatter = props.formatter || defaultFormatter(mu);
   return (
     <BarChart
       height={height || 240}
@@ -41,7 +49,8 @@ function BarChartWidget(props) {
         boundaryGap: true,
       }}
       yAxis={{
-        formatter: y => `${y} ${mu}`,
+        min: 0,
+        formatter,
       }}
       series={chartData.map((s, idx) => ({ 
         ...s, 
@@ -57,6 +66,7 @@ function BarChartWidget(props) {
 
 function HorizontalBarChartWidget(props) {
   const { chartData, chartCategories, chartFormatter, chartColors = [], mu, width, height } = props;
+  const formatter = props.formatter || defaultFormatter(mu);
   return (
     <BarChart
       height={height || 240}
@@ -68,7 +78,8 @@ function HorizontalBarChartWidget(props) {
         boundaryGap: true,
       }}
       yAxis={{
-        formatter: y => `${y} ${mu}`,
+        min: 0,
+        formatter,
       }}
       series={chartData.map(s => ({ 
         ...s, 

@@ -17,7 +17,7 @@ const dataAPI = require('../api/data');
 const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, memberFilterToMembers } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
 const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex } = require('../utils/general');
-const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod } = require('../utils/time');
+const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod, lastSixMonths } = require('../utils/time');
 const moment = require('moment');
 
 const requestedQuery = function () {
@@ -597,7 +597,11 @@ const queryUserComparisonsByTime = function (time) {
   return function (dispatch, getState) {
     const { startDate, endDate, granularity } = time;
     
-    const months = moment(endDate).diff(moment(startDate), 'months', true);
+    const endMonth = moment(endDate).month();
+    const months = moment(endDate)
+    .add(endMonth <= 6 ? 6 - endMonth : 12 - endMonth, 'month')
+    .diff(moment(startDate), 'months', true);
+
     const iters = Math.ceil(months / 6);
 
     return Promise.all(Array.from({ length: iters }, (x, i) => {
@@ -725,7 +729,7 @@ const fetchWidgetData = function (options) {
     const time = options.time ? options.time : getTimeByPeriod(period);
 
     if (deviceType === 'METER') {      
-      const prevTime = getPreviousPeriodSoFar(period);
+      const prevTime = getPreviousPeriodSoFar(period, time.startDate);
       return dispatch(queryMeter({ cache, deviceKey, time }))
       .then(data => ({ data }))
       .then((res) => {
@@ -738,22 +742,23 @@ const fetchWidgetData = function (options) {
           });
         } else if (type === 'forecast') {
           return dispatch(queryMeterForecast({ time }))
-          .then(forecastData => ({ ...res, forecastData }))
-          .catch((error) => { 
-            console.error('Caught error in widget forecast data fetch:', error); 
-          });
+          .then(forecastData => ({ ...res, forecastData }));
         } else if (type === 'comparison') {
           return Promise.all(['user', 'all', 'nearest', 'similar']
                              .map(id => dispatch(fetchUserComparison(id, time))
                                   .then(sessions => ({ id, sessions }))))
           .then(comparisons => ({ ...res, comparisons }));
+        } else if (type === 'wateriq') {
+          console.log('last six months time', lastSixMonths());
+          return dispatch(fetchWaterIQ({ time: lastSixMonths() }))
+          .then((c) => { console.log('last six months data', c); return c; })
+          .then(waterIQData => ({ ...res, waterIQData }));
+          //.then(waterIQData => dispatch(fetchWaterIQ({ time: prevTime }))
+          //            .then(previousWaterIQData => ({ ...res, waterIQData, previousWaterIQData }))); 
         }
         return Promise.resolve(res);
       });
     } else if (deviceType === 'AMPHIRO') {
-      //const amphiroCache = getState().query.cache[getCacheKey('AMPHIRO')];
-      //const allShowers = amphiroCache ? amphiroCache.data : [];
-
       if (type === 'last') {
         return dispatch(fetchLastDeviceSession({ cache, deviceKey }));
       }

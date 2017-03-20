@@ -124,39 +124,36 @@ const WidgetItem = React.createClass({
 });
 
 function StatWidget(props) {
-  const { deviceType, highlight, period, better, comparePercentage, mu } = props.widget;
+  const { deviceType, highlight, highlightImg, info = [], period, mu } = props.widget;
   
-  //const duration = data?(Array.isArray(data)?null:data.duration):null;
-  const arrowClass = better ? 'fa-arrow-down green' : 'fa-arrow-up red';
-  const bow = !(better == null || comparePercentage == null);
-  const str = better ? 'better' : 'worse';
   return (
     <div style={{ padding: 10, marginLeft: 10 }}>
-      <div style={{ float: 'left', width: '50%' }}>
-        <h2>
-          <span>{highlight}</span>
-          <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{mu}</span>
-        </h2>
+      <div style={{ float: 'left', width: '30%' }}>
+        {
+          highlight != null ?
+            <h2>
+              <span>{highlight}</span>
+              <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{mu}</span>
+            </h2>
+            :
+              <i />
+        }
+        { 
+          highlightImg ? 
+            <img style={{ height: 55 }} src={`${IMAGES}/${highlightImg}`} alt={highlightImg} /> 
+              : <i /> 
+        }
       </div>
-      <div style={{ float: 'left', width: '50%' }}>
+      <div style={{ float: 'left', width: '70%' }}>
         <div>
-          {
-            (() => {
-              if (bow) {
-                return (
-                  <span>
-                    <i className={`fa ${arrowClass}`} style={{ marginRight: 5 }} />
-                    {
-                      deviceType === 'AMPHIRO' ? 
-                        `${comparePercentage}% ${str} than previous ${period}!` 
-                        : 
-                        `${comparePercentage}% ${str} than last ${period} so far!` 
-                    }
-                  </span>
-                );
-              }
-              return <span>No comparison data</span>;
-            })()
+          { 
+            info.map((line, idx) => (
+              <div key={idx}>
+                <i className={`fa fa-${line.icon}`} />
+                &nbsp;
+                <span>{line.text}</span>
+              </div>
+              ))
           }
         </div>
       </div>

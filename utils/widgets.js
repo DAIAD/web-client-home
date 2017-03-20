@@ -6,7 +6,7 @@ const { getFriendlyDuration, getEnergyClass, getMetricMu, getPriceBrackets } = r
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { reduceMetric, getShowerMeasurementsById, getSessionsCount } = require('./sessions');
+const { reduceMetric, getShowerMeasurementsById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ } = require('./sessions');
 
 const tip = function (widget) {
   return {
@@ -89,15 +89,25 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
                              ),
     };
   }) : [];
-  
+  const hasComparison = better != null && comparePercentage != null;
+  const str = better ? 'better' : 'worse';
   return {
     ...widget,
     time,
     periods,
     highlight,
     mu,
-    better,
-    comparePercentage,
+    info: [
+      {
+        icon: better ? 'arrow-down green' : 'arrow-up red',
+        text: `${comparePercentage}% ${str} than previous ${period}!`,
+        display: hasComparison,
+      },
+      {
+        text: 'No comparison data!',
+        display: !hasComparison,
+      }
+    ].filter(i => i.display),
     chartCategories,
     chartData,
     mode: 'stats',
@@ -128,12 +138,23 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
  
   const showers = getSessionsCount(devices, data);
   const highlight = (showers === 0 || reduced === 0) ? null : getEnergyClass(reduced / showers);
+  const hasComparison = better != null && comparePercentage != null;
+  const str = better ? 'better' : 'worse';
   return {
     ...widget,
     periods,
     highlight,
-    better,
-    comparePercentage,
+    info: [
+      {
+        icon: better ? 'arrow-down green' : 'arrow-up red',
+        text: `${comparePercentage}% ${str} than previous ${period}!`,
+        display: hasComparison,
+      },
+      {
+        text: 'No comparison data!',
+        display: !hasComparison,
+      }
+    ].filter(i => i.display),
     mode: 'stats',
     clearComparisons: true,
   };
@@ -274,14 +295,14 @@ const meterBreakdown = function (widget, devices, intl) {
 };
 
 const meterComparison = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, comparisons } = widget;
+  const { data, period, periodIndex, deviceType, metric, comparisons } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter comparison supported');
     return {};
   }
 
-  const time = widget.time ? widget.time : getTimeByPeriod(period);
+  const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
   const periods = [];
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
 
@@ -300,7 +321,6 @@ const meterComparison = function (widget, devices, intl) {
     ...widget,
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
-    period: 'month',
     periods,
     chartType: 'horizontal-bar',
     chartCategories,
@@ -308,6 +328,67 @@ const meterComparison = function (widget, devices, intl) {
     chartData,
     mu,
     comparisonData: comparisons.filter(c => c.id !== 'user'), 
+  };
+};
+
+const waterIQ = function (widget, devices, intl) {
+  const { data, period, periodIndex, deviceType, metric, waterIQData } = widget;
+  
+  if (deviceType !== 'METER') {
+    console.error('only meter supported for water iq');
+    return {};
+  }
+
+  const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
+  const periods = [];
+  
+  const hasWaterIQ = Array.isArray(waterIQData) && waterIQData.length > 0;
+  const current = hasWaterIQ ? waterIQData.find(s => s.timestamp === time.startDate) : {};
+  const best = hasWaterIQ ? waterIQData.reduce((p, c) => c.user < p.user ? c : p, waterIQData[0]) : {};
+  const worst = hasWaterIQ ? waterIQData.reduce((p, c) => c.user > p.user ? c : p, waterIQData[0]) : {};
+
+  const highlight = current ? current.user : null;
+  const highlightImg = highlight ? `energy-${highlight}.svg` : null;
+
+  console.log('water iq', waterIQData, current);
+  const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
+  const comparisons = ['user', 'all', 'nearest', 'similar']; 
+  const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison}` })) : []; 
+
+  const chartData = [{ 
+    name: 'Water IQ', 
+    data: Array.isArray(comparisons) ? 
+      comparisons.map(comparison => waterIQToNumeral(current[comparison])) 
+      : [],
+  }];
+  return {
+    ...widget,
+    timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
+    time,
+    periods,
+    info: [
+      {
+        icon: 'arrow-up green',
+        text: `${intl.formatDate(best.timestamp, { month: 'long' })} is the best (${best.user}) of the last six months!`,
+        display: hasWaterIQ,
+      },
+      {
+        icon: 'arrow-down red',
+        text: `${intl.formatDate(worst.timestamp, { month: 'long' })} is the worst (${worst.user}) of the last six months!`,
+        display: hasWaterIQ,
+      },
+      {
+        text: 'Water IQ data not computed yet!',
+        display: !hasWaterIQ,
+      }
+    ].filter(i => i.display),
+    chartType: 'horizontal-bar',
+    chartColors,
+    chartCategories,
+    chartData,
+    formatter: y => numeralToWaterIQ(y),
+    highlightImg,
+    waterIQData,
   };
 };
 
@@ -373,6 +454,8 @@ const prepareWidget = function (widget, devices, intl) {
       return meterComparison(widget, devices, intl);
     case 'budget':
       return budget(widget, devices, intl);
+    case 'wateriq': 
+      return waterIQ(widget, devices, intl);
     default:
       return widget;
   }
