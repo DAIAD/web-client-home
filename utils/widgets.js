@@ -50,18 +50,8 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     : 
     METER_PERIODS.filter(p => p.id !== 'custom');
 
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-  
-  // TODO: static
-  let fac = 1.1;
-  if (period === 'ten') fac = 1.2;
-  else if (period === 'twenty') fac = 0.8;
-  else if (period === 'fifty') fac = 0.75;
-
-  const previousReduced = (deviceType === 'AMPHIRO' || previous == null) ?
-    reduced * fac 
-    :
-    reduceMetric(devices, previous, metric);
+  const reduced = reduceMetric(devices, data, metric);
+  const previousReduced = reduceMetric(devices, previous, metric);
 
   const highlight = reduced;
   const mu = getMetricMu(metric);
@@ -126,15 +116,9 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
   const device = getDeviceKeysByType(devices, deviceType);
   const periods = DEV_PERIODS.filter(p => p.id !== 'all');
 
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-
-  // TODO: static
-  let fac; 
-  if (period === 'ten') fac = 0.4;
-  else if (period === 'twenty') fac = 1.1;
-  else if (period === 'fifty') fac = 1.15;
-
-  const previousReduced = previous ? reduceMetric(devices, previous, metric) : reduced * fac; 
+  const reduced = reduceMetric(devices, data, metric);
+  const previousReduced = reduceMetric(devices, previous, metric);
+  
   const better = reduced < previousReduced;
 
   const comparePercentage = previousReduced === 0 ? 

@@ -99,7 +99,7 @@ const getShowerMeasurementsById = function (data, id) {
 };
 
 const reduceMetric = function (devices, data, metric) {
-  if (!devices || !data || !metric) return null;
+  if (!devices || !data || !metric) return 0;
   const sessions = getSessionsCount(devices, data);
 
   let reducedMetric = data

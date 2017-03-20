@@ -762,7 +762,14 @@ const fetchWidgetData = function (options) {
         length: showerFilterToLength(period),
         deviceKey,
       }))
-      .then(data => ({ data }));
+      .then(data => ({ data }))
+      .then(res => dispatch(queryDevice({
+        cache,
+        length: showerFilterToLength(period),
+        deviceKey,
+        index: -1,
+      }))
+      .then(prevData => ({ ...res, previous: prevData })));
     }
     return Promise.reject(new Error('noDeviceType'));
   };
