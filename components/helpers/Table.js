@@ -3,7 +3,7 @@ const bs = require('react-bootstrap');
 const { IMAGES } = require('../../constants/HomeConstants');
 
 function Table(props) {
-  const { className, fields, data, empty = 'No results' } = props;
+  const { className, fields, data, empty = '' } = props;
   if (!Array.isArray(fields)) {
     throw new Error('Fields must be array, check Table render');
   }
