@@ -564,10 +564,8 @@ const ignoreShower = function (options) {
   };
 };
 
-const getUserComparisons = function (options) {
+const queryUserComparisons = function (month, year) {
   return function (dispatch, getState) {
-    const { year, month } = options;
-
     const data = {
       year,
       month,
@@ -576,73 +574,105 @@ const getUserComparisons = function (options) {
 
     dispatch(requestedQuery());
 
-    const userKey = getState().user.profile.key;
-    console.log('requesting comparisons', data);
     return dataAPI.getComparisons(data)
     .then((response) => {
-      console.log('got: ', response);
       dispatch(receivedQuery(response.success, response.errors));
       dispatch(resetSuccess());
       
       if (!response || !response.success) {
         throwServerError(response);  
-      } else if (!response.comparison) {
-        throw new Error('noComparisons');
       } 
-
+      
       return response.comparison;
     })
-    .then((comparison) => {
-      const dailyConsumption = comparison.dailyConsumtpion.map(day => ({
-        ...day,
-        time: {
-          startDate: moment(day.date).startOf('day').valueOf(),
-          endDate: moment(day.date).endOf('day').valueOf(),
-        },
-      }));
-      
-      const weeklyConsumption = dailyConsumption.reduce((p, c) => {
-        if (p.length > 0 && c.week === p[p.length - 1].week) {
-          return [...p.filter((x, i) => i !== p.length - 1), { 
-            ...c, 
-            all: c.all + p[p.length - 1].all, 
-            nearest: c.nearest + p[p.length - 1].nearest, 
-            similar: c.similar + p[p.length - 1].similar,
-            user: c.user + p[p.length - 1].user, 
-            time: {
-              startDate: moment(c.date).startOf('isoweek').valueOf(),
-              endDate: moment(c.date).endOf('isoweek').valueOf(),
-            },
-          }];
-        }
-          return [...p, c];
-      }, []);
-      const monthlyConsumption = comparison.monthlyConsumtpion.map(cmonth => ({
-        ...cmonth,
-        time: {
-          startDate: moment(cmonth.from).startOf('day').valueOf(),
-          endDate: moment(cmonth.to).endOf('day').valueOf(),
-        },
-      }));
-
-      const response = { ...comparison, dailyConsumption, weeklyConsumption, monthlyConsumption };
-      delete response.dailyConsumtpion;
-      delete response.monthlyConsumtpion;
-      return response;
-    })
-    .then((comparison) => {
-      console.log('got: ', comparison);
-    })
     .catch((error) => {
-      console.error('caught error in get user comparisons: ', error);
+      console.error('caught error in fetch user comparisons: ', error);
       dispatch(receivedQuery(false, error));
       throw error;
     });
   };
 };
 
+const queryUserComparisonsByTime = function (time) {
+  return function (dispatch, getState) {
+    const { startDate, endDate, granularity } = time;
+    
+    const months = moment(endDate).diff(moment(startDate), 'months', true);
+    const iters = Math.ceil(months / 6);
+
+    return Promise.all(Array.from({ length: iters }, (x, i) => {
+      const currDate = moment(endDate).subtract(i * 6, 'month');
+      const month = currDate.month() + 1 <= 6 ? 6 : 12;
+      const year = currDate.year();
+      const cacheKey = getCacheKey('COMPARISON', null, month, year);
+      return dispatch(fetchFromCache(cacheKey))
+      .catch(error => dispatch(queryUserComparisons(month, year))
+        .then((data) => { 
+          dispatch(saveToCache(cacheKey, data)); 
+          return data; 
+        }));
+    }));
+  };
+};
+
+const fetchUserComparison = function (comparison, time) {
+  return function (dispatch, getState) {
+    const { startDate, endDate, granularity } = time;
+    if (granularity !== 2 && granularity !== 4) {
+      return Promise.reject('only day, month granularity supported in fetch comparisonByTime');
+    }
+    return dispatch(queryUserComparisonsByTime(time))
+    .then(comparisonsArr => comparisonsArr.map((c) => {
+      if (c === null) {
+        return [];
+      } else if (granularity === 2) {
+        return c.dailyConsumtpion;
+      } else if (granularity === 4) {
+        return c.monthlyConsumtpion;
+      }
+      return [];
+    }))
+    .then(sessionsArr => sessionsArr.reduce((p, c) => [...p, ...c], []))
+    .then(comparisons => comparisons.map(m => ({
+      from: m.from,
+      to: m.to,
+      date: m.date,
+      timestamp: granularity === 2 ? moment(m.date).valueOf() : moment(m.from).valueOf(),
+      volume: m[comparison],
+    })))
+    .then(sessions => sessions.filter(s => granularity === 2 ? 
+                  startDate <= moment(s.date).valueOf() && 
+                    endDate >= moment(s.date).valueOf()
+                  :
+                  startDate <= moment(s.from).valueOf() &&
+                    endDate >= moment(s.to).valueOf())
+         );
+  };
+};
+
+const fetchWaterIQ = function (options) {
+  return function (dispatch, getState) {
+    const { time } = options;
+    const { startDate, endDate } = time;
+    return dispatch(queryUserComparisonsByTime(time))
+    .then(comparisonsArr => comparisonsArr.map(c => c == null ? [] : c.waterIq))
+    .then(sessionsArr => sessionsArr.reduce((p, c) => [...p, ...c], []))
+    .then(comparisons => comparisons.map(m => ({
+      ...m,
+      user: m.user.value,
+      all: m.all.value,
+      similar: m.similar.value,
+      nearest: m.nearest.value,
+      timestamp: moment(m.from).valueOf(),
+      })))
+    .then(sessions => sessions.filter(s => 
+                  startDate <= moment(s.from).valueOf() && 
+                    endDate >= moment(s.to).valueOf()));
+  };
+};
+
 /**
- * Fetch data based on provided options and handle query response before returning
+ ** Fetch data based on provided options and handle query response before returning
  * 
  * @param {Object} options - Options to fetch data 
  * @param {Boolean} options.cache - Whether cache query functions should be called or not 
@@ -754,5 +784,6 @@ module.exports = {
   queryDataCache,
   queryDataAverageCache,
   ignoreShower,
-  getUserComparisons,
+  fetchWaterIQ,
+  fetchUserComparison,
 };

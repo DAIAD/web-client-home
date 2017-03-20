@@ -132,6 +132,10 @@ const getMeterCacheKey = function (key, time, extra = '') {
   return `METER,${key},${time.startDate},${time.endDate}${extra}`;
 };
 
+const getComparisonCacheKey = function (key, month, year) {
+  return `COMPARISON,${year},${month}`;
+};
+
 const getCacheKey = function (deviceType, key, ...rest) {
   if (deviceType === 'AMPHIRO') {
     if (rest.length < 2) {
@@ -142,6 +146,8 @@ const getCacheKey = function (deviceType, key, ...rest) {
     return getAmphiroByTimeCacheKey(key, ...rest);
   } else if (deviceType === 'METER') {
     return getMeterCacheKey(key, ...rest);
+  } else if (deviceType === 'COMPARISON') {
+    return getComparisonCacheKey(key, ...rest);
   }
   throw new Error(`deviceType ${deviceType} not supported`);
 };
