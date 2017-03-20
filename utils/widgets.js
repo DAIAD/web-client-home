@@ -16,7 +16,7 @@ const tip = function (widget) {
 };
 
 const amphiroLastShower = function (widget, devices, intl) {
-  const { data, device, showerId, metric } = widget;
+  const { data, device, showerId, metric, timestamp } = widget;
   const last = data ? data.find(d => d.deviceKey === device) : null;
   const measurements = last ? getShowerMeasurementsById(last, showerId) : [];
   const chartCategories = measurements.map(m => moment(m.timestamp).format('hh:mm:ss'));
@@ -31,6 +31,7 @@ const amphiroLastShower = function (widget, devices, intl) {
   return {
     ...widget,
     chartCategories,
+    timeDisplay: intl.formatRelative(timestamp),
     chartData,
     highlight,
     mode: 'stats',
@@ -236,7 +237,7 @@ const meterPricing = function (widget, devices, intl) {
   return {
     ...widget,
     chartType: 'line',
-    title: `${widget.title} (${intl.formatDate(time.startDate, { month: 'long' })})`,
+    timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
     periods,
     chartCategories: xCategoryLabels,
@@ -313,7 +314,7 @@ const meterComparison = function (widget, devices, intl) {
  
   return {
     ...widget,
-    title: `${widget.title} (${intl.formatDate(time.startDate, { month: 'long' })})`,
+    timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
     period: 'month',
     periods,

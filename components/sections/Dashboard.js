@@ -44,7 +44,7 @@ const WidgetItem = React.createClass({
   },
   render: function () {
     const { widget, updateWidget, removeWidget, _t, linkToHistory, width } = this.props;
-    const { id, error, period, type, display, periods, time } = widget;
+    const { id, error, period, type, display, periods, time, timeDisplay } = widget;
     return (
       <div 
         className="widget"
@@ -57,6 +57,7 @@ const WidgetItem = React.createClass({
 
           <div className="header-right">
             <div>
+              { timeDisplay }
               {
                 periods && periods.map(p => (
                   <a 
@@ -73,13 +74,7 @@ const WidgetItem = React.createClass({
                   </a>
                   ))
               }
-            </div>
-            {
-              type === 'last' && time ? 
-                <FormattedRelative value={time} /> 
-                  : 
-                  <span />
-            }
+            </div> 
             {
               <a 
                 className="widget-x" 
