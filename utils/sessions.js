@@ -319,7 +319,6 @@ const getComparisons = function (devType, start, period, favCommon, intl) {
       title: getComparisonTitle('common', start, period, favCommon, intl)
     },
     // TODO: allow when backend computation fixed to compute average instead of sum
-    /*
     {
       id: 'nearest',
       title: getComparisonTitle('nearest', start, period, favCommon, intl),
@@ -328,7 +327,6 @@ const getComparisons = function (devType, start, period, favCommon, intl) {
       id: 'similar',
       title: getComparisonTitle('similar', start, period, favCommon, intl),
       },
-    */
     ].filter(c => favCommon == null ? c.id !== 'common' : true);
   }
   return [];

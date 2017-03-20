@@ -742,6 +742,11 @@ const fetchWidgetData = function (options) {
           .catch((error) => { 
             console.error('Caught error in widget forecast data fetch:', error); 
           });
+        } else if (type === 'comparison') {
+          return Promise.all(['user', 'all', 'nearest', 'similar']
+                             .map(id => dispatch(fetchUserComparison(id, time))
+                                  .then(sessions => ({ id, sessions }))))
+          .then(comparisons => ({ ...res, comparisons }));
         }
         return Promise.resolve(res);
       });

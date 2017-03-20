@@ -602,7 +602,7 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparison, clearComparisons, data, forecastData, memberFilter, mode } = query;
+    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparisons, clearComparisons, data, forecastData, comparisonData, memberFilter, mode } = query;
 
     dispatch(setDataUnsynced());
 
@@ -616,15 +616,24 @@ const setQuery = function (query) {
     if (increaseIndex === true) dispatch(increaseShowerIndex());
     if (decreaseIndex === true) dispatch(decreaseShowerIndex());
 
-    if (getState().section.history.comparisons.find(c => c.id === comparison)) {
-      dispatch(removeComparison(comparison));
-    } else if (comparison) {
-      dispatch(addComparison(comparison));
+    if (Array.isArray(comparisons)) {
+      comparisons.forEach((comparison) => {
+        if (getState().section.history.comparisons.find(c => c.id === comparison)) {
+          dispatch(removeComparison(comparison));
+        } else if (comparison) {
+          dispatch(addComparison(comparison));
+        }
+      });
     }
 
     if (clearComparisons) {
       dispatch(resetComparisons());
     }
+
+    if (comparisonData) {
+      dispatch(setComparisons(comparisonData));
+    }
+
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
 
     if (device != null && showerId != null) { 

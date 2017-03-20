@@ -35,6 +35,7 @@ const amphiroLastShower = function (widget, devices, intl) {
     highlight,
     mode: 'stats',
     mu,
+    clearComparisons: true,
   };
 };
 
@@ -109,6 +110,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     chartCategories,
     chartData,
     mode: 'stats',
+    clearComparisons: true,
   };
 };
 
@@ -148,6 +150,7 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
     better,
     comparePercentage,
     mode: 'stats',
+    clearComparisons: true,
   };
 };
 
@@ -196,6 +199,7 @@ const meterForecast = function (widget, devices, intl) {
     chartColors,
     mu,
     mode: 'forecasting',
+    clearComparisons: true,
   };
 };
 
@@ -232,12 +236,14 @@ const meterPricing = function (widget, devices, intl) {
   return {
     ...widget,
     chartType: 'line',
+    title: `${widget.title} (${intl.formatDate(time.startDate, { month: 'long' })})`,
     time,
     periods,
     chartCategories: xCategoryLabels,
     chartData: [...chartData, ...priceBrackets],
     mu,
     mode: 'pricing',
+    clearComparisons: true,
   };
 };
 const meterBreakdown = function (widget, devices, intl) {
@@ -278,45 +284,45 @@ const meterBreakdown = function (widget, devices, intl) {
     chartData,
     mu,
     invertAxis,
+    clearComparisons: true,
   };
 };
 
 const meterComparison = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+  const { data, period, deviceType, metric, comparisons } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter comparison supported');
+    return {};
   }
 
   const time = widget.time ? widget.time : getTimeByPeriod(period);
-  //const periods = deviceType === 'AMPHIRO' ? DEV_PERIODS : METER_PERIODS.filter(p => p.id !== 'custom');
-  const periods = METER_PERIODS.filter(p => p.id !== 'custom');
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-  // TODO: static
-  // dummy data based on real user data
-  const chartCategories = ['City', 'Neighbors', 'Similar', 'You'];
+  const periods = [];
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
+
+  const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison.id}` })) : []; 
+
   const chartData = [{ 
     name: 'Comparison', 
-    data: [
-      reduced - (0.2 * reduced), 
-      reduced + (0.5 * reduced), 
-      reduced / 2, 
-      reduced,
-    ],
+    data: Array.isArray(comparisons) ? 
+      comparisons.map(comparison => comparison.sessions.reduce((p, c) => c ? p + c[metric] : p, 0) : null) 
+      : [],
   }];
-  const mu = getMetricMu(metric);
-  const invertAxis = true;
+
+  const mu = 'lt';
+ 
   return {
     ...widget,
+    title: `${widget.title} (${intl.formatDate(time.startDate, { month: 'long' })})`,
     time,
+    period: 'month',
     periods,
     chartType: 'horizontal-bar',
     chartCategories,
     chartColors,
     chartData,
     mu,
-    invertAxis,
+    comparisonData: comparisons.filter(c => c.id !== 'user'), 
   };
 };
 

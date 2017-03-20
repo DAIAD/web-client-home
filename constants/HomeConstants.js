@@ -432,11 +432,11 @@ module.exports = {
     {
       id: 'comparison', 
       title: 'Comparison', 
-      description: 'A widget showing your consumption in comparison to others, like your neighbors or your city average for the last month. You can later change this to see comparison data for the current day, week, or year.', 
+      description: 'A widget showing your consumption in comparison to others, like your neighbors or your city average for the previous month.', 
       type: 'comparison', 
       metric: 'volume', 
       display: 'chart',
-      period: 'month',
+      period: 'lastMonth',
     },
     {
       id: 'budget', 

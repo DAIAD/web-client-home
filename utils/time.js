@@ -39,6 +39,15 @@ const thisYear = function () {
   };
 };
 
+const lastMonth = function () {
+  const { startDate, endDate, granularity } = thisMonth();
+  return {
+    startDate: moment(startDate).subtract(1, 'month').valueOf(),
+    endDate: moment(endDate).subtract(1, 'month').valueOf(),
+    granularity,
+  };
+};
+
 const convertPeriodToGranularity = function (period) {
   if (period === 'year') return 4;
   else if (period === 'month') return 2;
@@ -67,6 +76,7 @@ const getLowerGranularityPeriod = function (period) {
 const getTimeByPeriod = function (period) {
   if (period === 'year') return thisYear();
   else if (period === 'month') return thisMonth();
+  else if (period === 'lastMonth') return lastMonth();
   else if (period === 'week') return thisWeek();
   else if (period === 'day') return today();
   return {};

@@ -156,6 +156,12 @@
     "fifty": "Last 50",
     "all": "All"
   },
+  "comparisons": {
+    "all": "Everyone",
+    "nearest": "Neighbors",
+    "similar": "Similar",
+    "user": "You"
+  },
   "notifications": {
     "showAll": "Show all",
     "alerts": "Alerts",

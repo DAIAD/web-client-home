@@ -137,7 +137,7 @@ const History = React.createClass({
     this.props.setQueryAndFetch({ device: vals, ...switchDevType });
   },
   handleComparisonSelect: function (val) {
-    this.props.setQueryAndFetch({ comparison: val });
+    this.props.setQueryAndFetch({ comparisons: [val] });
   },
   handleSortSelect: function (e, val) {
     this.props.setSortFilter(val);
