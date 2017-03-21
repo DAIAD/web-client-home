@@ -230,7 +230,7 @@ const fetchData = function () {
       if (activeDevice.length === 0) {
         dispatch(setSessions([]));
         dispatch(setDataSynced());
-        return;
+        return Promise.resolve();
       }
 
       dispatch(QueryActions.queryDeviceSessionsCache({ 
@@ -269,9 +269,8 @@ const fetchData = function () {
           dispatch(fetchForecastData());
         }
     }
-
     // comparisons
-    dispatch(fetchComparisonData());  
+    return dispatch(fetchComparisonData());  
   };
 };
 
@@ -506,6 +505,7 @@ const fetchDeviceSession = function (id, deviceKey) {
     if (found && found.measurements) {
       return Promise.resolve();
     }
+      
     return dispatch(QueryActions.fetchDeviceSession(id, deviceKey))
     .then((session) => { 
       dispatch(setSession({ ...session, deviceKey }));
@@ -602,7 +602,11 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
+<<<<<<< HEAD
     const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparisons, clearComparisons, data, forecastData, comparisonData, memberFilter, mode } = query;
+=======
+    const { active, showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparison, clearComparisons, data, forecastData, memberFilter, mode } = query;
+>>>>>>> 411c3c6... connected ignore shower and assign members to backend and made necessary changes to invalidate cache for updated data
 
     dispatch(setDataUnsynced());
 
@@ -636,9 +640,12 @@ const setQuery = function (query) {
 
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
 
-    if (device != null && showerId != null) { 
-      dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
-    } 
+    if (Array.isArray(active) && active.length === 2 && active[0] != null && active[1] != null) { 
+      //dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
+      dispatch(setActiveSession(active[0], active[1])); 
+    } else if (active === null) {
+      dispatch(resetActiveSession());
+    }
 
     if (forecastData) {
       dispatch(setForecastData(forecastData));
@@ -654,6 +661,13 @@ const setQueryAndFetch = function (query) {
   return function (dispatch, getState) {
     dispatch(setQuery(query));
     dispatch(fetchData());
+  };
+};
+
+const fetchAndSetQuery = function (query) {
+  return function (dispatch, getState) {
+    dispatch(fetchData())
+    .then(() => dispatch(setQuery(query)));
   };
 };
 
@@ -691,6 +705,7 @@ module.exports = {
   enablePricing,
   disablePricing,
   setQueryAndFetch,
+  fetchAndSetQuery,
   enableEditShower,
   disableEditShower,
   setMemberFilter,
