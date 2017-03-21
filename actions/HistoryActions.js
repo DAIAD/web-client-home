@@ -141,10 +141,10 @@ const fetchComparisonData = function () {
     const utilityKey = getState().user.profile.utility.key;
     const commonKey = getState().section.settings.commons.favorite;
 
-    comparisons.forEach((comparison) => {
+    return Promise.all(comparisons.map((comparison) => {
       if (comparison.id === 'last') {
         const prevTime = getPreviousPeriod(timeFilter, time.startDate);
-        dispatch(fetchComparison('last', {
+        return dispatch(fetchComparison('last', {
           time: prevTime, 
           source: activeDeviceType,
           population: [{ 
@@ -154,7 +154,7 @@ const fetchComparisonData = function () {
           }],
         }));
       } else if (comparison.id === 'all') {
-        dispatch(fetchComparison('all', {
+        return dispatch(fetchComparison('all', {
           time,
           source: activeDeviceType,
           population: [{ 
@@ -164,7 +164,7 @@ const fetchComparisonData = function () {
           }],
         }));
       } else if (comparison.id === 'common') {
-        dispatch(fetchComparison('common', {
+        return dispatch(fetchComparison('common', {
           time,
           source: activeDeviceType,
           population: [{ 
@@ -174,13 +174,14 @@ const fetchComparisonData = function () {
           }],
         }));
       } else if (comparison.id === 'nearest') {
-        dispatch(QueryActions.fetchUserComparison('nearest', time))
+        return dispatch(QueryActions.fetchUserComparison('nearest', time))
         .then(nearest => dispatch(setComparisonSessions('nearest', nearest)));
       } else if (comparison.id === 'similar') {
-        dispatch(QueryActions.fetchUserComparison('similar', time))
+        return dispatch(QueryActions.fetchUserComparison('similar', time))
         .then(nearest => dispatch(setComparisonSessions('similar', nearest)));
       }
-    });
+      return Promise.resolve();
+    }));
   };
 };
 
@@ -235,7 +236,7 @@ const fetchData = function () {
         return Promise.resolve();
       }
 
-      dispatch(QueryActions.queryDeviceSessionsCache({ 
+      return dispatch(QueryActions.queryDeviceSessionsCache({ 
         deviceKey: activeDevice, 
         length: showerFilterToLength(timeFilter),
         index: showerIndex,
@@ -252,8 +253,8 @@ const fetchData = function () {
       });
       // SWM
     } else if (activeDeviceType === 'METER') {
-        dispatch(fetchWaterIQData());
-        dispatch(QueryActions.queryMeterHistory({
+      return dispatch(fetchWaterIQData())
+      .then(() => dispatch(QueryActions.queryMeterHistory({
           time,
         }))
         .then((meterData) => {
@@ -264,15 +265,11 @@ const fetchData = function () {
           console.error('Caught error in history meter query:', error); 
           dispatch(setSessions([]));
           dispatch(setDataSynced());
-        }); 
-      
-        // forecasting
-        if (getState().section.history.forecasting) {
-          dispatch(fetchForecastData());
-        }
+        }))
+        .then(() => getState().section.history.forecasting ? dispatch(fetchForecastData()) : Promise.resolve())
+        .then(() => dispatch(fetchComparisonData()));
     }
-    // comparisons
-    return dispatch(fetchComparisonData());  
+    return Promise.resolve();
   };
 };
 

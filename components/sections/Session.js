@@ -289,7 +289,7 @@ function Session(props) {
     ` ${Math.abs(data.percentDiff)}%` 
     : '';
     
-  if (devType === 'AMPHIRO' && (history === true || (Array.isArray(measurements) && measurements.length === 0))) {
+  if (devType === 'AMPHIRO' && (history === true || !measurements || (Array.isArray(measurements) && measurements.length === 0))) {
     return (
       <div className="shower-container">
         <div className="shower-chart-area">
