@@ -128,7 +128,6 @@ const History = React.createClass({
     this.props.setQueryAndFetch({ deviceType: val });
   },
   handleModeSelect: function (val) {
-    console.log('select', val);
     this.props.setQueryAndFetch({ mode: val });
   },
   handleActiveDevicesChanged: function (vals) {
