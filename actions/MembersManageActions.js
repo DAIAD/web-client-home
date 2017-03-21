@@ -10,7 +10,7 @@ const { showerFilterToLength, throwServerError } = require('../utils/general');
 const { flattenCommonsGroups } = require('../utils/commons');
 
 const { setConfirm, resetConfirm } = require('./FormActions');
-const { resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo, clearCacheItems } = require('./QueryActions');
+const { resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo } = require('./QueryActions');
 const { fetchProfile } = require('./UserActions');
 
 const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
@@ -98,42 +98,6 @@ const clickConfirmMember = function () {
   };
 };
 
-const assignToMember = function (options) {
-  return function (dispatch, getState) {
-    const { deviceKey, sessionId, memberIndex } = options;
-
-    const data = {
-      assignments: [{
-        deviceKey,
-        sessionId,
-        memberIndex,
-        timestamp: new Date().valueOf(),
-      }],
-      csrf: getState().user.csrf,
-    };
-
-    dispatch(requestedQuery());
-
-    return dataAPI.assignToMember(data)
-    .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-
-      if (!response || !response.success) {
-        throwServerError(response);  
-      }
-
-      dispatch(clearCacheItems('AMPHIRO', deviceKey, sessionId));
-
-      return response;
-    })
-    .catch((errors) => {
-      console.error('Error caught on assign shower to member:', errors);
-      dispatch(receivedQuery(false, errors));
-      return errors;
-    });
-  };
-};
 
 module.exports = {
   saveMembers,
@@ -142,5 +106,4 @@ module.exports = {
   removeMember,
   //confirm
   clickConfirmMember,
-  assignToMember,
 };
