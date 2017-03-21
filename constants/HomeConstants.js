@@ -13,6 +13,7 @@ module.exports = {
   ENERGY_BULB: 30,
   ENERGY_HOUSE: 1000,
   ENERGY_CITY: 1000000,
+  BRACKET_COLORS: ['green', 'orange', 'red', 'black'],
   LOCALES: ['en', 'el', 'de', 'es'],
   COUNTRIES: ['United Kingdom', 'Spain', 'Greece'],
   TIMEZONES: [

@@ -210,7 +210,7 @@ const meterForecast = function (widget, devices, intl) {
 };
 
 const meterPricing = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+  const { data, period, deviceType, metric, brackets } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter pricing supported');
@@ -226,7 +226,7 @@ const meterPricing = function (widget, devices, intl) {
   const xCategories = getChartMeterCategories(time);
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
 
-  const priceBrackets = getPriceBrackets(xCategories, intl);
+  const priceBrackets = getPriceBrackets(xCategories, brackets, intl);
 
   const chartData = data ? data.map(devData => ({ 
       name: 'Consumption', 

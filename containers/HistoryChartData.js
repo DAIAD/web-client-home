@@ -27,6 +27,7 @@ function mapStateToProps(state) {
     pricing: state.section.history.pricing,
     mode: state.section.history.mode,
     forecastData: state.section.history.forecastData,
+    priceBrackets: state.section.history.priceBrackets,
     myCommons: state.section.commons.myCommons,
     favoriteCommon: state.section.settings.commons.favorite,
   };
@@ -111,7 +112,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     : [];
 
     
-  const priceBrackets = stateProps.timeFilter === 'month' && stateProps.pricing ? getPriceBrackets(xCategories, ownProps.intl) : [];
+  const priceBrackets = stateProps.timeFilter === 'month' && stateProps.pricing ? getPriceBrackets(xCategories, stateProps.priceBrackets, ownProps.intl) : [];
 
   return {
     ...stateProps,

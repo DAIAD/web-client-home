@@ -1,4 +1,4 @@
-const { SHOWERS_PAGE } = require('../constants/HomeConstants');
+const { SHOWERS_PAGE, BRACKET_COLORS } = require('../constants/HomeConstants');
 
 // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
 const validateEmail = function (email) {
@@ -256,36 +256,19 @@ const validatePassword = function (password, confirmPassword) {
   return Promise.resolve();
 };
 
-const getPriceBrackets = function (xCategories, intl) {
-  return [
-    {
-      name: 'Up to 9m^3\n 0.02E/m^3',
-      data: xCategories.map(() => 9000),
-      label: false,
-      lineType: 'dashed',
-      symbol: 'none',
-      color: 'green',
-      fill: 0,
-    },
-    {
-      name: 'Up to 30m^3\n 0.55E/m^3',
-      data: xCategories.map(() => 30000),
-      label: false,
-      lineType: 'dashed',
-      symbol: 'none',
-      color: 'orange',
-      fill: 0,
-    },
-    {
-      name: 'Up to 60m^3\n 1.85E/m^3',
-      data: xCategories.map(() => 60000),
-      label: false,
-      lineType: 'dashed',
-      symbol: 'none',
-      color: 'red',
-      fill: 0,
-    },
-  ];
+const getPriceBrackets = function (xCategories, brackets, intl) {
+  console.log('getting price brackets', xCategories, brackets);
+  return brackets
+  .filter(bracket => bracket.maxVolume != null)
+  .map((bracket, i) => ({
+    name: `${bracket.minVolume} to ${bracket.maxVolume}: ${bracket.price}`,
+    data: xCategories.map(() => bracket.maxVolume * 1000),
+    label: false,
+    lineType: 'dashed',
+    symbol: 'none',
+    color: BRACKET_COLORS[i],
+    fill: 0,
+  }));
 };
 
 module.exports = {

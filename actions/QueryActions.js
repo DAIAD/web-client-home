@@ -835,6 +835,8 @@ const fetchWidgetData = function (options) {
         } else if (type === 'wateriq') {
           return dispatch(fetchWaterIQ({ time: lastSixMonths(time.startDate) }))
           .then(waterIQData => ({ ...res, waterIQData }));
+        } else if (type === 'pricing') {
+          return { ...res, brackets: getState().section.history.priceBrackets };
         }
         return Promise.resolve(res);
       });

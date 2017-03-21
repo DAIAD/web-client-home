@@ -14,6 +14,7 @@ const CommonsManageActions = require('./CommonsManageActions');
 const FormActions = require('./FormActions');
 const { letTheRightOneIn } = require('./UserActions');
 const { fetchInitial: fetchAllMessages } = require('./MessageActions');
+
 const { getMeterCount } = require('../utils/device');
 const { filterObj } = require('../utils/general');
 
@@ -71,6 +72,8 @@ const initHome = function (profile) {
     ]);
     
     dispatch(FormActions.setForm('profileForm', profileForm));
+
+    dispatch(HistoryActions.initPriceBrackets());
 
     const fetchCommonsData = dispatch(CommonsActions.getMyCommons())
     .then(commons => Array.isArray(commons) && commons.length > 0 ? 

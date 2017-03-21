@@ -25,6 +25,7 @@ const initialState = {
   editShower: false,
   memberFilter: 'all',
   mode: 'stats',
+  priceBrackets: [],
 };
  
 const history = function (state = initialState, action) {
@@ -160,6 +161,11 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_MODE:
       return Object.assign({}, state, {
         mode: action.mode,
+      });
+
+    case types.HISTORY_SET_PRICE_BRACKETS:
+      return Object.assign({}, state, {
+        priceBrackets: action.brackets,
       });
 
     case types.USER_RECEIVED_LOGOUT:

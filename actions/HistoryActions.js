@@ -8,6 +8,7 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm } = require('./FormActions');
+const { fetchPriceBrackets } = require('./BillingActions');
 
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
@@ -682,6 +683,20 @@ const linkToHistory = function (options) {
   };
 };
 
+const setPriceBrackets = function (brackets) {
+  return {
+    type: types.HISTORY_SET_PRICE_BRACKETS,
+    brackets,
+  };
+};
+
+const initPriceBrackets = function () {
+  return function (dispatch, getState) {
+    dispatch(fetchPriceBrackets())
+    .then(brackets => dispatch(setPriceBrackets(brackets)));
+  };
+};
+
 module.exports = {
   linkToHistory,
   fetchDeviceSession,
@@ -715,4 +730,5 @@ module.exports = {
   setMemberFilter,
   setDataSynced,
   setDataUnsynced,
+  initPriceBrackets,
 };
