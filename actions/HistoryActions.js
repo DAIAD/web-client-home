@@ -606,7 +606,7 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { active, showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparisons, clearComparisons, data, forecastData, comparisonData, memberFilter, mode } = query;
+    const { active, showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparisons, clearComparisons, data, forecastData, comparisonData, waterIQData, memberFilter, mode } = query;
 
     dispatch(setDataUnsynced());
 
@@ -636,6 +636,10 @@ const setQuery = function (query) {
 
     if (comparisonData) {
       dispatch(setComparisons(comparisonData));
+    }
+
+    if (waterIQData) {
+      dispatch(setWaterIQSessions(waterIQData));
     }
 
     if (memberFilter) dispatch(setMemberFilter(memberFilter));

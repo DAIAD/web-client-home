@@ -332,6 +332,15 @@ const getComparisons = function (devType, start, period, favCommon, intl) {
   return [];
 };
 
+const waterIQToNumeral = function (waterIQ) {
+  return 5 - (String(waterIQ).charCodeAt(0) - 65);
+};
+
+const numeralToWaterIQ = function (num) {
+  if (num < 0 || num > 5) return ' ';
+  return String.fromCharCode((5 - num) + 65);
+};
+
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
@@ -352,4 +361,6 @@ module.exports = {
   memberFilterToMembers,
   getComparisons,
   getComparisonTitle,
+  waterIQToNumeral,
+  numeralToWaterIQ,
 };
