@@ -21,6 +21,7 @@ function mapStateToProps(state) {
     activeSession: state.section.history.activeSession,
     timeFilter: state.section.history.timeFilter,
     user: state.user.profile,
+    memberFilter: state.section.history.memberFilter, 
     members: state.user.profile.household.members,
     editShower: state.section.history.editShower,
     width: state.viewport.width,
@@ -55,8 +56,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       index: 0, 
       name: stateProps.user.firstname 
     }, 
-    ...stateProps.members
-    .filter(member => member.active)
+    ...stateProps.members.filter(member => member.active)
     ],
     chartCategories: measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss')),
     chartData: measurements.map(measurement => measurement ? 

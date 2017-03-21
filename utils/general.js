@@ -140,6 +140,17 @@ const getCacheKey = function (deviceType, ...rest) {
   throw new Error(`deviceType ${deviceType} not supported`);
 };
 
+//TODO: user rest parameters to filter specific cache items instead of all 
+const filterCacheItems = function (cache, deviceType, ...rest) {
+  return Object.keys(cache)
+  .filter(key => !key.startsWith(deviceType))
+  .reduce((p, c) => {
+    const n = { ...p };
+    n[c] = cache[c];
+    return n;
+  }, {});
+};
+
 const uploadFile = function (file, successCb, failureCb) {
   if (!file) return;
   if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
@@ -242,6 +253,7 @@ module.exports = {
   getShowerMetricMu,
   showerFilterToLength,
   getCacheKey,
+  filterCacheItems,
   getShowersPagingIndex,
   debounce,
   uploadFile,

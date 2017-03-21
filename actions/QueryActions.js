@@ -16,7 +16,7 @@ const dataAPI = require('../api/data');
 
 const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, memberFilterToMembers } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
-const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex } = require('../utils/general');
+const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex, filterCacheItems } = require('../utils/general');
 const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod } = require('../utils/time');
 
 
@@ -83,6 +83,13 @@ const setCache = function (cache) {
   return {
     type: types.QUERY_SET_CACHE,
     cache,
+  };
+};
+
+const clearCacheItems = function (deviceType, ...rest) {
+  return function (dispatch, getState) {
+    const { cache } = getState().query;
+    dispatch(setCache(filterCacheItems(cache, deviceType, ...rest)));
   };
 };
 
@@ -275,6 +282,7 @@ const fetchLastDeviceSession = function (options) {
       return dispatch(fetchDeviceSession(id, device))
       .then(session => ({ 
         ...session,
+        active: [device, id],
         showerId: id,
         device,
         data: updateOrAppendToSession([devSessions], { ...session, deviceKey: device }), 
@@ -462,9 +470,12 @@ const queryData = function (options) {
 
 const ignoreShower = function (options) {
   return function (dispatch, getState) {
+    const { deviceKey, sessionId } = options;
+
     const data = {
       sessions: [{
-        ...options,
+        deviceKey,
+        sessionId,
         timestamp: new Date().valueOf(),
       }],
       csrf: getState().user.csrf,
@@ -479,10 +490,13 @@ const ignoreShower = function (options) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
+      
+      dispatch(clearCacheItems('AMPHIRO', deviceKey, sessionId));
+
       return response;
     }) 
     .catch((errors) => {
-      console.error('Error caught on assign shower to member:', errors);
+      console.error('Error caught on ignore shower:', errors);
       dispatch(receivedQuery(false, errors));
       return errors;
     });
@@ -599,4 +613,5 @@ module.exports = {
   queryMeterForecast,
   queryData,
   ignoreShower,
+  clearCacheItems,
 };

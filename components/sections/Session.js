@@ -85,7 +85,7 @@ function SessionInfoLine(props) {
       
 
 function Member(props) {
-  const { deviceKey, sessionId, member, members, assignToMember, editShower, disableEditShower } = props;
+  const { deviceKey, sessionId, member, memberFilter, members, assignToMember, editShower, disableEditShower, fetchAndSetQuery } = props;
   return (
     <div className="headline-user">
       <i className="fa fa-user" />
@@ -100,6 +100,7 @@ function Member(props) {
                 sessionId, 
                 memberIndex: val, 
               })
+              .then(() => fetchAndSetQuery({ active: memberFilter === 'all' ? [deviceKey, sessionId] : null })) 
               .then(() => disableEditShower());
             }}
           >
@@ -126,10 +127,10 @@ function Member(props) {
 }
 
 function SessionInfo(props) {
-  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower } = props;
+  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower, memberFilter, fetchAndSetQuery } = props;
   const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
   
-  const { device: deviceKey, id: sessionId, member } = data;
+  const { device: deviceKey, id: sessionId, member, ignored } = data;
   return !data ? <div /> : (
     <div className="shower-info">  
       {
@@ -139,7 +140,10 @@ function SessionInfo(props) {
               onClick={() => ignoreShower({ 
                 deviceKey, 
                 sessionId, 
-              }).then(() => disableEditShower())}
+              })
+              .then(() => fetchAndSetQuery({ active: [deviceKey, sessionId] })) 
+              .then(() => disableEditShower())
+              }
             >
               Delete shower
             </a>
@@ -162,11 +166,13 @@ function SessionInfo(props) {
           deviceKey, 
           sessionId, 
           member, 
+          memberFilter,
           members, 
           assignToMember, 
           editShower, 
           enableEditShower, 
-          disableEditShower 
+          disableEditShower,
+          fetchAndSetQuery,
         }} 
       /> 
       
@@ -387,9 +393,15 @@ const SessionModal = React.createClass({
             {
               data.id ?
                 <span>
-                  <span>{` ${data.devName}  `}</span>
-                  <FormattedMessage id="section.shower" />
-                  <span>{` ${data.id}`}</span>
+                  { 
+                    data.ignored ? 
+                      <span>Not a shower!</span>
+                      :
+                        <div>
+                          <FormattedMessage id="section.shower" />
+                          <span>{` ${data.id}`}</span>
+                        </div>
+                  }
                 </span>
                 :
                 <FormattedMessage id="section.shower-aggregated" />

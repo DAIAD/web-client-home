@@ -88,10 +88,10 @@ const fetchData = function () {
       if (activeDevice.length === 0) {
         dispatch(setSessions([]));
         dispatch(setDataSynced());
-        return;
+        return Promise.resolve();
       }
 
-      dispatch(QueryActions.queryDeviceSessionsCache({ 
+      return dispatch(QueryActions.queryDeviceSessionsCache({ 
         deviceKey: activeDevice, 
         length: showerFilterToLength(timeFilter),
         index: showerIndex,
@@ -140,7 +140,6 @@ const fetchData = function () {
           console.error('Caught error in history forecast query:', error);
         });
       }
-    }
       // comparisons
       if (getState().section.history.comparison === 'last') {
         dispatch(QueryActions.queryMeterHistoryCache({
@@ -157,6 +156,8 @@ const fetchData = function () {
       } else {
         dispatch(setComparisonSessions([]));
       }
+    }
+    return Promise.resolve();
   };
 };
 
@@ -381,6 +382,7 @@ const fetchDeviceSession = function (id, deviceKey) {
     if (found && found.measurements) {
       return Promise.resolve();
     }
+      
     return dispatch(QueryActions.fetchDeviceSession(id, deviceKey))
     .then((session) => { 
       dispatch(setSession({ ...session, deviceKey }));
@@ -503,7 +505,7 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparison, clearComparisons, data, forecastData, memberFilter, mode } = query;
+    const { active, showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparison, clearComparisons, data, forecastData, memberFilter, mode } = query;
 
     dispatch(setDataUnsynced());
 
@@ -521,9 +523,12 @@ const setQuery = function (query) {
 
     if (memberFilter) dispatch(setMemberFilter(memberFilter));
 
-    if (device != null && showerId != null) { 
-      dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
-    } 
+    if (Array.isArray(active) && active.length === 2 && active[0] != null && active[1] != null) { 
+      //dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
+      dispatch(setActiveSession(active[0], active[1])); 
+    } else if (active === null) {
+      dispatch(resetActiveSession());
+    }
 
     if (forecastData && Array.isArray(forecastData)) {
       dispatch(setForecastData(forecastData));
@@ -539,6 +544,13 @@ const setQueryAndFetch = function (query) {
   return function (dispatch, getState) {
     dispatch(setQuery(query));
     dispatch(fetchData());
+  };
+};
+
+const fetchAndSetQuery = function (query) {
+  return function (dispatch, getState) {
+    dispatch(fetchData())
+    .then(() => dispatch(setQuery(query)));
   };
 };
 
@@ -575,6 +587,7 @@ module.exports = {
   enablePricing,
   disablePricing,
   setQueryAndFetch,
+  fetchAndSetQuery,
   enableEditShower,
   disableEditShower,
   setMemberFilter,
