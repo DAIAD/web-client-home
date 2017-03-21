@@ -1,6 +1,7 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl');
+const DatetimeInput = require('react-datetime');
 
 const { LineChart } = require('react-echarts');
 const theme = require('../chart/themes/session');
@@ -127,10 +128,11 @@ function Member(props) {
 }
 
 function SessionInfo(props) {
-  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower, memberFilter, fetchAndSetQuery } = props;
+  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower, memberFilter, fetchAndSetQuery, nextReal, setShowerReal, setShowerTimeForm, showerTime } = props; 
+  const { device: deviceKey, id: sessionId, member, history } = data;
+
   const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
-  
-  const { device: deviceKey, id: sessionId, member, ignored } = data;
+
   return !data ? <div /> : (
     <div className="shower-info">  
       {
@@ -185,15 +187,56 @@ function SessionInfo(props) {
         activeDeviceType === 'AMPHIRO' ? 
           <span className="headline-date">
             <i className="fa fa-calendar" />
-            <FormattedDate 
-              value={new Date(data.timestamp)} 
-              year="numeric" 
-              month="long" 
-              day="numeric" 
-              weekday="long" 
-            /> 
-            &nbsp;
-            <FormattedTime value={new Date(data.timestamp)} />
+            { 
+              editShower && history ? 
+                <span>
+                  <DatetimeInput
+                    dateFormat="DD/MM/YYYY"
+                    timeFormat="HH:mm"
+                    className="headline-date-input"
+                    inputProps={{ size: 18 }}
+                    value={showerTime} 
+                    isValidDate={curr => nextReal ? 
+                      curr.valueOf() <= nextReal.timestamp 
+                      : 
+                      curr.valueOf() <= new Date().valueOf()
+                    }
+                    isValidTime={curr => nextReal ? 
+                      curr.valueOf() <= nextReal.timestamp 
+                      : 
+                      curr.valueOf() <= new Date().valueOf()
+                    }
+                    onChange={(val) => {
+                      setShowerTimeForm(val.valueOf());
+                    }}
+                  /> 
+                  &nbsp;
+                  <a 
+                    onClick={() => setShowerReal({ 
+                      deviceKey, 
+                      sessionId,
+                      timestamp: showerTime,
+                    })
+                    .then(() => fetchAndSetQuery({ active: [deviceKey, sessionId] })) 
+                    .then(() => disableEditShower())
+                    }
+                  >
+                    Set
+                  </a>
+                </span>
+                :
+                <span>
+                  <FormattedDate 
+                    value={new Date(data.timestamp)} 
+                    year="numeric" 
+                    month="long" 
+                    day="numeric" 
+                    weekday="long" 
+                  /> 
+                  &nbsp;
+                  <FormattedTime value={new Date(data.timestamp)} />
+                </span>
+            }
           </span> 
           :
           <span className="headline-date">
@@ -229,7 +272,7 @@ function Session(props) {
     activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period, members } = props;
     
   if (!data) return <div />;
-  const { history, id, min, max, date, device } = data;
+  const { devType, history, id, min, max, date, device, measurements } = data;
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
   const betterStr = better ? 'better' : 'worse';
@@ -245,8 +288,34 @@ function Session(props) {
   const percentDifference = data.percentDiff != null ? 
     ` ${Math.abs(data.percentDiff)}%` 
     : '';
+    
+  if (devType === 'AMPHIRO' && (history === true || (Array.isArray(measurements) && measurements.length === 0))) {
+    return (
+      <div className="shower-container">
+        <div className="shower-chart-area">
+          <div className="limited-data-text">
+            <h3><FormattedMessage id="history.limitedData" /></h3>
+            <h5>
+              <i className={arrowClass} />
+              <b>{percentDifference}</b>
+              <span>
+                {
+                  better != null ? 
+                    `  ${betterStr} than last shower`
+                    : 
+                   'No comparison data'
+                }
+              </span>
+            </h5>
+          </div> 
+        </div> 
 
-  if (history === false) {
+        <SessionInfo
+          {...props}
+        />
+      </div> 
+    );
+  } else if (devType === 'AMPHIRO') {
     return (
       <div className="shower-container">
         <div className="shower-chart-area">
@@ -285,32 +354,6 @@ function Session(props) {
           {...props}
         /> 
       </div>
-    );
-  } else if (history === true) {
-    return (
-      <div className="shower-container">
-        <div className="shower-chart-area">
-          <div className="limited-data-text">
-            <h3><FormattedMessage id="history.limitedData" /></h3>
-            <h5>
-              <i className={arrowClass} />
-              <b>{percentDifference}</b>
-              <span>
-                {
-                  better != null ? 
-                    `  ${betterStr} than last shower`
-                    : 
-                   'No comparison data'
-                }
-              </span>
-            </h5>
-          </div> 
-        </div> 
-
-        <SessionInfo
-          {...props}
-        />
-      </div> 
     );
   }
   return (

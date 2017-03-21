@@ -7,7 +7,9 @@ const moment = require('moment');
 
 const SessionModal = require('../components/sections/Session');
 const HistoryActions = require('../actions/HistoryActions');
-const { ignoreShower, assignToMember } = require('../actions/QueryActions');
+const { ignoreShower, assignToMember, setShowerReal } = require('../actions/QueryActions');
+const { setForm } = require('../actions/FormActions');
+
 const { getShowerMetricMu, formatMessage } = require('../utils/general');
 const { convertGranularityToPeriod, getLowerGranularityPeriod } = require('../utils/time');
 const { SHOWER_METRICS } = require('../constants/HomeConstants');
@@ -24,6 +26,7 @@ function mapStateToProps(state) {
     memberFilter: state.section.history.memberFilter, 
     members: state.user.profile.household.members,
     editShower: state.section.history.editShower,
+    showerTime: state.forms.shower.time,
     width: state.viewport.width,
   };
 }
@@ -32,6 +35,8 @@ function mapDispatchToProps(dispatch) {
     ...HistoryActions,
     assignToMember,
     ignoreShower,
+    setShowerReal,
+    setForm,
   }, dispatch);
 }
 
@@ -45,6 +50,16 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const chartFormatter = t => moment(t).format('hh:mm');
   const measurements = data && data.measurements ? data.measurements : [];
 
+  const nextReal = ownProps.sessions.sort((a, b) => { 
+      if (a.id < b.id) return -1; 
+      else if (a.id > b.id) return 1; 
+      return 0; 
+    })
+    .find(s => s.device === data.device 
+          && s.id > data.id 
+          && s.history === false
+         ); 
+         
   return {
     ...stateProps,
     ...dispatchProps,
@@ -66,7 +81,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFilters: SHOWER_METRICS
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
     mu: getShowerMetricMu(stateProps.activeSessionFilter),
-    period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(convertGranularityToPeriod(stateProps.time.granularity)) : '',
+    period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',
+    setShowerTimeForm: time => dispatchProps.setForm('shower', { time }),
+    nextReal,
     _t: formatMessage(ownProps.intl),
   };
 }

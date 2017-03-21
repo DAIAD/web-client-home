@@ -7,6 +7,8 @@
 
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
+const { setForm } = require('./FormActions');
+
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
 const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter, isValidShowerIndex } = require('../utils/sessions');
@@ -534,7 +536,12 @@ const setActiveSession = function (deviceKey, id, timestamp) {
       id: id || timestamp,
     });
     if (id != null && deviceKey != null) {
-      dispatch(fetchDeviceSession(id, deviceKey, getState().section.history.time));
+      dispatch(fetchDeviceSession(id, deviceKey, getState().section.history.time))
+      .then((session) => {
+        if (session) {
+          dispatch(setForm('shower', { time: session.timestamp }));
+        }
+      });
     }
   };
 };
@@ -602,11 +609,7 @@ const decreaseShowerIndex = function () {
  */
 const setQuery = function (query) {
   return function (dispatch, getState) {
-<<<<<<< HEAD
-    const { showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, forecasting, comparisons, clearComparisons, data, forecastData, comparisonData, memberFilter, mode } = query;
-=======
-    const { active, showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparison, clearComparisons, data, forecastData, memberFilter, mode } = query;
->>>>>>> 411c3c6... connected ignore shower and assign members to backend and made necessary changes to invalidate cache for updated data
+    const { active, showerId, device, deviceType, metric, sessionMetric, period, time, increaseShowerIndex: increaseIndex, decreaseShowerIndex: decreaseIndex, comparisons, clearComparisons, data, forecastData, comparisonData, memberFilter, mode } = query;
 
     dispatch(setDataUnsynced());
 

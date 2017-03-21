@@ -615,6 +615,39 @@ const ignoreShower = function (options) {
   };
 };
 
+const setShowerReal = function (options) {
+  return function (dispatch, getState) {
+    const { deviceKey, sessionId, timestamp } = options;
+
+    const data = {
+      deviceKey,
+      sessionId,
+      timestamp,
+      csrf: getState().user.csrf,
+    };  
+    dispatch(requestedQuery());
+
+    return dataAPI.setShowerReal(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+      
+      dispatch(clearCacheItems('AMPHIRO', deviceKey, sessionId));
+
+      return response;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on set shower real:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
+
 const queryUserComparisons = function (month, year) {
   return function (dispatch, getState) {
     const data = {
@@ -846,9 +879,9 @@ module.exports = {
   queryData,
   queryDataCache,
   queryDataAverageCache,
-  ignoreShower,
   fetchWaterIQ,
   fetchUserComparison,
   assignToMember,
   ignoreShower,
+  setShowerReal,
 };
