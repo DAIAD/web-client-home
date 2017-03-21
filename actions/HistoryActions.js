@@ -7,6 +7,8 @@
 
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
+const { setForm } = require('./FormActions');
+
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
 const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter, isValidShowerIndex } = require('../utils/sessions');
@@ -411,7 +413,12 @@ const setActiveSession = function (deviceKey, id, timestamp) {
       id: id || timestamp,
     });
     if (id != null && deviceKey != null) {
-      dispatch(fetchDeviceSession(id, deviceKey, getState().section.history.time));
+      dispatch(fetchDeviceSession(id, deviceKey, getState().section.history.time))
+      .then((session) => {
+        if (session) {
+          dispatch(setForm('shower', { time: session.timestamp }));
+        }
+      });
     }
   };
 };

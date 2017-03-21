@@ -12,6 +12,9 @@ const initialState = {
     name: '',
     properties: [],
   },
+  shower: {
+    time: null,
+  },
   confirm: {
     mode: null,
     item: null,

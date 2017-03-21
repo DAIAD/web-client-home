@@ -2,7 +2,6 @@ const React = require('react');
 const { FormattedDate } = require('react-intl');
 const bs = require('react-bootstrap');
 const CheckboxGroup = require('react-checkbox-group');
-const DatetimeInput = require('react-datetime');
 
 const MainSection = require('../layout/MainSection');
 const Topbar = require('../layout/Topbar');

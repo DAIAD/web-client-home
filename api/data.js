@@ -10,6 +10,9 @@ const DataAPI = {
   ignoreShower: function (data) {
     return callAPI('/action/data/session/ignore', data);
   },
+  setShowerReal: function (data) {
+    return callAPI('/action/data/session/date', data);
+  },
 };
 
 module.exports = DataAPI;
