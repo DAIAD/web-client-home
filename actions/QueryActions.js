@@ -787,7 +787,7 @@ const fetchWaterIQ = function (options) {
  */
 const fetchWidgetData = function (options) {
   return function (dispatch, getState) {
-    const { type, deviceType, period } = options;
+    const { type, deviceType, period, periodIndex } = options;
     const cache = options.cache || true;
     const deviceKey = getDeviceKeysByType(getState().user.profile.devices, deviceType);
     
@@ -810,7 +810,7 @@ const fetchWidgetData = function (options) {
     if (!deviceKey || !deviceKey.length) {
       return Promise.resolve(); 
     }
-    const time = options.time ? options.time : getTimeByPeriod(period);
+    const time = options.time ? options.time : getTimeByPeriod(period, periodIndex);
 
     if (deviceType === 'METER') {      
       const prevTime = getPreviousPeriodSoFar(period, time.startDate);
@@ -833,12 +833,8 @@ const fetchWidgetData = function (options) {
                                   .then(sessions => ({ id, sessions }))))
           .then(comparisons => ({ ...res, comparisons }));
         } else if (type === 'wateriq') {
-          console.log('last six months time', lastSixMonths());
-          return dispatch(fetchWaterIQ({ time: lastSixMonths() }))
-          .then((c) => { console.log('last six months data', c); return c; })
+          return dispatch(fetchWaterIQ({ time: lastSixMonths(time.startDate) }))
           .then(waterIQData => ({ ...res, waterIQData }));
-          //.then(waterIQData => dispatch(fetchWaterIQ({ time: prevTime }))
-          //            .then(previousWaterIQData => ({ ...res, waterIQData, previousWaterIQData }))); 
         }
         return Promise.resolve(res);
       });

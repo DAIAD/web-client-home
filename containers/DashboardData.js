@@ -66,6 +66,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       'display',
       'metric',
       'period',
+      'periodIndex',
       'title',
       'type',
     ])),

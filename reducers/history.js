@@ -1,12 +1,12 @@
 const types = require('../constants/ActionTypes');
 
 const { updateOrAppendToSession } = require('../utils/sessions');
-const { thisMonth } = require('../utils/time');
+const { getMonth } = require('../utils/time');
 
 const initialState = {
   filter: 'volume',
   timeFilter: 'month',
-  time: thisMonth(),
+  time: getMonth(),
   sortFilter: 'timestamp',
   sortOrder: 'desc',
   activeDevice: [],

@@ -8,41 +8,41 @@ const last24Hours = function (timestamp) {
   };
 };
 
-const today = function () {
+const getDay = function (timestamp = moment().valueOf()) {
   return {
-    startDate: moment().startOf('day').valueOf(),
-    endDate: moment().endOf('day').valueOf(),
+    startDate: moment(timestamp).startOf('day').valueOf(),
+    endDate: moment(timestamp).endOf('day').valueOf(),
     granularity: 0,
   };
 };
 
-const thisWeek = function () {
+const getWeek = function (timestamp = moment().valueOf()) {
   return {
-    startDate: moment().startOf('isoweek').valueOf(),
-    endDate: moment().endOf('isoweek').valueOf(),
+    startDate: moment(timestamp).startOf('isoweek').valueOf(),
+    endDate: moment(timestamp).endOf('isoweek').valueOf(),
     granularity: 2,
   };
 };
-const thisMonth = function () {
+const getMonth = function (timestamp = moment().valueOf()) {
   return {
-    startDate: moment().startOf('month').valueOf(),
-    endDate: moment().endOf('month').valueOf(),
+    startDate: moment(timestamp).startOf('month').valueOf(),
+    endDate: moment(timestamp).endOf('month').valueOf(),
     granularity: 2,
   };
 };
 
-const thisYear = function () {
+const getYear = function (timestamp = moment().valueOf()) {
   return {
-    startDate: moment().startOf('year').valueOf(),
-    endDate: moment().endOf('year').valueOf(),
+    startDate: moment(timestamp).startOf('year').valueOf(),
+    endDate: moment(timestamp).endOf('year').valueOf(),
     granularity: 4,
   };
 };
 
-const lastSixMonths = function () {
+const lastSixMonths = function (timestamp = moment().valueOf()) {
   return {
-    startDate: moment().subtract(6, 'month').startOf('month').valueOf(),
-    endDate: moment().subtract(1, 'month').endOf('month').valueOf(),
+    startDate: moment(timestamp).subtract(6, 'month').startOf('month').valueOf(),
+    endDate: moment(timestamp).endOf('month').valueOf(),
     granularity: 4,
   };
 };
@@ -72,11 +72,11 @@ const getLowerGranularityPeriod = function (period) {
   return null;
 };
 
-const getTimeByPeriod = function (period) {
-  if (period === 'year') return thisYear();
-  else if (period === 'month') return thisMonth();
-  else if (period === 'week') return thisWeek();
-  else if (period === 'day') return today();
+const getTimeByPeriod = function (period, index) {
+  if (period === 'year') return getYear(moment().subtract(index, period).valueOf());
+  else if (period === 'month') return getMonth(moment().subtract(index, period).valueOf());
+  else if (period === 'week') return getWeek(moment().subtract(index, period).valueOf());
+  else if (period === 'day') return getDay(moment().subtract(index, period).valueOf());
   return {};
   //throw new Error(`Period unrecognized ${period}`);
 };
@@ -238,10 +238,10 @@ module.exports = {
   defaultFormatter,
   selectTimeFormatter,
   last24Hours,
-  today,
-  thisWeek,
-  thisMonth,
-  thisYear,
+  getDay,
+  getWeek,
+  getMonth,
+  getYear,
   lastSixMonths,
   getPeriod,
   getNextPeriod,

@@ -1,11 +1,11 @@
 const types = require('../constants/ActionTypes');
 
-const { thisYear } = require('../utils/time');
+const { getMonth } = require('../utils/time');
 
 const initialState = {
   filter: 'volume',
-  time: thisYear(),
-  timeFilter: 'year',
+  time: getMonth(),
+  timeFilter: 'month',
   activeDeviceType: 'METER',
   data: [],
   synced: false,

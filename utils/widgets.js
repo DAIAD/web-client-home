@@ -212,7 +212,6 @@ const meterForecast = function (widget, devices, intl) {
 const meterPricing = function (widget, devices, intl) {
   const { data, period, deviceType, metric, previous } = widget;
   
-  console.log('meterprice', widget);
   if (deviceType !== 'METER') {
     console.error('only meter pricing supported');
   } else if (period !== 'month') {
@@ -350,7 +349,6 @@ const waterIQ = function (widget, devices, intl) {
   const highlight = current ? current.user : null;
   const highlightImg = highlight ? `energy-${highlight}.svg` : null;
 
-  console.log('water iq', waterIQData, current);
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
   const comparisons = ['user', 'all', 'nearest', 'similar']; 
   const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison}` })) : []; 
@@ -358,7 +356,7 @@ const waterIQ = function (widget, devices, intl) {
   const chartData = [{ 
     name: 'Water IQ', 
     data: Array.isArray(comparisons) ? 
-      comparisons.map(comparison => waterIQToNumeral(current[comparison])) 
+      comparisons.map(comparison => current ? waterIQToNumeral(current[comparison]) : null) 
       : [],
   }];
   return {

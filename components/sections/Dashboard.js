@@ -143,6 +143,12 @@ function StatWidget(props) {
             <img style={{ height: 55 }} src={`${IMAGES}/${highlightImg}`} alt={highlightImg} /> 
               : <i /> 
         }
+        {
+          highlight == null && highlightImg == null ?
+            <h2>-</h2>
+            :
+              <i />
+        }
       </div>
       <div style={{ float: 'left', width: '70%' }}>
         <div>

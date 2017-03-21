@@ -437,7 +437,7 @@ module.exports = {
       metric: 'volume', 
       display: 'chart',
       period: 'month',
-      periodIndex: -1,
+      periodIndex: 1,
     },
     {
       id: 'budget', 
@@ -456,7 +456,7 @@ module.exports = {
       metric: 'volume', 
       display: 'stat',
       period: 'month',
-      periodIndex: -1,
+      periodIndex: 1,
     },
     {
       id: 'wateriqChart', 
@@ -466,7 +466,7 @@ module.exports = {
       metric: 'volume', 
       display: 'chart',
       period: 'month',
-      periodIndex: -1,
+      periodIndex: 1,
     },
   ],
   HEATING_SYSTEMS: ['electricity', 'oil', 'gas'],
