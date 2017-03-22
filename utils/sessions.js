@@ -121,6 +121,18 @@ const reduceMetric = function (devices, data, metric) {
   return reducedMetric;
 };
 
+const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, granularity, intl) {
+  const total = reduceMetric(devices, data, metric);
+  return breakdown.map(item => ({
+    title: String(item.label).toLowerCase().replace(' ', '-'),
+    volume: Math.round(total * (item.percent / 100)),
+    member: user,
+    date: getTimeLabelByGranularity(time, 
+                                    granularity, 
+                                    intl
+                                   ),
+  }));
+};
 
 const calculateIndexes = function (sessions) { 
   return sessions.map((session, idx, array) => ({
@@ -355,4 +367,5 @@ module.exports = {
   waterIQToNumeral,
   numeralToWaterIQ,
   getAllMembers,
+  prepareBreakdownSessions,
 };

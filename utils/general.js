@@ -257,7 +257,6 @@ const validatePassword = function (password, confirmPassword) {
 };
 
 const getPriceBrackets = function (xCategories, brackets, intl) {
-  console.log('getting price brackets', xCategories, brackets);
   return brackets
   .filter(bracket => bracket.maxVolume != null)
   .map((bracket, i) => ({

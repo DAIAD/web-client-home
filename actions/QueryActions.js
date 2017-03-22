@@ -837,6 +837,8 @@ const fetchWidgetData = function (options) {
           .then(waterIQData => ({ ...res, waterIQData }));
         } else if (type === 'pricing') {
           return { ...res, brackets: getState().section.history.priceBrackets };
+        } else if (type === 'breakdown') {
+          return { ...res, breakdown: getState().section.history.waterBreakdown };
         }
         return Promise.resolve(res);
       });

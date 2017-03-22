@@ -9,6 +9,7 @@ const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm } = require('./FormActions');
 const { fetchPriceBrackets } = require('./BillingActions');
+const { fetchWaterBreakdown } = require('./WaterCalculatorActions');
 
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
@@ -718,6 +719,20 @@ const initPriceBrackets = function () {
   };
 };
 
+const setBreakdownLabels = function (labels) {
+  return {
+    type: types.HISTORY_SET_BREAKDOWN_LABELS,
+    labels,
+  };
+};
+
+const initWaterBreakdown = function () {
+  return function (dispatch, getState) {
+    dispatch(fetchWaterBreakdown())
+    .then(labels => dispatch(setBreakdownLabels(labels)));
+  };
+};
+
 module.exports = {
   linkToHistory,
   fetchDeviceSession,
@@ -752,4 +767,5 @@ module.exports = {
   setDataSynced,
   setDataUnsynced,
   initPriceBrackets,
+  initWaterBreakdown,
 };

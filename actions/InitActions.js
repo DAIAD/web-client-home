@@ -74,6 +74,7 @@ const initHome = function (profile) {
     dispatch(FormActions.setForm('profileForm', profileForm));
 
     dispatch(HistoryActions.initPriceBrackets());
+    dispatch(HistoryActions.initWaterBreakdown());
 
     const fetchCommonsData = dispatch(CommonsActions.getMyCommons())
     .then(commons => Array.isArray(commons) && commons.length > 0 ? 

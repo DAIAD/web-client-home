@@ -26,6 +26,7 @@ const initialState = {
   memberFilter: 'all',
   mode: 'stats',
   priceBrackets: [],
+  waterBreakdown: [],
 };
  
 const history = function (state = initialState, action) {
@@ -166,6 +167,11 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_PRICE_BRACKETS:
       return Object.assign({}, state, {
         priceBrackets: action.brackets,
+      });
+
+    case types.HISTORY_SET_BREAKDOWN_LABELS:
+      return Object.assign({}, state, {
+        waterBreakdown: action.labels,
       });
 
     case types.USER_RECEIVED_LOGOUT:

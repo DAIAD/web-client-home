@@ -165,6 +165,12 @@
     "common": "{comparison}",
     "member": "{comparison}"
   },
+  "breakdown": {
+    "shower": "Shower",
+    "bath": "Bath",
+    "washing-machine": "Washing machine",
+    "other": "Other"
+  },
   "notifications": {
     "showAll": "Show all",
     "alerts": "Alerts",

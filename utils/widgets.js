@@ -6,7 +6,7 @@ const { getFriendlyDuration, getEnergyClass, getMetricMu, getPriceBrackets } = r
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { reduceMetric, getShowerMeasurementsById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ } = require('./sessions');
+const { reduceMetric, getShowerMeasurementsById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ, prepareBreakdownSessions } = require('./sessions');
 
 const tip = function (widget) {
   return {
@@ -252,7 +252,7 @@ const meterPricing = function (widget, devices, intl) {
   };
 };
 const meterBreakdown = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+  const { data, period, deviceType, metric, breakdown = [] } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter breakdown makes sense');
@@ -264,21 +264,26 @@ const meterBreakdown = function (widget, devices, intl) {
   const reduced = data ? reduceMetric(devices, data, metric) : 0;
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
-  // TODO: static
-  // dummy data
-  const chartCategories = ['toilet', 'faucet', 'shower', 'kitchen'];
+
+  const sessions = prepareBreakdownSessions(devices,
+                                            data,
+                                            metric,
+                                            breakdown,
+                                            null,
+                                            time.startDate,
+                                            time.granularity,
+                                            intl
+                                           );
+
   const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
+  const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.title}` }).split(' ').join('\n'));
   const chartData = [{
-    name: 'Consumption', 
-    data: [
-      Math.floor(reduced / 4), 
-      Math.floor(reduced / 4), 
-      Math.floor(reduced / 3), 
-      Math.floor((reduced / 2) - (reduced / 3)),
-    ],
+    name: 'Consumption',
+    data: sessions.map(x => x[metric]),
   }];
+  
   const mu = getMetricMu(metric);
-  const invertAxis = true;
+
   return {
     ...widget,
     time,
@@ -288,8 +293,8 @@ const meterBreakdown = function (widget, devices, intl) {
     chartColors,
     chartData,
     mu,
-    invertAxis,
     clearComparisons: true,
+    mode: 'breakdown',
   };
 };
 
