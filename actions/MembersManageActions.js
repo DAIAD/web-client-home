@@ -82,9 +82,9 @@ const clickConfirmMember = function () {
     const { item, mode } = getState().forms.confirm;
 
     if (mode === 'create') {
+      dispatch(push('/settings/members'));
       dispatch(addMember(item))
-      .then(() => dispatch(fetchProfile()))
-      .then(() => dispatch(push('/settings/members')));
+      .then(() => dispatch(fetchProfile()));
     } else if (mode === 'update') {
       dispatch(editMember(item))
       .then(() => dispatch(fetchProfile()));
