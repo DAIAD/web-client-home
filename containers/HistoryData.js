@@ -7,12 +7,12 @@ const HistoryActions = require('../actions/HistoryActions');
 const History = require('../components/sections/History');
 
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, getComparisonTitle, getAllMembers } = require('../utils/sessions');
+const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, getComparisonTitle, getAllMembers, prepareBreakdownSessions } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu, formatMessage } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
 
-const { meter: meterSessionSchema, amphiro: amphiroSessionSchema } = require('../schemas/history');
+const { meter: meterSessionSchema, amphiro: amphiroSessionSchema, breakdown: breakdownSessionSchema } = require('../schemas/history');
 
 const { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
 
@@ -37,16 +37,27 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const devType = stateProps.activeDeviceType;  
   const members = getAllMembers(stateProps.members, stateProps.firstname); 
 
-  const sessions = sortSessions(prepareSessionsForTable(stateProps.devices, 
-                                                        stateProps.data, 
-                                                        members,
-                                                        stateProps.firstname, 
-                                                        stateProps.time.granularity,
-                                                        ownProps.intl
-                                                       ),
-                                stateProps.sortFilter, 
-                                stateProps.sortOrder
-                               );
+  const sessions = stateProps.mode === 'breakdown' ?
+    prepareBreakdownSessions(stateProps.devices,
+                             stateProps.data,
+                             stateProps.filter,
+                             stateProps.waterBreakdown,
+                             stateProps.firstname,
+                             stateProps.time.startDate,
+                             stateProps.time.granularity + 1,
+                             ownProps.intl
+                            )
+    : 
+    sortSessions(prepareSessionsForTable(stateProps.devices, 
+                                         stateProps.data, 
+                                         members,
+                                         stateProps.firstname, 
+                                         stateProps.time.granularity,
+                                         ownProps.intl
+                                        ),
+                                    stateProps.sortFilter, 
+                                    stateProps.sortOrder
+                );
 
   const sessionFields = stateProps.activeDeviceType === 'METER' ? 
     meterSessionSchema
@@ -138,6 +149,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     periods: METER_PERIODS.filter(p => p.id === 'month'),
     comparisons: availableComparisons,
   },
+  {
+    id: 'breakdown',
+    title: 'Water breakdown',
+    periods: METER_PERIODS.filter(p => p.id !== 'day' && p.id !== 'custom'),
+    comparisons: [],
+  }
   ];
 
   const modes = devType === 'AMPHIRO' ? AMPHIRO_MODES : METER_MODES;
@@ -163,7 +180,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     memberFilters,
     sortOptions,
     sessions,
-    sessionFields,
+    sessionFields: stateProps.mode === 'breakdown' ? breakdownSessionSchema : sessionFields,
     deviceTypes,
     csvData,
     reducedMetric: `${reducedMetric} ${getMetricMu(stateProps.filter)}`,

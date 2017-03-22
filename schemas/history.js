@@ -1,5 +1,5 @@
 const React = require('react');
-const { FormattedDate } = require('react-intl');
+const { FormattedDate, FormattedMessage } = require('react-intl');
 const { IMAGES } = require('../constants/HomeConstants');
 
 const meter = [
@@ -137,7 +137,36 @@ const amphiro = [
   }
 ];
 
+const breakdown = [
+  {
+    id: 'title',
+    name: 'Usage',
+    value: value => (
+      <span style={{ fontSize: '1.5em' }}>
+        <img src={`${IMAGES}/${value}.svg`} alt={value} style={{ marginRight: 10 }} />
+        <FormattedMessage id={`breakdown.${value}`} />
+      </span>
+    ),
+  },
+  {
+    id: 'volume',
+    name: 'Volume',
+    value: (value, row) => 
+      <span style={{ fontSize: '2.5em' }}>
+        {value}
+        <span style={{ fontSize: '0.6em' }}> lt</span>
+      </span>,
+  },
+  {
+    id: 'showMore',
+    name: '',
+    value: () => 
+      <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
+  },
+];
+
 module.exports = {
   meter,
   amphiro,
+  breakdown,
 };
