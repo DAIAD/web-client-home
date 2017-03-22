@@ -158,16 +158,16 @@ const getLastPeriod = function (period, timestamp) {
   return moment(timestamp).subtract(period, 1).valueOf();
 };
 
-const getComparisonPeriod = function (timestamp, period, intl) {
+const getComparisonPeriod = function (timestamp, period, _t) {
   const last = getLastPeriod(period, timestamp);
   if (period === 'year') {
     return moment(last).get('year').toString();
   } else if (period === 'month') {
-    return intl.formatMessage({ id: `months.${moment(last).get('month')}` }); 
+    return _t(`months.${moment(last).get('month')}`); 
   } else if (period === 'week') {
-    return `${intl.formatMessage({ id: 'periods.week' })} ${moment(last).get('isoweek')}`;
+    return `${_t('periods.week')} ${moment(last).get('isoweek')}`;
   } else if (period === 'day') {
-    return intl.formatMessage({ id: `weekdays.${moment(last).get('day')}` });
+    return _t(`weekdays.${moment(last).get('day')}`);
   }
   return null;
 };

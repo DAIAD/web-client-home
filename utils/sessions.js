@@ -277,59 +277,50 @@ const energyToPictures = function (energy) {
     items: div(ENERGY_CITY),
   };
 };
+const getAllMembers = function (members, firstname) {
+  return [{
+    id: 'default',
+    index: 0,
+    name: firstname,
+  },
+  ...members.filter(member => member.active),
+  ];
+};
 
 const memberFilterToMembers = function (filter) {
   if (filter === 'all') {
     return [];
-  } else if (filter === 'default') {
-    return [0];
   } else if (!isNaN(filter)) {
     return [filter];
   } 
   return [];
 };
 
-const getComparisonTitle = function (comparison, start, period, favCommon, intl) {
-  if (comparison === 'last') {
-    return getComparisonPeriod(start, period, intl);
-  } else if (comparison === 'all') {
-    return 'Everyone';
-  } else if (comparison === 'common') {
-    return favCommon;
-  } else if (comparison === 'nearest') {
-    return 'Neighbours';
-  } else if (comparison === 'similar') {
-    return 'Similar';
+const getComparisonTitle = function (devType, comparison, start, period, favCommon, members, _t) {
+  if (devType === 'METER') {
+    let extra = '';
+    if (comparison === 'last') {
+      extra = getComparisonPeriod(start, period, _t);
+    } else if (comparison === 'common') {
+      extra = favCommon;
+    }
+    return _t(`comparisons.${comparison}`, { comparison: extra });
+  } else if (devType === 'AMPHIRO') {
+    const member = members.find(m => String(m.index) === comparison);
+    return _t('comparisons.member', { comparison: member ? member.name : '' });
   }
   return '';
 };
 
-const getComparisons = function (devType, start, period, favCommon, intl) {
+const getComparisons = function (devType, memberFilter, members) {
    if (devType === 'METER') {
-    return [{
-      id: 'last',
-      title: getComparisonTitle('last', start, period, favCommon, intl),
-    },
-    {
-      id: 'all',
-      title: getComparisonTitle('all', start, period, favCommon, intl),
-    },
-    {
-      id: 'common',
-      title: getComparisonTitle('common', start, period, favCommon, intl)
-    },
-    // TODO: allow when backend computation fixed to compute average instead of sum
-    {
-      id: 'nearest',
-      title: getComparisonTitle('nearest', start, period, favCommon, intl),
-    },
-    {
-      id: 'similar',
-      title: getComparisonTitle('similar', start, period, favCommon, intl),
-      },
-    ].filter(c => favCommon == null ? c.id !== 'common' : true);
-  }
-  return [];
+     return ['last', 'all', 'common', 'nearest', 'similar'];
+   } else if (devType === 'AMPHIRO') {
+     return memberFilter !== 'all' ? 
+       members.filter(m => m.index !== memberFilter).map(m => String(m.index))
+         : [];
+   }
+   return [];
 };
 
 const waterIQToNumeral = function (waterIQ) {
@@ -363,4 +354,5 @@ module.exports = {
   getComparisonTitle,
   waterIQToNumeral,
   numeralToWaterIQ,
+  getAllMembers,
 };

@@ -10,6 +10,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const { ignoreShower, assignToMember, setShowerReal } = require('../actions/QueryActions');
 const { setForm } = require('../actions/FormActions');
 
+const { getAllMembers } = require('../utils/sessions');
 const { getShowerMetricMu, formatMessage } = require('../utils/general');
 const { convertGranularityToPeriod, getLowerGranularityPeriod } = require('../utils/time');
 const { SHOWER_METRICS } = require('../constants/HomeConstants');
@@ -66,13 +67,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...ownProps,
     data,
     chartFormatter,
-    members: [{ 
-      id: 'default', 
-      index: 0, 
-      name: stateProps.user.firstname 
-    }, 
-    ...stateProps.members.filter(member => member.active)
-    ],
+    members: getAllMembers(stateProps.members, stateProps.user.firstname),
     chartCategories: measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss')),
     chartData: measurements.map(measurement => measurement ? 
                                 measurement[stateProps.activeSessionFilter]

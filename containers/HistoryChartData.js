@@ -9,8 +9,8 @@ const HistoryChart = require('../components/sections/HistoryChart');
 const { bringPastSessionsToPresent } = require('../utils/time');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart } = require('../utils/chart');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('../utils/device');
-const { getLastShowerIdFromMultiple, getComparisons, getComparisonTitle } = require('../utils/sessions');
-const { getMetricMu, getPriceBrackets } = require('../utils/general');
+const { getLastShowerIdFromMultiple, getComparisonTitle, getAllMembers } = require('../utils/sessions');
+const { formatMessage, getMetricMu, getPriceBrackets } = require('../utils/general');
 
 
 function mapStateToProps(state) {
@@ -30,6 +30,9 @@ function mapStateToProps(state) {
     priceBrackets: state.section.history.priceBrackets,
     myCommons: state.section.commons.myCommons,
     favoriteCommon: state.section.settings.commons.favorite,
+    user: state.user.profile,
+    members: state.user.profile.household.members,
+    memberFilter: state.section.history.memberFilter, 
   };
 }
 
@@ -38,6 +41,10 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
+  const _t = formatMessage(ownProps.intl);
+
+  const members = getAllMembers(stateProps.members, stateProps.user.firstname);
+
   const xCategories = stateProps.activeDeviceType === 'METER' ? 
     getChartMeterCategories(stateProps.time) : 
       getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
@@ -63,8 +70,10 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
         },
       };
     } else if (stateProps.activeDeviceType === 'AMPHIRO') {
+      const memberName = stateProps.memberFilter === 'all' ? 'All' : members.find(m => stateProps.memberFilter === m.index).name;
+      const devName = getDeviceNameByKey(stateProps.devices, devData.deviceKey);
       return {
-        name: getDeviceNameByKey(stateProps.devices, devData.deviceKey) || '', 
+        name: memberName + ' (' + devName + ')', 
         data: getChartAmphiroData(devData.sessions, xCategories, stateProps.filter),
         metadata: {
           device: devData.deviceKey,
@@ -75,26 +84,44 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     return [];
   });
 
-  const comparisons = stateProps.comparisons.map((comparison) => {
+
+  const comparisons = stateProps.activeDeviceType === 'METER' ? 
+    stateProps.comparisons.map((comparison) => {
     const sessions = comparison.id === 'last' ? 
       bringPastSessionsToPresent(comparison.sessions, stateProps.timeFilter) 
       : 
       comparison.sessions;
     return ({
-      name: getComparisonTitle(comparison.id, 
+      name: getComparisonTitle(stateProps.activeDeviceType,
+                               comparison.id, 
                                stateProps.time.startDate,
                                stateProps.timeFilter, 
                                favoriteCommonName, 
-                               ownProps.intl),
-      data: getChartMeterData(sessions, 
-                              xCategories, 
-                              stateProps.time, 
-                              stateProps.filter,
-                              stateProps.pricing
-                             ),
+                               members,
+                               _t
+                              ),
+     data: getChartMeterData(sessions, 
+                      xCategories, 
+                      stateProps.time, 
+                      stateProps.filter,
+                      stateProps.pricing
+                     ),
       fill: 0.1,
     });
-  });
+  })
+  :
+    stateProps.comparisons.map(comparison => comparison.sessions.map(dev => ({
+      name: getComparisonTitle(stateProps.activeDeviceType,
+                               comparison.id, 
+                               stateProps.time.startDate,
+                               stateProps.timeFilter, 
+                               favoriteCommonName, 
+                               members,
+                               _t
+                              ) + ' (' + dev.name + ')',
+     data: getChartAmphiroData(dev.sessions, xCategories, stateProps.filter),
+     fill: 0.1,
+    }))).reduce((p, c) => [...p, ...c], []);
   
   const forecast = stateProps.activeDeviceType === 'METER' && stateProps.forecasting && stateProps.forecastData ? 
     [{

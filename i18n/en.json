@@ -157,10 +157,13 @@
     "all": "All"
   },
   "comparisons": {
-    "all": "Everyone",
+    "all": "City",
     "nearest": "Neighbors",
     "similar": "Similar",
-    "user": "You"
+    "user": "You",
+    "last": "{comparison}",
+    "common": "{comparison}",
+    "member": "{comparison}"
   },
   "notifications": {
     "showAll": "Show all",

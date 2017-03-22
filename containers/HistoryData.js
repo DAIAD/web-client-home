@@ -7,7 +7,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const History = require('../components/sections/History');
 
 const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons } = require('../utils/sessions');
+const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, getComparisonTitle, getAllMembers } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu, formatMessage } = require('../utils/general');
 const { getTimeLabelByGranularity } = require('../utils/chart');
@@ -32,8 +32,10 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
+  const _t = formatMessage(ownProps.intl);
+
   const devType = stateProps.activeDeviceType;  
-  const members = stateProps.members.filter(member => member.active);
+  const members = getAllMembers(stateProps.members, stateProps.firstname); 
 
   const sessions = sortSessions(prepareSessionsForTable(stateProps.devices, 
                                                         stateProps.data, 
@@ -80,22 +82,27 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const metrics = devType === 'AMPHIRO' ? DEV_METRICS : METER_METRICS;
 
-  //const periods = devType === 'AMPHIRO' ? DEV_PERIODS : METER_PERIODS;
-  
   const sortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
 
   const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
 
-  const availableComparisons = getComparisons(devType, stateProps.time.startDate, stateProps.timeFilter, favoriteCommon.name, ownProps.intl);
+  const availableComparisons = getComparisons(devType, stateProps.memberFilter, members)
+  .map(c => ({
+    id: c,
+    title: getComparisonTitle(stateProps.activeDeviceType,
+                              c, 
+                              stateProps.time.startDate, 
+                              stateProps.timeFilter, 
+                              favoriteCommon.name, 
+                              members, 
+                              _t
+                             ),
+  }));   
 
   const memberFilters = devType === 'AMPHIRO' ?
     [{
       id: 'all',
       title: 'All',
-    },
-    {
-      id: 'default',
-      title: stateProps.firstname,
     },
     ...members.map(member => ({
       id: member.index,
@@ -162,7 +169,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     reducedMetric: `${reducedMetric} ${getMetricMu(stateProps.filter)}`,
     hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
     hasShowersBefore: () => hasShowersBefore(stateProps.data),
-    _t: formatMessage(ownProps.intl),
+    _t,
   };
 }
 

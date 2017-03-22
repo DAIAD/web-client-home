@@ -137,7 +137,7 @@ const fetchComparison = function (id, query) {
 
 const fetchComparisonData = function () {
   return function (dispatch, getState) {
-    const { comparisons, activeDeviceType, timeFilter, time } = getState().section.history;
+    const { comparisons, activeDeviceType, activeDevice, timeFilter, showerIndex, time } = getState().section.history;
     const userKey = getState().user.profile.key;
     const utilityKey = getState().user.profile.utility.key;
     const commonKey = getState().section.settings.commons.favorite;
@@ -180,6 +180,16 @@ const fetchComparisonData = function () {
       } else if (comparison.id === 'similar') {
         return dispatch(QueryActions.fetchUserComparison('similar', time))
         .then(nearest => dispatch(setComparisonSessions('similar', nearest)));
+      } else if (activeDeviceType === 'AMPHIRO' && !isNaN(comparison.id)) {
+        return dispatch(QueryActions.queryDeviceSessionsCache({ 
+          deviceKey: activeDevice, 
+          length: showerFilterToLength(timeFilter),
+          index: showerIndex,
+          memberFilter: comparison.id,
+        }))
+        .then((sessions) => {
+          dispatch(setComparisonSessions(comparison.id, sessions));
+        });
       }
       return Promise.resolve();
     }));
@@ -246,6 +256,7 @@ const fetchData = function () {
       .then((sessions) => {
         dispatch(setSessions(sessions));
       })
+      .then(() => dispatch(fetchComparisonData()))
       .then(() => dispatch(setDataSynced()))
       .catch((error) => { 
         console.error('Caught error in history device query:', error); 
@@ -330,6 +341,15 @@ const setShowerIndex = function (index) {
     index,
   };
 };
+
+const switchMemberFilter = function (filter) {
+  return function (dispatch, getState) {
+    dispatch(resetComparisons());
+    dispatch(setShowerIndex(0));
+    dispatch(setMemberFilter(filter));
+  };
+};
+
 
 /**
  * Sets time/period filter for history section. 
@@ -483,6 +503,7 @@ const switchActiveDeviceType = function (deviceType) {
       dispatch(setTimeFilter('month'));
       dispatch(setTime(getTimeByPeriod('month')));
       dispatch(setSortFilter('timestamp'));
+      dispatch(resetComparisons());
     }
   };
 };
@@ -643,7 +664,7 @@ const setQuery = function (query) {
       dispatch(setWaterIQSessions(waterIQData));
     }
 
-    if (memberFilter) dispatch(setMemberFilter(memberFilter));
+    if (memberFilter != null) dispatch(switchMemberFilter(memberFilter));
 
     if (Array.isArray(active) && active.length === 2 && active[0] != null && active[1] != null) { 
       //dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 

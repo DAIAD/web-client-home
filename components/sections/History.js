@@ -251,6 +251,32 @@ const History = React.createClass({
               }
             </CheckboxGroup>
             <br />
+            
+            { this.props.memberFilters && this.props.memberFilters.length > 0 ? 
+              <div>
+                <h5 style={{ marginLeft: 20 }}>Filter by</h5>
+                <bs.Tabs 
+                  position="left" 
+                  tabWidth={20} 
+                  activeKey={this.props.memberFilter} 
+                  onSelect={(val) => {
+                    this.props.setQueryAndFetch({ memberFilter: val });
+                  }}
+                >
+                  {
+                    this.props.memberFilters.map(filter => (
+                      <bs.Tab 
+                        key={filter.id} 
+                        eventKey={filter.id}
+                        title={filter.title} 
+                      /> 
+                    ))
+                  }
+                </bs.Tabs>
+              </div>
+              : <div />
+            }
+            <br />
 
             { 
               this.props.compareAgainst && this.props.compareAgainst.length > 0 ?
@@ -281,7 +307,7 @@ const History = React.createClass({
                   }
                 </ul>
               </div>
-            }
+              } 
             {
               this.props.comparisons.length > 0 ?
                 <a 
@@ -292,30 +318,6 @@ const History = React.createClass({
                 </a>
                 :
                 <div />
-            }
-            { this.props.memberFilters && this.props.memberFilters.length > 0 ? 
-              <div>
-                <h5 style={{ marginLeft: 20 }}>Filter by</h5>
-                <bs.Tabs 
-                  position="left" 
-                  tabWidth={20} 
-                  activeKey={this.props.memberFilter} 
-                  onSelect={(val) => {
-                    this.props.setQueryAndFetch({ memberFilter: val });
-                  }}
-                >
-                  {
-                    this.props.memberFilters.map(filter => (
-                      <bs.Tab 
-                        key={filter.id} 
-                        eventKey={filter.id}
-                        title={filter.title} 
-                      /> 
-                    ))
-                  }
-                </bs.Tabs>
-              </div>
-              : <div />
             }
           </SidebarRight>
           <div className="primary"> 
