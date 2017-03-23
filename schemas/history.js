@@ -144,7 +144,7 @@ const breakdown = [
     value: value => (
       <span style={{ fontSize: '1.5em' }}>
         <img src={`${IMAGES}/${value}.svg`} alt={value} style={{ marginRight: 10 }} />
-        <FormattedMessage id={`breakdown.${value}`} />
+        <span>{value}</span>
       </span>
     ),
   },

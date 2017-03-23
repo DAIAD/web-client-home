@@ -10,15 +10,14 @@ const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils
 const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, getComparisonTitle, getAllMembers, prepareBreakdownSessions } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu, formatMessage } = require('../utils/general');
-const { getTimeLabelByGranularity } = require('../utils/chart');
+const { getHistoryData } = require('../utils/history');
 
-const { meter: meterSessionSchema, amphiro: amphiroSessionSchema, breakdown: breakdownSessionSchema } = require('../schemas/history');
 
 const { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
-    firstname: state.user.profile.firstname,
+    user: state.user.profile,
     devices: state.user.profile.devices,
     myCommons: state.section.commons.myCommons,
     favoriteCommon: state.section.settings.commons.favorite,
@@ -35,40 +34,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const _t = formatMessage(ownProps.intl);
 
   const devType = stateProps.activeDeviceType;  
-  const members = getAllMembers(stateProps.members, stateProps.firstname); 
-
-  const sessions = stateProps.mode === 'breakdown' ?
-    prepareBreakdownSessions(stateProps.devices,
-                             stateProps.data,
-                             stateProps.filter,
-                             stateProps.waterBreakdown,
-                             stateProps.firstname,
-                             stateProps.time.startDate,
-                             stateProps.time.granularity + 1,
-                             ownProps.intl
-                            )
-    : 
-    sortSessions(prepareSessionsForTable(stateProps.devices, 
-                                         stateProps.data, 
-                                         members,
-                                         stateProps.firstname, 
-                                         stateProps.time.granularity,
-                                         ownProps.intl
-                                        ),
-                                    stateProps.sortFilter, 
-                                    stateProps.sortOrder
-                );
-
-  const sessionFields = stateProps.activeDeviceType === 'METER' ? 
-    meterSessionSchema
-      :
-    amphiroSessionSchema;
-    
-  const csvData = stateProps.activeDeviceType === 'METER' ? 
-    meterSessionsToCSV(sessions) 
-    : 
-    deviceSessionsToCSV(sessions);
-
+  const members = getAllMembers(stateProps.members, stateProps.user.firstname); 
+ 
   let deviceTypes = [{
     id: 'METER', 
     title: 'Water meter', 
@@ -93,7 +60,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const metrics = devType === 'AMPHIRO' ? DEV_METRICS : METER_METRICS;
 
-  const sortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
+  const availableSortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
 
   const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
 
@@ -123,37 +90,40 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     :
       [];
 
-  const reducedMetric = reduceMetric(stateProps.devices, stateProps.data, stateProps.filter);
-
   const AMPHIRO_MODES = [{ 
     id: 'stats', 
     title: 'Statistics',
     periods: DEV_PERIODS, 
     comparisons: availableComparisons,
+    sort: availableSortOptions,
   }];
   const METER_MODES = [{ 
     id: 'stats', 
     title: 'Statistics',
     periods: METER_PERIODS,
     comparisons: availableComparisons.filter(c => stateProps.timeFilter === 'custom' ? c.id !== 'last' : true),
+    sort: availableSortOptions,
   },
   {
     id: 'forecasting',
     title: 'Forecasting',
-    periods: METER_PERIODS.filter(p => p.id !== 'custom'),
+    periods: METER_PERIODS,
     comparisons: availableComparisons,
+    sort: availableSortOptions,
   },
   {
     id: 'pricing',
     title: 'Pricing',
     periods: METER_PERIODS.filter(p => p.id === 'month'),
     comparisons: availableComparisons,
+    sort: availableSortOptions,
   },
   {
     id: 'breakdown',
-    title: 'Water breakdown',
+    title: 'Breakdown',
     periods: METER_PERIODS.filter(p => p.id !== 'day' && p.id !== 'custom'),
-    comparisons: [],
+    comparisons: availableComparisons.filter(p => p.id === 'last'),
+    sort: availableSortOptions.filter(x => x.id !== 'timestamp'),
   }
   ];
 
@@ -161,7 +131,21 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const activeMode = modes.find(m => m.id === stateProps.mode);
   const periods = activeMode ? activeMode.periods : [];
   const compareAgainst = activeMode ? activeMode.comparisons : [];
+  const sortOptions = activeMode ? activeMode.sort : [];
 
+  const { 
+    sessions,
+    sessionFields,
+    csvData,
+    reducedMetric,
+    chartType,
+    chartData,
+    chartCategories,
+    chartFormatter,
+    chartColors,
+    mu,
+  } = getHistoryData({ ...stateProps, ...ownProps });
+  
   return {
     ...stateProps,
     ...dispatchProps,
@@ -179,14 +163,36 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     compareAgainst,
     memberFilters,
     sortOptions,
+    hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
+    hasShowersBefore: () => hasShowersBefore(stateProps.data), 
+    _t,
     sessions,
-    sessionFields: stateProps.mode === 'breakdown' ? breakdownSessionSchema : sessionFields,
+    //sessionFields: stateProps.mode === 'breakdown' ? breakdownSessionSchema : sessionFields,
+    sessionFields,
     deviceTypes,
     csvData,
     reducedMetric: `${reducedMetric} ${getMetricMu(stateProps.filter)}`,
-    hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
-    hasShowersBefore: () => hasShowersBefore(stateProps.data),
-    _t,
+    mu,
+    chart: {
+      //chart width = viewport width - main menu - sidebar left - sidebar right - padding
+      width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),
+      chartType,
+      chartData,
+      chartCategories,
+      chartColors,
+      chartFormatter,
+      onPointClick: (series, index) => {
+        const device = chartData[series] ? 
+          chartData[series].metadata.device 
+          : null;
+          
+        const [id, timestamp] = chartData[series] 
+         && chartData[series].metadata.ids ? 
+           chartData[series].metadata.ids[index] 
+           : [null, null];
+        dispatchProps.setActiveSession(device, id, timestamp);
+      },
+    },
   };
 }
 

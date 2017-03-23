@@ -115,9 +115,15 @@ module.exports = {
       id: 'devName',  
       mu: '', 
       title: 'history.device', 
-      icon: 'amphiro_small.svg', 
-      details: 'history.durationDetails', 
-      clickable: false,
+      icon: 'water-meter.svg', 
+      details: 'history.deviceDetails', 
+    }, 
+    {
+      id: 'devType',  
+      mu: '', 
+      title: 'history.deviceType', 
+      icon: 'water-meter.svg', 
+      details: 'history.deviceDetails', 
     }, 
     {
       id: 'count',
@@ -125,7 +131,6 @@ module.exports = {
       title: 'history.count', 
       details: 'history.countDetails', 
       icon: 'default-ranking.svg', 
-      clickable: true,
     },  
     {
       id: 'volume', 
@@ -133,7 +138,6 @@ module.exports = {
       title: 'history.volume', 
       details: 'history.volumeDetails', 
       icon: 'volume.svg',
-      clickable: true,
     },
   ],
   SHOWER_METRICS: [
@@ -143,7 +147,6 @@ module.exports = {
       title: 'history.device', 
       icon: 'amphiro_small.svg', 
       details: 'history.durationDetails', 
-      clickable: false,
     }, 
     {
       id: 'volume', 
@@ -167,7 +170,6 @@ module.exports = {
       title: 'history.energy', 
       details: 'history.energyDetails',
       icon: 'energy.svg', 
-      clickable: true,
     }, 
     {
       id: 'friendlyDuration', 
@@ -175,7 +177,6 @@ module.exports = {
       title: 'history.duration', 
       details: 'history.durationDetails', 
       icon: 'duration.svg', 
-      clickable: false,
     }, 
   ],
   METER_PERIODS: [

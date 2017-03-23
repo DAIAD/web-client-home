@@ -1,6 +1,6 @@
 const { getFriendlyDuration, getEnergyClass, energyToPower } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
-const { getComparisonPeriod, getTimeLabelByGranularity } = require('./time');
+const { getComparisonPeriod, getTimeLabelByGranularity, getPeriodTimeLabel } = require('./time');
 
 const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
@@ -120,17 +120,24 @@ const reduceMetric = function (devices, data, metric) {
   return reducedMetric;
 };
 
-const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, granularity, intl) {
+const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, timeFilter, intl) {
   const total = reduceMetric(devices, data, metric);
-  return breakdown.map(item => ({
-    title: String(item.label).toLowerCase().replace(' ', '-'),
-    volume: Math.round(total * (item.percent / 100)),
-    member: user,
-    date: getTimeLabelByGranularity(time, 
-                                    granularity, 
-                                    intl
-                                   ),
-  }));
+  return breakdown.map(item => {
+    const id = String(item.label).toLowerCase().replace(' ', '-');
+    const title = intl.formatMessage({ id: `breakdown.${id}` });
+    return {
+      id,
+      devName: 'SWM',
+      devType: title,
+      title,
+      volume: Math.round(total * (item.percent / 100)),
+      member: user,
+      date: getPeriodTimeLabel(time, 
+                               timeFilter,
+                               intl
+                              ),
+    };
+  });
 };
 
 const calculateIndexes = function (sessions) { 
@@ -307,18 +314,26 @@ const memberFilterToMembers = function (filter) {
   return [];
 };
 
+const getMeterComparisonTitle = function (comparison, start, period, favCommon, _t) {
+  let extra = '';
+  if (comparison === 'last') {
+    extra = getComparisonPeriod(start, period, _t);
+  } else if (comparison === 'common') {
+    extra = favCommon;
+  }
+  return _t(`comparisons.${comparison}`, { comparison: extra });
+};
+
+const getAmphiroComparisonTitle = function (comparison, members, _t) {
+  const member = members.find(m => String(m.index) === comparison);
+  return _t('comparisons.member', { comparison: member ? member.name : '' });
+};
+
 const getComparisonTitle = function (devType, comparison, start, period, favCommon, members, _t) {
   if (devType === 'METER') {
-    let extra = '';
-    if (comparison === 'last') {
-      extra = getComparisonPeriod(start, period, _t);
-    } else if (comparison === 'common') {
-      extra = favCommon;
-    }
-    return _t(`comparisons.${comparison}`, { comparison: extra });
+    return getMeterComparisonTitle(comparison, start, period, favCommon, _t);
   } else if (devType === 'AMPHIRO') {
-    const member = members.find(m => String(m.index) === comparison);
-    return _t('comparisons.member', { comparison: member ? member.name : '' });
+    return getAmphiroComparisonTitle(comparison, members, _t);
   }
   return '';
 };

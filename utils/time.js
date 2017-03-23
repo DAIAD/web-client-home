@@ -234,7 +234,9 @@ const bringPastSessionsToPresent = function (sessions, period) {
 };
 
 const getTimeLabelByGranularity = function (timestamp, granularity, intl) {
-  if (granularity === 4) {
+    if (granularity === 5) {
+      return moment(timestamp).get('year');
+    } else if (granularity === 4) {
     return intl.formatMessage({ id: `months.${moment(timestamp).get('month')}` }) + 
       ' ' +
       moment(timestamp).format('YYYY'); 
@@ -254,6 +256,13 @@ const getTimeLabelByGranularity = function (timestamp, granularity, intl) {
   return intl.formatMessage({ id: `weekdays.${moment(timestamp).get('day')}` }) + 
     ' ' +
     moment(timestamp).format('DD/ MM/ YYYY hh:mm a');
+};
+
+const getPeriodTimeLabel = function (timestamp, period, intl) {
+  let granularity = convertPeriodToGranularity(period) + 1;
+  if (period === 'month') granularity = 4;
+  
+  return getTimeLabelByGranularity(timestamp, granularity, intl);
 };
 
 const getTimeLabelByGranularityShort = function (timestamp, granularity, period, intl) {
@@ -301,4 +310,5 @@ module.exports = {
   getComparisonPeriod,
   getTimeLabelByGranularity,
   getTimeLabelByGranularityShort,
+  getPeriodTimeLabel,
 };

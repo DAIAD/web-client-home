@@ -458,7 +458,14 @@ const switchMode = function (mode) {
       }
     } else if (mode === 'forecasting') {
       dispatch(enableForecasting());
-      if (getState().section.history.timeFilter !== 'month') {
+    } else if (mode === 'breakdown') {
+      getState().section.history.comparisons.forEach((c) => { 
+        if (c.id !== 'last') {
+          dispatch(removeComparison(c.id));
+        }
+      });
+      dispatch(setSortFilter('volume'));
+      if (getState().section.history.timeFilter === 'day' || getState().section.history.timeFilter === 'custom') {
         dispatch(setTimeFilter('month'));
         dispatch(setTime(getTimeByPeriod('month')));
       }

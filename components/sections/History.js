@@ -8,10 +8,10 @@ const Topbar = require('../layout/Topbar');
 const { SidebarLeft, SidebarRight } = require('../layout/Sidebars');
 const Table = require('../helpers/Table');
 const { TimeNavigator, CustomTimeNavigator, ShowerNavigator } = require('../helpers/Navigators');
+const HistoryChart = require('./HistoryChart');
 
 //sub-containers
 const SessionData = require('../../containers/SessionData');
-const HistoryChartData = require('../../containers/HistoryChartData');
 
 //utils
 const timeUtil = require('../../utils/time');
@@ -141,8 +141,8 @@ const History = React.createClass({
     this.props.setSortFilter(val);
   },
   render: function () {
-    const { _t, amphiros, activeDevice, activeDeviceType, timeFilter, 
-      time, metrics, periods, comparisons, deviceTypes, data, 
+    const { _t, chart, mu, amphiros, activeDevice, 
+      activeDeviceType, timeFilter, time, metrics, periods, comparisons, deviceTypes, data, 
       hasShowersBefore, hasShowersAfter, forecasting, pricing } = this.props;
     return (
       <MainSection id="section.history">
@@ -362,7 +362,9 @@ const History = React.createClass({
                 })()
               }
               <div className="history-chart">
-                <HistoryChartData />
+                <HistoryChart 
+                  {...{ ...chart }}
+                />
               </div>
               
             </div>        

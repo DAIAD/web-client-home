@@ -53,7 +53,7 @@ function InPictures(props) {
 
 function SessionInfoLine(props) {
   const { id, name, title, icon, data, mu, _t } = props;
-  return !data ? <div /> : (
+  return data == null ? <div /> : (
   <li className="session-item" >
     <span>
       <h4 style={{ float: 'left' }}>

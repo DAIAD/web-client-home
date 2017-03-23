@@ -1,27 +1,27 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
-const { LineChart, BarChart } = require('react-echarts');
+const { Chart, LineChart, BarChart } = require('react-echarts');
 const theme = require('../chart/themes/history');
 
 function HistoryChart(props) {
-  const { chartData, xCategoryLabels, mu, onPointClick, width } = props;
-  
+  const { chartType, chartData, chartCategories, chartFormatter, onPointClick, width } = props;
   return (
-    <LineChart 
+    <Chart 
       width={width}
       height={380}
       theme={theme}
       xAxis={{
-        data: xCategoryLabels,
+        data: chartCategories,
         boundaryGap: true,
       }}
       yAxis={{
-        formatter: y => `${y} ${mu}`,
+        formatter: chartFormatter,
         min: 0,
       }}
       onPointClick={onPointClick}
       series={chartData.map((s, i) => ({
         fill: 0.55,
+        type: chartType,
         symbol: theme.symbol[i % theme.symbol.length],
         ...s,
       }))}
