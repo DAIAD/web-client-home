@@ -51,15 +51,17 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const chartFormatter = t => moment(t).format('hh:mm');
   const measurements = data && data.measurements ? data.measurements : [];
 
-  const nextReal = ownProps.sessions.sort((a, b) => { 
+  const nextReal = Array.isArray(ownProps.sessions) ? ownProps.sessions.sort((a, b) => { 
       if (a.id < b.id) return -1; 
       else if (a.id > b.id) return 1; 
       return 0; 
     })
-    .find(s => s.device === data.device 
+    .find(s => s && data && s.device === data.device 
           && s.id > data.id 
           && s.history === false
-         ); 
+         )
+         : null;
+
          
   return {
     ...stateProps,
