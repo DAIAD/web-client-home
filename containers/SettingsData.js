@@ -14,6 +14,7 @@ const { setError, dismissError } = require('../actions/QueryActions');
 const Settings = require('../components/sections/settings/');
 
 const { formatMessage } = require('../utils/general');
+const { getAllMembers } = require('../utils/sessions');
 
 function matches(str1, str2) {
   return str1.toLowerCase().indexOf(str2.toLowerCase()) !== -1;
@@ -87,7 +88,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       confirmLeaveCommon: () => dispatchProps.setConfirm('leave', stateProps.commonForm),
     },
     ...ownProps,
-    members: stateProps.members.filter(member => member.active),
+    members: getAllMembers(stateProps.members),
     pagingIndex: stateProps.pagingIndex + 1, // 1-based
     _t: formatMessage(ownProps.intl),
   };

@@ -289,6 +289,9 @@ const energyToPictures = function (energy) {
     items: div(ENERGY_CITY),
   };
 };
+const getAllMembers = function (members, firstname) {
+  return members.filter(member => member.active || member.index === 0);
+};
 
 const memberFilterToMembers = function (filter) {
   if (filter === 'all') {
