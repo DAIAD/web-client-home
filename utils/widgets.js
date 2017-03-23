@@ -276,7 +276,7 @@ const meterBreakdown = function (widget, devices, intl) {
                                            );
 
   const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
-  const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.title}` }).split(' ').join('\n'));
+  const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.id}` }).split(' ').join('\n'));
   const chartData = [{
     name: 'Consumption',
     data: sessions.map(x => x[metric]),

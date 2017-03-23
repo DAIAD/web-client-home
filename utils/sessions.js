@@ -122,7 +122,7 @@ const reduceMetric = function (devices, data, metric) {
 
 const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, timeFilter, intl) {
   const total = reduceMetric(devices, data, metric);
-  return breakdown.map(item => {
+  return breakdown.map((item) => {
     const id = String(item.label).toLowerCase().replace(' ', '-');
     const title = intl.formatMessage({ id: `breakdown.${id}` });
     return {

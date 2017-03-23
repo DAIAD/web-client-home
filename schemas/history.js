@@ -141,9 +141,9 @@ const breakdown = [
   {
     id: 'title',
     name: 'Usage',
-    value: value => (
+    value: (value, row) => (
       <span style={{ fontSize: '1.5em' }}>
-        <img src={`${IMAGES}/${value}.svg`} alt={value} style={{ marginRight: 10 }} />
+        <img src={`${IMAGES}/${row.id}.svg`} alt={value} style={{ marginRight: 10 }} />
         <span>{value}</span>
       </span>
     ),

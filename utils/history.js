@@ -244,7 +244,7 @@ const getBreakdownData = function (props) {
                                            );
 
   const sessionsSorted = sortSessions(sessions, props.sortFilter, props.sortOrder);
-  const chartCategories = sessions.map(x => props.intl.formatMessage({ id: `breakdown.${x.title}` }));
+  const chartCategories = sessions.map(x => props.intl.formatMessage({ id: `breakdown.${x.id}` }));
   const chartData = [{
     name: 'Consumption',
     data: sessions.map(x => x[props.filter]),
@@ -274,7 +274,6 @@ const getBreakdownData = function (props) {
   }))
   ];
 
-  console.log('chart data', chartData, props);
   return {
     ...statsData,
     sessions: sessionsSorted,
