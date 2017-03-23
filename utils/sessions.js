@@ -1,7 +1,6 @@
 const { getFriendlyDuration, getEnergyClass, energyToPower } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
-const { getTimeLabelByGranularity } = require('./chart');
-const { getComparisonPeriod } = require('./time');
+const { getComparisonPeriod, getTimeLabelByGranularity } = require('./time');
 
 const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
 

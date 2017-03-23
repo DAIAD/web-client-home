@@ -234,6 +234,50 @@ const bringPastSessionsToPresent = function (sessions, period) {
   }));
 };
 
+const getTimeLabelByGranularity = function (timestamp, granularity, intl) {
+  if (granularity === 4) {
+    return intl.formatMessage({ id: `months.${moment(timestamp).get('month')}` }) + 
+      ' ' +
+      moment(timestamp).format('YYYY'); 
+  } else if (granularity === 3) {
+    return intl.formatMessage({ id: 'periods.week' }) + 
+      ' ' +
+      moment(timestamp).get('isoweek') + 
+      ', ' +
+      intl.formatMessage({ id: `months.${moment(timestamp).get('month')}` }) + 
+      ' ' +
+      moment(timestamp).format('YYYY');
+  } else if (granularity === 2) {
+    return intl.formatMessage({ id: `weekdays.${moment(timestamp).get('day')}` }) + 
+      ' ' +
+      moment(timestamp).format(' DD / MM / YYYY');
+  }
+  return intl.formatMessage({ id: `weekdays.${moment(timestamp).get('day')}` }) + 
+    ' ' +
+    moment(timestamp).format('DD/ MM/ YYYY hh:mm a');
+};
+
+const getTimeLabelByGranularityShort = function (timestamp, granularity, period, intl) {
+  if (granularity === 4) {
+    return intl.formatMessage({ 
+      id: `months.${moment(timestamp).get('month')}`,
+    });
+  } else if (granularity === 3 && period === 'month') {
+    return intl.formatMessage({ id: 'periods.week' }) + 
+      ' ' +
+      moment(timestamp).get('isoweek');
+  } else if (granularity === 2 && (period === 'month' || period === 'custom')) {
+    return moment(timestamp).format('DD/MM');
+  } else if (granularity === 2) {
+    return intl.formatMessage({ 
+      id: `weekdays.${moment(timestamp).get('day')}`,
+    });
+  } else if (granularity === 1 || granularity === 0) { 
+    return moment(timestamp).format('hh:mm');
+  }
+  return ' ';
+};
+
 module.exports = {
   defaultFormatter,
   selectTimeFormatter,
@@ -256,4 +300,6 @@ module.exports = {
   getLowerGranularityPeriod,
   bringPastSessionsToPresent,
   getComparisonPeriod,
+  getTimeLabelByGranularity,
+  getTimeLabelByGranularityShort,
 };
