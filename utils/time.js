@@ -68,7 +68,6 @@ const getLowerGranularityPeriod = function (period) {
   else if (period === 'month') return 'day';
   else if (period === 'week') return 'day';
   else if (period === 'day') return 'hour';
-  console.error('error in lower granularity period');
   return null;
 };
 
@@ -188,7 +187,7 @@ const getGranularityByDiff = function (start, end) {
   const days = diff.days();
 
   if (years > 0 || months > 5) return 4;
-  else if (days > 1) return 2;
+  else if (years === 0 && months <= 5 && days > 1) return 2;
   return 1;
 };
 
