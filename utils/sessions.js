@@ -297,13 +297,7 @@ const energyToPictures = function (energy) {
   };
 };
 const getAllMembers = function (members, firstname) {
-  return [{
-    id: 'default',
-    index: 0,
-    name: firstname,
-  },
-  ...members.filter(member => member.active),
-  ];
+  return members.filter(member => member.active || member.index === 0);
 };
 
 const memberFilterToMembers = function (filter) {
