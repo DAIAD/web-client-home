@@ -160,7 +160,8 @@ const calculateIndexes = function (sessions) {
   }));
 };
 
-const sortSessions = function (sessions, by = 'timestamp', order = 'desc') {
+const sortSessions = function (psessions, by = 'timestamp', order = 'desc') {
+  const sessions = [...psessions];
   const sorted = order === 'asc' ? 
     sessions.sort((a, b) => a[by] - b[by]) 
     : 
