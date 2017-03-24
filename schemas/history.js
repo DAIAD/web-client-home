@@ -226,9 +226,82 @@ const wateriq = [
   }
 ];
 
+const pricing = [
+  {
+    id: 'cost',
+    name: 'Cost',
+    icon: 'euro',
+    value: value => <span style={{ fontSize: '2.5em' }}>{`${value} \u20AC`}</span>,
+  },
+  {
+    id: 'total',
+    name: 'Total',
+    value: (value, row) => 
+      <span style={{ fontSize: '2.0em' }}>
+        {value}
+        <span style={{ fontSize: '0.6em' }}> lt</span>
+      </span>,
+  },
+  {
+    id: 'volume',
+    name: 'Volume',
+    value: (value, row) => 
+      <span style={{ fontSize: '1.5em' }}>
+        {value}
+        <span style={{ fontSize: '0.6em' }}> lt</span>
+      </span>,
+  },
+  {
+    id: 'comparison',
+    name: '',
+    value: (value, row) => {
+      const { min, max } = row;
+      if (row.percentDiff == null) {
+        return (
+          <span>
+            <i className="dash" />
+            &nbsp;
+            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
+            { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
+          </span>
+        );
+      } else if (row.percentDiff < 0) {
+        return (
+          <span>
+            <i className="fa fa-arrow-down green" />
+            &nbsp;
+            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
+          </span>
+        );
+      }
+      return (
+        <span>
+          <i className="fa fa-arrow-up red" />
+          &nbsp;
+          { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
+        </span>
+      );
+    },
+  },
+
+  {
+    id: 'date',
+    name: 'Date',
+    icon: 'calendar',
+  },
+  {
+    id: 'showMore',
+    name: '',
+    value: () => 
+      <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
+
+  }
+];
+
 module.exports = {
   meter,
   amphiro,
   breakdown,
   wateriq,
+  pricing,
 };

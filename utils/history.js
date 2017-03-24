@@ -3,10 +3,10 @@ const moment = require('moment');
 const { meter: meterSchema, amphiro: amphiroSchema, breakdown: breakdownSchema, wateriq: waterIQSchema, pricing: pricingSchema } = require('../schemas/history');
 
 const { bringPastSessionsToPresent } = require('./time');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart, getTimeLabelByGranularity } = require('./chart');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart, getTimeLabelByGranularity, getChartPriceBrackets } = require('./chart');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { getLastShowerIdFromMultiple, getComparisonTitle, getAllMembers, prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, prepareBreakdownSessions, waterIQToNumeral, numeralToWaterIQ } = require('./sessions');
-const { formatMessage, getMetricMu, getPriceBrackets } = require('./general');
+const { getLastShowerIdFromMultiple, getComparisonTitle, getAllMembers, prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, prepareBreakdownSessions, preparePricingSessions, waterIQToNumeral, numeralToWaterIQ } = require('./sessions');
+const { formatMessage, getMetricMu } = require('./general');
 
 
 const getStatsMeterData = function (props) {
@@ -42,8 +42,7 @@ const getStatsMeterData = function (props) {
     data: getChartMeterData(devData.sessions,
                             xCategories, 
                             props.time,
-                            props.filter,
-                            props.pricing
+                            props.filter
                            ),
     metadata: {
       ids: mapMeterDataToChart(devData.sessions, 
@@ -70,8 +69,7 @@ const getStatsMeterData = function (props) {
      data: getChartMeterData(compSessions, 
                       xCategories, 
                       props.time, 
-                      props.filter,
-                      props.pricing
+                      props.filter
                      ),
       fill: 0.1,
     });
@@ -212,13 +210,92 @@ const getForecastData = function (props) {
 };
 
 const getPricingData = function (props) {
-  const statsData = getStatsData(props);
-  const priceBrackets = props.pricing && props.priceBrackets ? getPriceBrackets(statsData.xCategories, props.priceBrackets, props.intl) : [];
+  //const statsData = getStatsData(props);
+
+  const sessionFields = pricingSchema;
+  
+  const meterSessions = Array.isArray(props.data) && props.data.length === 1 ? props.data[0].sessions : [];
+  const sessions = sortSessions(preparePricingSessions(meterSessions, 
+                                                       props.priceBrackets, 
+                                                       props.time.granularity,
+                                                       props.user.firstname,
+                                                       props.intl
+                                                      ),
+                                props.sortFilter,
+                                props.sortOrder
+                               );
+  
+                               console.log('pricing sesssions', sessions);
+  const reducedMetric = reduceMetric(props.devices, [{ sessions }], 'cost');
+  const highlight = `${reducedMetric} ${getMetricMu('cost')}`;
+
+  // CHART
+
+  const xCategories = getChartMeterCategories(props.time);
+
+  const chartPriceBrackets = props.pricing && props.priceBrackets ? 
+    getChartPriceBrackets(xCategories, props.priceBrackets, props.intl) 
+    : [];
+
+  const chartFormatter = y => `${y} ${getMetricMu(props.filter)}`;
+
+  const chartCategories = getChartMeterCategoryLabels(xCategories, props.time.granularity, props.timeFilter, props.intl);
+     
+  const chartData = [{
+    name: 'SWM total',
+    data: getChartMeterData(sessions,
+                            xCategories, 
+                            props.time,
+                            props.filter
+                           ),
+    metadata: {
+      ids: mapMeterDataToChart(sessions, 
+                               xCategories, 
+                               props.time)
+                               .map(val => val ? [val.id, val.timestamp] : [null, null]),
+    },
+  }];
+  
+  const comparisonsData = props.comparisons.map((comparison) => {
+    const compSessions = comparison.id === 'last' ? 
+      bringPastSessionsToPresent(comparison.sessions, props.timeFilter) 
+      : 
+      comparison.sessions;
+
+      const sessionsToCompare = preparePricingSessions(compSessions, 
+                                                       props.priceBrackets,
+                                                       props.time.granularity,
+                                                       props.user.firstname,
+                                                       props.intl
+                                                      );
+      return ({
+        name: getComparisonTitle(props.activeDeviceType,
+                                 comparison.id, 
+                                 props.time.startDate,
+                                 props.timeFilter, 
+                                 props.favoriteCommonName, 
+                                 props.members,
+                                 props._t
+                                ),
+       data: getChartMeterData(sessionsToCompare, 
+                        xCategories, 
+                        props.time, 
+                        props.filter
+                       ),
+        fill: 0.1,
+      });
+  }); 
   return {
-    ...statsData,
+    sessions,
+    sessionFields,
+    reducedMetric,
+    highlight,
+    chartCategories,
+    chartFormatter,
     chartData: [
-      ...statsData.chartData,
-      ...priceBrackets,
+      ...chartData,
+      ...comparisonsData,
+      ...chartPriceBrackets,
     ],
   };
 };

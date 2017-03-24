@@ -116,28 +116,12 @@ const reduceMetric = function (devices, data, metric) {
     reducedMetric /= 1000;
   }
 
-  reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 10) / 10) : 0;
+  if (metric === 'cost') {
+    reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 100) / 100) : 0;
+  } else {
+    reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 10) / 10) : 0;
+  }
   return reducedMetric;
-};
-
-const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, timeFilter, intl) {
-  const total = reduceMetric(devices, data, metric);
-  return breakdown.map((item) => {
-    const id = String(item.label).toLowerCase().replace(' ', '-');
-    const title = intl.formatMessage({ id: `breakdown.${id}` });
-    return {
-      id,
-      devName: 'SWM',
-      devType: title,
-      title,
-      volume: Math.round(total * (item.percent / 100)),
-      member: user,
-      date: getPeriodTimeLabel(time, 
-                               timeFilter,
-                               intl
-                              ),
-    };
-  });
 };
 
 const calculateIndexes = function (sessions) { 
@@ -353,6 +337,66 @@ const numeralToWaterIQ = function (num) {
   return String.fromCharCode((5 - num) + 65);
 };
 
+const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, timeFilter, intl) {
+  const total = reduceMetric(devices, data, metric);
+  return breakdown.map((item) => {
+    const id = String(item.label).toLowerCase().replace(' ', '-');
+    const title = intl.formatMessage({ id: `breakdown.${id}` });
+    return {
+      id,
+      devName: 'SWM',
+      devType: title,
+      title,
+      volume: Math.round(total * (item.percent / 100)),
+      member: user,
+      date: getPeriodTimeLabel(time, 
+                               timeFilter,
+                               intl
+                              ),
+    };
+  });
+};
+
+const getAugmental = function (array) {
+  return array.map((x, i, arr) => x !== null ? 
+                      arr.filter((y, j) => j <= i)
+                      .reduce((p, c) => p + c, 0) 
+                        : null
+                     );
+};
+
+// TODO: take into consideration days that are between price brackets
+const getCurrentMeasurementCost = function (volume, pTotal, brackets) {
+  const curr = brackets.find(bracket => (pTotal / 1000) >= bracket.minVolume && (bracket.maxVolume === null || (pTotal / 1000) < bracket.maxVolume));
+  return curr ? Math.round(curr.price * (volume / 1000) * 1000) / 1000 : 0;
+};
+
+const preparePricingSessions = function (sessions, brackets, granularity, user, intl) {
+  return sortSessions(sessions, 'timestamp', 'asc')
+  .map((session, i, arr) => {
+    const totalVolume = arr
+    .filter((x, j) => j <= i)
+    .map(x => x.volume)
+    .reduce((p, c) => p + c, 0);
+    
+    const diff = arr[i - 1] != null ? (arr[i].volume - arr[i - 1].volume) : null;
+    return {
+      ...session,
+      devName: 'SWM',
+      member: user,
+      total: totalVolume,
+      percentDiff: (diff != null && arr[i - 1].volume !== 0) ? 
+                        Math.round(10000 * (diff / arr[i - 1].volume)) / 100 
+                        : null,
+      cost: getCurrentMeasurementCost(session.volume, totalVolume, brackets),
+      date: getTimeLabelByGranularity(session.timestamp, 
+                                      granularity, 
+                                      intl
+                                     ),
+    };
+  });
+};
+
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
@@ -376,5 +420,7 @@ module.exports = {
   waterIQToNumeral,
   numeralToWaterIQ,
   getAllMembers,
+  getAugmental,
   prepareBreakdownSessions,
+  preparePricingSessions,
 };

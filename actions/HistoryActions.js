@@ -452,13 +452,20 @@ const switchMode = function (mode) {
     dispatch(disablePricing());
     if (mode === 'pricing') {
       dispatch(enablePricing());
+      dispatch(setSortOrder('asc'));
+      dispatch(setSortFilter('timestamp'));
+      dispatch(setMetricFilter('total'));
       if (getState().section.history.timeFilter !== 'month') {
         dispatch(setTimeFilter('month'));
         dispatch(setTime(getTimeByPeriod('month')));
       }
     } else if (mode === 'forecasting') {
+      dispatch(setSortOrder('desc'));
       dispatch(enableForecasting());
+      dispatch(setMetricFilter('volume'));
     } else if (mode === 'breakdown') {
+      dispatch(setSortOrder('desc'));
+      dispatch(setMetricFilter('volume'));
       getState().section.history.comparisons.forEach((c) => { 
         if (c.id !== 'last') {
           dispatch(removeComparison(c.id));
@@ -470,9 +477,14 @@ const switchMode = function (mode) {
         dispatch(setTime(getTimeByPeriod('month')));
       }
     } else if (mode === 'wateriq') {
+      dispatch(setSortOrder('desc'));
+      dispatch(setMetricFilter('volume'));
       dispatch(resetComparisons());
       dispatch(setTimeFilter('year'));
       dispatch(setTime(getTimeByPeriod('year')));
+    } else if (mode === 'stats') {
+      dispatch(setSortOrder('desc'));
+      dispatch(setMetricFilter('volume'));
     }
   };
 };

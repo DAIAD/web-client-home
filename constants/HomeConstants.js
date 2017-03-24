@@ -140,11 +140,25 @@ module.exports = {
       icon: 'volume.svg',
     },
     {
+      id: 'total', 
+      mu: 'lt',
+      title: 'history.volumeTotal', 
+      details: 'history.volumeTotalDetails', 
+      icon: 'volume.svg',
+    },
+    {
       id: 'wateriq',
       mu: '',
       title: 'history.wateriq',
       details: 'history.wateriqDetails',
       icon: 'default-ranking.svg',
+    },
+    {
+      id: 'cost',
+      mu: '\u20AC',
+      title: 'history.cost',
+      details: 'history.costDetails',
+      icon: 'money.svg',
     },
   ],
   SHOWER_METRICS: [
