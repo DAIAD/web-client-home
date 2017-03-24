@@ -4,7 +4,7 @@ const { Chart, LineChart, BarChart } = require('react-echarts');
 const theme = require('../chart/themes/history');
 
 function HistoryChart(props) {
-  const { chartType, chartData, chartCategories, chartFormatter, onPointClick, width } = props;
+  const { chartType, chartData, chartCategories, chartFormatter, chartYMax, onPointClick, width } = props;
   return (
     <Chart 
       width={width}
@@ -17,6 +17,7 @@ function HistoryChart(props) {
       yAxis={{
         formatter: chartFormatter,
         min: 0,
+        max: chartYMax,
       }}
       onPointClick={onPointClick}
       series={chartData.map((s, i) => ({

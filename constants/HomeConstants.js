@@ -139,6 +139,13 @@ module.exports = {
       details: 'history.volumeDetails', 
       icon: 'volume.svg',
     },
+    {
+      id: 'wateriq',
+      mu: '',
+      title: 'history.wateriq',
+      details: 'history.wateriqDetails',
+      icon: 'default-ranking.svg',
+    },
   ],
   SHOWER_METRICS: [
     {

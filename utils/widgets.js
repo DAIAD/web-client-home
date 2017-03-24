@@ -331,6 +331,7 @@ const meterComparison = function (widget, devices, intl) {
     chartColors,
     chartData,
     mu,
+    mode: 'stats',
     comparisonData: comparisons.filter(c => c.id !== 'user'), 
   };
 };
@@ -367,7 +368,7 @@ const waterIQ = function (widget, devices, intl) {
   return {
     ...widget,
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
-    time,
+    //time,
     periods,
     info: [
       {
@@ -392,6 +393,10 @@ const waterIQ = function (widget, devices, intl) {
     formatter: y => numeralToWaterIQ(y),
     highlightImg,
     waterIQData,
+    mode: 'wateriq',
+    period: 'year',
+    comparisonData: widget.display === 'chart' ? comparisons.map(c => ({ id: c, sessions: [] })) : [],
+    time: getTimeByPeriod('year'),
   };
 };
 

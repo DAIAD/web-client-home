@@ -32,18 +32,16 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const _t = formatMessage(ownProps.intl);
-
   const devType = stateProps.activeDeviceType;  
   const members = getAllMembers(stateProps.members, stateProps.user.firstname); 
+  const favoriteCommonName = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon).name : '';
  
   let deviceTypes = [{
     id: 'METER', 
     title: 'Water meter', 
-    image: 'water-meter.svg',
   }, {
     id: 'AMPHIRO', 
     title: 'Shower devices', 
-    image: 'amphiro_small.svg',
   }];
 
   const amphiros = getAvailableDevices(stateProps.devices); 
@@ -62,7 +60,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const availableSortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
 
-  const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
 
   const availableComparisons = getComparisons(devType, stateProps.memberFilter, members)
   .map(c => ({
@@ -71,7 +68,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                               c, 
                               stateProps.time.startDate, 
                               stateProps.timeFilter, 
-                              favoriteCommon.name, 
+                              favoriteCommonName, 
                               members, 
                               _t
                              ),
@@ -124,7 +121,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     periods: METER_PERIODS.filter(p => p.id !== 'day' && p.id !== 'custom'),
     comparisons: availableComparisons.filter(p => p.id === 'last'),
     sort: availableSortOptions.filter(x => x.id !== 'timestamp'),
-  }
+  },
+  {
+    id: 'wateriq',
+    title: 'Water IQ',
+    periods: METER_PERIODS.filter(p => p.id === 'year'),
+    comparisons: availableComparisons.filter(p => p.id !== 'last' && p.id !== 'common'),
+    sort: availableSortOptions,
+  },
   ];
 
   const modes = devType === 'AMPHIRO' ? AMPHIRO_MODES : METER_MODES;
@@ -138,13 +142,15 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessionFields,
     csvData,
     reducedMetric,
+    highlight,
     chartType,
     chartData,
     chartCategories,
     chartFormatter,
     chartColors,
+    chartYMax,
     mu,
-  } = getHistoryData({ ...stateProps, ...ownProps });
+  } = getHistoryData({ ...stateProps, ...ownProps, _t, members, favoriteCommonName });
   
   return {
     ...stateProps,
@@ -165,13 +171,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sortOptions,
     hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
     hasShowersBefore: () => hasShowersBefore(stateProps.data), 
+    onSessionClick: session => dispatchProps.setActiveSession(session.device, session.id, session.timestamp),
     _t,
     sessions,
     //sessionFields: stateProps.mode === 'breakdown' ? breakdownSessionSchema : sessionFields,
     sessionFields,
     deviceTypes,
     csvData,
-    reducedMetric: `${reducedMetric} ${getMetricMu(stateProps.filter)}`,
+    reducedMetric: highlight,
     mu,
     chart: {
       //chart width = viewport width - main menu - sidebar left - sidebar right - padding
@@ -181,6 +188,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       chartCategories,
       chartColors,
       chartFormatter,
+      chartYMax,
       onPointClick: (series, index) => {
         const device = chartData[series] ? 
           chartData[series].metadata.device 

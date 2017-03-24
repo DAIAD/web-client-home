@@ -27,6 +27,7 @@ const initialState = {
   mode: 'stats',
   priceBrackets: [],
   waterBreakdown: [],
+  waterIQData: [],
 };
  
 const history = function (state = initialState, action) {
@@ -172,6 +173,11 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_BREAKDOWN_LABELS:
       return Object.assign({}, state, {
         waterBreakdown: action.labels,
+      });
+
+    case types.HISTORY_SET_WATERIQ_SESSIONS:
+      return Object.assign({}, state, {
+        waterIQData: action.sessions,
       });
 
     case types.USER_RECEIVED_LOGOUT:
