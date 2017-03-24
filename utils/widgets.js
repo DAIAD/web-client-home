@@ -2,8 +2,8 @@ const moment = require('moment');
 
 const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_PERIODS, METER_PERIODS } = require('../constants/HomeConstants');
 
-const { getFriendlyDuration, getEnergyClass, getMetricMu, getPriceBrackets } = require('./general');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
+const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
 const { reduceMetric, getShowerMeasurementsById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ, prepareBreakdownSessions } = require('./sessions');
@@ -226,7 +226,7 @@ const meterPricing = function (widget, devices, intl) {
   const xCategories = getChartMeterCategories(time);
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
 
-  const priceBrackets = getPriceBrackets(xCategories, brackets, intl);
+  const priceBrackets = getChartPriceBrackets(xCategories, brackets, intl);
 
   const chartData = data ? data.map(devData => ({ 
       name: 'Consumption', 
