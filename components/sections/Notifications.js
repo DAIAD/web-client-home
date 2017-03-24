@@ -4,7 +4,7 @@ const bs = require('react-bootstrap');
 const classNames = require('classnames');
 const { FormattedRelative } = require('react-intl');
 
-const { IMAGES } = require('../../constants/HomeConstants'); 
+const { IMAGES, BASE64 } = require('../../constants/HomeConstants'); 
 
 const Topbar = require('../layout/Topbar');
 const MainSection = require('../layout/MainSection');
@@ -23,7 +23,7 @@ function NotificationMessage(props) {
         notification.imageEncoded ?
           <img 
             className="notification-img" 
-            src={`data:image/png;base64, ${notification.imageEncoded}`} 
+            src={`${BASE64}${notification.imageEncoded}`} 
             alt="tip" 
           />
           :

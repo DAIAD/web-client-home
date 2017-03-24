@@ -4,7 +4,7 @@ const { FormattedMessage, FormattedDate } = require('react-intl');
 const Select = require('react-select');
 
 const { uploadFile } = require('../../../../utils/general');
-const { IMAGES } = require('../../../../constants/HomeConstants');
+const { IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 function CommonForm(props) {
   const { values, onChange, disabled, errors } = props;
@@ -20,7 +20,7 @@ function CommonForm(props) {
               width: 100,
               border: '2px #2D3580 solid',
             }} 
-            src={`data:image/png;base64,${values.image}`} 
+            src={`${BASE64}${values.image}`} 
             alt="commons" 
           />
           :

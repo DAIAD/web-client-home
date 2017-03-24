@@ -8,7 +8,7 @@ const LocaleSwitcher = require('../../LocaleSwitcher');
 
 const { uploadFile, validatePassword } = require('../../../utils/general');
 
-const { COUNTRIES, TIMEZONES, SYSTEM_UNITS, PNG_IMAGES } = require('../../../constants/HomeConstants');
+const { COUNTRIES, TIMEZONES, SYSTEM_UNITS, PNG_IMAGES, BASE64 } = require('../../../constants/HomeConstants');
 
 
 function ChangePassword(props) {
@@ -106,7 +106,7 @@ function ProfileForm(props) {
               width: 100,
               border: '2px #2D3580 solid',
             }} 
-            src={`data:image/png;base64,${profile.photo}`} 
+            src={`${BASE64}${profile.photo}`} 
             alt="profile" 
           />
           :

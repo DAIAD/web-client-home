@@ -18,7 +18,7 @@ const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSc
 const timeUtil = require('../../utils/time');
 const { debounce } = require('../../utils/general');
 
-const { IMAGES, COMMONS_MEMBERS_PAGE, COMMONS_USER_SORT } = require('../../constants/HomeConstants');
+const { IMAGES, COMMONS_MEMBERS_PAGE, COMMONS_USER_SORT, BASE64 } = require('../../constants/HomeConstants');
 
 function ChartArea(props) {
   const { _t, handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, actions } = props;
@@ -271,7 +271,7 @@ const Commons = React.createClass({
                         width: 120,
                         border: '2px #2D3580 solid',
                       }} 
-                      src={`data:image/png;base64,${active.image}`} 
+                      src={`${BASE64}${active.image}`} 
                       alt="commons" 
                     />
                     :

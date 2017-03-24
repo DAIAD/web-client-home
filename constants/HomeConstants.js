@@ -1,6 +1,7 @@
 module.exports = {
   IMAGES: '/assets/images/home/svg',
   PNG_IMAGES: '/assets/images/home/png',
+  BASE64: 'data:image/png;base64,',
   NOTIFICATION_TITLE_LENGTH: 50,
   CACHE_SIZE: 20,
   SHOWERS_PAGE: 1000,

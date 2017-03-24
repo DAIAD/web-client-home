@@ -7,7 +7,7 @@ const MainSection = require('../../../layout/MainSection');
 const FormFields = require('./FormFields');
 const LocaleSwitcher = require('../../../LocaleSwitcher');
 
-const { PNG_IMAGES } = require('../../../../constants/HomeConstants');
+const { PNG_IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 
 function EditMembers(props) {
@@ -39,7 +39,7 @@ function EditMembers(props) {
                         marginRight: 10,
                         border: '1px #2D3580 solid',
                       }} 
-                      src={`data:image/png;base64,${member.photo}`} 
+                      src={`${BASE64}${member.photo}`} 
                       alt="member" 
                     />
                     :

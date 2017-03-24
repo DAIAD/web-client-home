@@ -8,7 +8,7 @@ const LocaleSwitcher = require('../LocaleSwitcher');
 const Logout = require('../LogoutForm');
 const NotificationList = require('../helpers/NotificationList');
 const { formatMessage } = require('../../utils/general');
-const { IMAGES, PNG_IMAGES } = require('../../constants/HomeConstants'); 
+const { IMAGES, PNG_IMAGES, BASE64 } = require('../../constants/HomeConstants'); 
 
 /* DAIAD Logo */
 function MainLogo() {
@@ -36,7 +36,7 @@ function UserInfo(props) {
             props.photo ? 
               <img 
                 className="profile-header-photo"
-                src={`data:image/png;base64,${props.photo}`} 
+                src={`${BASE64}${props.photo}`} 
                 alt="profile" 
               />
               :

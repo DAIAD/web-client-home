@@ -3,7 +3,7 @@ const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedDate, FormattedTime } = require('react-intl');
 
 const CommonFormFields = require('./Form');
-const { IMAGES } = require('../../../../constants/HomeConstants');
+const { IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 function UpdateCommons(props) {
   const { myCommons, commonForm, favorite, actions } = props;
@@ -36,7 +36,7 @@ function UpdateCommons(props) {
                     marginRight: 10,
                     border: '1px #2d3580 solid',
                   }} 
-                  src={`data:image/png;base64,${common.image}`} 
+                  src={`${BASE64}${common.image}`} 
                   alt="member" 
                 />
                 :

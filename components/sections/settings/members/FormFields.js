@@ -3,7 +3,7 @@ const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
 
 const { uploadFile } = require('../../../../utils/general');
-const { PNG_IMAGES } = require('../../../../constants/HomeConstants');
+const { PNG_IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 function MemberFormFields(props) {
   const { _t, errors, member, fetchProfile, updateMemberForm, setError, dismissError, goTo } = props;
@@ -19,7 +19,7 @@ function MemberFormFields(props) {
               width: 100,
               border: '2px #2D3580 solid',
             }} 
-            src={`data:image/png;base64,${member.photo}`} 
+            src={`${BASE64}${member.photo}`} 
             alt="member" 
           />
           :
