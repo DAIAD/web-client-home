@@ -111,6 +111,16 @@ module.exports = {
       }
     ],
   }],
+  DEVICE_TYPES: [
+    {
+      id: 'METER', 
+      title: 'Water meter', 
+    }, 
+    {
+      id: 'AMPHIRO', 
+      title: 'Shower devices', 
+    }
+  ],
   METER_AGG_METRICS: [
     {
       id: 'devName',  

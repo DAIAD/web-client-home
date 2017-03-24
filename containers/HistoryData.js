@@ -13,7 +13,7 @@ const { getMetricMu, formatMessage } = require('../utils/general');
 const { getHistoryData } = require('../utils/history');
 
 
-const { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
+const { DEVICE_TYPES, DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
@@ -32,29 +32,18 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const _t = formatMessage(ownProps.intl);
+
   const devType = stateProps.activeDeviceType;  
   const members = getAllMembers(stateProps.members, stateProps.user.firstname); 
   const favoriteCommonName = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon).name : '';
  
-  let deviceTypes = [{
-    id: 'METER', 
-    title: 'Water meter', 
-  }, {
-    id: 'AMPHIRO', 
-    title: 'Shower devices', 
-  }];
-
   const amphiros = getAvailableDevices(stateProps.devices); 
   const meterCount = getMeterCount(stateProps.devices);
   const deviceCount = getDeviceCount(stateProps.devices);
 
-  if (meterCount === 0) {
-    deviceTypes = deviceTypes.filter(x => x.id !== 'METER');
-  }
-  
-  if (deviceCount === 0) {
-    deviceTypes = deviceTypes.filter(x => x.id !== 'AMPHIRO');
-  }
+  const deviceTypes = DEVICE_TYPES
+  .filter(type => meterCount === 0 ? type.id !== 'METER' : true)
+  .filter(type => deviceCount === 0 ? type.id !== 'AMPHIRO' : true);
 
   const metrics = devType === 'AMPHIRO' ? DEV_METRICS : METER_METRICS;
 
