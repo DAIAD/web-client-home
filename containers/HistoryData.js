@@ -6,14 +6,14 @@ const HistoryActions = require('../actions/HistoryActions');
 
 const History = require('../components/sections/History');
 
-const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
+const { getAvailableDevices, getAvailableDeviceTypes } = require('../utils/device');
 const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, getComparisonTitle, getAllMembers, prepareBreakdownSessions } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
 const { getMetricMu, formatMessage } = require('../utils/general');
 const { getHistoryData } = require('../utils/history');
 
 
-const { DEVICE_TYPES, DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
+const { FILTER_METRICS, PERIODS, SORT, MODES } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
@@ -32,22 +32,26 @@ function mapDispatchToProps(dispatch) {
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
   const _t = formatMessage(ownProps.intl);
+  const amphiros = getAvailableDevices(stateProps.devices); 
 
   const devType = stateProps.activeDeviceType;  
   const members = getAllMembers(stateProps.members, stateProps.user.firstname); 
   const favoriteCommonName = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon).name : '';
  
-  const amphiros = getAvailableDevices(stateProps.devices); 
-  const meterCount = getMeterCount(stateProps.devices);
-  const deviceCount = getDeviceCount(stateProps.devices);
+  const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
 
-  const deviceTypes = DEVICE_TYPES
-  .filter(type => meterCount === 0 ? type.id !== 'METER' : true)
-  .filter(type => deviceCount === 0 ? type.id !== 'AMPHIRO' : true);
-
-  const metrics = devType === 'AMPHIRO' ? DEV_METRICS : METER_METRICS;
-
-  const availableSortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
+  const memberFilters = devType === 'AMPHIRO' ?
+    [{
+      id: 'all',
+      title: 'All',
+    },
+    ...members.map(member => ({
+      id: member.index,
+      title: member.name,
+    })),
+    ]
+    :
+      [];
 
 
   const availableComparisons = getComparisons(devType, stateProps.memberFilter, members)
@@ -63,68 +67,24 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                              ),
   }));   
 
-  const memberFilters = devType === 'AMPHIRO' ?
-    [{
-      id: 'all',
-      title: 'All',
-    },
-    ...members.map(member => ({
-      id: member.index,
-      title: member.name,
-    })),
-    ]
-    :
-      [];
-
-  const AMPHIRO_MODES = [{ 
-    id: 'stats', 
-    title: 'Statistics',
-    periods: DEV_PERIODS, 
-    comparisons: availableComparisons,
-    sort: availableSortOptions,
-  }];
-  const METER_MODES = [{ 
-    id: 'stats', 
-    title: 'Statistics',
-    periods: METER_PERIODS,
-    comparisons: availableComparisons.filter(c => stateProps.timeFilter === 'custom' ? c.id !== 'last' : true),
-    sort: availableSortOptions,
-  },
-  {
-    id: 'forecasting',
-    title: 'Forecasting',
-    periods: METER_PERIODS,
-    comparisons: availableComparisons,
-    sort: availableSortOptions,
-  },
-  {
-    id: 'pricing',
-    title: 'Pricing',
-    periods: METER_PERIODS.filter(p => p.id === 'month'),
-    comparisons: availableComparisons,
-    sort: availableSortOptions,
-  },
-  {
-    id: 'breakdown',
-    title: 'Breakdown',
-    periods: METER_PERIODS.filter(p => p.id !== 'day' && p.id !== 'custom'),
-    comparisons: availableComparisons.filter(p => p.id === 'last'),
-    sort: availableSortOptions.filter(x => x.id !== 'timestamp'),
-  },
-  {
-    id: 'wateriq',
-    title: 'Water IQ',
-    periods: METER_PERIODS.filter(p => p.id === 'year'),
-    comparisons: availableComparisons.filter(p => p.id !== 'last' && p.id !== 'common'),
-    sort: availableSortOptions,
-  },
-  ];
-
-  const modes = devType === 'AMPHIRO' ? AMPHIRO_MODES : METER_MODES;
+  const modes = MODES[devType];
+  const metrics = FILTER_METRICS[devType];
   const activeMode = modes.find(m => m.id === stateProps.mode);
-  const periods = activeMode ? activeMode.periods : [];
-  const compareAgainst = activeMode ? activeMode.comparisons : [];
-  const sortOptions = activeMode ? activeMode.sort : [];
+
+  const allOptions = {
+    periods: PERIODS[devType],
+    comparisons: availableComparisons,
+    sort: SORT[devType],
+  };
+
+  const [
+    periods, 
+    compareAgainst, 
+    sortOptions] = ['periods', 'comparisons', 'sort']
+    .map(x => activeMode[x] ? 
+         allOptions[x].filter(y => activeMode[x].includes(y.id)) 
+           : allOptions[x]
+        );
 
   const { 
     sessions,

@@ -1,4 +1,4 @@
-const { AMPHIRO_PROPERTIES } = require('../constants/HomeConstants');
+const { DEVICE_TYPES, AMPHIRO_PROPERTIES } = require('../constants/HomeConstants');
 
 const getAvailableDevices = function (devices) {
   if (!devices) return [];
@@ -122,6 +122,15 @@ const deviceFormToDevice = function (deviceForm) {
   };
 };
 
+const getAvailableDeviceTypes = function (devices) {
+  const meterCount = getMeterCount(devices);
+  const deviceCount = getDeviceCount(devices);
+
+  return DEVICE_TYPES
+  .filter(type => meterCount === 0 ? type.id !== 'METER' : true)
+  .filter(type => deviceCount === 0 ? type.id !== 'AMPHIRO' : true);
+};
+
 module.exports = {
   getDefaultDevice,
   getDeviceTypeByKey,
@@ -137,4 +146,5 @@ module.exports = {
   filterDataByDeviceKeys,
   deviceToDeviceForm,
   deviceFormToDevice,
+  getAvailableDeviceTypes,
 };

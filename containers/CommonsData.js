@@ -9,10 +9,10 @@ const Commons = require('../components/sections/Commons');
 const CommonsActions = require('../actions/CommonsActions');
 const timeUtil = require('../utils/time');
 const { getLastShowerIdFromMultiple } = require('../utils/sessions');
-const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
+const { getAvailableDeviceTypes, getDeviceCount, getMeterCount } = require('../utils/device');
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 
-const { METER_PERIODS } = require('../constants/HomeConstants');
+const { PERIODS } = require('../constants/HomeConstants');
 const { formatMessage } = require('../utils/general');
 
 function mapStateToProps(state) {
@@ -32,29 +32,9 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  let deviceTypes = [{
-    id: 'METER', 
-    title: 'Water meter', 
-    image: 'water-meter.svg',
-  }, {
-    id: 'AMPHIRO', 
-    title: 'Shower devices', 
-    image: 'amphiro_small.svg',
-  }];
-
-  const amphiros = getAvailableDevices(stateProps.devices); 
-  const meterCount = getMeterCount(stateProps.devices);
-  const deviceCount = getDeviceCount(stateProps.devices);
-
-  if (meterCount === 0) {
-    deviceTypes = deviceTypes.filter(x => x.id !== 'METER');
-  }
+  const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
   
-  if (deviceCount === 0) {
-    deviceTypes = deviceTypes.filter(x => x.id !== 'AMPHIRO');
-  }
-  
-  const periods = METER_PERIODS
+  const periods = PERIODS.METER
   .filter(period => period.id !== 'day');
 
   const active = stateProps.myCommons.find(common => common.key === stateProps.activeKey);

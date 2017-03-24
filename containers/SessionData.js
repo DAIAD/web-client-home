@@ -13,7 +13,7 @@ const { setForm } = require('../actions/FormActions');
 const { getAllMembers } = require('../utils/sessions');
 const { getShowerMetricMu, formatMessage } = require('../utils/general');
 const { convertGranularityToPeriod, getLowerGranularityPeriod } = require('../utils/time');
-const { SHOWER_METRICS } = require('../constants/HomeConstants');
+const { METRICS } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
@@ -62,11 +62,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
          )
          : null;
 
-         
+  const metrics = METRICS[stateProps.activeDeviceType];
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
+    metrics,
     data,
     chartFormatter,
     members: getAllMembers(stateProps.members, stateProps.user.firstname),
@@ -75,7 +76,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                                 measurement[stateProps.activeSessionFilter]
                                   : null),
     showModal: stateProps.activeSession != null,
-    sessionFilters: SHOWER_METRICS
+    sessionFilters: METRICS.AMPHIRO
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
     mu: getShowerMetricMu(stateProps.activeSessionFilter),
     period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',

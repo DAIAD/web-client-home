@@ -225,7 +225,6 @@ const getPricingData = function (props) {
                                 props.sortOrder
                                );
   
-                               console.log('pricing sesssions', sessions);
   const reducedMetric = reduceMetric(props.devices, [{ sessions }], 'cost');
   const highlight = `${reducedMetric} ${getMetricMu('cost')}`;
 

@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_PERIODS, METER_PERIODS } = require('../constants/HomeConstants');
+const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS } = require('../constants/HomeConstants');
 
 const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets } = require('./chart');
@@ -46,9 +46,9 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
   const periods = deviceType === 'AMPHIRO' ? 
-    DEV_PERIODS.filter(p => p.id !== 'all') 
+    PERIODS.AMPHIRO.filter(p => p.id !== 'all') 
     : 
-    METER_PERIODS.filter(p => p.id !== 'custom');
+    PERIODS.METER.filter(p => p.id !== 'custom');
 
   const reduced = reduceMetric(devices, data, metric);
   const previousReduced = reduceMetric(devices, previous, metric);
@@ -124,7 +124,7 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
     console.error('only amphiro energy efficiency supported');
   }
   const device = getDeviceKeysByType(devices, deviceType);
-  const periods = DEV_PERIODS.filter(p => p.id !== 'all');
+  const periods = PERIODS.AMPHIRO.filter(p => p.id !== 'all');
 
   const reduced = reduceMetric(devices, data, metric);
   const previousReduced = reduceMetric(devices, previous, metric);
@@ -167,7 +167,7 @@ const meterForecast = function (widget, devices, intl) {
     console.error('only meter forecast supported');
   }
   const time = widget.time ? widget.time : getTimeByPeriod(period);
-  const periods = METER_PERIODS.filter(p => p.id !== 'custom');
+  const periods = PERIODS.METER.filter(p => p.id !== 'custom');
 
   const device = getDeviceKeysByType(devices, deviceType);
   
@@ -258,7 +258,7 @@ const meterBreakdown = function (widget, devices, intl) {
     console.error('only meter breakdown makes sense');
   }
 
-  const periods = METER_PERIODS.filter(p => p.id === 'month' || p.id === 'year');
+  const periods = PERIODS.METER.filter(p => p.id === 'month' || p.id === 'year');
 
   const device = getDeviceKeysByType(devices, deviceType);
   const reduced = data ? reduceMetric(devices, data, metric) : 0;
@@ -407,7 +407,7 @@ const budget = function (widget, devices, intl) {
     console.error('only meter comparison supported');
   }
 
-  const periods = METER_PERIODS.filter(p => p.id !== 'custom');
+  const periods = PERIODS.METER.filter(p => p.id !== 'custom');
   const reduced = data ? reduceMetric(devices, data, metric) : 0;
   const mu = getMetricMu(metric);
   

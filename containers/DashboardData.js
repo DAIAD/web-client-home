@@ -13,7 +13,7 @@ const { getDeviceCount, getMeterCount } = require('../utils/device');
 const prepareWidget = require('../utils/widgets');
 const { filterObj, formatMessage } = require('../utils/general');
 
-const { AMPHIRO_WIDGET_TYPES, METER_WIDGET_TYPES } = require('../constants/HomeConstants');
+const { WIDGET_TYPES } = require('../constants/HomeConstants');
 
 
 function mapStateToProps(state) {
@@ -77,16 +77,10 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       stateProps.activeDeviceType !== 'METER') {
         console.error('Oops, wrong device type', stateProps.activeDeviceType);
       }
-  const widgetTypes = stateProps.activeDeviceType === 'AMPHIRO' ? 
-    AMPHIRO_WIDGET_TYPES.map(w => ({ 
-      ...w, 
-      deviceType: 'AMPHIRO',
-    }))
-    :
-    METER_WIDGET_TYPES.map(w => ({ 
-      ...w, 
-      deviceType: 'METER', 
-    }));
+  const widgetTypes = WIDGET_TYPES[stateProps.activeDeviceType].map(w => ({
+    ...w,
+    deviceType: stateProps.activeDeviceType,
+  }));
 
   const setWidgetToAdd = data => dispatchProps.setForm('widgetToAdd', data);
 

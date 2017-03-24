@@ -18,7 +18,7 @@ const { showerFilterToLength, getCacheKey } = require('../utils/general');
 
 const QueryActions = require('./QueryActions');
 
-const { DEV_PERIODS } = require('../constants/HomeConstants');
+const { PERIODS } = require('../constants/HomeConstants');
 
 const setSessions = function (sessions) {
   return {
@@ -363,7 +363,7 @@ const setTimeFilter = function (filter) {
       type: types.HISTORY_SET_TIME_FILTER,
       filter,
     });
-    if (DEV_PERIODS.map(p => p.id).includes(filter)) {
+    if (PERIODS.AMPHIRO.map(p => p.id).includes(filter)) {
       dispatch(setShowerIndex(0));
     }
   };

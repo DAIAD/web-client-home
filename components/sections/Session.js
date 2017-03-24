@@ -6,7 +6,7 @@ const DatetimeInput = require('react-datetime');
 const { LineChart } = require('react-echarts');
 const theme = require('../chart/themes/session');
 const { volumeToPictures, energyToPictures } = require('../../utils/sessions'); 
-const { SHOWER_METRICS, METER_AGG_METRICS, IMAGES } = require('../../constants/HomeConstants'); 
+const { IMAGES } = require('../../constants/HomeConstants'); 
 
 
 function Picture(props) {
@@ -128,10 +128,8 @@ function Member(props) {
 }
 
 function SessionInfo(props) {
-  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower, memberFilter, fetchAndSetQuery, nextReal, setShowerReal, setShowerTimeForm, showerTime } = props; 
+  const { _t, data, activeDeviceType, members, editShower, setSessionFilter, assignToMember, enableEditShower, disableEditShower, ignoreShower, memberFilter, fetchAndSetQuery, nextReal, setShowerReal, setShowerTimeForm, showerTime, metrics } = props; 
   const { device: deviceKey, id: sessionId, member, history } = data;
-
-  const metrics = activeDeviceType === 'METER' ? METER_AGG_METRICS : SHOWER_METRICS;
 
   return !data ? <div /> : (
     <div className="shower-info">  
