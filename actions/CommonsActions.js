@@ -94,21 +94,9 @@ const setTime = function (time) {
  * @param {Array} deviceType - Active device type. One of AMPHIRO, METER  
  */
 const setActiveDeviceType = function (deviceType) {
-  return function (dispatch, getState) {
-    dispatch({
-      type: types.COMMONS_SET_ACTIVE_DEVICE_TYPE,
-      deviceType,
-    });
-    const devices = getDeviceKeysByType(getState().user.profile.devices, deviceType);
-    
-    // set default options when switching
-    if (deviceType === 'AMPHIRO') {
-      dispatch(setMetricFilter('volume'));
-    } else if (deviceType === 'METER') {
-      dispatch(setMetricFilter('volume'));
-      dispatch(setTimeFilter('year'));
-      dispatch(setTime(getTimeByPeriod('year')));
-    }
+  return {
+    type: types.COMMONS_SET_ACTIVE_DEVICE_TYPE,
+    deviceType,
   };
 };
 
