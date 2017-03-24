@@ -1,4 +1,4 @@
-const { SHOWERS_PAGE, BRACKET_COLORS } = require('../constants/HomeConstants');
+const { SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
 const validateEmail = function (email) {
@@ -93,11 +93,14 @@ const getEnergyClass = function (energy) {
 
 const getMetricMu = function (metric) {
   if (metric === 'showers') return '';
-  else if (metric === 'volume' || metric === 'difference') return 'lt';
+  else if (metric === 'volume' || metric === 'difference' || metric === 'total') return 'lt';
+  //else if (metric === 'total' || metric === 'volumeCubic') return '\u33A5';
   else if (metric === 'energy') return 'kW';
   else if (metric === 'duration') return 'min';
   else if (metric === 'temperature') return '°C';
-  throw new Error(`unrecognized metric ${metric}`);
+  else if (metric === 'cost') return '\u20AC';
+  return '';
+  //throw new Error(`unrecognized metric ${metric}`);
 };
 
 const getShowerMetricMu = function (metric) {
@@ -256,20 +259,6 @@ const validatePassword = function (password, confirmPassword) {
   return Promise.resolve();
 };
 
-const getPriceBrackets = function (xCategories, brackets, intl) {
-  return brackets
-  .filter(bracket => bracket.maxVolume != null)
-  .map((bracket, i) => ({
-    name: `${bracket.minVolume} to ${bracket.maxVolume}: ${bracket.price}`,
-    data: xCategories.map(() => bracket.maxVolume * 1000),
-    label: false,
-    lineType: 'dashed',
-    symbol: 'none',
-    color: BRACKET_COLORS[i],
-    fill: 0,
-  }));
-};
-
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -288,5 +277,4 @@ module.exports = {
   throwServerError,
   formatMessage,
   validatePassword,
-  getPriceBrackets,
 };

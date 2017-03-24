@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { convertGranularityToPeriod, getLowerGranularityPeriod, getTimeLabelByGranularityShort, timeToBuckets } = require('./time');
+const { BRACKET_COLORS } = require('../constants/HomeConstants');
 
 const getChartMeterCategories = function (time) {
   return timeToBuckets(time);
@@ -77,15 +78,24 @@ const mapMeterDataToChart = function (sessions, categories, time) {
   });
 };
 
-const getChartMeterData = function (sessions, categories, time, filter, augmental = false) {
-  const mapped = mapMeterDataToChart(sessions, categories, time)
+const getChartMeterData = function (sessions, categories, time, filter) {
+  return mapMeterDataToChart(sessions, categories, time)
   .map(x => x && x[filter] !== null ? 
          Math.round(100 * x[filter]) / 100 : null);
+};
 
-  return augmental ? 
-    mapped.map((x, i, arr) => x !== null ? arr.filter((y, j) => j <= i).reduce((p, c) => p + c, 0) : null)
-    :
-    mapped;
+const getChartPriceBrackets = function (xCategories, brackets, intl) {
+  return brackets
+  .filter(bracket => bracket.maxVolume != null)
+  .map((bracket, i) => ({
+    name: `${bracket.minVolume} to ${bracket.maxVolume} \u33A5: ${bracket.price}\u20AC`,
+    data: xCategories.map(() => bracket.maxVolume * 1000),
+    label: false,
+    lineType: 'dashed',
+    symbol: 'none',
+    color: BRACKET_COLORS[i],
+    fill: 0,
+  }));
 };
 
 module.exports = {
@@ -96,4 +106,5 @@ module.exports = {
   getChartMeterCategories,
   getChartMeterCategoryLabels,
   getChartAmphiroCategories,
+  getChartPriceBrackets,
 };
