@@ -21,6 +21,7 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
                     const member = session.member && session.member.index && Array.isArray(members) ? members.find(m => session.member.index === m.index) : null;
                     return {
                       ...session,
+                      real: !session.history,
                       index: idx, 
                       devType,
                       vol: session.volume,
@@ -158,33 +159,6 @@ const getSessionById = function (sessions, id) {
     return null;
   }
   return sessions.find(x => (x.id).toString() === id.toString());
-};
-
-const meterSessionsToCSV = function (sessions) {
-  return sessions.map(session => [
-    session.devName, 
-    session.volume, 
-    session.difference, 
-    session.timestamp, 
-  ].join('%2C'))
-  .reduce((prev, curr) => [prev, curr].join('%0A'), 
-          'Device, Volume%A0total, Volume%A0 difference, Timestamp');
-};
-
-const deviceSessionsToCSV = function (sessions) {
-  return sessions.map(session => [
-    session.devName,
-    session.id,
-    session.history,
-    session.volume, 
-    session.energy,
-    session.energyClass,
-    session.temperature,
-    session.duration, 
-    session.timestamp,
-  ].join('%2C'))
-  .reduce((prev, curr) => [prev, curr].join('%0A'), 
-          'Device, Id, Historic, Volume, Energy, Energy%A0Class, Temperature, Duration, Timestamp');
 };
 
 const getShowerRange = function (sessions) {
@@ -405,8 +379,6 @@ module.exports = {
   reduceMetric,
   getSessionsCount,
   getShowerMeasurementsById,
-  meterSessionsToCSV,
-  deviceSessionsToCSV,
   getShowerRange,
   filterShowers,
   getLastShowerIdFromMultiple,

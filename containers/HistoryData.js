@@ -9,7 +9,7 @@ const History = require('../components/sections/History');
 const { getAvailableDevices, getAvailableDeviceTypes } = require('../utils/device');
 const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, getComparisonTitle, getAllMembers, prepareBreakdownSessions } = require('../utils/sessions');
 const timeUtil = require('../utils/time');
-const { getMetricMu, formatMessage } = require('../utils/general');
+const { getMetricMu, formatMessage, tableToCSV } = require('../utils/general');
 const { getHistoryData } = require('../utils/history');
 
 
@@ -89,7 +89,6 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const { 
     sessions,
     sessionFields,
-    csvData,
     reducedMetric,
     highlight,
     chartType,
@@ -100,7 +99,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     chartYMax,
     mu,
   } = getHistoryData({ ...stateProps, ...ownProps, _t, members, favoriteCommonName });
-  
+
+  const csvData = tableToCSV(sessionFields, sessions);
   return {
     ...stateProps,
     ...dispatchProps,

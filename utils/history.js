@@ -24,8 +24,6 @@ const getStatsMeterData = function (props) {
                 
   const sessionFields = meterSchema;
     
-  const csvData = meterSessionsToCSV(sessions);
-
   const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   const mu = getMetricMu(props.filter);
   const highlight = `${reducedMetric} ${mu}`;
@@ -79,7 +77,6 @@ const getStatsMeterData = function (props) {
     //Table
     sessions,
     sessionFields,
-    csvData,
     reducedMetric,
     highlight,
     //Chart
@@ -110,8 +107,6 @@ const getStatsAmphiroData = function (props) {
                 
   const sessionFields = amphiroSchema;
     
-  const csvData = deviceSessionsToCSV(sessions);
-
   const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   const mu = getMetricMu(props.filter);
   const highlight = `${reducedMetric} ${mu}`;
@@ -156,7 +151,6 @@ const getStatsAmphiroData = function (props) {
     //Table
     sessions,
     sessionFields,
-    csvData,
     reducedMetric,
     highlight,
     //Chart

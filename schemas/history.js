@@ -8,13 +8,20 @@ const meter = [
     name: 'Volume',
     value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
-        {value}
-        <span style={{ fontSize: '0.6em' }}> lt</span>
+        { value ? 
+          <div>
+          <span>{value}</span>
+          <span style={{ fontSize: '0.6em' }}> lt</span>
+        </div>
+        :
+        <span>-</span>
+        }
       </span>,
   },
   {
     id: 'comparison',
     name: '',
+    csv: false,
     value: (value, row) => {
       const { min, max } = row;
       if (row.percentDiff == null) {
@@ -57,6 +64,7 @@ const meter = [
   {
     id: 'showMore',
     name: '',
+    csv: false,
     value: () => 
       <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
 
@@ -76,6 +84,7 @@ const amphiro = [
   {
     id: 'comparison',
     name: '',
+    csv: false,
     value: (value, row) => {
       if (row.percentDiff == null) {
         return <i className="dash" />;
@@ -91,10 +100,9 @@ const amphiro = [
     icon: 'user',
   },
   {
-    id: 'timestamp',
+    id: 'date',
     name: 'Date',
     icon: 'calendar',
-    value: value => <FormattedDate value={value} />,
   },
   {
     id: 'devName',
@@ -117,12 +125,12 @@ const amphiro = [
     value: (value, row) => `${value} ºC`
   },
   {
-    id: 'realtime',
+    id: 'real',
     name: 'Real',
-    value: (value, row) => row.history ? 
-      <i />
+    value: (value, row) => value ? 
+      <i className="fa fa-check" />
       :
-      <i className="fa fa-check" />,
+      <i />,
   },
   {
     id: 'id',
@@ -132,6 +140,7 @@ const amphiro = [
   {
     id: 'showMore',
     name: '',
+    csv: false,
     value: () => 
       <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
   }
@@ -158,8 +167,19 @@ const breakdown = [
       </span>,
   },
   {
+    id: 'member',
+    name: 'User',
+    icon: 'user',
+  },
+  {
+    id: 'date',
+    name: 'Date',
+    icon: 'calendar',
+  },
+  {
     id: 'showMore',
     name: '',
+    csv: false,
     value: () => 
       <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
   },
@@ -171,59 +191,7 @@ const wateriq = [
     name: 'Water IQ',
     value: value => <span style={{ fontSize: '2.5em', marginLeft: 20 }}>{value}</span>,
   },
-  {
-    id: 'volume',
-    name: 'Volume',
-    value: (value, row) => 
-      <span style={{ fontSize: '2.5em' }}>
-        {value}
-        <span style={{ fontSize: '0.6em' }}> lt</span>
-      </span>,
-  },
-  {
-    id: 'comparison',
-    name: '',
-    value: (value, row) => {
-      const { min, max } = row;
-      if (row.percentDiff == null) {
-        return (
-          <span>
-            <i className="dash" />
-            &nbsp;
-            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
-            { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
-          </span>
-        );
-      } else if (row.percentDiff < 0) {
-        return (
-          <span>
-            <i className="fa fa-arrow-down green" />
-            &nbsp;
-            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
-          </span>
-        );
-      }
-      return (
-        <span>
-          <i className="fa fa-arrow-up red" />
-          &nbsp;
-          { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
-        </span>
-      );
-    },
-  },
-  {
-    id: 'date',
-    name: 'Date',
-    icon: 'calendar',
-  },
-  {
-    id: 'showMore',
-    name: '',
-    value: () => 
-      <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
-
-  }
+  ...meter,
 ];
 
 const pricing = [

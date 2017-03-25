@@ -259,6 +259,12 @@ const validatePassword = function (password, confirmPassword) {
   return Promise.resolve();
 };
 
+const tableToCSV = function (schema, data) {
+  const fields = schema.filter(field => field.csv !== false);
+  return data.map(row => fields.map(field => row[field.id]).join('%2C'))
+  .reduce((p, c) => [p, c].join('%0A'), fields.map(field => field.name).join(', '));
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -277,4 +283,5 @@ module.exports = {
   throwServerError,
   formatMessage,
   validatePassword,
+  tableToCSV,
 };
