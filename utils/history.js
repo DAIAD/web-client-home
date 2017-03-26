@@ -1,11 +1,11 @@
 const moment = require('moment');
 
-const { meter: meterSchema, amphiro: amphiroSchema, breakdown: breakdownSchema, wateriq: waterIQSchema, pricing: pricingSchema } = require('../schemas/history');
+const { meter: meterSchema, amphiro: amphiroSchema, breakdown: breakdownSchema, wateriq: waterIQSchema, pricing: pricingSchema, forecast: forecastSchema } = require('../schemas/history');
 
-const { bringPastSessionsToPresent } = require('./time');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart, getTimeLabelByGranularity, getChartPriceBrackets } = require('./chart');
+const { bringPastSessionsToPresent, getTimeLabelByGranularity } = require('./time');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart, getChartPriceBrackets } = require('./chart');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { getLastShowerIdFromMultiple, getComparisonTitle, getAllMembers, prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, getComparisons, prepareBreakdownSessions, preparePricingSessions, waterIQToNumeral, numeralToWaterIQ } = require('./sessions');
+const { getLastShowerIdFromMultiple, getComparisonTitle, getAllMembers, prepareSessionsForTable, reduceMetric, sortSessions, hasShowersBefore, hasShowersAfter, getComparisons, prepareBreakdownSessions, preparePricingSessions, waterIQToNumeral, numeralToWaterIQ } = require('./sessions');
 const { formatMessage, getMetricMu } = require('./general');
 
 
@@ -179,7 +179,7 @@ const getStatsData = function (props) {
 
 const getForecastData = function (props) {
   const statsData = getStatsData(props);
-  const forecastData = props.forecasting && props.forecastData ? 
+  const forecastData = props.forecasting && props.forecastData && Array.isArray(props.forecastData.sessions) ? 
     [{
       name: 'Forecast',
       data: getChartMeterData(props.forecastData.sessions,
@@ -187,15 +187,40 @@ const getForecastData = function (props) {
                         props.time,
                         props.filter
                        ),
+      metadata: {
+        ids: mapMeterDataToChart(props.forecastData.sessions, 
+                               statsData.xCategories, 
+                               props.time)
+                               .map(val => val ? [val.id, val.timestamp] : [null, null]),
+    },
       lineType: 'dashed',
       color: '#2d3480',
       fill: 0.1,
       symbol: 'emptyRectangle',
     }]
     : [];
-  
+    
+  const sessionFields = forecastSchema;
+
+  const sessions = Array.isArray(props.forecastData.sessions) ? sortSessions(props.forecastData.sessions.map(session => ({
+    ...statsData.sessions.find(s => s.timestamp === session.timestamp),
+    devName: 'SWM',
+    forecast: Math.round(session.volume * 100) / 100,
+    member: props.user.firstname,
+    timestamp: session.timestamp,
+    date: getTimeLabelByGranularity(session.timestamp, 
+                                    props.time.granularity, 
+                                    props.intl
+                                   ),
+
+  })),
+    props.sortFilter,
+    props.sortOrder
+                                                                            ) : [];
   return {
     ...statsData,
+    sessionFields,
+    sessions,
     chartData: [
       ...statsData.chartData,
       ...forecastData,

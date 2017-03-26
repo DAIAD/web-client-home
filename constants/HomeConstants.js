@@ -188,6 +188,13 @@ module.exports = {
         icon: 'volume.svg',
       },
       {
+        id: 'forecast',
+        mu: 'lt',
+        title: 'history.forecast',
+        details: 'history.forecastDetails',
+        icon: 'volume.svg',
+      },
+      {
         id: 'total', 
         mu: 'lt',
         title: 'history.volumeTotal', 
