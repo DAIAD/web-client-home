@@ -1,12 +1,34 @@
 const moment = require('moment');
 
-const { meter: meterSchema, amphiro: amphiroSchema, breakdown: breakdownSchema, wateriq: waterIQSchema, pricing: pricingSchema, forecast: forecastSchema } = require('../schemas/history');
+const schemas = require('../schemas/history');
 
-const { bringPastSessionsToPresent, getTimeLabelByGranularity } = require('./time');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, mapMeterDataToChart, mapAmphiroDataToChart, getChartPriceBrackets } = require('./chart');
+const { bringPastSessionsToPresent, convertGranularityToPeriod, getTimeLabelByGranularity } = require('./time');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { getLastShowerIdFromMultiple, getComparisonTitle, getAllMembers, prepareSessionsForTable, reduceMetric, sortSessions, hasShowersBefore, hasShowersAfter, getComparisons, prepareBreakdownSessions, preparePricingSessions, waterIQToNumeral, numeralToWaterIQ } = require('./sessions');
 const { formatMessage, getMetricMu } = require('./general');
+
+const { 
+  getChartMeterData, 
+  getChartAmphiroData, 
+  getChartMeterCategories, 
+  getChartMeterCategoryLabels, 
+  getChartAmphiroCategories, 
+  mapMeterDataToChart, 
+  mapAmphiroDataToChart, 
+  getChartPriceBrackets 
+} = require('./chart');
+
+const { 
+  getLastShowerIdFromMultiple, 
+  getComparisons, 
+  getComparisonTitle, 
+  reduceMetric, 
+  sortSessions, 
+  prepareSessionsForTable, 
+  prepareBreakdownSessions, 
+  preparePricingSessions, 
+  waterIQToNumeral, 
+  numeralToWaterIQ 
+} = require('./sessions');
 
 
 const getStatsMeterData = function (props) {
@@ -22,7 +44,6 @@ const getStatsMeterData = function (props) {
                                     props.sortOrder
                 );
                 
-  const sessionFields = meterSchema;
     
   const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   const mu = getMetricMu(props.filter);
@@ -76,7 +97,7 @@ const getStatsMeterData = function (props) {
   return {
     //Table
     sessions,
-    sessionFields,
+    sessionFields: schemas.meter,
     reducedMetric,
     highlight,
     //Chart
@@ -105,8 +126,6 @@ const getStatsAmphiroData = function (props) {
                                     props.sortOrder
                 );
                 
-  const sessionFields = amphiroSchema;
-    
   const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   const mu = getMetricMu(props.filter);
   const highlight = `${reducedMetric} ${mu}`;
@@ -150,7 +169,7 @@ const getStatsAmphiroData = function (props) {
   return {
     //Table
     sessions,
-    sessionFields,
+    sessionFields: schemas.amphiro,
     reducedMetric,
     highlight,
     //Chart
@@ -200,8 +219,6 @@ const getForecastData = function (props) {
     }]
     : [];
     
-  const sessionFields = forecastSchema;
-
   const sessions = Array.isArray(props.forecastData.sessions) ? sortSessions(props.forecastData.sessions.map(session => ({
     ...statsData.sessions.find(s => s.timestamp === session.timestamp),
     devName: 'SWM',
@@ -219,7 +236,7 @@ const getForecastData = function (props) {
                                                                             ) : [];
   return {
     ...statsData,
-    sessionFields,
+    sessionFields: schemas.forecast,
     sessions,
     chartData: [
       ...statsData.chartData,
@@ -231,8 +248,6 @@ const getForecastData = function (props) {
 const getPricingData = function (props) {
   //const statsData = getStatsData(props);
 
-  const sessionFields = pricingSchema;
-  
   const meterSessions = Array.isArray(props.data) && props.data.length === 1 ? props.data[0].sessions : [];
   const sessions = sortSessions(preparePricingSessions(meterSessions, 
                                                        props.priceBrackets, 
@@ -305,7 +320,7 @@ const getPricingData = function (props) {
   }); 
   return {
     sessions,
-    sessionFields,
+    sessionFields: schemas.pricing,
     reducedMetric,
     highlight,
     chartCategories,
@@ -371,7 +386,7 @@ const getBreakdownData = function (props) {
     chartCategories,
     chartColors,
     chartData,
-    sessionFields: breakdownSchema, 
+    sessionFields: schemas.breakdown, 
   };
 };
 
@@ -393,7 +408,6 @@ const getWaterIQData = function (props) {
       numeralToWaterIQ(waterIQData.find(x => x.timestamp === moment(session.timestamp).startOf('month').valueOf()).user) : null,
   }));
   
-  const sessionFields = waterIQSchema;
   const chartData = [
     { 
       id: 'user', 
@@ -429,7 +443,7 @@ const getWaterIQData = function (props) {
   return {
     ...statsData,
     sessions,
-    sessionFields,
+    sessionFields: schemas.wateriq,
     highlight: '',
     chartData,
     chartYMax: 6,
