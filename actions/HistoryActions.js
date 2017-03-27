@@ -748,6 +748,7 @@ const setBreakdownLabels = function (labels) {
 const initWaterBreakdown = function () {
   return function (dispatch, getState) {
     dispatch(fetchWaterBreakdown())
+    .then(labels => labels.reverse())
     .then(labels => dispatch(setBreakdownLabels(labels)));
   };
 };

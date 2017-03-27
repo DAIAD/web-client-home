@@ -828,7 +828,7 @@ const fetchWidgetData = function (options) {
           return dispatch(queryMeterForecast({ time }))
           .then(forecastData => ({ ...res, forecastData }));
         } else if (type === 'comparison') {
-          return Promise.all(['user', 'all', 'nearest', 'similar']
+          return Promise.all(['similar', 'nearest', 'all', 'user']
                              .map(id => dispatch(fetchUserComparison(id, time))
                                   .then(sessions => ({ id, sessions }))))
           .then(comparisons => ({ ...res, comparisons }));

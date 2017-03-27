@@ -251,6 +251,7 @@ const meterPricing = function (widget, devices, intl) {
     clearComparisons: true,
   };
 };
+
 const meterBreakdown = function (widget, devices, intl) {
   const { data, period, deviceType, metric, breakdown = [] } = widget;
   
@@ -356,7 +357,7 @@ const waterIQ = function (widget, devices, intl) {
   const highlightImg = highlight ? `energy-${highlight}.svg` : null;
 
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
-  const comparisons = ['user', 'all', 'nearest', 'similar']; 
+  const comparisons = ['similar', 'nearest', 'all', 'user']; 
   const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison}` })) : []; 
 
   const chartData = [{ 
