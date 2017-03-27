@@ -129,6 +129,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     csvData,
     reducedMetric: highlight,
     mu,
+    isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
     chart: {
       //chart width = viewport width - main menu - sidebar left - sidebar right - padding
       width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),

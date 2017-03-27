@@ -340,6 +340,7 @@ const History = React.createClass({
                       <TimeNavigator 
                         handlePrevious={this.handleTimePrevious} 
                         handleNext={this.handleTimeNext}
+                        hasNext={!this.props.isAfterToday}
                         time={time}
                       />
                     );

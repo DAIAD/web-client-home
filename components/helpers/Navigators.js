@@ -37,7 +37,7 @@ function CustomTimeNavigator(props) {
 }
 
 function TimeNavigator(props) {
-  const { time, handlePrevious, handleNext } = props;
+  const { time, hasNext, handlePrevious, handleNext } = props;
 
   if (!time.startDate || !time.endDate) return (<div />);
   return (
@@ -60,9 +60,13 @@ function TimeNavigator(props) {
           year="numeric" 
         />
       </div>
-      <a className="navigator-child pull-right" onClick={handleNext}>
-        <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
-      </a>
+      { hasNext ? 
+        <a className="navigator-child pull-right" onClick={handleNext}>
+          <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
+        </a>
+        :
+        <div className="navigator-child pull-right">&nbsp;</div>
+      }
     </div>
   );
 }
