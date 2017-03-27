@@ -32,7 +32,7 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
                       temperature: session.temperature ? 
                         Math.round(session.temperature * 10) / 10 
                         : null,
-                      energy: session.energy ? Math.round(session.energy * 10) / 10 : null,
+                      energy: session.energy ? Math.round((session.energy / 1000) * 100) / 100 : null,
                       energyClass: getEnergyClass(session.energy), 
                       percentDiff: (diff != null && array[idx - 1][vol] !== 0) ? 
                         Math.round(10000 * (diff / array[idx - 1][vol])) / 100 

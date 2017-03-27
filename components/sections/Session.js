@@ -6,6 +6,7 @@ const DatetimeInput = require('react-datetime');
 const { LineChart } = require('react-echarts');
 const theme = require('../chart/themes/session');
 const { volumeToPictures, energyToPictures } = require('../../utils/sessions'); 
+const { getMetricMu } = require('../../utils/general');
 const { IMAGES } = require('../../constants/HomeConstants'); 
 
 
@@ -52,7 +53,7 @@ function InPictures(props) {
 }
 
 function SessionInfoLine(props) {
-  const { id, name, title, icon, data, mu, _t } = props;
+  const { id, name, title, icon, data, _t } = props;
   return data == null ? <div /> : (
   <li className="session-item" >
     <span>
@@ -78,7 +79,7 @@ function SessionInfoLine(props) {
           return <span />;
         })()
       }
-      <h4 style={{ float: 'right' }}>{data} <span>{mu}</span></h4>
+      <h4 style={{ float: 'right' }}>{data} <span>{getMetricMu(id)}</span></h4>
     </span>
   </li>
   );
@@ -251,11 +252,9 @@ function SessionInfo(props) {
             key={metric.id} 
             _t={_t}
             icon={metric.icon} 
-            sessionClick={metric.clickable ? setSessionFilter : null} 
             title={metric.title} 
             id={metric.id} 
             data={data[metric.id]} 
-            mu={metric.mu} 
             details={metric.details} 
           />
         ))
@@ -267,7 +266,7 @@ function SessionInfo(props) {
 
 function Session(props) {
   const { _t, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
-    activeDeviceType, activeSessionFilter, sessionFilters, width, mu, period, members } = props;
+    activeDeviceType, activeSessionFilter, sessionFilters, width, period, members } = props;
     
   if (!data) return <div />;
   const { devType, history, id, min, max, date, device, measurements } = data;
@@ -342,7 +341,8 @@ function Session(props) {
               boundaryGap: true,
             }}
             yAxis={{
-              formatter: y => `${y} ${mu}`,
+              min: 0,
+              formatter: chartFormatter,
             }} 
             series={[{ name: `${_t('section.shower')} ${id}`, data: chartData, fill: 0.55 }]}
           />

@@ -10,8 +10,9 @@ const HistoryActions = require('../actions/HistoryActions');
 const { ignoreShower, assignToMember, setShowerReal } = require('../actions/QueryActions');
 const { setForm } = require('../actions/FormActions');
 
+const { getChartAmphiroData } = require('../utils/chart');
 const { getAllMembers } = require('../utils/sessions');
-const { getShowerMetricMu, formatMessage } = require('../utils/general');
+const { getMetricMu, getShowerMetricMu, formatMessage } = require('../utils/general');
 const { convertGranularityToPeriod, getLowerGranularityPeriod } = require('../utils/time');
 const { METRICS } = require('../constants/HomeConstants');
 
@@ -47,9 +48,13 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                                 && (s.id === stateProps.activeSession[1] 
                                 || s.timestamp === stateProps.activeSession[1]))
    : {};
-      
-  const chartFormatter = t => moment(t).format('hh:mm');
+
+  const mu = getMetricMu(stateProps.activeSessionFilter);   
+  const chartFormatter = y => `${y} ${mu}`;
   const measurements = data && data.measurements ? data.measurements : [];
+
+  const chartCategories = measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss'));
+  const chartData = getChartAmphiroData(measurements, chartCategories, stateProps.activeSessionFilter);
 
   const nextReal = Array.isArray(ownProps.sessions) ? ownProps.sessions.sort((a, b) => { 
       if (a.id < b.id) return -1; 
@@ -71,14 +76,11 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     data,
     chartFormatter,
     members: getAllMembers(stateProps.members, stateProps.user.firstname),
-    chartCategories: measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss')),
-    chartData: measurements.map(measurement => measurement ? 
-                                measurement[stateProps.activeSessionFilter]
-                                  : null),
+    chartCategories,
+    chartData,
     showModal: stateProps.activeSession != null,
     sessionFilters: METRICS.AMPHIRO
       .filter(m => m.id === 'volume' || m.id === 'temperature' || m.id === 'energy'),
-    mu: getShowerMetricMu(stateProps.activeSessionFilter),
     period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',
     setShowerTimeForm: time => dispatchProps.setForm('shower', { time }),
     nextReal,

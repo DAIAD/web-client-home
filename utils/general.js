@@ -91,11 +91,12 @@ const getEnergyClass = function (energy) {
   return scale;
 };
 
+
 const getMetricMu = function (metric) {
   if (metric === 'showers') return '';
-  else if (metric === 'volume' || metric === 'difference' || metric === 'total') return 'lt';
+  else if (metric === 'volume' || metric === 'difference' || metric === 'total' || metric === 'forecast') return 'lt';
   //else if (metric === 'total' || metric === 'volumeCubic') return '\u33A5';
-  else if (metric === 'energy') return 'kW';
+  else if (metric === 'energy') return 'kWh';
   else if (metric === 'duration') return 'min';
   else if (metric === 'temperature') return '°C';
   else if (metric === 'cost') return '\u20AC';

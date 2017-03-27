@@ -47,7 +47,7 @@ const getChartAmphiroData = function (sessions, categories, filter) {
     if (filter === 'duration') {
       return Math.round(100 * (x / 60)) / 100;
     } else if (filter === 'energy') {
-      return Math.round((100 * x) / 10) / 100;
+      return Math.round(100 * (x / 1000)) / 100;
     } 
     return Math.round(100 * x) / 100;
   });

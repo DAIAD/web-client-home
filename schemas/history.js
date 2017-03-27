@@ -1,6 +1,7 @@
 const React = require('react');
 const { FormattedDate, FormattedMessage } = require('react-intl');
 const { IMAGES } = require('../constants/HomeConstants');
+const { getMetricMu } = require('../utils/general');
 
 const meter = [
   {
@@ -11,7 +12,7 @@ const meter = [
         { value ? 
           <div>
           <span>{value}</span>
-          <span style={{ fontSize: '0.6em' }}> lt</span>
+          <span style={{ fontSize: '0.6em' }}> {getMetricMu('volume')}</span>
         </div>
         :
         <span>-</span>
@@ -78,7 +79,7 @@ const amphiro = [
     value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
         {value}
-        <span style={{ fontSize: '0.6em' }}> lt</span>
+        <span style={{ fontSize: '0.6em' }}> {getMetricMu('volume')}</span>
       </span>,
   },
   {
@@ -163,7 +164,7 @@ const breakdown = [
     value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
         {value}
-        <span style={{ fontSize: '0.6em' }}> lt</span>
+        <span style={{ fontSize: '0.6em' }}> {getMetricMu('volume')}</span>
       </span>,
   },
   {
@@ -194,7 +195,7 @@ const forecast = [
         { value ? 
           <div>
           <span>{value}</span>
-          <span style={{ fontSize: '0.6em' }}> lt</span>
+          <span style={{ fontSize: '0.6em' }}> {getMetricMu('forecst')}</span>
         </div>
         :
         <span>-</span>
@@ -218,7 +219,7 @@ const pricing = [
     id: 'cost',
     name: 'Cost',
     icon: 'euro',
-    value: value => <span style={{ fontSize: '2.5em' }}>{`${value} \u20AC`}</span>,
+    value: value => <span style={{ fontSize: '2.5em' }}>{`${value} ${getMetricMu('cost')}`}</span>,
   },
   {
     id: 'total',
@@ -226,7 +227,7 @@ const pricing = [
     value: (value, row) => 
       <span style={{ fontSize: '2.0em' }}>
         {value}
-        <span style={{ fontSize: '0.6em' }}> lt</span>
+        <span style={{ fontSize: '0.6em' }}> {getMetricMu('total')}</span>
       </span>,
   },
   ...meter,
