@@ -266,8 +266,7 @@ const fetchData = function () {
       });
       // SWM
     } else if (activeDeviceType === 'METER') {
-      return dispatch(fetchWaterIQData())
-      .then(() => dispatch(QueryActions.queryMeterHistory({
+      return dispatch(QueryActions.queryMeterHistory({
           time,
         }))
         .then((meterData) => {
@@ -278,7 +277,8 @@ const fetchData = function () {
           console.error('Caught error in history meter query:', error); 
           dispatch(setSessions([]));
           dispatch(setDataSynced());
-        }))
+        })
+        .then(() => getState().section.history.mode === 'wateriq' ? dispatch(fetchWaterIQData()) : Promise.resolve())
         .then(() => getState().section.history.forecasting ? dispatch(fetchForecastData()) : Promise.resolve())
         .then(() => dispatch(fetchComparisonData()));
     }
