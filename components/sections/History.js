@@ -9,6 +9,7 @@ const { SidebarLeft, SidebarRight } = require('../layout/Sidebars');
 const Table = require('../helpers/Table');
 const { TimeNavigator, CustomTimeNavigator, ShowerNavigator } = require('../helpers/Navigators');
 const HistoryChart = require('./HistoryChart');
+const { Tabs, TabsMulti, Tab } = require('../helpers/Tabs');
 
 //sub-containers
 const SessionData = require('../../containers/SessionData');
@@ -19,10 +20,7 @@ const { IMAGES } = require('../../constants/HomeConstants');
 
 function SessionsList(props) {
   const { sortOptions, sortFilter, sortOrder, handleSortSelect, activeDeviceType, 
-    csvData, time, sessionFields, sessions, setActiveSession, setSortOrder, setSortFilter } = props;
-    
-  const onSessionClick = session => 
-    setActiveSession(session.device, session.id, session.timestamp);
+    csvData, time, sessionFields, sessions, setActiveSession, setSortOrder, setSortFilter, onSessionClick } = props;
   return (
     <div className="history-list-area">
       <div className="history-list-header">
@@ -147,7 +145,7 @@ const History = React.createClass({
     return (
       <MainSection id="section.history">
         <Topbar> 
-          <bs.Tabs 
+          <Tabs 
             className="history-time-nav" 
             position="top" 
             tabWidth={3} 
@@ -156,18 +154,19 @@ const History = React.createClass({
           >
             {
               periods.map(period => (
-                <bs.Tab 
+                <Tab 
                   key={period.id} 
                   eventKey={period.id} 
                   title={_t(period.title)} 
                 />
               ))
             } 
-          </bs.Tabs>
+          </Tabs>
         </Topbar>
         <div className="section-row-container">
           <SidebarLeft> 
-            <bs.Tabs 
+            { this.props.activeDeviceType === 'METER' ?
+            <Tabs 
               position="left" 
               tabWidth={20} 
               activeKey={this.props.mode} 
@@ -175,38 +174,60 @@ const History = React.createClass({
             >
               {
                 this.props.modes.map(mode => (
-                  <bs.Tab 
+                  <Tab 
                     key={mode.id} 
                     eventKey={mode.id} 
+                    image={mode.image ? `${IMAGES}/${mode.image}` : null}
                     title={mode.title} 
                   /> 
                 ))
               }
-            </bs.Tabs>
-            <br />
-            <br />
-            <br />
-            <br />
-            <bs.Tabs 
-              position="left" 
-              tabWidth={20} 
+            </Tabs>
+            : <i /> }
+            { this.props.activeDeviceType === 'AMPHIRO' ? 
+            <Tabs 
               activeKey={this.props.filter} 
               onSelect={this.handleTypeSelect}
             >
               {
                 metrics.map(metric => (
-                  <bs.Tab 
+                  <Tab 
                     key={metric.id} 
                     eventKey={metric.id} 
+                    image={`${IMAGES}/${metric.image}`}
                     title={metric.title} 
                   /> 
                 ))
               }
-            </bs.Tabs>
+            </Tabs>
+            : <i /> 
+            }
+            <br />
+            <br />
+            { this.props.memberFilters && this.props.memberFilters.length > 0 ? 
+              <div>
+                <h5 style={{ marginLeft: 20 }}>Member</h5>
+                <Tabs
+                  activeKey={this.props.memberFilter}
+                  onSelect={val => this.props.setQueryAndFetch({ memberFilter: val })}
+                >
+                {
+                  this.props.memberFilters.map(filter => (
+                    <Tab
+                      key={filter.id}
+                      eventKey={filter.id}
+                      title={filter.title}
+                    />
+                    ))
+                }
+              </Tabs>
+              </div>
+              : <div />
+            }
           </SidebarLeft>
           <SidebarRight> 
             {
-              <bs.Tabs 
+              <Tabs 
                 position="left" 
                 tabWidth={20} 
                 activeKey={this.props.activeDeviceType} 
@@ -214,14 +235,14 @@ const History = React.createClass({
               >
                 {
                  deviceTypes.map(devType => ( 
-                   <bs.Tab 
+                   <Tab 
                      key={devType.id} 
                      eventKey={devType.id} 
                      title={devType.title} 
                    /> 
                  ))
                 }
-              </bs.Tabs>
+              </Tabs>
             }
             <CheckboxGroup 
               name="amphiro-devices" 
@@ -236,7 +257,11 @@ const History = React.createClass({
                   <div className="shower-devices">
                     {
                       amphiros.map(device => (
-                        <label key={device.deviceKey} htmlFor={device.deviceKey}>
+                        <label 
+                          key={device.deviceKey} 
+                          className="shower-device-checkbox"
+                          htmlFor={device.deviceKey}
+                        >
                           <Checkbox 
                             id={device.deviceKey} 
                             value={device.deviceKey} 
@@ -252,30 +277,6 @@ const History = React.createClass({
             </CheckboxGroup>
             <br />
             
-            { this.props.memberFilters && this.props.memberFilters.length > 0 ? 
-              <div>
-                <h5 style={{ marginLeft: 20 }}>Filter by</h5>
-                <bs.Tabs 
-                  position="left" 
-                  tabWidth={20} 
-                  activeKey={this.props.memberFilter} 
-                  onSelect={(val) => {
-                    this.props.setQueryAndFetch({ memberFilter: val });
-                  }}
-                >
-                  {
-                    this.props.memberFilters.map(filter => (
-                      <bs.Tab 
-                        key={filter.id} 
-                        eventKey={filter.id}
-                        title={filter.title} 
-                      /> 
-                    ))
-                  }
-                </bs.Tabs>
-              </div>
-              : <div />
-            }
             <br />
 
             { 
@@ -284,30 +285,20 @@ const History = React.createClass({
                 :
                 <span />
             }
-            {
-              <div className="clearfix">
-                <ul className="col-xs-20 nav nav-pills nav-stacked">
-                  {
-                    this.props.compareAgainst.map((comparison, i) => (
-                      <li 
-                        key={comparison.id} 
-                        role="presentation" 
-                        className={this.props.comparisons.find(c => c.id === comparison.id) ? 'active' : ''}
-                      >
-                      <a onClick={() => this.handleComparisonSelect(comparison.id)}>{comparison.title}
-                      {
-                        this.props.comparisons.find(c => c.id === comparison.id) ?
-                          <i style={{ float: 'right', marginRight: -5, marginTop: 5 }} className="fa fa-times" />
-                          :
-                          <i />
-                          }
-                        </a>
-                    </li>
-                    ))
-                  }
-                </ul>
-              </div>
-              } 
+              <TabsMulti
+                activeKeys={this.props.comparisons.map(c => c.id)}
+                onSelect={val => this.handleComparisonSelect(val)}
+              >
+              {
+                this.props.compareAgainst.map(comparison => (
+                  <Tab
+                    key={comparison.id}
+                    eventKey={comparison.id}
+                    icon={comparison.icon}
+                    title={comparison.title}
+                  />
+                ))}
+              </TabsMulti>
             {
               this.props.comparisons.length > 0 ?
                 <a 
