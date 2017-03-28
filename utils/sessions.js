@@ -98,7 +98,7 @@ const getShowerMeasurementsById = function (data, id) {
   return found ? found.measurements : [];
 };
 
-const reduceMetric = function (devices, data, metric) {
+const reduceMetric = function (devices, data, metric, average = false) {
   if (!devices || !data || !metric) return 0;
   const sessions = getSessionsCount(devices, data);
 
@@ -109,7 +109,8 @@ const reduceMetric = function (devices, data, metric) {
   )
   .reduce(((p, c) => p + c), 0);
 
-  if (metric === 'temperature') {
+  //if (metric === 'temperature') {
+  if (metric === 'temperature' || average) {
     reducedMetric /= sessions;
   } else if (metric === 'duration') {
     reducedMetric = (reducedMetric / sessions) / 60;
@@ -254,7 +255,7 @@ const energyToPictures = function (energy) {
     items: div(ENERGY_CITY),
   };
 };
-const getAllMembers = function (members, firstname) {
+const getAllMembers = function (members) {
   return members.filter(member => member.active || member.index === 0);
 };
 

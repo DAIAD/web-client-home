@@ -194,7 +194,6 @@ const History = React.createClass({
                   <Tab 
                     key={metric.id} 
                     eventKey={metric.id} 
-                    image={`${IMAGES}/${metric.image}`}
                     title={metric.title} 
                   /> 
                 ))

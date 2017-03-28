@@ -382,7 +382,7 @@ const meterComparison = function (widget, devices, intl) {
     chartData,
     mu,
     mode: 'stats',
-    comparisonData: comparisons.filter(c => c.id !== 'user'), 
+    comparisonData: Array.isArray(comparisons) ? comparisons.filter(c => c.id !== 'user') : [], 
   };
 };
 

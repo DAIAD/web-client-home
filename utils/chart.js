@@ -85,17 +85,19 @@ const getChartMeterData = function (sessions, categories, time, filter) {
 };
 
 const getChartPriceBrackets = function (xCategories, brackets, intl) {
-  return brackets
-  .filter(bracket => bracket.maxVolume != null)
-  .map((bracket, i) => ({
-    name: `${bracket.minVolume} to ${bracket.maxVolume} \u33A5: ${bracket.price}\u20AC`,
-    data: xCategories.map(() => bracket.maxVolume * 1000),
-    label: false,
-    lineType: 'dashed',
-    symbol: 'none',
-    color: BRACKET_COLORS[i],
-    fill: 0,
-  }));
+  return Array.isArray(brackets) ? 
+    brackets
+    .filter(bracket => bracket.maxVolume != null)
+    .map((bracket, i) => ({
+      name: `${bracket.minVolume} to ${bracket.maxVolume} \u33A5: ${bracket.price}\u20AC`,
+      data: xCategories.map(() => bracket.maxVolume * 1000),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: BRACKET_COLORS[i],
+      fill: 0,
+    }))
+    : [];
 };
 
 module.exports = {

@@ -546,7 +546,7 @@ module.exports = {
       },
       {
         id: 'wateriqChart', 
-        title: 'Water IQ Chart',
+        title: 'Water IQ Comparison',
         description: 'A chart widget showing your Water IQ for the previous month against your city, neighbors and similar users.', 
         type: 'wateriq', 
         metric: 'volume', 
