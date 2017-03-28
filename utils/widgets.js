@@ -53,7 +53,7 @@ const amphiroMembersRanking = function (widget, devices, intl) {
     showers: m.sessions.reduce((p, c) => p + c.sessions.length, 0),
   }))
   .sort((a, b) => a.average - b.average)
-  .filter((x, i) => i < 5);
+  .filter((x, i) => i < 3);
   
   const chartCategories = data.map(m => m.name).reverse(); 
   const chartData = [{
@@ -71,6 +71,7 @@ const amphiroMembersRanking = function (widget, devices, intl) {
     highlight: {
       image: 'rank-1.svg',
       text: data.length > 0 ? data[0].name : null,
+      width: 45,
       mu: '',
     },
     chartColors,
@@ -443,6 +444,7 @@ const waterIQ = function (widget, devices, intl) {
     chartFormatter: y => numeralToWaterIQ(y),
     highlight: {
       image: highlightImg,
+      width: 25,
     },
     waterIQData,
     mode: 'wateriq',

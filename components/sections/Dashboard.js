@@ -110,7 +110,7 @@ const WidgetItem = React.createClass({
                   <HybridWidget
                     {...widget}
                     width={this.state.el ? this.state.el.clientWidth : '100%'}
-                    height={this.state.el ? this.state.el.clientHeight / 2.5 : '40%'}
+                    height={this.state.el ? this.state.el.clientHeight / 2.1 : '40%'}
                   />
                   );
               }

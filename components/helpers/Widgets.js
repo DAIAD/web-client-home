@@ -14,21 +14,21 @@ function defaultFormatter(mu) {
 
 function StatWidget(props) {
   const { highlight, info = [], period, mu } = props;
-  
+  const highlightWidth = highlight.width || 30;
   return (
     <div style={{ padding: 10, marginLeft: 10 }}>
-      <div style={{ float: 'left', width: highlight != null ? '30%' : '0%' }}>
+      <div style={{ float: 'left', width: highlight != null ? `${highlightWidth}%` : '0%' }}>
         { 
           (() => {
              if (highlight && highlight.image != null && highlight.text != null) {
               // image and text
               return (
-                <div>
-                  <img style={{ height: 55 }} src={`${IMAGES}/${highlight.image}`} alt={highlight.image} /> 
-                  <h5>
+                <div style={{ textAlign: 'center' }}>
+                  <img style={{ height: 40, width: 40, float: 'left' }} src={`${IMAGES}/${highlight.image}`} alt={highlight.image} /> 
+                  <h2>
                     <span>{highlight.text}</span>
                     <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{highlight.mu}</span>
-                  </h5>
+                  </h2>
                 </div>
                 );
             } else if (highlight && highlight.text == null && highlight.image != null) {
@@ -52,13 +52,13 @@ function StatWidget(props) {
           })()
         }
       </div>
-      <div style={{ float: 'left', width: highlight != null ? '70%' : '100%' }}>
+      <div style={{ float: 'left', width: highlight != null ? `${100 - highlightWidth}%` : '100%' }}>
         <div>
           { 
             info.map((line, idx) => (
-              <div key={idx}>
+              <div key={idx} style={{ float: 'left', margin: '0 10px 5px 0' }}>
                 <i className={`fa fa-${line.icon}`} />
-                { line.image ? <img src={`${IMAGES}/${line.image}`} alt={line.id} /> : <i /> }
+                { line.image ? <img style={{ maxHeight: 30, maxWidth: 30 }} src={`${IMAGES}/${line.image}`} alt={line.id} /> : <i /> }
                 &nbsp;
                 <span>{line.text}</span>
               </div>
