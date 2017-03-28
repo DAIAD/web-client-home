@@ -92,7 +92,9 @@ const amphiroMembersRanking = function (widget, devices, intl) {
       image: `rank-${i + 2}.svg`,
       text: m.name,
     })),
-    clearComparisons: true,
+    data: null,
+    memberFilter: data.length > 0 ? data[0].index : null,
+    comparisons: data.filter((x, i) => i > 0).map(x => String(x.index)),
   };
 };
 const amphiroOrMeterTotal = function (widget, devices, intl) {
