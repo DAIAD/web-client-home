@@ -164,7 +164,19 @@ const dashboard = function (state = initialState, action) {
         widgets: newWidgets
       });
     }
-  
+
+    case types.DASHBOARD_SET_WIDGET_TYPE_UNSYNCED: {
+      const newWidgets = state.widgets
+      .map(w => w.type === action.widgetType ? ({ 
+        ...w, 
+        synced: false, 
+      }) 
+      : w);
+      
+      return Object.assign({}, state, {
+        widgets: newWidgets
+      });
+    }
     case types.DASHBOARD_UPDATE_LAYOUT: {
       return Object.assign({}, state, {
         layout: action.layout

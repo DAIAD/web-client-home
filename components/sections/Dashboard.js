@@ -332,9 +332,11 @@ const Dashboard = React.createClass({
   //mixins: [ PureRenderMixin ],
 
   componentWillMount: function () {
-    //const { fetchAllWidgetesData, switchMode } = this.props;
-    //switchMode("normal");
-    //fetchAllWidgetesData();
+    this.props.widgets.forEach((widget) => {
+      if (widget.synced === false) {
+        this.props.updateWidget(widget.id, {});
+      }
+    });
   },
   
   render: function () {

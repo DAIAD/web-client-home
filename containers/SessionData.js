@@ -7,6 +7,7 @@ const moment = require('moment');
 
 const SessionModal = require('../components/sections/Session');
 const HistoryActions = require('../actions/HistoryActions');
+const { setWidgetTypeUnsynced } = require('../actions/DashboardActions');
 const { ignoreShower, assignToMember, setShowerReal } = require('../actions/QueryActions');
 const { setForm } = require('../actions/FormActions');
 
@@ -35,6 +36,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({
     ...HistoryActions,
+    setWidgetTypeUnsynced,
     assignToMember,
     ignoreShower,
     setShowerReal,
@@ -84,6 +86,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     period: stateProps.activeDeviceType === 'METER' ? getLowerGranularityPeriod(stateProps.timeFilter) : '',
     setShowerTimeForm: time => dispatchProps.setForm('shower', { time }),
     nextReal,
+    assignToMember: x => dispatchProps.assignToMember(x)
+    .then(() => dispatchProps.setWidgetTypeUnsynced('ranking')),
     _t: formatMessage(ownProps.intl),
   };
 }

@@ -148,6 +148,13 @@ const setWidgetData = function (id, update) {
   };
 };
 
+const setWidgetTypeUnsynced = function (widgetType) {
+  return {
+    type: types.DASHBOARD_SET_WIDGET_TYPE_UNSYNCED,
+    widgetType,
+  };
+};
+
 /**
  * Updates an existing widget with provided options.
  * Important: This action triggers data fetch 
@@ -162,7 +169,7 @@ const updateWidget = function (id, update) {
     dispatch({
       type: types.DASHBOARD_UPDATE_WIDGET,
       id,
-      update: { ...update, synced: false },
+      update: { ...update },
     });
     /*
     if (Object.keys(data).length > 0) {
@@ -270,5 +277,6 @@ module.exports = {
   removeWidget,
   fetchAllWidgetsData,
   setDeviceType,
+  setWidgetTypeUnsynced,
 };
 
