@@ -459,6 +459,15 @@ module.exports = {
         display: 'stat',
         period: 'ten',
       },
+      {
+        id: 'ranking', 
+        title: 'Member ranking', 
+        description: 'A widget displaying the household members ranking based on average shower water consumption.', 
+        type: 'ranking', 
+        metric: 'volume', 
+        display: 'hybrid',
+        period: 'all',
+      },
     ],
     METER: [
       {

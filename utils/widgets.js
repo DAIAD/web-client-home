@@ -40,6 +40,47 @@ const amphiroLastShower = function (widget, devices, intl) {
   };
 };
 
+const amphiroMembersRanking = function (widget, devices, intl) {
+  const { device, metric } = widget;
+  
+  const periods = PERIODS.AMPHIRO;
+  const data = widget.data.map(m => ({ 
+    ...m, 
+    average: reduceMetric(devices, m.sessions, metric, true),
+    showers: m.sessions.reduce((p, c) => p + c.sessions.length, 0),
+  }))
+  .sort((a, b) => a.average - b.average)
+  .filter((x, i) => i < 5);
+  
+  const chartCategories = data.map(m => m.name).reverse(); 
+  const chartData = [{
+    name: 'Average shower',
+    data: data.map(x => x.average).reverse(),
+  }];
+  const mu = getMetricMu(metric);
+
+  const chartColors = ['#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'];
+  return {
+    ...widget,
+    periods,
+    chartCategories,
+    chartData,
+    highlight: {
+      image: 'rank-1.svg',
+      text: data.length > 0 ? data[0].name : null,
+      mu: '',
+    },
+    chartColors,
+    chartType: 'horizontal-bar',
+    mode: 'stats',
+    mu,
+    info: data.filter((x, i) => i > 0).map((m, i) => ({
+      image: `rank-${i + 2}.svg`,
+      text: m.name,
+    })),
+    clearComparisons: true,
+  };
+};
 const amphiroOrMeterTotal = function (widget, devices, intl) {
   const { data, period, deviceType, metric, previous } = widget;
   
@@ -449,6 +490,8 @@ const prepareWidget = function (widget, devices, intl) {
       return tip();
     case 'last': 
       return amphiroLastShower(widget, devices, intl);
+    case 'ranking': 
+      return amphiroMembersRanking(widget, devices, intl);
     case 'total':
       return amphiroOrMeterTotal(widget, devices, intl); 
     case 'efficiency':

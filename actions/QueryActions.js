@@ -14,7 +14,7 @@ const deviceAPI = require('../api/device');
 const meterAPI = require('../api/meter');
 const dataAPI = require('../api/data');
 
-const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, memberFilterToMembers } = require('../utils/sessions');
+const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, memberFilterToMembers, getAllMembers } = require('../utils/sessions');
 const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
 const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex, filterCacheItems } = require('../utils/general');
 const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod, lastSixMonths } = require('../utils/time');
@@ -845,6 +845,15 @@ const fetchWidgetData = function (options) {
     } else if (deviceType === 'AMPHIRO') {
       if (type === 'last') {
         return dispatch(fetchLastDeviceSession({ cache, deviceKey }));
+      } else if (type === 'ranking' || type === 'comparisonMembers') {
+        const members = getAllMembers(getState().user.profile.household.members);
+        return Promise.all(members.map(m => dispatch(queryDevice({
+          cache,
+          length: showerFilterToLength(period),
+          memberFilter: m.index,
+          deviceKey,
+        })).then(memberData => ({ sessions: memberData, ...m }))))
+        .then(data => ({ data }));
       }
       return dispatch(queryDevice({ 
         cache, 
@@ -852,13 +861,15 @@ const fetchWidgetData = function (options) {
         deviceKey,
       }))
       .then(data => ({ data }))
-      .then(res => dispatch(queryDevice({
-        cache,
-        length: showerFilterToLength(period),
-        deviceKey,
-        index: -1,
-      }))
-      .then(prevData => ({ ...res, previous: prevData })));
+      .then(res => period !== 'all' ? 
+            dispatch(queryDevice({
+              cache,
+              length: showerFilterToLength(period),
+              deviceKey,
+              index: -1,
+            }))
+            .then(prevData => ({ ...res, previous: prevData }))
+            : Promise.resolve(res));
     }
     return Promise.reject(new Error('noDeviceType'));
   };

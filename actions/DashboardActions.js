@@ -31,9 +31,9 @@ const createWidget = function (data) {
 const appendLayout = function (id, display, type) {
   let layout = { x: 0, y: 0, w: 1, h: 1, static: false, i: id };
   
-  if (display === 'stat' || (display === 'chart' && type === 'budget')) {
+  if (display === 'stat') {
     layout = { ...layout, w: 2, minW: 2, minH: 1, maxH: 1 };
-  } else if (display === 'chart') {
+  } else if (display === 'chart' || display === 'hybrid') {
     layout = { ...layout, w: 2, h: 2, minW: 2, minH: 2 };
   }
   return {
