@@ -32,12 +32,12 @@ const getFriendlyDuration = function (seconds) {
   if (!seconds) { return null; }
   
   if (seconds > 3600) {
-    return `${addZero(Math.floor(seconds / 3600))}:` +
-           `${addZero(Math.floor((seconds % 3600) / 60))}:` +
-           `${addZero(Math.floor((seconds % 3600) / 60) % 60)}`;
+    return `${addZero(Math.floor(seconds / 3600))}h ` +
+           `${addZero(Math.floor((seconds % 3600) / 60))}' ` +
+           `${addZero(Math.floor((seconds % 3600) / 60) % 60)}"`;
   } else if (seconds > 60) {
-    return `${addZero(Math.floor(seconds / 60))}:` +
-      `${addZero(Math.floor(seconds / 60) % 60)}`;
+    return `${addZero(Math.floor(seconds / 60))}' ` +
+      `${addZero(Math.floor(seconds / 60) % 60)}"`;
   }
   return `00:${addZero(seconds)}`;
 };

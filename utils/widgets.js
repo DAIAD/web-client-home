@@ -6,7 +6,7 @@ const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general'
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { reduceMetric, getShowerMeasurementsById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ, prepareBreakdownSessions } = require('./sessions');
+const { reduceMetric, getShowerById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ, prepareBreakdownSessions } = require('./sessions');
 
 const tip = function (widget) {
   return {
@@ -17,8 +17,9 @@ const tip = function (widget) {
 
 const amphiroLastShower = function (widget, devices, intl) {
   const { data, device, showerId, metric, timestamp } = widget;
-  const last = data ? data.find(d => d.deviceKey === device) : null;
-  const measurements = last ? getShowerMeasurementsById(last, showerId) : [];
+
+  const lastSession = getShowerById(data.find(d => d.deviceKey === device), showerId);
+  const measurements = lastSession ? lastSession.measurements : [];
   const chartCategories = measurements.map(m => moment(m.timestamp).format('hh:mm:ss'));
   const chartData = [{
     name: getDeviceNameByKey(devices, device) || '', 
@@ -26,17 +27,26 @@ const amphiroLastShower = function (widget, devices, intl) {
   }];
   const mu = getMetricMu(metric);
 
-  const highlight = measurements.map(s => s[metric]).reduce((p, c) => p + c, 0);
-
   return {
     ...widget,
     chartCategories,
     timeDisplay: intl.formatRelative(timestamp),
     chartData,
     highlight: {
-      text: highlight,
+      image: 'volume.svg',
+      text: lastSession ? lastSession[metric] : null,
       mu,
-    }
+    },
+    info: lastSession ? [
+      {
+        image: 'energy.svg',
+        text: `${Math.round(lastSession.energy / 10) / 100} ${getMetricMu('energy')}`,
+      },
+      {
+        image: 'timer-on.svg',
+        text: getFriendlyDuration(lastSession.duration),
+      },
+    ] : [],
     mode: 'stats',
     mu,
     clearComparisons: true,

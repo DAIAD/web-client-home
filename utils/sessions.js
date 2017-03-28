@@ -88,14 +88,11 @@ const updateOrAppendToSession = function (devices, data) {
   return updated;
 };
 
-const getShowerMeasurementsById = function (data, id) {
+const getShowerById = function (data, id) {
   if (!data || !Array.isArray(data.sessions)) {
-    return [];
+    return null;
   }
-  const sessions = data.sessions;
-
-  const found = sessions.find(session => session.id === id);
-  return found ? found.measurements : [];
+  return data.sessions.find(session => session.id === id);
 };
 
 const reduceMetric = function (devices, data, metric, average = false) {
@@ -379,7 +376,7 @@ module.exports = {
   sortSessions,
   reduceMetric,
   getSessionsCount,
-  getShowerMeasurementsById,
+  getShowerById,
   getShowerRange,
   filterShowers,
   getLastShowerIdFromMultiple,

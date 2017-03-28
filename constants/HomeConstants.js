@@ -447,7 +447,7 @@ module.exports = {
         description: 'A widget displaying the last shower recorded for all your devices.', 
         type: 'last', 
         metric: 'volume', 
-        display: 'chart',
+        display: 'hybrid',
         period: 'ten',
       },
       {
