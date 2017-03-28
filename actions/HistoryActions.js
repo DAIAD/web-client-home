@@ -662,17 +662,17 @@ const setQuery = function (query) {
     if (increaseIndex === true) dispatch(increaseShowerIndex());
     if (decreaseIndex === true) dispatch(decreaseShowerIndex());
 
+    if (memberFilter != null) dispatch(switchMemberFilter(memberFilter));
+
     if (Array.isArray(comparisons)) {
       comparisons.forEach((comparison) => {
         if (getState().section.history.comparisons.find(c => c.id === comparison)) {
           dispatch(removeComparison(comparison));
-        } else if (comparison) {
+        } else if (comparison != null) {
           dispatch(addComparison(comparison));
         }
       });
-    }
-
-    if (clearComparisons) {
+    } else if (clearComparisons) {
       dispatch(resetComparisons());
     }
 
@@ -683,9 +683,6 @@ const setQuery = function (query) {
     if (waterIQData) {
       dispatch(setWaterIQSessions(waterIQData));
     }
-
-    if (memberFilter != null) dispatch(switchMemberFilter(memberFilter));
-
     if (Array.isArray(active) && active.length === 2 && active[0] != null && active[1] != null) { 
       //dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
       dispatch(setActiveSession(active[0], active[1])); 
@@ -695,12 +692,12 @@ const setQuery = function (query) {
 
     if (forecastData) {
       dispatch(setForecastData(forecastData));
-    }
+      }
 
     if (data && Array.isArray(data)) { 
       dispatch(setSessions(data));
       dispatch(setDataSynced());
-    }    
+    } 
   };
 };
 const setQueryAndFetch = function (query) {
