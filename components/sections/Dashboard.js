@@ -5,7 +5,7 @@ const { Responsive, WidthProvider } = require('react-grid-layout');
 const { Link } = require('react-router');
 
 const MainSection = require('../layout/MainSection');
-const ChartWidget = require('../helpers/ChartWidget');
+const { StatWidget, ChartWidget, HybridWidget } = require('../helpers/Widgets');
 
 const { IMAGES } = require('../../constants/HomeConstants');
 
@@ -95,7 +95,7 @@ const WidgetItem = React.createClass({
               } 
               if (display === 'stat') {
                 return (
-                  <StatWidget {...this.props} /> 
+                  <StatWidget {...widget} /> 
                 );
               } else if (display === 'chart') {
                 return (
@@ -105,10 +105,14 @@ const WidgetItem = React.createClass({
                     height={this.state.el ? this.state.el.clientHeight - 90 : null}
                   /> 
                 );
-              } else if (display === 'tip') {
+              } else if (display === 'hybrid') {
                 return (
-                  <TipWidget {...this.props} />
-                );
+                  <HybridWidget
+                    {...widget}
+                    width={this.state.el ? this.state.el.clientWidth : '100%'}
+                    height={this.state.el ? this.state.el.clientHeight / 2.5 : '40%'}
+                  />
+                  );
               }
               return <div />;
             }
@@ -122,59 +126,6 @@ const WidgetItem = React.createClass({
     );
   }
 });
-
-function StatWidget(props) {
-  const { deviceType, highlight, highlightImg, info = [], period, mu } = props.widget;
-  
-  return (
-    <div style={{ padding: 10, marginLeft: 10 }}>
-      <div style={{ float: 'left', width: '30%' }}>
-        {
-          highlight != null ?
-            <h2>
-              <span>{highlight}</span>
-              <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{mu}</span>
-            </h2>
-            :
-              <i />
-        }
-        { 
-          highlightImg ? 
-            <img style={{ height: 55 }} src={`${IMAGES}/${highlightImg}`} alt={highlightImg} /> 
-              : <i /> 
-        }
-        {
-          highlight == null && highlightImg == null ?
-            <h2>-</h2>
-            :
-              <i />
-        }
-      </div>
-      <div style={{ float: 'left', width: '70%' }}>
-        <div>
-          { 
-            info.map((line, idx) => (
-              <div key={idx}>
-                <i className={`fa fa-${line.icon}`} />
-                &nbsp;
-                <span>{line.text}</span>
-              </div>
-              ))
-          }
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function TipWidget(props) {
-  const { highlight } = props.widget;
-  return (
-    <div >
-      <p>{highlight}</p>
-    </div>
-  );
-}
 
 function WidgetPanel(props) {
   const { _t, mode, layout, widgets, updateLayout, updateWidget, removeWidget, 

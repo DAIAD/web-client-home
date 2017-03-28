@@ -8,7 +8,7 @@ const { IMAGES, BASE64 } = require('../../constants/HomeConstants');
 
 const Topbar = require('../layout/Topbar');
 const MainSection = require('../layout/MainSection');
-const ChartWidget = require('../helpers/ChartWidget');
+const { ChartWidget } = require('../helpers/Widgets');
 const NotificationList = require('../helpers/NotificationList');
 
 function NotificationMessage(props) {

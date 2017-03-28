@@ -33,7 +33,10 @@ const amphiroLastShower = function (widget, devices, intl) {
     chartCategories,
     timeDisplay: intl.formatRelative(timestamp),
     chartData,
-    highlight,
+    highlight: {
+      text: highlight,
+      mu,
+    }
     mode: 'stats',
     mu,
     clearComparisons: true,
@@ -94,7 +97,6 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   const reduced = reduceMetric(devices, data, metric);
   const previousReduced = reduceMetric(devices, previous, metric);
 
-  const highlight = reduced;
   const mu = getMetricMu(metric);
   const better = reduced < previousReduced;
   const comparePercentage = previousReduced === 0 ?
@@ -136,7 +138,10 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     ...widget,
     time,
     periods,
-    highlight,
+    highlight: {
+      text: reduced,
+      mu,
+    },
     mu,
     info: [
       {
@@ -184,7 +189,10 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
   return {
     ...widget,
     periods,
-    highlight,
+    highlight: {
+      text: highlight,
+      mu: '',
+    },
     info: [
       {
         icon: better ? 'arrow-down green' : 'arrow-up red',
@@ -432,8 +440,10 @@ const waterIQ = function (widget, devices, intl) {
     chartColors,
     chartCategories,
     chartData,
-    formatter: y => numeralToWaterIQ(y),
-    highlightImg,
+    chartFormatter: y => numeralToWaterIQ(y),
+    highlight: {
+      image: highlightImg,
+    },
     waterIQData,
     mode: 'wateriq',
     period: 'year',
@@ -478,7 +488,10 @@ const budget = function (widget, devices, intl) {
   const chartColors = ['#2d3480', '#abaecc'];
   return {
     ...widget,
-    highlight: reduced,
+    highlight: {
+      text: reduced,
+      mu,
+    },
     chartData,
     chartColors,
   };
