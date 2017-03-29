@@ -5,7 +5,7 @@ const { Responsive, WidthProvider } = require('react-grid-layout');
 const { Link } = require('react-router');
 
 const MainSection = require('../layout/MainSection');
-const { StatWidget, ChartWidget, HybridWidget } = require('../helpers/Widgets');
+const { Widget } = require('../helpers/Widgets');
 
 const { IMAGES } = require('../../constants/HomeConstants');
 
@@ -89,35 +89,15 @@ const WidgetItem = React.createClass({
         
         <div className="widget-body">
           {
-            (() => {
-              if (error) {
-                return (<ErrorDisplay errors={error} />);
-              } 
-              if (display === 'stat') {
-                return (
-                  <StatWidget {...widget} /> 
-                );
-              } else if (display === 'chart') {
-                return (
-                  <ChartWidget
-                    {...widget} 
-                    width={this.state.el ? this.state.el.clientWidth : '100%'}
-                    height={this.state.el ? this.state.el.clientHeight - 90 : null}
-                  /> 
-                );
-              } else if (display === 'hybrid') {
-                return (
-                  <HybridWidget
-                    {...widget}
-                    width={this.state.el ? this.state.el.clientWidth : '100%'}
-                    height={this.state.el ? this.state.el.clientHeight / 2.1 : '40%'}
-                  />
-                  );
-              }
-              return <div />;
-            }
-            )()
-           }
+            error ? 
+              <ErrorDisplay errors={error} />
+              :
+              <Widget 
+                {...widget} 
+                width={this.state.el ? this.state.el.clientWidth : '100%'}
+                height={this.state.el ? this.state.el.clientHeight - 90 : null}
+              />    
+          }
         </div>
         <div className="widget-footer">
           <a onClick={() => linkToHistory(widget)}>See more</a>

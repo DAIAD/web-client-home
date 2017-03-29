@@ -100,6 +100,12 @@ const getChartPriceBrackets = function (xCategories, brackets, intl) {
     : [];
 };
 
+const colorFormatterSingle = function (colors) {
+  return function (name, data, idx) {
+    return colors.find((c, i, arr) => (idx % arr.length) === i);
+  };
+};
+
 module.exports = {
   mapMeterDataToChart,
   mapAmphiroDataToChart,
@@ -109,4 +115,5 @@ module.exports = {
   getChartMeterCategoryLabels,
   getChartAmphiroCategories,
   getChartPriceBrackets,
+  colorFormatterSingle,
 };

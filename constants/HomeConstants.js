@@ -447,7 +447,7 @@ module.exports = {
         description: 'A widget displaying the last shower recorded for all your devices.', 
         type: 'last', 
         metric: 'volume', 
-        display: 'hybrid',
+        display: 'chart',
         period: 'ten',
       },
       {
@@ -465,7 +465,7 @@ module.exports = {
         description: 'A widget displaying the household members ranking based on average shower water consumption.', 
         type: 'ranking', 
         metric: 'volume', 
-        display: 'hybrid',
+        display: 'chart',
         period: 'all',
       },
     ],

@@ -3,7 +3,7 @@ const moment = require('moment');
 const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS } = require('../constants/HomeConstants');
 
 const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets } = require('./chart');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets, colorFormatterSingle } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
 const { reduceMetric, getShowerById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ, prepareBreakdownSessions } = require('./sessions');
@@ -46,6 +46,10 @@ const amphiroLastShower = function (widget, devices, intl) {
         image: 'timer-on.svg',
         text: getFriendlyDuration(lastSession.duration),
       },
+      {
+        image: 'temperature.svg',
+        text: `${lastSession.temperature} ${getMetricMu('temperature')}`,
+      }
     ] : [],
     mode: 'stats',
     mu,
@@ -65,38 +69,34 @@ const amphiroMembersRanking = function (widget, devices, intl) {
   .sort((a, b) => a.average - b.average)
   .filter((x, i) => i < 3);
   
-  const chartCategories = data.map(m => m.name).reverse(); 
+  const chartCategories = data.map(m => m.name); 
   const chartData = [{
     name: 'Average shower',
-    data: data.map(x => x.average).reverse(),
+    data: data.map(x => x.average),
   }];
   const mu = getMetricMu(metric);
+  const chartColors = ['#7AD3AB', '#2d3480', '#abaecc'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
 
-  const chartColors = ['#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'];
   return {
     ...widget,
     periods,
     chartCategories,
     chartData,
-    highlight: {
-      image: 'rank-1.svg',
-      text: data.length > 0 ? data[0].name : null,
-      width: 45,
-      mu: '',
-    },
-    chartColors,
-    chartType: 'horizontal-bar',
+    legend: false,
+    chartColorFormatter,
+    chartType: 'bar',
     mode: 'stats',
     mu,
-    info: data.filter((x, i) => i > 0).map((m, i) => ({
-      image: `rank-${i + 2}.svg`,
-      text: m.name,
+    info: data.map((m, i) => ({
+      image: `rank-${i + 1}.svg`,
     })),
     data: null,
     memberFilter: data.length > 0 ? data[0].index : null,
     comparisons: data.filter((x, i) => i > 0).map(x => String(x.index)),
   };
 };
+
 const amphiroOrMeterTotal = function (widget, devices, intl) {
   const { data, period, deviceType, metric, previous } = widget;
   
@@ -234,12 +234,13 @@ const meterForecast = function (widget, devices, intl) {
   const device = getDeviceKeysByType(devices, deviceType);
   
   const chartColors = ['#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'];
+
   const mu = getMetricMu(metric);
   const xCategories = getChartMeterCategories(time);
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
   
   const chartData = data ? data.map(devData => ({ 
-      name: getDeviceNameByKey(devices, devData.deviceKey) || 'SWM', 
+      name: 'SWM', 
       data: getChartMeterData(devData.sessions, 
                               xCategories,
                               time,
@@ -264,7 +265,6 @@ const meterForecast = function (widget, devices, intl) {
     periods,
     chartCategories: xCategoryLabels,
     chartData: [...chartData, ...forecastChartData],
-    chartColors,
     mu,
     mode: 'forecasting',
     clearComparisons: true,
@@ -339,6 +339,7 @@ const meterBreakdown = function (widget, devices, intl) {
                                            );
 
   const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
   const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.id}` }).split(' ').join('\n'));
   const chartData = [{
     name: 'Consumption',
@@ -353,7 +354,7 @@ const meterBreakdown = function (widget, devices, intl) {
     periods,
     chartType: 'horizontal-bar',
     chartCategories,
-    chartColors,
+    chartColorFormatter,
     chartData,
     mu,
     clearComparisons: true,
@@ -372,6 +373,7 @@ const meterComparison = function (widget, devices, intl) {
   const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
   const periods = [];
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
 
   const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison.id}` })) : []; 
 
@@ -391,7 +393,7 @@ const meterComparison = function (widget, devices, intl) {
     periods,
     chartType: 'horizontal-bar',
     chartCategories,
-    chartColors,
+    chartColorFormatter,
     chartData,
     mu,
     mode: 'stats',
@@ -419,6 +421,7 @@ const waterIQ = function (widget, devices, intl) {
   const highlightImg = highlight ? `energy-${highlight}.svg` : null;
 
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
   const comparisons = ['similar', 'nearest', 'all', 'user']; 
   const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison}` })) : []; 
 
@@ -450,7 +453,7 @@ const waterIQ = function (widget, devices, intl) {
       }
     ].filter(i => i.display),
     chartType: 'horizontal-bar',
-    chartColors,
+    chartColorFormatter,
     chartCategories,
     chartData,
     chartFormatter: y => numeralToWaterIQ(y),
