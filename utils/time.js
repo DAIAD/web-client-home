@@ -93,11 +93,13 @@ const getNextPeriod = function (period, timestamp = moment().valueOf()) {
   const sPeriod = period === 'week' ? 'isoweek' : period;
   return {
     startDate: moment(timestamp)
+    .add(1, period)
     .startOf(sPeriod)
-    .add(1, period).valueOf(),
+    .valueOf(),
     endDate: moment(timestamp)
+    .add(1, period)
     .endOf(sPeriod)
-    .add(1, period).valueOf(),
+    .valueOf(),
     granularity: convertPeriodToGranularity(period),
   };
 };
@@ -107,10 +109,12 @@ const getPreviousPeriod = function (period, timestamp = moment().valueOf()) {
   return {
     startDate: moment(timestamp)
     .subtract(1, period)
-    .startOf(sPeriod).valueOf(),
+    .startOf(sPeriod)
+    .valueOf(),
     endDate: moment(timestamp)
     .subtract(1, period)
-    .endOf(sPeriod).valueOf(),
+    .endOf(sPeriod)
+    .valueOf(),
     granularity: convertPeriodToGranularity(period),
   };
 };
@@ -119,11 +123,13 @@ const getPreviousPeriodSoFar = function (period, timestamp = moment().valueOf())
   const sPeriod = period === 'week' ? 'isoweek' : period;
   return {
     startDate: moment(timestamp)
+    .subtract(1, period)
     .startOf(sPeriod)
-    .subtract(1, period).valueOf(),
+    .valueOf(),
     endDate: moment(timestamp)
     .endOf(getLowerGranularityPeriod(period))
-    .subtract(1, period).valueOf(),
+    .subtract(1, period)
+    .valueOf(),
     granularity: convertPeriodToGranularity(period),
   };
 };
