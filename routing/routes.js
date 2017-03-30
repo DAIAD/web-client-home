@@ -5,6 +5,7 @@ const requireAuth = require('./auth');
 const HomeApp = require('../containers/HomeApp');
 const Dashboard = require('../containers/DashboardData');
 const History = require('../containers/HistoryData');
+const Reports = require('../containers/ReportsData');
 const Commons = require('../containers/CommonsData');
 const Messages = require('../containers/MessageData');
 const Settings = require('../containers/SettingsData');
@@ -31,6 +32,7 @@ const routes = () => (
     <Route path="dashboard" component={Dashboard} onEnter={requireAuth} />  
     <Route path="history" component={History} onEnter={requireAuth} />
     <Route path="notifications" component={Messages} onEnter={requireAuth} />
+    <Route path="reports" component={Reports} onEnter={requireAuth} />
     <Route path="commons" component={Commons} onEnter={requireAuth} />
     <Route path="settings" component={Settings} onEnter={requireAuth}>
       <IndexRoute default="profile" component={Profile} />

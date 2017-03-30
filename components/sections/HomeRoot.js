@@ -27,7 +27,7 @@ function MainSidebar(props) {
                 {
                   item.image ? 
                     <div style={{ float: 'left', minWidth: 25 }}>
-                      <img src={`${IMAGES}/${item.image}`} alt={item.name} />
+                      <img style={{ width: 20 }} src={`${IMAGES}/${item.image}`} alt={item.name} />
                     </div>
                     : 
                     null

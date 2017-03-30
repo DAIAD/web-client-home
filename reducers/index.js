@@ -6,6 +6,7 @@ const user = require('./user');
 const query = require('./query');
 const history = require('./history');
 const dashboard = require('./dashboard');
+const reports = require('./reports');
 const messages = require('./messages');
 const forms = require('./forms');
 const viewport = require('./viewport');
@@ -24,6 +25,7 @@ const rootReducer = combineReducers({
     history,
     dashboard,
     messages,
+    reports,
     commons,
     settings: combineReducers({
       commons: manageCommons,

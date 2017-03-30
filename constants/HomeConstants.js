@@ -49,6 +49,12 @@ module.exports = {
     route: '/notifications',
   },
   {
+    name: 'reports',
+    title: 'section.reports',
+    image: 'challenge-daily.svg',
+    route: '/reports',
+  },
+  {
     name: 'commons',
     title: 'section.commons',
     image: 'commons-menu.svg',

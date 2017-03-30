@@ -116,5 +116,8 @@ module.exports = keyMirror({
   COMMONS_SET_FAVORITE: null,
   
   SETTINGS_SET_CHANGE_PASSWORD: null,
+
+  REPORTS_SET_TIME: null,
+  REPORTS_SET_TIME_FILTER: null,
 });
 
