@@ -44,7 +44,7 @@ const WidgetItem = React.createClass({
   },
   render: function () {
     const { widget, updateWidget, removeWidget, _t, linkToHistory, width } = this.props;
-    const { id, error, period, type, display, periods, time, timeDisplay } = widget;
+    const { id, icon, error, period, title, type, display, periods, time, timeDisplay } = widget;
     return (
       <div 
         className="widget"
@@ -52,7 +52,18 @@ const WidgetItem = React.createClass({
       >
         <div className="widget-header">
           <div className="header-left">
-            <h4>{widget.title}</h4>
+            <h4>
+              { icon ? 
+                <img 
+                  style={{ marginRight: 10, maxHeight: 25 }} 
+                  src={`${IMAGES}/${icon}`} 
+                  alt="icon" 
+                />
+                :
+                  <i />
+              }
+              {title}
+            </h4>
           </div>
 
           <div className="header-right">
@@ -100,7 +111,7 @@ const WidgetItem = React.createClass({
           }
         </div>
         <div className="widget-footer">
-          <a onClick={() => linkToHistory(widget)}>See more</a>
+          <a onClick={() => linkToHistory(widget)}>{widget.more || 'See more'}</a>
         </div>
       </div>
     );
@@ -115,7 +126,7 @@ function WidgetPanel(props) {
       className="layout"
       layouts={{ lg: layout, md: layout, sm: layout }}
       breakpoints={{ lg: 1080, md: 650, sm: 200 }}
-      cols={{ lg: 8, md: 4, sm: 2 }}
+      cols={{ lg: 4, md: 4, sm: 2 }}
       rowHeight={160}
       measureBeforeMount
       draggableHandle=".widget-header"

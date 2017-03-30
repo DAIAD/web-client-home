@@ -29,6 +29,8 @@ const amphiroLastShower = function (widget, devices, intl) {
 
   return {
     ...widget,
+    icon: 'shower.svg',
+    more: 'See more details',
     chartCategories,
     timeDisplay: intl.formatRelative(timestamp),
     chartData,
@@ -80,6 +82,8 @@ const amphiroMembersRanking = function (widget, devices, intl) {
 
   return {
     ...widget,
+    icon: 'goals.svg',
+    more: 'See shower comparisons',
     periods,
     chartCategories,
     chartData,
@@ -149,6 +153,8 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   const str = better ? 'better' : 'worse';
   return {
     ...widget,
+    icon: `${metric}.svg`,
+    more: `Explore ${deviceType === 'AMPHIRO' ? 'all showers' : 'SWM consumption'}`,
     time,
     periods,
     highlight: {
@@ -201,6 +207,7 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
   const str = better ? 'better' : 'worse';
   return {
     ...widget,
+    icon: 'energy.svg',
     periods,
     highlight: {
       text: highlight,
@@ -302,6 +309,7 @@ const meterPricing = function (widget, devices, intl) {
 
   return {
     ...widget,
+    icon: 'money.svg',
     chartType: 'line',
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
@@ -350,6 +358,7 @@ const meterBreakdown = function (widget, devices, intl) {
 
   return {
     ...widget,
+    icon: 'stats-side.svg',
     time,
     periods,
     chartType: 'horizontal-bar',
@@ -388,6 +397,7 @@ const meterComparison = function (widget, devices, intl) {
  
   return {
     ...widget,
+    icon: 'stats-side.svg',
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
     periods,
@@ -433,6 +443,7 @@ const waterIQ = function (widget, devices, intl) {
   }];
   return {
     ...widget,
+    icon: 'stats-side.svg',
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     //time,
     periods,
