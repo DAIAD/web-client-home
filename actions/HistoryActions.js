@@ -685,16 +685,16 @@ const setQuery = function (query) {
       dispatch(resetComparisons());
     }
 
-    if (comparisonData) {
-      dispatch(setComparisons(comparisonData));
-    }
-
-
+    
     if (Array.isArray(active) && active.length === 2 && active[0] != null && active[1] != null) { 
       //dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
       dispatch(setActiveSession(active[0], active[1])); 
     } else if (active === null) {
       dispatch(resetActiveSession());
+    }
+    /*
+    if (comparisonData) {
+      dispatch(setComparisons(comparisonData));
     }
     if (waterIQData) {
       dispatch(setWaterIQSessions(waterIQData));
@@ -706,7 +706,8 @@ const setQuery = function (query) {
     if (data && Array.isArray(data)) { 
       dispatch(setSessions(data));
       dispatch(setDataSynced());
-    } 
+      } 
+    */
   };
 };
 const setQueryAndFetch = function (query) {
