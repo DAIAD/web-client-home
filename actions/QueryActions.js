@@ -501,7 +501,7 @@ const queryMeterForecastCache = function (options) {
       throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
                       'time object with startDate, endDate and granularity');
     }
-    const cacheKey = cacheUtils.getCacheKey('METER', userKey, time, ',forecast');
+    const cacheKey = cacheUtils.getCacheKey('FORECAST', userKey, time);
 
     return dispatch(fetchFromCache(cacheKey))
     .then(data => Promise.resolve(data))
@@ -559,7 +559,7 @@ const queryUserComparisonsByTime = function (userKey, time) {
       const currDate = moment(endDate).subtract(i * 6, 'month');
       const month = currDate.month() + 1 <= 6 ? 6 : 12;
       const year = currDate.year();
-      const cacheKey = cacheUtils.getCacheKey('COMPARISON', null, month, year);
+      const cacheKey = cacheUtils.getCacheKey('COMPARISON', userKey, month, year);
       return dispatch(fetchFromCache(cacheKey))
       .catch(error => dispatch(queryUserComparisons(userKey, month, year))
         .then((data) => { 
