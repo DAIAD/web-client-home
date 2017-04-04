@@ -189,6 +189,7 @@ const fetchWidgetData = function (id) {
 
 const updateWidgetAndFetch = function (id, update) {
   return function (dispatch, getState) {
+    dispatch(setDirty());
     dispatch(updateWidget(id, update));
     return dispatch(fetchWidgetData(id));
   };
@@ -221,6 +222,7 @@ const addWidget = function (options) {
       id,
     };
 
+    dispatch(setDirty());
     dispatch(createWidget(newWidget));
     dispatch(appendLayout(id, display, type));
 
