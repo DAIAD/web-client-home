@@ -11,7 +11,6 @@ const types = require('../constants/ActionTypes');
 const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 const deviceAPI = require('../api/device');
-const meterAPI = require('../api/meter');
 const dataAPI = require('../api/data');
 
 const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, memberFilterToMembers, getAllMembers } = require('../utils/sessions');
@@ -497,7 +496,7 @@ const queryMeterForecast = function (options) {
     };
 
     dispatch(requestedQuery());
-    return meterAPI.getForecast(data)
+    return dataAPI.getForecast(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
       dispatch(resetSuccess());
