@@ -178,7 +178,16 @@ const fetchWidgetData = function (id) {
 
     const userKey = getState().user.profile.key;
     const members = getState().user.profile.household.members;
-    return dispatch(QueryActions.fetchWidgetData({ ...widget, userKey, members }))
+    const brackets = getState().section.history.priceBrackets;
+    const breakdown = getState().section.history.waterBreakdown;
+
+    return dispatch(QueryActions.fetchWidgetData({ 
+      ...widget, 
+      userKey, 
+      members,
+      brackets,
+      breakdown,
+    }))
     .then(res => dispatch(setWidgetData(id, res)))
     .catch((error) => { 
       console.error('Caught error in widget data fetch:', error); 

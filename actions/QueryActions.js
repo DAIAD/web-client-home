@@ -657,7 +657,7 @@ const fetchWaterIQ = function (options) {
  */
 const fetchWidgetData = function (options) {
   return function (dispatch, getState) {
-    const { type, userKey, deviceType, period, periodIndex, members } = options;
+    const { type, userKey, deviceType, period, periodIndex, members, brackets, breakdown } = options;
     const deviceKey = null; 
 
     if (!type || !deviceType) {
@@ -695,9 +695,9 @@ const fetchWidgetData = function (options) {
           return dispatch(fetchWaterIQ({ time: timeUtils.lastSixMonths(time.startDate), userKey }))
           .then(data => ({ ...res, data }));
         } else if (type === 'pricing') {
-          return { ...res, brackets: getState().section.history.priceBrackets };
+          return { ...res, brackets };
         } else if (type === 'breakdown') {
-          return { ...res, breakdown: getState().section.history.waterBreakdown };
+          return { ...res, breakdown };
         }
         return Promise.resolve(res);
       });
