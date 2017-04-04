@@ -165,26 +165,32 @@ const setWidgetTypeUnsynced = function (widgetType) {
  * 
  */
 const updateWidget = function (id, update) {
+  return {
+    type: types.DASHBOARD_UPDATE_WIDGET,
+    id,
+    update,
+  };
+};
+
+const fetchWidgetData = function (id) {
   return function (dispatch, getState) {
-    dispatch({
-      type: types.DASHBOARD_UPDATE_WIDGET,
-      id,
-      update: { ...update },
-    });
-    /*
-    if (Object.keys(data).length > 0) {
-      dispatch(updateLayoutItem(id, data.display, data.type));
-      dispatch(setDirty()); 
-    }
-    */
     const widget = getState().section.dashboard.widgets.find(i => i.id === id);
 
-    return dispatch(QueryActions.fetchWidgetData(widget))
+    const userKey = getState().user.profile.key;
+    const members = getState().user.profile.household.members;
+    return dispatch(QueryActions.fetchWidgetData({ ...widget, userKey, members }))
     .then(res => dispatch(setWidgetData(id, res)))
     .catch((error) => { 
       console.error('Caught error in widget data fetch:', error); 
       dispatch(setWidgetData(id, { data: [], error: 'Oops sth went wrong, please refresh the page.' })); 
     });
+  };
+};
+
+const updateWidgetAndFetch = function (id, update) {
+  return function (dispatch, getState) {
+    dispatch(updateWidget(id, update));
+    return dispatch(fetchWidgetData(id));
   };
 };
 
@@ -218,9 +224,7 @@ const addWidget = function (options) {
     dispatch(createWidget(newWidget));
     dispatch(appendLayout(id, display, type));
 
-    // fetch data
-    dispatch(setDirty()); 
-    dispatch(updateWidget(id, {}));
+    dispatch(fetchWidgetData(id));
     return id;
   };
 };
@@ -251,7 +255,7 @@ const fetchAllWidgetsData = function () {
    * sequential execution to take advantage of cache
    */
     return getState().section.dashboard.widgets
-    .map(widget => updateWidget(widget.id, {}))
+    .map(widget => fetchWidgetData(widget.id))
     .reduce((prev, curr) => prev.then(() => dispatch(curr)), Promise.resolve());
   };
 };
@@ -270,6 +274,8 @@ module.exports = {
   switchMode,
   addWidget,
   updateWidget,
+  fetchWidgetData,
+  updateWidgetAndFetch,
   setWidgetData,
   setWidgets,
   updateLayoutItem,

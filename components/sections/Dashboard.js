@@ -43,7 +43,7 @@ const WidgetItem = React.createClass({
     };
   },
   render: function () {
-    const { widget, updateWidget, removeWidget, _t, linkToHistory, width } = this.props;
+    const { widget, updateWidgetAndFetch, removeWidget, _t, linkToHistory, width } = this.props;
     const { id, icon, error, period, title, type, display, periods, time, timeDisplay } = widget;
     return (
       <div 
@@ -73,7 +73,7 @@ const WidgetItem = React.createClass({
                 periods && periods.map(p => (
                   <a 
                     key={p.id} 
-                    onClick={() => updateWidget(id, { period: p.id })} 
+                    onClick={() => updateWidgetAndFetch(id, { period: p.id })} 
                     style={{ marginLeft: 5 }}
                   >
                     {
@@ -119,7 +119,7 @@ const WidgetItem = React.createClass({
 });
 
 function WidgetPanel(props) {
-  const { _t, mode, layout, widgets, updateLayout, updateWidget, removeWidget, 
+  const { _t, mode, layout, widgets, updateLayout, updateWidgetAndFetch, removeWidget, 
     periods, linkToHistory, width } = props;
   return (
     <ResponsiveGridLayout 
@@ -151,7 +151,7 @@ function WidgetPanel(props) {
                mode, 
                periods, 
                widget, 
-               updateWidget, 
+               updateWidgetAndFetch, 
                removeWidget, 
                _t,
                linkToHistory,
@@ -325,7 +325,7 @@ const Dashboard = React.createClass({
   componentWillMount: function () {
     this.props.widgets.forEach((widget) => {
       if (widget.synced === false) {
-        this.props.updateWidget(widget.id, {});
+        this.props.fetchWidgetData(widget.id);
       }
     });
   },
