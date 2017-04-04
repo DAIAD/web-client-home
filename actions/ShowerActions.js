@@ -1,7 +1,7 @@
 const types = require('../constants/ActionTypes');
 const { requestedQuery, receivedQuery, clearCacheItems, resetSuccess } = require('./QueryActions');
 
-const dataAPI = require('../api/data');
+const showersAPI = require('../api/data');
 
 const { throwServerError } = require('../utils/general');
 
@@ -23,7 +23,7 @@ const assignToMember = function (options) {
 
     dispatch(requestedQuery());
 
-    return dataAPI.assignToMember(data)
+    return showersAPI.assignToMember(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
@@ -58,7 +58,7 @@ const ignoreShower = function (options) {
     };  
     dispatch(requestedQuery());
 
-    return dataAPI.ignoreShower(data)
+    return showersAPI.ignoreShower(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
@@ -91,7 +91,7 @@ const setShowerReal = function (options) {
     };  
     dispatch(requestedQuery());
 
-    return dataAPI.setShowerReal(data)
+    return showersAPI.setShowerReal(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);

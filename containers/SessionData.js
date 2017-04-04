@@ -8,7 +8,7 @@ const moment = require('moment');
 const SessionModal = require('../components/sections/Session');
 const HistoryActions = require('../actions/HistoryActions');
 const { setWidgetTypeUnsynced } = require('../actions/DashboardActions');
-const { ignoreShower, assignToMember, setShowerReal } = require('../actions/QueryActions');
+const { ignoreShower, assignToMember, setShowerReal } = require('../actions/ShowerActions');
 const { setForm } = require('../actions/FormActions');
 
 const { getChartAmphiroData } = require('../utils/chart');
