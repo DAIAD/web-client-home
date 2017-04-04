@@ -124,6 +124,9 @@ const getShowersPagingIndex = function (length, index) {
 };
 
 const getAmphiroCacheKey = function (key, length, index) {
+  if (key == null) {
+    console.error('cache key undefined');
+  }
   const cacheIdx = -1 * getShowersPagingIndex(length, index);
   return `AMPHIRO,${key},${SHOWERS_PAGE},${cacheIdx}`;
 };

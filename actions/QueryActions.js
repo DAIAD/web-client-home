@@ -245,13 +245,11 @@ const queryDataAverageCache = function (options) {
  */
 const queryDeviceSessions = function (options) {
   return function (dispatch, getState) {
-    const { length, deviceKey, memberFilter } = options;
+    const { length, deviceKey, userKey, members } = options;
     
-    if (!deviceKey || !length) {
-      throw new Error(`Not sufficient data provided for device sessions query: deviceKey:${deviceKey}`);
+    if (!length) {
+      throw new Error('Not sufficient data provided for device sessions query');
     }
-    
-    const members = memberFilterToMembers(memberFilter);
     
     const data = {
       ...options,
@@ -266,7 +264,6 @@ const queryDeviceSessions = function (options) {
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors, response.devices));
       dispatch(resetSuccess());
-
 
       if (!response || !response.success) {
         throwServerError(response);  
@@ -294,12 +291,11 @@ const queryDeviceSessions = function (options) {
 
 const queryDeviceSessionsCache = function (options) {
   return function (dispatch, getState) {
-    const { length, deviceKey, type, memberFilter, index = 0 } = options;
+    const { length, userKey, deviceKey, type, memberFilter = 'all', index = 0 } = options;
 
-    //const userKey = getState().user.profile.key;
-    //const cacheKey = getCacheKey('AMPHIRO', userKey, length, index);
     const cacheKey = getCacheKey('AMPHIRO', memberFilter, length, index);
     const startIndex = SHOWERS_PAGE * getShowersPagingIndex(length, index);
+    const members = memberFilterToMembers(memberFilter);
 
     // if item found in cache return it
     return dispatch(fetchFromCache(cacheKey))
@@ -312,36 +308,19 @@ const queryDeviceSessionsCache = function (options) {
         ...options, 
         length: SHOWERS_PAGE,
         startIndex,
-        memberFilter,
-        deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO'),
+        members,
+        userKey,
+        deviceKey: null, //null for all user devices
       };
       
       return dispatch(queryDeviceSessions(newOptions))
-      .then((devices) => {
-        dispatch(saveToCache(cacheKey, devices));
+      .then((data) => {
+        dispatch(saveToCache(cacheKey, data));
         // return only the items requested
-        const deviceData = filterDataByDeviceKeys(devices, deviceKey);
+        const deviceData = filterDataByDeviceKeys(data, deviceKey);
         return filterShowers(deviceData, length, index);
       });
     }); 
-      /*
-    }
-    
-    const newOptions = {
-      length: SHOWERS_PAGE,
-      startIndex,
-      memberFilter,
-      deviceKey: getDeviceKeysByType(getState().user.profile.devices, 'AMPHIRO'),
-    };
-    
-    return dispatch(queryDeviceSessions(newOptions))
-    .then((devices) => {
-      dispatch(saveToCache(cacheKey, devices));
-      // return only the items requested
-      const deviceData = filterDataByDeviceKeys(devices, deviceKey);
-      return filterShowers(deviceData, length, index);
-    });
-    */
   };
 };
  
@@ -394,17 +373,11 @@ const fetchDeviceSession = function (id, deviceKey) {
  */
 const fetchLastDeviceSession = function (options) {
   return function (dispatch, getState) {
-    const { cache } = options;
-    let querySessions = null;
-    if (cache) {
-      querySessions = queryDeviceSessionsCache;
-    } else {
-      querySessions = queryDeviceSessions;
-    }
-    return dispatch(querySessions({ ...options, length: 10 }))
+    return dispatch(queryDeviceSessionsCache({ ...options, length: 1 }))
     .then((response) => {
       const reduced = response.reduce((p, c) => [...p, ...c.sessions.map(s => ({ ...s, device: c.deviceKey }))], []);
-      // find last
+
+      // find last between devices
       const lastSession = reduced.reduce((curr, prev) => 
         ((curr.id > prev.id) ? curr : prev), {}); 
 
@@ -441,7 +414,7 @@ const fetchLastDeviceSession = function (options) {
  */                 
 const queryMeterHistory = function (options) {
   return function (dispatch, getState) {
-    const { time } = options;
+    const { time, userKey } = options;
     
     if (!time || !time.startDate || !time.endDate) {
       throw new Error(`Not sufficient data provided for meter history query: time: ${time.startDate}, ${time.endDate}`);
@@ -454,8 +427,8 @@ const queryMeterHistory = function (options) {
       population: [
         {
           type: 'USER',
-          label: getCacheKey('METER', getState().user.profile.key, time),
-          users: [getState().user.profile.key],
+          label: getCacheKey('METER', userKey, time),
+          users: [userKey],
         },
       ],
     };
@@ -469,13 +442,11 @@ const queryMeterHistory = function (options) {
 
 const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
-    const { time, label } = options;
+    const { time, label, userKey } = options;
     if (!time || !time.startDate || !time.endDate || time.granularity == null) {
       throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
                       'time object with startDate, endDate and granularity');
     }
-    const userKey = getState().user.profile.key;
-
     const data = {
       query: {
         time: {
@@ -523,12 +494,11 @@ const queryMeterForecast = function (options) {
 
 const queryMeterForecastCache = function (options) {
   return function (dispatch, getState) {
-    const { time } = options;
+    const { userKey, time } = options;
     if (!time || !time.startDate || !time.endDate || time.granularity == null) {
       throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
                       'time object with startDate, endDate and granularity');
     }
-    const userKey = getState().user.profile.key;
     const cacheKey = getCacheKey('METER', userKey, time, ',forecast');
 
     return dispatch(fetchFromCache(cacheKey))
@@ -542,9 +512,10 @@ const queryMeterForecastCache = function (options) {
   };
 };
 
-const queryUserComparisons = function (month, year) {
+const queryUserComparisons = function (userKey, month, year) {
   return function (dispatch, getState) {
     const data = {
+      userKey,
       year,
       month,
       csrf: getState().user.csrf,
@@ -571,7 +542,7 @@ const queryUserComparisons = function (month, year) {
   };
 };
 
-const queryUserComparisonsByTime = function (time) {
+const queryUserComparisonsByTime = function (userKey, time) {
   return function (dispatch, getState) {
     const { startDate, endDate, granularity } = time;
     
@@ -588,7 +559,7 @@ const queryUserComparisonsByTime = function (time) {
       const year = currDate.year();
       const cacheKey = getCacheKey('COMPARISON', null, month, year);
       return dispatch(fetchFromCache(cacheKey))
-      .catch(error => dispatch(queryUserComparisons(month, year))
+      .catch(error => dispatch(queryUserComparisons(userKey, month, year))
         .then((data) => { 
           dispatch(saveToCache(cacheKey, data)); 
           return data; 
@@ -597,13 +568,15 @@ const queryUserComparisonsByTime = function (time) {
   };
 };
 
-const fetchUserComparison = function (comparison, time) {
+const fetchUserComparison = function (comparison, options) {
   return function (dispatch, getState) {
+    const { time, userKey } = options;
     const { startDate, endDate, granularity } = time;
+
     if (granularity !== 2 && granularity !== 4) {
       return Promise.reject('only day, month granularity supported in fetch comparisonByTime');
     }
-    return dispatch(queryUserComparisonsByTime(time))
+    return dispatch(queryUserComparisonsByTime(userKey, time))
     .then(comparisonsArr => comparisonsArr.map((c) => {
       if (c === null) {
         return [];
@@ -634,9 +607,10 @@ const fetchUserComparison = function (comparison, time) {
 
 const fetchWaterIQ = function (options) {
   return function (dispatch, getState) {
-    const { time } = options;
+    const { time, userKey } = options;
     const { startDate, endDate } = time;
-    return dispatch(queryUserComparisonsByTime(time))
+
+    return dispatch(queryUserComparisonsByTime(userKey, time))
     .then(comparisonsArr => comparisonsArr.map(c => c == null ? [] : c.waterIq))
     .then(sessionsArr => sessionsArr.reduce((p, c) => [...p, ...c], []))
     .then(comparisons => comparisons.map(m => ({
@@ -681,54 +655,43 @@ const fetchWaterIQ = function (options) {
  */
 const fetchWidgetData = function (options) {
   return function (dispatch, getState) {
-    const { type, deviceType, period, periodIndex } = options;
-    const cache = options.cache || true;
-    const deviceKey = getDeviceKeysByType(getState().user.profile.devices, deviceType);
-    
-    if (!type || !deviceType || !deviceKey) {
-      console.error('fetchWidgetData: Insufficient data provided (need type, deviceType, deviceKey):', options);
+    const { type, userKey, deviceType, period, periodIndex, members } = options;
+    const deviceKey = null; 
+
+    if (!type || !deviceType) {
+      console.error('fetchWidgetData: Insufficient data provided (need type, deviceType):', options);
       throw new Error('fetchWidgetData: Insufficient data provided:');
     }
-
-    let queryMeter;
-    let queryDevice;
-    if (cache) {
-      queryMeter = queryMeterHistory;
-      queryDevice = queryDeviceSessionsCache;
-    } else {
-      queryMeter = queryMeterHistory;
-      queryDevice = queryDeviceSessions;
-    }
-
-    // if no device in array just return 
-    if (!deviceKey || !deviceKey.length) {
+    
+    // if no userKey just return 
+    if (!userKey) {
       return Promise.resolve(); 
     }
     const time = options.time ? options.time : getTimeByPeriod(period, periodIndex);
 
     if (deviceType === 'METER') {      
       const prevTime = getPreviousPeriodSoFar(period, time.startDate);
-      return dispatch(queryMeter({ cache, deviceKey, time }))
+      return dispatch(queryMeterHistory({ userKey, time }))
       .then(data => ({ data }))
       .then((res) => {
         if (type === 'total' && prevTime) {
           // fetch previous period data for comparison 
-          return dispatch(queryMeter({ cache, deviceKey, time: prevTime }))
+          return dispatch(queryMeterHistory({ userKey, time: prevTime }))
           .then(prevData => ({ ...res, previous: prevData, prevTime }))
           .catch((error) => { 
             console.error('Caught error in widget previous period data fetch:', error); 
           });
         } else if (type === 'forecast') {
-          return dispatch(queryMeterForecast({ time }))
+          return dispatch(queryMeterForecast({ time, userKey }))
           .then(forecastData => ({ ...res, forecastData }));
         } else if (type === 'comparison') {
           return Promise.all(['similar', 'nearest', 'all', 'user']
-                             .map(id => dispatch(fetchUserComparison(id, time))
+                             .map(id => dispatch(fetchUserComparison(id, { time, userKey }))
                                   .then(sessions => ({ id, sessions }))))
           .then(comparisons => ({ ...res, comparisons }));
         } else if (type === 'wateriq') {
-          return dispatch(fetchWaterIQ({ time: lastSixMonths(time.startDate) }))
-          .then(waterIQData => ({ ...res, waterIQData }));
+          return dispatch(fetchWaterIQ({ time: lastSixMonths(time.startDate), userKey }))
+          .then(data => ({ ...res, data }));
         } else if (type === 'pricing') {
           return { ...res, brackets: getState().section.history.priceBrackets };
         } else if (type === 'breakdown') {
@@ -738,28 +701,28 @@ const fetchWidgetData = function (options) {
       });
     } else if (deviceType === 'AMPHIRO') {
       if (type === 'last') {
-        return dispatch(fetchLastDeviceSession({ cache, deviceKey }));
-      } else if (type === 'ranking' || type === 'comparisonMembers') {
-        const members = getAllMembers(getState().user.profile.household.members);
-        return Promise.all(members.map(m => dispatch(queryDevice({
-          cache,
+        return dispatch(fetchLastDeviceSession({ userKey, deviceKey }));
+      } else if (type === 'ranking') {
+        const activeMembers = getAllMembers(members);
+        return Promise.all(activeMembers.map(m => dispatch(queryDeviceSessionsCache({
           length: showerFilterToLength(period),
           memberFilter: m.index,
+          userKey,
           deviceKey,
         })).then(memberData => ({ sessions: memberData, ...m }))))
         .then(data => ({ data }));
       }
-      return dispatch(queryDevice({ 
-        cache, 
+      return dispatch(queryDeviceSessionsCache({ 
         length: showerFilterToLength(period),
+        userKey,
         deviceKey,
       }))
       .then(data => ({ data }))
       .then(res => period !== 'all' ? 
-            dispatch(queryDevice({
-              cache,
+            dispatch(queryDeviceSessionsCache({
               length: showerFilterToLength(period),
               deviceKey,
+              userKey,
               index: -1,
             }))
             .then(prevData => ({ ...res, previous: prevData }))

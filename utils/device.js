@@ -73,6 +73,7 @@ const getDeviceNameByKey = function (devices, key) {
 };
 
 const filterDataByDeviceKeys = function (data, deviceKeys) {
+  if (deviceKeys == null) return data;
   return data.filter(x => deviceKeys.findIndex(k => k === x.deviceKey) > -1);
 };
 

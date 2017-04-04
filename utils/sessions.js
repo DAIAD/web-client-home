@@ -253,6 +253,7 @@ const energyToPictures = function (energy) {
   };
 };
 const getAllMembers = function (members) {
+  if (!Array.isArray(members)) return [];
   return members.filter(member => member.active || member.index === 0);
 };
 

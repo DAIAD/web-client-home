@@ -176,10 +176,16 @@ const fetchComparisonData = function () {
           }],
         }));
       } else if (comparison.id === 'nearest') {
-        return dispatch(QueryActions.fetchUserComparison('nearest', time))
+        return dispatch(QueryActions.fetchUserComparison('nearest', {
+          time,
+          userKey: getState().user.profile.key,
+        }))
         .then(nearest => dispatch(setComparisonSessions('nearest', nearest)));
       } else if (comparison.id === 'similar') {
-        return dispatch(QueryActions.fetchUserComparison('similar', time))
+        return dispatch(QueryActions.fetchUserComparison('similar', {
+          time,
+          userKey: getState().user.profile.key,
+        }))
         .then(nearest => dispatch(setComparisonSessions('similar', nearest)));
       } else if (activeDeviceType === 'AMPHIRO' && !isNaN(comparison.id)) {
         return dispatch(QueryActions.queryDeviceSessionsCache({ 
@@ -202,6 +208,7 @@ const fetchForecastData = function () {
     const { time } = getState().section.history;
     dispatch(QueryActions.queryMeterForecastCache({
       time,
+      userKey: getState().user.profile.key,
     }))
     .then((forecastingData) => {
       const sessions = forecastingData.sessions;
@@ -224,6 +231,7 @@ const fetchWaterIQData = function () {
     const { time } = getState().section.history;
     return dispatch(QueryActions.fetchWaterIQ({
       time, 
+      userKey: getState().user.profile.key,
     }))
     .then((waterIQData) => {
       dispatch(setWaterIQSessions(waterIQData));
@@ -268,6 +276,7 @@ const fetchData = function () {
     } else if (activeDeviceType === 'METER') {
       return dispatch(QueryActions.queryMeterHistory({
           time,
+          userKey: getState().user.profile.key,
         }))
         .then((meterData) => {
           dispatch(setSessions(meterData));
@@ -680,16 +689,16 @@ const setQuery = function (query) {
       dispatch(setComparisons(comparisonData));
     }
 
-    if (waterIQData) {
-      dispatch(setWaterIQSessions(waterIQData));
-    }
+
     if (Array.isArray(active) && active.length === 2 && active[0] != null && active[1] != null) { 
       //dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
       dispatch(setActiveSession(active[0], active[1])); 
     } else if (active === null) {
       dispatch(resetActiveSession());
     }
-
+    if (waterIQData) {
+      dispatch(setWaterIQSessions(waterIQData));
+    }
     if (forecastData) {
       dispatch(setForecastData(forecastData));
       }

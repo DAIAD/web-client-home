@@ -13,11 +13,9 @@ const fetchWaterBreakdown = function () {
     };
 
     dispatch(requestedQuery());
-    console.log('requestin breakdown');
 
     return waterCalculatorAPI.getWaterBreakdown(data)
     .then((response) => {
-      console.log('got', response);
       dispatch(receivedQuery(response.success, response.errors));
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 

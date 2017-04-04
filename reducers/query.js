@@ -50,9 +50,6 @@ const query = function (state = initialState, action) {
         errors: null
       });
                   
-    case types.USER_RECEIVED_LOGOUT:
-      return Object.assign({}, initialState);
-
     case types.QUERY_SET_CACHE: {
       return Object.assign({}, state, {
         cache: action.cache
@@ -90,6 +87,9 @@ const query = function (state = initialState, action) {
       return Object.assign({}, state, {
         info: null
       });
+
+    case types.USER_RECEIVED_LOGOUT:
+      return Object.assign({}, initialState);
 
     default:
       return state;
