@@ -1,7 +1,7 @@
 const types = require('../constants/ActionTypes');
 const { requestedQuery, receivedQuery, clearCacheItems, resetSuccess } = require('./QueryActions');
 
-const showersAPI = require('../api/data');
+const showersAPI = require('../api/showers');
 
 const { throwServerError } = require('../utils/general');
 

@@ -7,17 +7,19 @@
  * @module QueryActions
  */
 
+const moment = require('moment');
+
 const types = require('../constants/ActionTypes');
 const { CACHE_SIZE, SUCCESS_SHOW_TIMEOUT, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 const deviceAPI = require('../api/device');
 const dataAPI = require('../api/data');
 
-const { updateOrAppendToSession, getShowerRange, filterShowers, getLastShowerIdFromMultiple, memberFilterToMembers, getAllMembers } = require('../utils/sessions');
-const { getDeviceKeysByType, filterDataByDeviceKeys } = require('../utils/device');
-const { getCacheKey, throwServerError, showerFilterToLength, getShowersPagingIndex, filterCacheItems } = require('../utils/general');
-const { getTimeByPeriod, getPreviousPeriodSoFar, getLowerGranularityPeriod, convertGranularityToPeriod, lastSixMonths } = require('../utils/time');
-const moment = require('moment');
+const sessionUtils = require('../utils/sessions');
+const deviceUtils = require('../utils/device');
+const genUtils = require('../utils/general');
+const cacheUtils = require('../utils/cache');
+const timeUtils = require('../utils/time');
 
 const requestedQuery = function () {
   return {
@@ -88,7 +90,7 @@ const setCache = function (cache) {
 const clearCacheItems = function (deviceType, ...rest) {
   return function (dispatch, getState) {
     const { cache } = getState().query;
-    dispatch(setCache(filterCacheItems(cache, deviceType, ...rest)));
+    dispatch(setCache(cacheUtils.filterCacheItems(cache, deviceType, ...rest)));
   };
 };
 
@@ -140,8 +142,8 @@ const queryData = function (options) {
           type: 'ABSOLUTE',
           start: time.startDate,
           end: time.endDate,
-          granularity: getLowerGranularityPeriod(
-            convertGranularityToPeriod(time.granularity)
+          granularity: timeUtils.getLowerGranularityPeriod(
+            timeUtils.convertGranularityToPeriod(time.granularity)
           ),
         },
         population, 
@@ -159,7 +161,7 @@ const queryData = function (options) {
       dispatch(resetSuccess());
       
       if (!response || !response.success) {
-        throwServerError(response);  
+        genUtils.throwServerError(response);  
       }
       const meters = response.meters || [];
       const devices = response.devices || [];
@@ -266,12 +268,12 @@ const queryDeviceSessions = function (options) {
       dispatch(resetSuccess());
 
       if (!response || !response.success) {
-        throwServerError(response);  
+        genUtils.throwServerError(response);  
       }
       
       return response.devices.map(session => ({ 
           ...session,
-          range: session.sessions ? getShowerRange(session.sessions) : {}
+          range: session.sessions ? sessionUtils.getShowerRange(session.sessions) : {}
         }));
     })
     .catch((error) => {
@@ -293,15 +295,15 @@ const queryDeviceSessionsCache = function (options) {
   return function (dispatch, getState) {
     const { length, userKey, deviceKey, type, memberFilter = 'all', index = 0 } = options;
 
-    const cacheKey = getCacheKey('AMPHIRO', memberFilter, length, index);
-    const startIndex = SHOWERS_PAGE * getShowersPagingIndex(length, index);
-    const members = memberFilterToMembers(memberFilter);
+    const cacheKey = cacheUtils.getCacheKey('AMPHIRO', memberFilter, length, index);
+    const startIndex = SHOWERS_PAGE * genUtils.getShowersPagingIndex(length, index);
+    const members = genUtils.memberFilterToMembers(memberFilter);
 
     // if item found in cache return it
     return dispatch(fetchFromCache(cacheKey))
     .then((data) => {
-      const deviceData = filterDataByDeviceKeys(data, deviceKey);
-      return Promise.resolve(filterShowers(deviceData, length, index));
+      const deviceData = sessionUtils.filterDataByDeviceKeys(data, deviceKey);
+      return Promise.resolve(sessionUtils.filterShowers(deviceData, length, index));
     })
     .catch((error) => {
       const newOptions = {
@@ -317,8 +319,8 @@ const queryDeviceSessionsCache = function (options) {
       .then((data) => {
         dispatch(saveToCache(cacheKey, data));
         // return only the items requested
-        const deviceData = filterDataByDeviceKeys(data, deviceKey);
-        return filterShowers(deviceData, length, index);
+        const deviceData = sessionUtils.filterDataByDeviceKeys(data, deviceKey);
+        return sessionUtils.filterShowers(deviceData, length, index);
       });
     }); 
   };
@@ -352,7 +354,7 @@ const fetchDeviceSession = function (id, deviceKey) {
         dispatch(resetSuccess());
         
         if (!response || !response.success) {
-          throwServerError(response);  
+          genUtils.throwServerError(response);  
         }
         return response.session;
       })
@@ -392,7 +394,7 @@ const fetchLastDeviceSession = function (options) {
         active: [device, id],
         showerId: id,
         device,
-        data: updateOrAppendToSession([devSessions], { ...session, deviceKey: device }), 
+        data: sessionUtils.updateOrAppendToSession([devSessions], { ...session, deviceKey: device }), 
         }))
       .catch((error) => { throw error; });
     });
@@ -427,7 +429,7 @@ const queryMeterHistory = function (options) {
       population: [
         {
           type: 'USER',
-          label: getCacheKey('METER', userKey, time),
+          label: cacheUtils.getCacheKey('METER', userKey, time),
           users: [userKey],
         },
       ],
@@ -453,8 +455,8 @@ const queryMeterForecast = function (options) {
           type: 'ABSOLUTE',
           start: time.startDate,
           end: time.endDate,
-          granularity: getLowerGranularityPeriod(
-            convertGranularityToPeriod(time.granularity)
+          granularity: timeUtils.getLowerGranularityPeriod(
+            timeUtils.convertGranularityToPeriod(time.granularity)
           ),
         },
         population: [{
@@ -474,7 +476,7 @@ const queryMeterForecast = function (options) {
       
       if (!response || !response.success || !Array.isArray(response.meters) || 
           !response.meters[0] || !response.meters[0].points) {
-        throwServerError(response);  
+        genUtils.throwServerError(response);  
       }
       return {
         label: response.meters[0].label,
@@ -499,7 +501,7 @@ const queryMeterForecastCache = function (options) {
       throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
                       'time object with startDate, endDate and granularity');
     }
-    const cacheKey = getCacheKey('METER', userKey, time, ',forecast');
+    const cacheKey = cacheUtils.getCacheKey('METER', userKey, time, ',forecast');
 
     return dispatch(fetchFromCache(cacheKey))
     .then(data => Promise.resolve(data))
@@ -529,7 +531,7 @@ const queryUserComparisons = function (userKey, month, year) {
       dispatch(resetSuccess());
       
       if (!response || !response.success) {
-        throwServerError(response);  
+        genUtils.throwServerError(response);  
       } 
       
       return response.comparison;
@@ -557,7 +559,7 @@ const queryUserComparisonsByTime = function (userKey, time) {
       const currDate = moment(endDate).subtract(i * 6, 'month');
       const month = currDate.month() + 1 <= 6 ? 6 : 12;
       const year = currDate.year();
-      const cacheKey = getCacheKey('COMPARISON', null, month, year);
+      const cacheKey = cacheUtils.getCacheKey('COMPARISON', null, month, year);
       return dispatch(fetchFromCache(cacheKey))
       .catch(error => dispatch(queryUserComparisons(userKey, month, year))
         .then((data) => { 
@@ -667,10 +669,10 @@ const fetchWidgetData = function (options) {
     if (!userKey) {
       return Promise.resolve(); 
     }
-    const time = options.time ? options.time : getTimeByPeriod(period, periodIndex);
+    const time = options.time ? options.time : timeUtils.getTimeByPeriod(period, periodIndex);
 
     if (deviceType === 'METER') {      
-      const prevTime = getPreviousPeriodSoFar(period, time.startDate);
+      const prevTime = timeUtils.getPreviousPeriodSoFar(period, time.startDate);
       return dispatch(queryMeterHistory({ userKey, time }))
       .then(data => ({ data }))
       .then((res) => {
@@ -690,7 +692,7 @@ const fetchWidgetData = function (options) {
                                   .then(sessions => ({ id, sessions }))))
           .then(comparisons => ({ ...res, comparisons }));
         } else if (type === 'wateriq') {
-          return dispatch(fetchWaterIQ({ time: lastSixMonths(time.startDate), userKey }))
+          return dispatch(fetchWaterIQ({ time: timeUtils.lastSixMonths(time.startDate), userKey }))
           .then(data => ({ ...res, data }));
         } else if (type === 'pricing') {
           return { ...res, brackets: getState().section.history.priceBrackets };
@@ -703,9 +705,9 @@ const fetchWidgetData = function (options) {
       if (type === 'last') {
         return dispatch(fetchLastDeviceSession({ userKey, deviceKey }));
       } else if (type === 'ranking') {
-        const activeMembers = getAllMembers(members);
+        const activeMembers = genUtils.getAllMembers(members);
         return Promise.all(activeMembers.map(m => dispatch(queryDeviceSessionsCache({
-          length: showerFilterToLength(period),
+          length: genUtils.showerFilterToLength(period),
           memberFilter: m.index,
           userKey,
           deviceKey,
@@ -713,14 +715,14 @@ const fetchWidgetData = function (options) {
         .then(data => ({ data }));
       }
       return dispatch(queryDeviceSessionsCache({ 
-        length: showerFilterToLength(period),
+        length: genUtils.showerFilterToLength(period),
         userKey,
         deviceKey,
       }))
       .then(data => ({ data }))
       .then(res => period !== 'all' ? 
             dispatch(queryDeviceSessionsCache({
-              length: showerFilterToLength(period),
+              length: genUtils.showerFilterToLength(period),
               deviceKey,
               userKey,
               index: -1,
@@ -733,6 +735,7 @@ const fetchWidgetData = function (options) {
 };
 
 module.exports = {
+  clearCacheItems,
   queryDeviceSessionsCache,
   queryDeviceSessions,
   fetchDeviceSession,

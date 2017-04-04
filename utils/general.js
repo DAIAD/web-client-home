@@ -1,4 +1,4 @@
-const { SHOWERS_PAGE } = require('../constants/HomeConstants');
+const { SHOWERS_PAGE, VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY } = require('../constants/HomeConstants');
 
 // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
 const validateEmail = function (email) {
@@ -123,53 +123,6 @@ const getShowersPagingIndex = function (length, index) {
   return Math.floor((length * Math.abs(index)) / SHOWERS_PAGE);
 };
 
-const getAmphiroCacheKey = function (key, length, index) {
-  if (key == null) {
-    console.error('cache key undefined');
-  }
-  const cacheIdx = -1 * getShowersPagingIndex(length, index);
-  return `AMPHIRO,${key},${SHOWERS_PAGE},${cacheIdx}`;
-};
-
-const getAmphiroByTimeCacheKey = function (key, time, extra = '') {
-  return `AMPHIRO_TIME,${key},${time.startDate},${time.endDate}${extra}`;
-};
-
-const getMeterCacheKey = function (key, time, extra = '') {
-  return `METER,${key},${time.startDate},${time.endDate}${extra}`;
-};
-
-const getComparisonCacheKey = function (key, month, year) {
-  return `COMPARISON,${year},${month}`;
-};
-
-const getCacheKey = function (deviceType, key, ...rest) {
-  if (deviceType === 'AMPHIRO') {
-    if (rest.length < 2) {
-      throw new Error('cant get amphiro cache key without members, length, index');
-    }
-    return getAmphiroCacheKey(key, ...rest);
-  } else if (deviceType === 'AMPHIRO_TIME') {
-    return getAmphiroByTimeCacheKey(key, ...rest);
-  } else if (deviceType === 'METER') {
-    return getMeterCacheKey(key, ...rest);
-  } else if (deviceType === 'COMPARISON') {
-    return getComparisonCacheKey(key, ...rest);
-  }
-  throw new Error(`deviceType ${deviceType} not supported`);
-};
-
-//TODO: user rest parameters to filter specific cache items instead of all 
-const filterCacheItems = function (cache, deviceType, ...rest) {
-  return Object.keys(cache)
-  .filter(key => !key.startsWith(deviceType))
-  .reduce((p, c) => {
-    const n = { ...p };
-    n[c] = cache[c];
-    return n;
-  }, {});
-};
-
 const uploadFile = function (file, successCb, failureCb) {
   if (!file) return;
   if (file.type !== 'image/png' && file.type !== 'image/jpeg') {
@@ -269,6 +222,74 @@ const tableToCSV = function (schema, data) {
   .reduce((p, c) => [p, c].join('%0A'), fields.map(field => field.name).join(', '));
 };
 
+// Estimates how many bottles/buckets/pools the given volume corresponds to
+// The remaining is provided in quarters
+const volumeToPictures = function (volume) {
+  const div = c => Math.floor(volume / c);
+  const rem = c => Math.floor((4 * (volume % c)) / c) / 4;
+  if (volume < VOLUME_BUCKET) {
+    return {
+      display: 'bottle',
+      items: div(VOLUME_BOTTLE),
+      remaining: rem(VOLUME_BOTTLE),
+    }; 
+  } else if (volume < VOLUME_POOL) {
+    return {
+      display: 'bucket',
+      items: div(VOLUME_BUCKET),
+      remaining: rem(VOLUME_BUCKET),
+    };
+  } 
+  return {
+    display: 'pool',
+    items: div(VOLUME_POOL),
+    remaining: 0,
+  };
+};
+
+const energyToPictures = function (energy) {
+  const div = c => Math.floor(energy / c);
+
+  if (energy < ENERGY_HOUSE) {
+    return {
+      display: 'light-bulb',
+      items: div(ENERGY_BULB),
+    };
+  } else if (energy < ENERGY_CITY) {
+    return {
+      display: 'home-energy',
+      items: div(ENERGY_HOUSE),
+    };
+  }
+  return {
+    display: 'city',
+    items: div(ENERGY_CITY),
+  };
+};
+const getAllMembers = function (members) {
+  if (!Array.isArray(members)) return [];
+  return members.filter(member => member.active || member.index === 0);
+};
+
+const memberFilterToMembers = function (filter) {
+  if (filter === 'all') {
+    return [];
+  } else if (!isNaN(filter)) {
+    return [filter];
+  } 
+  return [];
+};
+
+const waterIQToNumeral = function (waterIQ) {
+  return 5 - (String(waterIQ).charCodeAt(0) - 65);
+};
+
+const numeralToWaterIQ = function (num) {
+  if (num < 0 || num > 5) return ' ';
+  return String.fromCharCode((5 - num) + 65);
+};
+
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -277,8 +298,6 @@ module.exports = {
   getMetricMu,
   getShowerMetricMu,
   showerFilterToLength,
-  getCacheKey,
-  filterCacheItems,
   getShowersPagingIndex,
   debounce,
   uploadFile,
@@ -288,4 +307,10 @@ module.exports = {
   formatMessage,
   validatePassword,
   tableToCSV,
+  energyToPictures,
+  volumeToPictures, 
+  getAllMembers,
+  memberFilterToMembers,
+  waterIQToNumeral,
+  numeralToWaterIQ,
 };

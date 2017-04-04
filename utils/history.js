@@ -4,7 +4,9 @@ const schemas = require('../schemas/history');
 
 const { bringPastSessionsToPresent, convertGranularityToPeriod, getTimeLabelByGranularity } = require('./time');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { formatMessage, getMetricMu } = require('./general');
+const { formatMessage, getMetricMu, waterIQToNumeral, numeralToWaterIQ } = require('./general');
+
+const { getComparisons, getComparisonTitle } = require('./comparisons');
 
 const { 
   getChartMeterData, 
@@ -18,16 +20,12 @@ const {
 } = require('./chart');
 
 const { 
-  getLastShowerIdFromMultiple, 
-  getComparisons, 
-  getComparisonTitle, 
+  getLastShowerIdFromMultiple,  
   reduceMetric, 
   sortSessions, 
   prepareSessionsForTable, 
   prepareBreakdownSessions, 
   preparePricingSessions, 
-  waterIQToNumeral, 
-  numeralToWaterIQ 
 } = require('./sessions');
 
 

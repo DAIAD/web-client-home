@@ -72,11 +72,6 @@ const getDeviceNameByKey = function (devices, key) {
   return device.name || device.serial || device.macAddress || device.deviceKey;
 };
 
-const filterDataByDeviceKeys = function (data, deviceKeys) {
-  if (deviceKeys == null) return data;
-  return data.filter(x => deviceKeys.findIndex(k => k === x.deviceKey) > -1);
-};
-
 const getDeviceProperty = function (properties, key) {
   if (!Array.isArray(properties)) {
     throw new Error('Properties argument provided to getDeviceProperty needs to be array');
@@ -144,7 +139,6 @@ module.exports = {
   getDeviceByKey,
   getDeviceKeyByName,
   getDeviceKeysByType,
-  filterDataByDeviceKeys,
   deviceToDeviceForm,
   deviceFormToDevice,
   getAvailableDeviceTypes,

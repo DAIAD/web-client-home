@@ -1,8 +1,8 @@
-const { getFriendlyDuration, getEnergyClass, energyToPower } = require('./general');
+const { getFriendlyDuration, getEnergyClass } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
-const { getComparisonPeriod, getTimeLabelByGranularity, getPeriodTimeLabel } = require('./time');
+const { getTimeLabelByGranularity, getPeriodTimeLabel } = require('./time');
 
-const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
+const { SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 const getSessionsCount = function (devices, data) {
   return data.map(dev => dev.sessions.length).reduce((p, c) => p + c, 0);
@@ -207,109 +207,6 @@ const hasShowersBefore = function (data) {
   return data.reduce((p, c) => c.range.first !== 1 && c.range.first != null ? c.range.first : p, null) != null;
 };
 
-
-// Estimates how many bottles/buckets/pools the given volume corresponds to
-// The remaining is provided in quarters
-const volumeToPictures = function (volume) {
-  const div = c => Math.floor(volume / c);
-  const rem = c => Math.floor((4 * (volume % c)) / c) / 4;
-  if (volume < VOLUME_BUCKET) {
-    return {
-      display: 'bottle',
-      items: div(VOLUME_BOTTLE),
-      remaining: rem(VOLUME_BOTTLE),
-    }; 
-  } else if (volume < VOLUME_POOL) {
-    return {
-      display: 'bucket',
-      items: div(VOLUME_BUCKET),
-      remaining: rem(VOLUME_BUCKET),
-    };
-  } 
-  return {
-    display: 'pool',
-    items: div(VOLUME_POOL),
-    remaining: 0,
-  };
-};
-
-const energyToPictures = function (energy) {
-  const div = c => Math.floor(energy / c);
-
-  if (energy < ENERGY_HOUSE) {
-    return {
-      display: 'light-bulb',
-      items: div(ENERGY_BULB),
-    };
-  } else if (energy < ENERGY_CITY) {
-    return {
-      display: 'home-energy',
-      items: div(ENERGY_HOUSE),
-    };
-  }
-  return {
-    display: 'city',
-    items: div(ENERGY_CITY),
-  };
-};
-const getAllMembers = function (members) {
-  if (!Array.isArray(members)) return [];
-  return members.filter(member => member.active || member.index === 0);
-};
-
-const memberFilterToMembers = function (filter) {
-  if (filter === 'all') {
-    return [];
-  } else if (!isNaN(filter)) {
-    return [filter];
-  } 
-  return [];
-};
-
-const getMeterComparisonTitle = function (comparison, start, period, favCommon, _t) {
-  let extra = '';
-  if (comparison === 'last') {
-    extra = getComparisonPeriod(start, period, _t);
-  } else if (comparison === 'common') {
-    extra = favCommon;
-  }
-  return _t(`comparisons.${comparison}`, { comparison: extra });
-};
-
-const getAmphiroComparisonTitle = function (comparison, members, _t) {
-  const member = members.find(m => String(m.index) === comparison);
-  return _t('comparisons.member', { comparison: member ? member.name : '' });
-};
-
-const getComparisonTitle = function (devType, comparison, start, period, favCommon, members, _t) {
-  if (devType === 'METER') {
-    return getMeterComparisonTitle(comparison, start, period, favCommon, _t);
-  } else if (devType === 'AMPHIRO') {
-    return getAmphiroComparisonTitle(comparison, members, _t);
-  }
-  return '';
-};
-
-const getComparisons = function (devType, memberFilter, members) {
-   if (devType === 'METER') {
-     return ['last', 'all', 'common', 'nearest', 'similar'];
-   } else if (devType === 'AMPHIRO') {
-     return memberFilter !== 'all' ? 
-       members.filter(m => m.index !== memberFilter).map(m => String(m.index))
-         : [];
-   }
-   return [];
-};
-
-const waterIQToNumeral = function (waterIQ) {
-  return 5 - (String(waterIQ).charCodeAt(0) - 65);
-};
-
-const numeralToWaterIQ = function (num) {
-  if (num < 0 || num > 5) return ' ';
-  return String.fromCharCode((5 - num) + 65);
-};
-
 const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, timeFilter, intl) {
   const total = reduceMetric(devices, data, metric);
   return breakdown.map((item) => {
@@ -370,6 +267,12 @@ const preparePricingSessions = function (sessions, brackets, granularity, user, 
   });
 };
 
+const filterDataByDeviceKeys = function (data, deviceKeys) {
+  if (deviceKeys == null) return data;
+  return data.filter(x => deviceKeys.findIndex(k => k === x.deviceKey) > -1);
+};
+
+
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
@@ -383,15 +286,8 @@ module.exports = {
   getLastShowerIdFromMultiple,
   hasShowersBefore,
   hasShowersAfter,
-  volumeToPictures,
-  energyToPictures,
-  memberFilterToMembers,
-  getComparisons,
-  getComparisonTitle,
-  waterIQToNumeral,
-  numeralToWaterIQ,
-  getAllMembers,
   getAugmental,
   prepareBreakdownSessions,
   preparePricingSessions,
+  filterDataByDeviceKeys,
 };

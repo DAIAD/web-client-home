@@ -12,8 +12,7 @@ const { ignoreShower, assignToMember, setShowerReal } = require('../actions/Show
 const { setForm } = require('../actions/FormActions');
 
 const { getChartAmphiroData } = require('../utils/chart');
-const { getAllMembers } = require('../utils/sessions');
-const { getMetricMu, getShowerMetricMu, formatMessage } = require('../utils/general');
+const { getMetricMu, getShowerMetricMu, getAllMembers, formatMessage } = require('../utils/general');
 const { convertGranularityToPeriod, getLowerGranularityPeriod } = require('../utils/time');
 const { METRICS } = require('../constants/HomeConstants');
 

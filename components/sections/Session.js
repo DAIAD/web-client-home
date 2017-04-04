@@ -5,8 +5,7 @@ const DatetimeInput = require('react-datetime');
 
 const { LineChart } = require('react-echarts');
 const theme = require('../chart/themes/session');
-const { volumeToPictures, energyToPictures } = require('../../utils/sessions'); 
-const { getMetricMu } = require('../../utils/general');
+const { volumeToPictures, energyToPictures, getMetricMu } = require('../../utils/general'); 
 const { IMAGES } = require('../../constants/HomeConstants'); 
 
 

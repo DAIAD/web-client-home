@@ -14,7 +14,8 @@ const { fetchWaterBreakdown } = require('./WaterCalculatorActions');
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
 const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter, isValidShowerIndex } = require('../utils/sessions');
-const { showerFilterToLength, getCacheKey } = require('../utils/general');
+const { showerFilterToLength } = require('../utils/general');
+const { getCacheKey } = require('../utils/cache');
 
 const QueryActions = require('./QueryActions');
 

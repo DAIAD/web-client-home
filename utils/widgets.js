@@ -2,11 +2,11 @@ const moment = require('moment');
 
 const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS } = require('../constants/HomeConstants');
 
-const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
+const { getFriendlyDuration, getEnergyClass, getMetricMu, waterIQToNumeral, numeralToWaterIQ } = require('./general');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets, colorFormatterSingle } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { reduceMetric, getShowerById, getSessionsCount, waterIQToNumeral, numeralToWaterIQ, prepareBreakdownSessions } = require('./sessions');
+const { reduceMetric, getShowerById, getSessionsCount, prepareBreakdownSessions } = require('./sessions');
 
 const tip = function (widget) {
   return {
@@ -425,7 +425,6 @@ const waterIQ = function (widget, devices, intl) {
   const current = Array.isArray(data) && data.length > 0 && data.find(s => s.timestamp === time.startDate);
 
   const hasWaterIQ = current !== false && current != null;
-  console.log('water iq', current, hasWaterIQ);
   
   const best = hasWaterIQ ? data.reduce((p, c) => c.user < p.user ? c : p, data[0]) : {};
   const worst = hasWaterIQ ? data.reduce((p, c) => c.user > p.user ? c : p, data[0]) : {};

@@ -13,7 +13,8 @@ const commonsAPI = require('../api/commons');
 
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
-const { showerFilterToLength, throwServerError, getCacheKey } = require('../utils/general');
+const { showerFilterToLength, throwServerError } = require('../utils/general');
+const { getCacheKey } = require('../utils/cache');
 const { flattenCommonsGroups } = require('../utils/commons');
 
 const QueryActions = require('./QueryActions');
