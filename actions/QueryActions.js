@@ -334,8 +334,10 @@ const queryDeviceSessionsCache = function (options) {
  *  reject returns possible errors
  * 
  */
-const fetchDeviceSession = function (id, deviceKey) {
+const fetchDeviceSession = function (options) {
   return function (dispatch, getState) {
+    const { id, deviceKey } = options;
+
     if (!id || !deviceKey) {
       throw new Error(`Not sufficient data provided for device session fetch: id: ${id}, deviceKey:${deviceKey}`);
     }
@@ -388,7 +390,7 @@ const fetchLastDeviceSession = function (options) {
       if (!id) throw new Error('sessionIDNotFound');
       const devSessions = response.find(x => x.deviceKey === device);
 
-      return dispatch(fetchDeviceSession(id, device))
+      return dispatch(fetchDeviceSession({ id, deviceKey: device }))
       .then(session => ({ 
         ...session,
         active: [device, id],
@@ -514,8 +516,10 @@ const queryMeterForecastCache = function (options) {
   };
 };
 
-const queryUserComparisons = function (userKey, month, year) {
+const queryUserComparisons = function (options) {
   return function (dispatch, getState) {
+    const { userKey, month, year } = options;
+
     const data = {
       userKey,
       year,
@@ -544,8 +548,9 @@ const queryUserComparisons = function (userKey, month, year) {
   };
 };
 
-const queryUserComparisonsByTime = function (userKey, time) {
+const queryUserComparisonsByTime = function (options) {
   return function (dispatch, getState) {
+    const { userKey, time } = options;
     const { startDate, endDate, granularity } = time;
     
     const endMonth = moment(endDate).month();
@@ -561,7 +566,7 @@ const queryUserComparisonsByTime = function (userKey, time) {
       const year = currDate.year();
       const cacheKey = cacheUtils.getCacheKey('COMPARISON', userKey, month, year);
       return dispatch(fetchFromCache(cacheKey))
-      .catch(error => dispatch(queryUserComparisons(userKey, month, year))
+      .catch(error => dispatch(queryUserComparisons({ userKey, month, year }))
         .then((data) => { 
           dispatch(saveToCache(cacheKey, data)); 
           return data; 
@@ -570,15 +575,15 @@ const queryUserComparisonsByTime = function (userKey, time) {
   };
 };
 
-const fetchUserComparison = function (comparison, options) {
+const fetchUserComparison = function (options) {
   return function (dispatch, getState) {
-    const { time, userKey } = options;
+    const { time, userKey, comparison } = options;
     const { startDate, endDate, granularity } = time;
 
     if (granularity !== 2 && granularity !== 4) {
       return Promise.reject('only day, month granularity supported in fetch comparisonByTime');
     }
-    return dispatch(queryUserComparisonsByTime(userKey, time))
+    return dispatch(queryUserComparisonsByTime({ userKey, time }))
     .then(comparisonsArr => comparisonsArr.map((c) => {
       if (c === null) {
         return [];
@@ -612,7 +617,7 @@ const fetchWaterIQ = function (options) {
     const { time, userKey } = options;
     const { startDate, endDate } = time;
 
-    return dispatch(queryUserComparisonsByTime(userKey, time))
+    return dispatch(queryUserComparisonsByTime({ userKey, time }))
     .then(comparisonsArr => comparisonsArr.map(c => c == null ? [] : c.waterIq))
     .then(sessionsArr => sessionsArr.reduce((p, c) => [...p, ...c], []))
     .then(comparisons => comparisons.map(m => ({
@@ -688,9 +693,13 @@ const fetchWidgetData = function (options) {
           .then(forecastData => ({ ...res, forecastData }));
         } else if (type === 'comparison') {
           return Promise.all(['similar', 'nearest', 'all', 'user']
-                             .map(id => dispatch(fetchUserComparison(id, { time, userKey }))
-                                  .then(sessions => ({ id, sessions }))))
-          .then(comparisons => ({ ...res, comparisons }));
+                      .map(id => dispatch(fetchUserComparison({ 
+                        comparison: id,
+                        time, 
+                        userKey, 
+                      }))
+                    .then(sessions => ({ id, sessions }))))
+                .then(comparisons => ({ ...res, comparisons }));
         } else if (type === 'wateriq') {
           return dispatch(fetchWaterIQ({ time: timeUtils.lastSixMonths(time.startDate), userKey }))
           .then(data => ({ ...res, data }));

@@ -177,13 +177,15 @@ const fetchComparisonData = function () {
           }],
         }));
       } else if (comparison.id === 'nearest') {
-        return dispatch(QueryActions.fetchUserComparison('nearest', {
+        return dispatch(QueryActions.fetchUserComparison({
+          comparison: 'nearest',
           time,
           userKey: getState().user.profile.key,
         }))
         .then(nearest => dispatch(setComparisonSessions('nearest', nearest)));
       } else if (comparison.id === 'similar') {
-        return dispatch(QueryActions.fetchUserComparison('similar', {
+        return dispatch(QueryActions.fetchUserComparison({
+          comparison: 'similar',
           time,
           userKey: getState().user.profile.key,
         }))
@@ -557,7 +559,7 @@ const fetchDeviceSession = function (id, deviceKey) {
       return Promise.resolve();
     }
       
-    return dispatch(QueryActions.fetchDeviceSession(id, deviceKey))
+    return dispatch(QueryActions.fetchDeviceSession({ id, deviceKey }))
     .then((session) => { 
       dispatch(setSession({ ...session, deviceKey }));
       return session;
@@ -585,7 +587,7 @@ const setActiveSession = function (deviceKey, id, timestamp) {
       id: id || timestamp,
     });
     if (id != null && deviceKey != null) {
-      dispatch(fetchDeviceSession(id, deviceKey, getState().section.history.time))
+      dispatch(fetchDeviceSession(id, deviceKey))
       .then((session) => {
         if (session) {
           dispatch(setForm('shower', { time: session.timestamp }));
@@ -693,10 +695,10 @@ const setQuery = function (query) {
     } else if (active === null) {
       dispatch(resetActiveSession());
     }
-    /*
     if (comparisonData) {
       dispatch(setComparisons(comparisonData));
     }
+    /*
     if (waterIQData) {
       dispatch(setWaterIQSessions(waterIQData));
     }
