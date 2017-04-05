@@ -548,6 +548,20 @@ const queryUserComparisons = function (options) {
   };
 };
 
+const queryUserComparisonsCache = function (options) {
+  return function (dispatch, getState) {
+    const { userKey, month, year } = options;
+
+    const cacheKey = cacheUtils.getCacheKey('COMPARISON', userKey, month, year);
+    return dispatch(fetchFromCache(cacheKey))
+    .catch(error => dispatch(queryUserComparisons({ userKey, month, year }))
+      .then((data) => { 
+        dispatch(saveToCache(cacheKey, data)); 
+        return data; 
+      }));
+  };
+};
+
 const queryUserComparisonsByTime = function (options) {
   return function (dispatch, getState) {
     const { userKey, time } = options;
@@ -564,13 +578,7 @@ const queryUserComparisonsByTime = function (options) {
       const currDate = moment(endDate).subtract(i * 6, 'month');
       const month = currDate.month() + 1 <= 6 ? 6 : 12;
       const year = currDate.year();
-      const cacheKey = cacheUtils.getCacheKey('COMPARISON', userKey, month, year);
-      return dispatch(fetchFromCache(cacheKey))
-      .catch(error => dispatch(queryUserComparisons({ userKey, month, year }))
-        .then((data) => { 
-          dispatch(saveToCache(cacheKey, data)); 
-          return data; 
-        }));
+      return dispatch(queryUserComparisonsCache({ userKey, month, year })); 
     }));
   };
 };
