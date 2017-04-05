@@ -292,6 +292,17 @@ const getTimeLabelByGranularityShort = function (timestamp, granularity, period,
   return ' ';
 };
 
+const convertOldTimeObject = function (time) {
+  return {
+    type: 'ABSOLUTE',
+    start: time.startDate,
+    end: time.endDate,
+    granularity: getLowerGranularityPeriod(
+      convertGranularityToPeriod(time.granularity)
+    ),
+  };
+};
+
 module.exports = {
   defaultFormatter,
   selectTimeFormatter,
@@ -317,4 +328,5 @@ module.exports = {
   getTimeLabelByGranularity,
   getTimeLabelByGranularityShort,
   getPeriodTimeLabel,
+  convertOldTimeObject,
 };

@@ -35,15 +35,7 @@ const queryData = function (options) {
     
     const data = {
       query: {
-        //datetime: 'Europe/Madrid',
-        time: {
-          type: 'ABSOLUTE',
-          start: time.startDate,
-          end: time.endDate,
-          granularity: timeUtils.getLowerGranularityPeriod(
-            timeUtils.convertGranularityToPeriod(time.granularity)
-          ),
-        },
+        time: timeUtils.convertOldTimeObject(time),
         population, 
         source,
         metrics,
@@ -178,14 +170,7 @@ const queryMeterForecast = function (options) {
     }
     const data = {
       query: {
-        time: {
-          type: 'ABSOLUTE',
-          start: time.startDate,
-          end: time.endDate,
-          granularity: timeUtils.getLowerGranularityPeriod(
-            timeUtils.convertGranularityToPeriod(time.granularity)
-          ),
-        },
+        time: timeUtils.convertOldTimeObject(time),
         population: [{
           type: 'USER',
           label,
