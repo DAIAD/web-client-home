@@ -130,7 +130,7 @@ const fetchComparison = function (id, query) {
       console.error('must provide only one population item for comparison');
       return Promise.reject();
     }
-    return dispatch(QueryActions.queryDataAverageCache(query))
+    return dispatch(QueryActions.queryDataAverage(query))
     .then(populations => Array.isArray(populations) && populations.length > 0 ? 
           populations[0] : [])
     .then(common => dispatch(setComparisonSessions(id, common)));
@@ -191,7 +191,7 @@ const fetchComparisonData = function () {
         }))
         .then(nearest => dispatch(setComparisonSessions('similar', nearest)));
       } else if (activeDeviceType === 'AMPHIRO' && !isNaN(comparison.id)) {
-        return dispatch(QueryActions.queryDeviceSessionsCache({ 
+        return dispatch(QueryActions.queryDeviceSessions({ 
           deviceKey: activeDevice, 
           length: showerFilterToLength(timeFilter),
           index: showerIndex,
@@ -209,7 +209,7 @@ const fetchComparisonData = function () {
 const fetchForecastData = function () {
   return function (dispatch, getState) {
     const { time } = getState().section.history;
-    dispatch(QueryActions.queryMeterForecastCache({
+    dispatch(QueryActions.queryMeterForecast({
       time,
       userKey: getState().user.profile.key,
     }))
@@ -259,7 +259,7 @@ const fetchData = function () {
         return Promise.resolve();
       }
 
-      return dispatch(QueryActions.queryDeviceSessionsCache({ 
+      return dispatch(QueryActions.queryDeviceSessions({ 
         deviceKey: activeDevice, 
         length: showerFilterToLength(timeFilter),
         index: showerIndex,

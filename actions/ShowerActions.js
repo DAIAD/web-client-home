@@ -1,5 +1,6 @@
 const types = require('../constants/ActionTypes');
-const { requestedQuery, receivedQuery, clearCacheItems, resetSuccess } = require('./QueryActions');
+const { requestedQuery, receivedQuery, resetSuccess } = require('./QueryActions');
+const { clearCacheItems } = require('./CacheActions');
 
 const showersAPI = require('../api/showers');
 

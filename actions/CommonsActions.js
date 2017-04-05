@@ -289,7 +289,7 @@ const fetchData = function () {
     dispatch(setSessions([]));
     // serialize query to take advantage of cache (?)
     populations.forEach((population) => {
-      dispatch(QueryActions.queryDataCache({ 
+      dispatch(QueryActions.queryData({ 
         time,
         source: activeDeviceType,
         population: [population],
