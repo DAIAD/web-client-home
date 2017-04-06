@@ -7,5 +7,6 @@ module.exports = {
   },
   utils: {
     widgets: require('./utils/widgets'),
+    general: require('./utils/general'),
   },
 };
