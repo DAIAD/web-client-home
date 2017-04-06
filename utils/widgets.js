@@ -255,9 +255,9 @@ const meterForecast = function (widget, devices, intl) {
                              ),
     }));
 
-  const forecastChartData = forecastData && forecastData.sessions ? [{
+  const forecastChartData = Array.isArray(forecastData) ? [{
     name: 'Forecast',
-    data: getChartMeterData(forecastData.sessions,
+    data: getChartMeterData(forecastData,
                             xCategories, 
                             time,
                             metric
