@@ -376,23 +376,20 @@ const connectActionsToQueryBackend = function (QueryBackend) {
   };
 
   return {
-    queryDeviceSessions,
-    fetchDeviceSession,
-    fetchLastDeviceSession,
-    queryMeterHistory,
-    fetchWidgetData,
-    dismissError,
-    resetSuccess,
-    setError,
+    ...QueryBackend,
     requestedQuery,
     receivedQuery,
+    resetSuccess,
+    setError,
+    dismissError,
     setInfo,
     dismissInfo,
-    queryMeterForecast,
-    queryData,
     queryDataAverage,
-    fetchWaterIQ,
+    fetchLastDeviceSession,
+    queryMeterHistory,
     fetchUserComparison,
+    fetchWaterIQ,
+    fetchWidgetData,
   };
 };
 

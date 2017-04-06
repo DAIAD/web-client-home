@@ -8,8 +8,6 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm } = require('./FormActions');
-const { fetchPriceBrackets } = require('./BillingActions');
-const { fetchWaterBreakdown } = require('./WaterCalculatorActions');
 
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
@@ -743,7 +741,7 @@ const setPriceBrackets = function (brackets) {
 
 const initPriceBrackets = function () {
   return function (dispatch, getState) {
-    dispatch(fetchPriceBrackets())
+    dispatch(QueryActions.fetchPriceBrackets())
     .then(brackets => dispatch(setPriceBrackets(brackets)));
   };
 };
@@ -757,7 +755,7 @@ const setBreakdownLabels = function (labels) {
 
 const initWaterBreakdown = function () {
   return function (dispatch, getState) {
-    dispatch(fetchWaterBreakdown())
+    dispatch(QueryActions.fetchWaterBreakdown())
     .then(labels => labels.reverse())
     .then(labels => dispatch(setBreakdownLabels(labels)));
   };

@@ -238,10 +238,64 @@ const queryUserComparisons = function (options) {
   };
 };
 
+const fetchWaterBreakdown = function () {
+  return function (dispatch, getState) {
+    const data = {
+      csrf: getState().user.csrf,
+    };
+
+    dispatch(requestedQuery());
+
+    return dataAPI.getWaterBreakdown(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
+      if (!response || !response.success) {
+        genUtils.throwServerError(response);  
+      }
+      return response.labels;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on fetch water breakdown:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
+
+const fetchPriceBrackets = function () {
+  return function (dispatch, getState) {
+    const data = {
+      csrf: getState().user.csrf,
+    };
+
+    dispatch(requestedQuery());
+
+    return dataAPI.getPriceBrackets(data)
+    .then((response) => {
+      dispatch(receivedQuery(response.success, response.errors));
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
+      if (!response || !response.success) {
+        genUtils.throwServerError(response);  
+      }
+      return response.brackets;
+    }) 
+    .catch((errors) => {
+      console.error('Error caught on get price brackets:', errors);
+      dispatch(receivedQuery(false, errors));
+      return errors;
+    });
+  };
+};
+
 module.exports = {
   queryData,
   queryDeviceSessions,
   fetchDeviceSession,
   queryMeterForecast,
   queryUserComparisons,
+  fetchWaterBreakdown,
+  fetchPriceBrackets,
 };

@@ -10,6 +10,12 @@ const DataAPI = {
   getComparisons: function ({ csrf, month, year }) {
     return callAPI(`/action/comparison/${year}/${month}`, { csrf }, 'GET');
   }, 
+  getWaterBreakdown: function ({ csrf }) {
+    return callAPI('/action/water-calculator/water-breakdown', { csrf }, 'GET');
+  },
+  getPriceBrackets: function ({ csrf }) {
+    return callAPI('/action/billing/price-bracket', { csrf }, 'GET');
+  },
 };
 
 module.exports = DataAPI;
