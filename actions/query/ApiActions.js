@@ -53,6 +53,7 @@ const queryData = function (options) {
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
       }
+      // for cache
       const meters = response.meters || [];
       const devices = response.devices || [];
       return {
@@ -104,14 +105,11 @@ const queryDeviceSessions = function (options) {
       dispatch(receivedQuery(response.success, response.errors, response.devices));
       dispatch(resetSuccess());
 
-      if (!response || !response.success) {
+      if (!response || !response.success || !response.devices) {
         genUtils.throwServerError(response);  
       }
       
-      return response.devices.map(session => ({ 
-        ...session,
-        range: session.sessions ? sessionUtils.getShowerRange(session.sessions) : {}
-      }));
+      return response.devices;
     })
     .catch((error) => {
       dispatch(receivedQuery(false, error));

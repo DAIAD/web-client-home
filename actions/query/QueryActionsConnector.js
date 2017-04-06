@@ -100,6 +100,16 @@ const connectActionsToQueryBackend = function (QueryBackend) {
     };
   };
 
+  const queryDeviceSessions = function (options) {
+    return function (dispatch, getState) {
+      return dispatch(QueryBackend.queryDeviceSessions(options))
+      .then(sessions => sessions.map(session => ({ 
+        ...session,
+        range: session.sessions ? sessionUtils.getShowerRange(session.sessions) : {}
+      })));
+    };
+  };
+
   /**
    * Fetch last session for array of devices
    * @param {String} deviceKey - Device keys to query
@@ -392,6 +402,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
     dismissInfo,
     queryDataAverage,
     queryMeterForecast,
+    queryDeviceSessions,
     fetchLastDeviceSession,
     queryMeterHistory,
     fetchUserComparison,
