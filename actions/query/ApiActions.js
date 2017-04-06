@@ -1,13 +1,13 @@
-const types = require('../constants/ActionTypes');
+const types = require('../../constants/ActionTypes');
+const { SUCCESS_SHOW_TIMEOUT, SHOWERS_PAGE } = require('../../constants/HomeConstants');
 
-const deviceAPI = require('../api/device');
-const dataAPI = require('../api/data');
+const deviceAPI = require('../../api/device');
+const dataAPI = require('../../api/data');
 
-const sessionUtils = require('../utils/sessions');
-const genUtils = require('../utils/general');
-const timeUtils = require('../utils/time');
+const sessionUtils = require('../../utils/sessions');
+const genUtils = require('../../utils/general');
+const timeUtils = require('../../utils/time');
 
-const { SUCCESS_SHOW_TIMEOUT, SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 const requestedQuery = function () {
   return {
@@ -109,9 +109,9 @@ const queryDeviceSessions = function (options) {
       }
       
       return response.devices.map(session => ({ 
-          ...session,
-          range: session.sessions ? sessionUtils.getShowerRange(session.sessions) : {}
-        }));
+        ...session,
+        range: session.sessions ? sessionUtils.getShowerRange(session.sessions) : {}
+      }));
     })
     .catch((error) => {
       dispatch(receivedQuery(false, error));
@@ -239,9 +239,6 @@ const queryUserComparisons = function (options) {
 };
 
 module.exports = {
-  requestedQuery,
-  receivedQuery,
-  resetSuccess,
   queryData,
   queryDeviceSessions,
   fetchDeviceSession,

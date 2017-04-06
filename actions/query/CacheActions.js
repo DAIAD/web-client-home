@@ -1,13 +1,13 @@
-const types = require('../constants/ActionTypes');
+const types = require('../../constants/ActionTypes');
+const { SHOWERS_PAGE } = require('../../constants/HomeConstants');
 
-const QueryActions = require('./QueryApiActions');
-const { fetchFromCache, saveToCache } = require('./CacheActions'); 
+const QueryActions = require('./ApiActions');
+const { fetchFromCache, saveToCache } = require('../CacheActions'); 
 
-const cacheUtils = require('../utils/cache');
-const sessionUtils = require('../utils/sessions');
-const genUtils = require('../utils/general');
+const cacheUtils = require('../../utils/cache');
+const sessionUtils = require('../../utils/sessions');
+const genUtils = require('../../utils/general');
 
-const { SHOWERS_PAGE } = require('../constants/HomeConstants');
 
 const queryData = function (options) {
   return function (dispatch, getState) {
