@@ -8,14 +8,17 @@ const cacheUtils = require('../../utils/cache');
 const sessionUtils = require('../../utils/sessions');
 const genUtils = require('../../utils/general');
 
-
 const queryData = function (options) {
   return function (dispatch, getState) {
     const { time, length, index, population, source, metrics } = options;
     const { cache } = getState().query;
-    
-    const inCache = population.filter(group => cache[group.label] != null);
-    const notInCache = population.filter(group => !inCache.includes(group));
+
+    const populationWithLabels = population.map(group => ({ 
+      ...group, 
+      label: cacheUtils.getPopulationCacheKey(group, source, time), 
+    }));
+    const inCache = populationWithLabels.filter(group => cache[group.label] != null);
+    const notInCache = populationWithLabels.filter(group => !inCache.includes(group));
 
     const inCachePromise = Promise.all(inCache.map(group => dispatch(fetchFromCache(group.label))));
 
@@ -56,8 +59,7 @@ const queryData = function (options) {
 
 const queryDeviceSessions = function (options) {
   return function (dispatch, getState) {
-    const { length, userKey, deviceKey, type, memberFilter = 'all', index = 0 } = options;
-
+    const { length, userKey, deviceKey, type, memberFilter, members, index = 0 } = options;
     const cacheKey = cacheUtils.getCacheKey('AMPHIRO', memberFilter, length, index);
     const startIndex = SHOWERS_PAGE * genUtils.getShowersPagingIndex(length, index);
 
@@ -72,7 +74,6 @@ const queryDeviceSessions = function (options) {
         ...options, 
         length: SHOWERS_PAGE,
         startIndex,
-        memberFilter,
         userKey,
         deviceKey: null, //null for all user devices
       };
@@ -90,12 +91,8 @@ const queryDeviceSessions = function (options) {
 
 const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
-    const { userKey, time } = options;
-    if (!time || !time.startDate || !time.endDate || time.granularity == null) {
-      throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
-                      'time object with startDate, endDate and granularity');
-    }
-    const cacheKey = cacheUtils.getCacheKey('FORECAST', userKey, time);
+    const { population, time } = options;
+    const cacheKey = cacheUtils.getPopulationCacheKey(population[0], 'FORECAST', time);
 
     return dispatch(fetchFromCache(cacheKey))
     .then(data => Promise.resolve(data))
@@ -111,8 +108,8 @@ const queryMeterForecast = function (options) {
 const queryUserComparisons = function (options) {
   return function (dispatch, getState) {
     const { userKey, month, year } = options;
-
     const cacheKey = cacheUtils.getCacheKey('COMPARISON', userKey, month, year);
+
     return dispatch(fetchFromCache(cacheKey))
     .catch(error => dispatch(QueryActions.queryUserComparisons({ userKey, month, year }))
       .then((data) => { 

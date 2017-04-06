@@ -11,7 +11,6 @@ const moment = require('moment');
 
 const types = require('../../constants/ActionTypes');
 
-const cacheUtils = require('../../utils/cache');
 const sessionUtils = require('../../utils/sessions');
 const genUtils = require('../../utils/general');
 const timeUtils = require('../../utils/time');
@@ -174,7 +173,6 @@ const connectActionsToQueryBackend = function (QueryBackend) {
         population: [
           {
             type: 'USER',
-            label: cacheUtils.getCacheKey('METER', userKey, time),
             users: [userKey],
           },
         ],

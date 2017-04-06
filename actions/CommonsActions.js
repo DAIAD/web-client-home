@@ -14,7 +14,6 @@ const commonsAPI = require('../api/commons');
 const { getDeviceKeysByType } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
 const { showerFilterToLength, throwServerError } = require('../utils/general');
-const { getCacheKey } = require('../utils/cache');
 const { flattenCommonsGroups } = require('../utils/commons');
 
 const QueryActions = require('./QueryActions');
@@ -262,21 +261,18 @@ const fetchData = function () {
     const common = {
       type: 'GROUP',
       name: active.name,
-      label: getCacheKey(devType, active.key, time),
       group: active.key,
     };
 
     const myself = {
       type: 'USER',
       name: 'Me',
-      label: getCacheKey(devType, getState().user.profile.key, time),
       users: [getState().user.profile.key],
     };
 
     const selected = selectedMembers.map(user => ({
       type: 'USER',
       name: `${user.firstname} ${user.lastname}`,
-      label: getCacheKey(devType, user.key, time),
       users: [user.key],
     }));
 

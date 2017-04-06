@@ -10,11 +10,11 @@ const getAmphiroCacheKey = function (key, length, index) {
 };
 
 const getAmphiroByTimeCacheKey = function (key, time) {
-  return `AMPHIRO_TIME,${key},${time.startDate},${time.endDate}`;
+  return `AMPHIRO_TIME,${key},${time.start},${time.end}`;
 };
 
 const getMeterCacheKey = function (key, time) {
-  return `METER,${key},${time.startDate},${time.endDate}`;
+  return `METER,${key},${time.start},${time.end}`;
 };
 
 const getComparisonCacheKey = function (key, month, year) {
@@ -22,7 +22,7 @@ const getComparisonCacheKey = function (key, month, year) {
 };
 
 const getForecastCacheKey = function (key, time) {
-  return `FORECAST,${key},${time.startDate},${time.endDate}`;
+  return `FORECAST,${key},${time.start},${time.end}`;
 };
 
 const getCacheKey = function (type, key, ...rest) {
@@ -43,6 +43,26 @@ const getCacheKey = function (type, key, ...rest) {
   throw new Error(`type ${type} not supported`);
 };
 
+const getPopulationCacheKey = function (population, source, time) {
+  const { type } = population;
+  const sourceType = source === 'AMPHIRO' ? 'AMPHIRO_TIME' : source;
+  let key;
+  if (type === 'USER') {
+    key = Array.isArray(population.users) 
+    && population.users.length > 0 
+    && population.users[0];
+  } else if (type === 'UTILITY') {
+    key = population.utility;
+  } else if (type === 'GROUP') {
+    key = population.group;
+  }
+
+  if (!key) {
+    throw new Error('noPopulationCacheKey');
+  }
+  return getCacheKey(sourceType, key, time);
+};
+
 //TODO: user rest parameters to filter specific cache items instead of all 
 const filterCacheItems = function (cache, type, ...rest) {
   return Object.keys(cache)
@@ -56,5 +76,6 @@ const filterCacheItems = function (cache, type, ...rest) {
 
 module.exports = {
   getCacheKey,
+  getPopulationCacheKey,
   filterCacheItems,
 };

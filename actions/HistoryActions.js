@@ -13,7 +13,6 @@ const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
 const { getTimeByPeriod, getPreviousPeriod, getGranularityByDiff } = require('../utils/time');
 const { getSessionById, getShowerRange, getLastShowerIdFromMultiple, hasShowersBefore, hasShowersAfter, isValidShowerIndex } = require('../utils/sessions');
 const { showerFilterToLength } = require('../utils/general');
-const { getCacheKey } = require('../utils/cache');
 
 const QueryActions = require('./QueryActions');
 
@@ -150,7 +149,6 @@ const fetchComparisonData = function () {
           source: activeDeviceType,
           population: [{ 
             type: 'USER',
-            label: getCacheKey('METER', userKey, prevTime),
             users: [userKey],
           }],
         }));
@@ -160,7 +158,6 @@ const fetchComparisonData = function () {
           source: activeDeviceType,
           population: [{ 
             type: 'UTILITY',
-            label: getCacheKey('METER', utilityKey, time),
             utility: utilityKey,
           }],
         }));
@@ -170,7 +167,6 @@ const fetchComparisonData = function () {
           source: activeDeviceType,
           population: [{ 
             type: 'GROUP',
-            label: getCacheKey('METER', commonKey, time),
             group: commonKey,
           }],
         }));
