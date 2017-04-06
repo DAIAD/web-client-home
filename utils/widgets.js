@@ -230,12 +230,12 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
 };
 
 const meterForecast = function (widget, devices, intl) {
-  const { data = [], forecastData, period, deviceType, metric, previous } = widget;
+  const { data = [], forecastData, period, periodIndex, deviceType, metric, previous } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter forecast supported');
   }
-  const time = widget.time ? widget.time : getTimeByPeriod(period);
+  const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
   const periods = PERIODS.METER.filter(p => p.id !== 'custom');
 
   const device = getDeviceKeysByType(devices, deviceType);

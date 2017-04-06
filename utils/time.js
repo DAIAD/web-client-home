@@ -72,10 +72,10 @@ const getLowerGranularityPeriod = function (period) {
 };
 
 const getTimeByPeriod = function (period, index) {
-  if (period === 'year') return getYear(moment().subtract(index, period).valueOf());
-  else if (period === 'month') return getMonth(moment().subtract(index, period).valueOf());
-  else if (period === 'week') return getWeek(moment().subtract(index, period).valueOf());
-  else if (period === 'day') return getDay(moment().subtract(index, period).valueOf());
+  if (period === 'year') return getYear(moment().add(index, period).valueOf());
+  else if (period === 'month') return getMonth(moment().add(index, period).valueOf());
+  else if (period === 'week') return getWeek(moment().add(index, period).valueOf());
+  else if (period === 'day') return getDay(moment().add(index, period).valueOf());
   return {};
   //throw new Error(`Period unrecognized ${period}`);
 };
