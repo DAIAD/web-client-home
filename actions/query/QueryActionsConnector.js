@@ -70,11 +70,10 @@ const connectActionsToQueryBackend = function (QueryBackend) {
 
   const queryData = function (options) {
     return function (dispatch, getState) {
-      const { time, key, population, source, metrics } = options;
+      const { time, population, source, metrics } = options;
       return dispatch(QueryBackend.queryData({
         time: timeUtils.convertOldTimeObject(time),
         population, 
-        key,
         source,
         metrics,
       }));
