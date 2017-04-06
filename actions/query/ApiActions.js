@@ -163,7 +163,7 @@ const fetchDeviceSession = function (options) {
 
 const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
-    const { time, label, userKey } = options;
+    const { time, userKey } = options;
     if (!time || !time.startDate || !time.endDate || time.granularity == null) {
       throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
                       'time object with startDate, endDate and granularity');
@@ -173,7 +173,6 @@ const queryMeterForecast = function (options) {
         time: timeUtils.convertOldTimeObject(time),
         population: [{
           type: 'USER',
-          label,
           users: [userKey],
         }],
       },
@@ -190,13 +189,7 @@ const queryMeterForecast = function (options) {
           !response.meters[0] || !response.meters[0].points) {
         genUtils.throwServerError(response);  
       }
-      return {
-        label: response.meters[0].label,
-        sessions: response.meters[0].points.map(session => ({ 
-          ...session, 
-          volume: session.volume.SUM 
-        })),
-      };
+      return response.meters;
     })
     .catch((error) => {
       console.error('caught error in query meter forecast: ', error);

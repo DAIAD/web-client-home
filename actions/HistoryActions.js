@@ -211,14 +211,13 @@ const fetchForecastData = function () {
       time,
       userKey: getState().user.profile.key,
     }))
-    .then((forecastingData) => {
-      const sessions = forecastingData.sessions;
+    .then((sessions) => {
       const sortedByTime = sessions.sort((a, b) => {
         if (a.timestamp < b.timestamp) return -1;
         else if (a.timestamp > b.timestamp) return 1;
         return 0;
       });
-      dispatch(setForecastData({ ...forecastingData, sessions: sortedByTime }));
+      dispatch(setForecastData({ sessions: sortedByTime }));
     })
     .catch((error) => {
       dispatch(setForecastData({}));

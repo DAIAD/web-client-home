@@ -17,14 +17,6 @@ const genUtils = require('../../utils/general');
 const timeUtils = require('../../utils/time');
 
 const connectActionsToQueryBackend = function (QueryBackend) { 
-  const { 
-    queryData, 
-    queryDeviceSessions, 
-    fetchDeviceSession, 
-    queryMeterForecast, 
-    queryUserComparisons,
-  } = QueryBackend;
-
   const requestedQuery = function () {
     return {
       type: types.QUERY_REQUEST_START,
@@ -80,7 +72,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
   const queryDataAverage = function (options) {
     return function (dispatch, getState) {
       const { time, population, source } = options;
-      return dispatch(queryData({
+      return dispatch(QueryBackend.queryData({
         time,
         population,
         source,
@@ -94,6 +86,20 @@ const connectActionsToQueryBackend = function (QueryBackend) {
     };
   };
 
+  const queryMeterForecast = function (options) {
+    return function (dispatch, getState) {
+      const { time, userKey } = options;
+      return dispatch(QueryBackend.queryMeterForecast({
+        time,
+        userKey,
+      }))
+      .then(sessions => sessions[0].points.map(session => ({ 
+        ...session, 
+        volume: session.volume.SUM 
+      })));
+    };
+  };
+
   /**
    * Fetch last session for array of devices
    * @param {String} deviceKey - Device keys to query
@@ -104,7 +110,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
    */
   const fetchLastDeviceSession = function (options) {
     return function (dispatch, getState) {
-      return dispatch(queryDeviceSessions({ ...options, length: 1 }))
+      return dispatch(QueryBackend.queryDeviceSessions({ ...options, length: 1 }))
       .then((response) => {
         const reduced = response.reduce((p, c) => [...p, ...c.sessions.map(s => ({ ...s, device: c.deviceKey }))], []);
 
@@ -117,7 +123,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
         if (!id) throw new Error('sessionIDNotFound');
         const devSessions = response.find(x => x.deviceKey === device);
 
-        return dispatch(fetchDeviceSession({ id, deviceKey: device }))
+        return dispatch(QueryBackend.fetchDeviceSession({ id, deviceKey: device }))
         .then(session => ({ 
           ...session,
           active: [device, id],
@@ -187,7 +193,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
         const currDate = moment(endDate).subtract(i * 6, 'month');
         const month = currDate.month() + 1 <= 6 ? 6 : 12;
         const year = currDate.year();
-        return dispatch(queryUserComparisons({ userKey, month, year })); 
+        return dispatch(QueryBackend.queryUserComparisons({ userKey, month, year })); 
       }));
     };
   };
@@ -200,7 +206,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
       if (granularity !== 2 && granularity !== 4) {
         return Promise.reject('only day, month granularity supported in fetch comparisonByTime');
       }
-      return dispatch(queryUserComparisonsByTime({ userKey, time }))
+      return dispatch(QueryBackend.queryUserComparisonsByTime({ userKey, time }))
       .then(comparisonsArr => comparisonsArr.map((c) => {
         if (c === null) {
           return [];
@@ -234,7 +240,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
       const { time, userKey } = options;
       const { startDate, endDate } = time;
 
-      return dispatch(queryUserComparisonsByTime({ userKey, time }))
+      return dispatch(QueryBackend.queryUserComparisonsByTime({ userKey, time }))
       .then(comparisonsArr => comparisonsArr.map(c => c == null ? [] : c.waterIq))
       .then(sessionsArr => sessionsArr.reduce((p, c) => [...p, ...c], []))
       .then(comparisons => comparisons.map(m => ({
@@ -347,7 +353,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
           }));
         } else if (type === 'ranking') {
           const activeMembers = genUtils.getAllMembers(members);
-          return Promise.all(activeMembers.map(m => dispatch(queryDeviceSessions({
+          return Promise.all(activeMembers.map(m => dispatch(QueryBackend.queryDeviceSessions({
             length: genUtils.showerFilterToLength(period),
             memberFilter: m.index,
             userKey,
@@ -355,14 +361,14 @@ const connectActionsToQueryBackend = function (QueryBackend) {
           })).then(memberData => ({ sessions: memberData, ...m }))))
           .then(data => ({ data }));
         }
-        return dispatch(queryDeviceSessions({ 
+        return dispatch(QueryBackend.queryDeviceSessions({ 
           length: genUtils.showerFilterToLength(period),
           userKey,
           deviceKey,
         }))
         .then(data => ({ data }))
         .then(res => period !== 'all' ? 
-              dispatch(queryDeviceSessions({
+              dispatch(QueryBackend.queryDeviceSessions({
                 length: genUtils.showerFilterToLength(period),
                 deviceKey,
                 userKey,
@@ -385,6 +391,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
     setInfo,
     dismissInfo,
     queryDataAverage,
+    queryMeterForecast,
     fetchLastDeviceSession,
     queryMeterHistory,
     fetchUserComparison,
