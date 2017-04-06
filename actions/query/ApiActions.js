@@ -34,12 +34,7 @@ const queryData = function (options) {
     const { time, population, source, metrics } = options;
     
     const data = {
-      query: {
-        time: timeUtils.convertOldTimeObject(time),
-        population, 
-        source,
-        metrics,
-      },
+      query: options,
       csrf: getState().user.csrf,
     };
 
@@ -83,18 +78,9 @@ const queryData = function (options) {
  * 
  */
 const queryDeviceSessions = function (options) {
-  return function (dispatch, getState) {
-    const { length, deviceKey, userKey, memberFilter = 'all' } = options;
-    
-    if (!length) {
-      throw new Error('Not sufficient data provided for device sessions query');
-    }
-    const members = genUtils.memberFilterToMembers(memberFilter);
-    
+  return function (dispatch, getState) { 
     const data = {
       ...options,
-      type: 'SLIDING', 
-      members,
       csrf: getState().user.csrf,
     };
     
@@ -128,17 +114,10 @@ const queryDeviceSessions = function (options) {
  */
 const fetchDeviceSession = function (options) {
   return function (dispatch, getState) {
-    const { id, deviceKey } = options;
-
-    if (!id || !deviceKey) {
-      throw new Error(`Not sufficient data provided for device session fetch: id: ${id}, deviceKey:${deviceKey}`);
-    }
-
     dispatch(requestedQuery());
 
     const data = {
-      sessionId: id, 
-      deviceKey,
+      ...options,
       csrf: getState().user.csrf,
     };
 
@@ -161,19 +140,8 @@ const fetchDeviceSession = function (options) {
 
 const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
-    const { time, userKey } = options;
-    if (!time || !time.startDate || !time.endDate || time.granularity == null) {
-      throw new Error('Not sufficient data provided for meter forecast query. Requires: \n' + 
-                      'time object with startDate, endDate and granularity');
-    }
     const data = {
-      query: {
-        time: timeUtils.convertOldTimeObject(time),
-        population: [{
-          type: 'USER',
-          users: [userKey],
-        }],
-      },
+      query: options,
       csrf: getState().user.csrf,
     };
 
@@ -202,9 +170,7 @@ const queryUserComparisons = function (options) {
     const { userKey, month, year } = options;
 
     const data = {
-      userKey,
-      year,
-      month,
+      ...options,
       csrf: getState().user.csrf,
     };
 
