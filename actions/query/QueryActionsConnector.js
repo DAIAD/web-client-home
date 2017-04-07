@@ -351,8 +351,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
    */
   const fetchWidgetData = function (options) {
     return function (dispatch, getState) {
-      const { type, userKey, deviceType, period, periodIndex, members, brackets, breakdown } = options;
-      const deviceKey = null; 
+      const { type, userKey, deviceType, deviceKey = null, period, periodIndex, members, brackets, breakdown } = options;
 
       if (!type || !deviceType) {
         console.error('fetchWidgetData: Insufficient data provided (need type, deviceType):', options);
