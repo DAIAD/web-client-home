@@ -56,13 +56,14 @@ function StatWidget(props) {
 }
 
 function LineChartWidget(props) {
-  const { id, chartData = [], chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend } = props;
+  const { id, chartData = [], chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
   const formatter = chartFormatter || defaultFormatter(mu);
   return (
     <LineChart
       height={height || 240}
       width={width} 
       id={id}
+      renderAsImage={renderAsImage}
       theme={lineTheme}
       legend={legend}
       title=""
@@ -85,13 +86,14 @@ function LineChartWidget(props) {
 }
 
 function BarChartWidget(props) {
-  const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend } = props;
+  const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
   const formatter = chartFormatter || defaultFormatter(mu);
   return (
     <BarChart
       height={height || 240}
       width={width}
       id={id}
+      renderAsImage={renderAsImage}
       theme={verticalBarTheme}
       legend={legend}
       xAxis={{
@@ -115,13 +117,14 @@ function BarChartWidget(props) {
 }
 
 function HorizontalBarChartWidget(props) {
-  const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend } = props;
+  const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
   const formatter = chartFormatter || defaultFormatter(mu);
   return (
     <BarChart
       height={height || 240}
       width={width}
       id={id}
+      renderAsImage={renderAsImage}
       theme={horizontalBarTheme}
       legend={legend}
       horizontal
