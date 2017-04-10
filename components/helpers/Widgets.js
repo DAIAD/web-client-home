@@ -202,7 +202,7 @@ function RankingWidget(props) {
             key={idx} 
             style={{
               float: 'left', 
-              width: (props.width - 20) / props.info.length, 
+              width: `${100 / props.info.length}%`, 
               textAlign: 'center' 
             }}
           >
