@@ -68,6 +68,10 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       ...dispatchProps,
       //profile
       updateProfileForm: data => dispatchProps.setForm('profileForm', data),
+      resetChangePassword: () => {
+        dispatchProps.resetChangePassword();
+        dispatchProps.setForm('profileForm', { password: null, confirmPassword: null });
+      },
       //members
       updateMemberForm: data => dispatchProps.setForm('memberForm', data),
       clearMemberForm: () => dispatchProps.resetForm('memberForm'),
