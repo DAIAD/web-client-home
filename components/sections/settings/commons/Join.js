@@ -64,7 +64,7 @@ const JoinCommons = React.createClass({
             updateCommonForm(row);
           }
         }}
-        empty={<h5>No communities found</h5>}
+        empty={<h5 style={{ marginTop: 20 }}>No communities found</h5>}
       />
       {
         commonForm.key && !commonForm.member ?

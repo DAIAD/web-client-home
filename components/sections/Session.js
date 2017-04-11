@@ -151,43 +151,14 @@ function SessionInfo(props) {
           :
           <span />
         }
-      <div className="headline"> 
-        { 
-         activeDeviceType === 'AMPHIRO' ?
-            <div className="edit-shower-control">
-            {
-               editShower ? 
-                <a onClick={disableEditShower}><i className="fa fa-times" /></a>
-                :
-                <a onClick={enableEditShower}><i className="fa fa-pencil" /></a>
-            }
-          </div> 
-          :
-            <div />
-         }
-
-      <Member 
-        {...{ 
-          deviceKey, 
-          sessionId, 
-          member, 
-          memberFilter,
-          members, 
-          assignToMember, 
-          editShower, 
-          enableEditShower, 
-          disableEditShower,
-          fetchAndSetQuery,
-        }} 
-      /> 
-      
+      <div className="headline">  
       {
         activeDeviceType === 'AMPHIRO' ? 
-          <span className="headline-date">
+          <div className="headline-date">
             <i className="fa fa-calendar" />
             { 
               editShower && history ? 
-                <span>
+                <div className="headline-date-wrapper">
                   <DatetimeInput
                     dateFormat="DD/MM/YYYY"
                     timeFormat="HH:mm"
@@ -221,7 +192,7 @@ function SessionInfo(props) {
                   >
                     Set
                   </a>
-                </span>
+                </div>
                 :
                 <span>
                   <FormattedDate 
@@ -235,15 +206,42 @@ function SessionInfo(props) {
                   <FormattedTime value={new Date(data.timestamp)} />
                 </span>
             }
-          </span> 
+          </div> 
           :
           <span className="headline-date">
             <i className="fa fa-calendar" />
             {data.date}
           </span>
       }
+      { 
+       activeDeviceType === 'AMPHIRO' ?
+          <div className="edit-shower-control">
+          {
+             editShower ? 
+              <a onClick={disableEditShower}><i className="fa fa-times" /></a>
+              :
+              <a onClick={enableEditShower}><i className="fa fa-pencil" /></a>
+          }
+        </div> 
+        :
+          <span />
+      }
+          
+        <Member 
+          {...{ 
+            deviceKey, 
+            sessionId, 
+            member, 
+            memberFilter,
+            members, 
+            assignToMember, 
+            editShower, 
+            enableEditShower, 
+            disableEditShower,
+            fetchAndSetQuery,
+          }} 
+        /> 
     </div> 
-    <br />
     <ul className="sessions-list" >
       {
         metrics.map(metric => (
