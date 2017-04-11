@@ -82,15 +82,20 @@ function EditMembers(props) {
                       style={{ float: 'right', marginRight: 10 }} 
                       value={_t('forms.submit')} 
                     />
-                    <bs.Button 
-                      style={{ float: 'right', marginRight: 10 }} 
-                      bsStyle="danger"
-                      onClick={() => { 
-                        confirmDeleteMember(memberForm);
-                      }}
-                    >
-                      Delete
-                    </bs.Button>
+                    {
+                      member.index !== 0 ?
+                        <bs.Button 
+                          style={{ float: 'right', marginRight: 10 }} 
+                          bsStyle="danger"
+                          onClick={() => { 
+                            confirmDeleteMember(memberForm);
+                          }}
+                        >
+                          Delete
+                        </bs.Button>
+                        :
+                          <span />
+                   }
                   </div>
               </form>
             </div>
