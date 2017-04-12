@@ -1,7 +1,7 @@
 const React = require('react');
 const ReactDOM = require('react-dom');
 const { Chart, LineChart, BarChart } = require('react-echarts');
-const theme = require('../chart/themes/history');
+const theme = require('../../chart/themes/history');
 
 function HistoryChart(props) {
   const { chartType, chartData, chartCategories, chartFormatter, chartYMax, onPointClick, width } = props;

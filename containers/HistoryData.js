@@ -4,7 +4,7 @@ const { injectIntl } = require('react-intl');
 
 const HistoryActions = require('../actions/HistoryActions');
 
-const History = require('../components/sections/History');
+const History = require('../components/sections/history/');
 
 const { getAvailableDevices, getAvailableDeviceTypes } = require('../utils/device');
 const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, prepareBreakdownSessions } = require('../utils/sessions');

@@ -1,11 +1,9 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
-const { Link } = require('react-router');
 
 const MainSection = require('../../../layout/MainSection');
 const FormFields = require('./FormFields');
-const LocaleSwitcher = require('../../../LocaleSwitcher');
 
 const { PNG_IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 

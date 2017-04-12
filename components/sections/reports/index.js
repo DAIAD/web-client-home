@@ -6,13 +6,13 @@ const Select = require('react-select');
 const { FormattedMessage, FormattedDate } = require('react-intl');
 const { Link } = require('react-router');
 
-const MainSection = require('../layout/MainSection');
-const Topbar = require('../layout/Topbar');
-const { SidebarRight } = require('../layout/Sidebars');
+const MainSection = require('../../layout/MainSection');
+const Topbar = require('../../layout/Topbar');
+const { SidebarRight } = require('../../layout/Sidebars');
 
-const { TimeNavigator } = require('../helpers/Navigators');
+const { TimeNavigator } = require('../../helpers/Navigators');
 
-const { IMAGES } = require('../../constants/HomeConstants');
+const { IMAGES } = require('../../../constants/HomeConstants');
 
 const Reports = React.createClass({
   componentWillMount: function () {

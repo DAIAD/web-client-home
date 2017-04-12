@@ -304,6 +304,7 @@
     "meter": "Meter",
     "meters": "Meters",
     "properties": "Properties",
+    "no-properties": "No properties",
     "name": {
       "label": "Device name"
     },
@@ -376,5 +377,9 @@
   },
   "reports": {
     "title": "Monthly reports"
+  },
+  "footer": {
+    "contact": "Contact",
+    "terms": "Terms of service"
   }
 }

@@ -4,7 +4,7 @@ const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
 const { push } = require('react-router-redux');
 
-const Commons = require('../components/sections/Commons');
+const Commons = require('../components/sections/commons/');
 
 const CommonsActions = require('../actions/CommonsActions');
 const timeUtil = require('../utils/time');
@@ -63,6 +63,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     active,
     deviceTypes,
     periods,
+    isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
     members: {
       ...stateProps.members,
       active: stateProps.members.active.map(m => stateProps.members.selected.map(s => s.key).includes(m.key) ? ({ ...m, selected: true }) : m),

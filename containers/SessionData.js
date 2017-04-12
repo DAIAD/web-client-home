@@ -5,7 +5,7 @@ const moment = require('moment');
 
 //const { getChartTimeData } = require('../utils/chart');
 
-const SessionModal = require('../components/sections/Session');
+const Session = require('../components/sections/history/SessionModal');
 const HistoryActions = require('../actions/HistoryActions');
 const { setWidgetTypeUnsynced } = require('../actions/DashboardActions');
 const { ignoreShower, assignToMember, setShowerReal } = require('../actions/ShowerActions');
@@ -94,5 +94,5 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 const SessionData = injectIntl(connect(mapStateToProps, 
                                        mapDispatchToProps, 
                                        mergeProps
-                                      )(SessionModal));
+                                      )(Session));
 module.exports = SessionData;

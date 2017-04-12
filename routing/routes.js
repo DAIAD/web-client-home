@@ -7,10 +7,10 @@ const Dashboard = require('../containers/DashboardData');
 const History = require('../containers/HistoryData');
 const Reports = require('../containers/ReportsData');
 const Commons = require('../containers/CommonsData');
-const Messages = require('../containers/MessageData');
+const Notifications = require('../containers/NotificationData');
 const Settings = require('../containers/SettingsData');
-const Profile = require('../components/sections/settings/Profile');
-const Devices = require('../components/sections/settings/Devices');
+const Profile = require('../components/sections/settings/profile/');
+const Devices = require('../components/sections/settings/devices/');
 
 const MembersSettings = require('../components/sections/settings/members/');
 const MembersManage = require('../components/sections/settings/members/Edit');
@@ -31,7 +31,7 @@ const routes = () => (
     <IndexRoute default="dashboard" component={Dashboard} onEnter={requireAuth} />
     <Route path="dashboard" component={Dashboard} onEnter={requireAuth} />  
     <Route path="history" component={History} onEnter={requireAuth} />
-    <Route path="notifications" component={Messages} onEnter={requireAuth} />
+    <Route path="notifications" component={Notifications} onEnter={requireAuth} />
     <Route path="reports" component={Reports} onEnter={requireAuth} />
     <Route path="commons" component={Commons} onEnter={requireAuth} />
     <Route path="settings" component={Settings} onEnter={requireAuth}>

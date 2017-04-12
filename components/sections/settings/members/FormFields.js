@@ -2,6 +2,8 @@ const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
 
+const Dropdown = require('../../../helpers/Dropdown');
+
 const { uploadFile } = require('../../../../utils/general');
 const { PNG_IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
@@ -68,40 +70,17 @@ function MemberFormFields(props) {
         onChange={(e) => { updateMemberForm({ age: parseInt(e.target.value, 0) }); }}
         value={member.age}
       /> 
-
-
-      <div className="form-group">
-        <label 
-          className="control-label col-md-3" 
-          style={{ paddingLeft: 0 }} 
-          htmlFor="gender-switcher"
-        >
-          <span><FormattedMessage id="member.gender" /></span>
-        </label>
-
-        <bs.DropdownButton
-          title={member.gender ? 
-            _t(`member.${member.gender}`) 
-            : 
-            _t('member.placeholder-gender')}
-          id="gender-switcher"
-          onSelect={(e, val) => { 
-            updateMemberForm({ gender: val });
-          }}
-        >
-          {
-            ['MALE', 'FEMALE'].map(gender => 
-              <bs.MenuItem 
-                key={gender} 
-                eventKey={gender} 
-                value={gender}
-              >
-                { _t(`member.${gender}`) }
-              </bs.MenuItem>
-              )
-          }	
-        </bs.DropdownButton>
-      </div>
+        
+      <Dropdown
+        _t={_t}
+        id={`member-gender-${member.index}`}
+        label="member.gender"
+        defaultValue="FEMALE"
+        titlePrefix="member"
+        value={member.gender}
+        update={val => updateMemberForm({ gender: val })}
+        options={['FEMALE', 'MALE']}
+      />
     </div>
   );
 }

@@ -1,7 +1,7 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 
-const { LOCALES } = require('../constants/HomeConstants');
+const { LOCALES } = require('../../constants/HomeConstants');
 
 function LocaleSwitcher(props) {
   const { locale, _t, id = 'language-switcher' } = props;

@@ -7,7 +7,7 @@ const { linkToHistory } = require('../actions/HistoryActions');
 const { saveConfiguration } = require('../actions/UserActions');
 const { setForm } = require('../actions/FormActions');
 
-const Dashboard = require('../components/sections/Dashboard');
+const Dashboard = require('../components/sections/dashboard/');
 
 const { getDeviceCount, getMeterCount } = require('../utils/device');
 const prepareWidget = require('../utils/widgets');

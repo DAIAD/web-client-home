@@ -4,8 +4,6 @@ const lineTheme = require('../chart/themes/default');
 const horizontalBarTheme = require('../chart/themes/horizontal-bar');
 const verticalBarTheme = require('../chart/themes/vertical-bar');
 
-const { IMAGES } = require('../../constants/HomeConstants');
-
 function defaultFormatter(mu) {
   return function (y) {
     return `${y} ${mu}`;
@@ -13,7 +11,7 @@ function defaultFormatter(mu) {
 }
 
 function StatWidget(props) {
-  const { highlight, info = [], period, mu } = props;
+  const { highlight, info = [], period, mu, imgPrefix } = props;
   return (
     <div style={{ padding: 10 }}>
       <div style={{ float: 'left', width: '30%' }}>
@@ -25,7 +23,7 @@ function StatWidget(props) {
                 maxHeight: 50, 
                 float: 'left', 
               }} 
-              src={`${IMAGES}/${highlight.image}`} 
+              src={`${imgPrefix}/${highlight.image}`} 
               alt={highlight.image} 
             /> 
             :
@@ -43,7 +41,7 @@ function StatWidget(props) {
             info.map((line, idx) => (
               <div key={idx}>
                 <i className={`fa fa-${line.icon}`} />
-                { line.image ? <img style={{ maxHeight: 30, maxWidth: 30 }} src={`${IMAGES}/${line.image}`} alt={line.id} /> : <i /> }
+                { line.image ? <img style={{ maxHeight: 30, maxWidth: 30 }} src={`${imgPrefix}/${line.image}`} alt={line.id} /> : <i /> }
                 &nbsp;
                 <span>{line.text}</span>
               </div>
@@ -210,7 +208,7 @@ function RankingWidget(props) {
             line.image ? 
               <img
                 style={{ maxHeight: 30, maxWidth: 30 }} 
-                src={`${IMAGES}/${line.image}`} 
+                src={`${props.imgPrefix}/${line.image}`} 
                 alt={line.id} 
               /> 
                 : <i /> 
@@ -233,7 +231,7 @@ function LastShowerWidget(props) {
       />
       <div style={{ padding: '0 10px' }}>
         <div style={{ float: 'left', textAlign: 'center' }}>
-          <img style={{ height: 40, width: 40, float: 'left' }} src={`${IMAGES}/${props.highlight.image}`} alt={props.highlight.image} /> 
+          <img style={{ height: 40, width: 40, float: 'left' }} src={`${props.imgPrefix}/${props.highlight.image}`} alt={props.highlight.image} /> 
           <h2 style={{ float: 'left' }}>
             <span>{props.highlight.text}</span>
             <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{props.highlight.mu}</span>
@@ -254,7 +252,7 @@ function LastShowerWidget(props) {
             line.image ? 
               <img
                 style={{ maxHeight: 30, maxWidth: 30 }} 
-                src={`${IMAGES}/${line.image}`} 
+                src={`${props.imgPrefix}/${line.image}`} 
                 alt={line.id} 
               /> 
                 : <i /> 

@@ -1,8 +1,8 @@
 /**
- * Message Actions module.
+ * Notification Actions module.
  * Action creators for Messages section
  * 
- * @module MessageActions
+ * @module NotificationActions
  */
 
 const { push } = require('react-router-redux');

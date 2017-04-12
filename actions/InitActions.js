@@ -13,7 +13,7 @@ const CommonsActions = require('./CommonsActions');
 const CommonsManageActions = require('./CommonsManageActions');
 const FormActions = require('./FormActions');
 const { letTheRightOneIn } = require('./UserActions');
-const { fetchInitial: fetchAllMessages } = require('./MessageActions');
+const { fetchInitial: fetchAllMessages } = require('./NotificationActions');
 
 const { getMeterCount } = require('../utils/device');
 const { filterObj } = require('../utils/general');

@@ -3,95 +3,20 @@ const { FormattedDate, FormattedMessage } = require('react-intl');
 const bs = require('react-bootstrap');
 const CheckboxGroup = require('react-checkbox-group');
 
-const MainSection = require('../layout/MainSection');
-const Topbar = require('../layout/Topbar');
-const { SidebarLeft, SidebarRight } = require('../layout/Sidebars');
-const Table = require('../helpers/Table');
-const { TimeNavigator, CustomTimeNavigator, ShowerNavigator } = require('../helpers/Navigators');
+const MainSection = require('../../layout/MainSection');
+const Topbar = require('../../layout/Topbar');
+const { SidebarLeft, SidebarRight } = require('../../layout/Sidebars');
+const { TimeNavigator, CustomTimeNavigator, ShowerNavigator } = require('../../helpers/Navigators');
+const { Tabs, TabsMulti, Tab } = require('../../helpers/Tabs');
 const HistoryChart = require('./HistoryChart');
-const { Tabs, TabsMulti, Tab } = require('../helpers/Tabs');
+const SessionsList = require('./SessionsList');
 
 //sub-containers
-const SessionData = require('../../containers/SessionData');
+const SessionData = require('../../../containers/SessionData');
 
 //utils
-const timeUtil = require('../../utils/time');
-const { IMAGES } = require('../../constants/HomeConstants');
-
-function SessionsList(props) {
-  const { _t, sortOptions, sortFilter, sortOrder, handleSortSelect, activeDeviceType, 
-    csvData, time, sessionFields, sessions, setActiveSession, setSortOrder, setSortFilter, onSessionClick } = props;
-  return (
-    <div className="history-list-area">
-      <div className="history-list-header">
-        <h3 style={{ float: 'left' }}><FormattedMessage id="history.in-detail" /></h3>
-
-        { 
-          csvData ?  
-            <a 
-              style={{ float: 'left', marginLeft: 10 }} 
-              className="btn" 
-              href={`data:application/csv;charset=utf-8, ${csvData}`}
-              download="Data.csv"
-            >
-              <FormattedMessage id="common.download" />
-            </a>
-           :
-           <span />
-        }
-        <div style={{ float: 'right' }}> 
-          <h5 style={{ float: 'left', marginTop: 5 }}><FormattedMessage id="common.sortby" /></h5>
-          <div 
-            className="sort-options" 
-            style={{ float: 'right', marginLeft: 10, textAlign: 'right' }}
-          >
-            <bs.DropdownButton
-              title={sortOptions.find(sort => sort.id === sortFilter) ? 
-                _t(sortOptions.find(sort => sort.id === sortFilter).title)
-                : _t('history.volume')}
-              id="sort-by"
-              defaultValue={sortFilter}
-              onSelect={handleSortSelect}
-            >
-              {
-                sortOptions.map(sort => 
-                  <bs.MenuItem 
-                    key={sort.id} 
-                    eventKey={sort.id} 
-                    value={sort.id}
-                  >
-                    {_t(sort.title)}
-                  </bs.MenuItem>
-                )
-              } 
-            </bs.DropdownButton>
-
-            <div style={{ float: 'right', marginLeft: 10 }}>
-              {
-                sortOrder === 'asc' ? 
-                  <a onClick={() => setSortOrder('desc')}>
-                    <i className="fa fa-arrow-up" />
-                  </a>
-                 :
-                 <a onClick={() => setSortOrder('asc')}>
-                   <i className="fa fa-arrow-down" />
-                 </a>
-              }
-            </div>
-          </div>
-        </div>
-      </div>
-      
-      <Table
-        className="session-list"
-        rowClassName="session-list-item"
-        fields={sessionFields}
-        data={sessions}
-        onRowClick={onSessionClick}
-      />
-    </div>
-  );
-}
+const timeUtil = require('../../../utils/time');
+const { IMAGES } = require('../../../constants/HomeConstants');
 
 const History = React.createClass({
   componentWillMount: function () {

@@ -2,9 +2,9 @@ const { injectIntl } = require('react-intl');
 const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 
-const Notifications = require('../components/sections/Notifications');
+const Notifications = require('../components/sections/notifications/');
 
-const MessageActions = require('../actions/MessageActions');
+const NotificationActions = require('../actions/NotificationActions');
 
 const prepareWidget = require('../utils/widgets');
 const { stripTags } = require('../utils/messages');
@@ -26,7 +26,7 @@ function mapStateToProps(state) {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators(MessageActions, dispatch);
+  return bindActionCreators(NotificationActions, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
@@ -101,8 +101,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   };
 }
 
-const MessageData = injectIntl(connect(mapStateToProps, 
-                                       mapDispatchToProps, 
-                                       mergeProps
-                                      )(Notifications));
-module.exports = MessageData;
+const NotificationData = injectIntl(connect(mapStateToProps, 
+                                            mapDispatchToProps, 
+                                            mergeProps
+                                           )(Notifications));
+module.exports = NotificationData;

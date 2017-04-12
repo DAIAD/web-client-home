@@ -4,7 +4,7 @@ const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
 const { push } = require('react-router-redux');
 
-const Reports = require('../components/sections/Reports');
+const Reports = require('../components/sections/reports/');
 
 const ReportsActions = require('../actions/ReportsActions');
 
