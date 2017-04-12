@@ -179,7 +179,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
         if (!id) throw new Error('sessionIDNotFound');
         const devSessions = response.find(x => x.deviceKey === device);
 
-        return dispatch(QueryBackend.fetchDeviceSession({ id, deviceKey: device }))
+        return dispatch(fetchDeviceSession({ id, deviceKey: device }))
         .then(session => ({ 
           ...session,
           active: [device, id],
