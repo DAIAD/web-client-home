@@ -58,8 +58,22 @@
     "passwordMailSent": "An email has been sent to the address you provided. Please check your inbox"
   },
   "forms": {
-    "submit": "Update",
-    "cancel": "Cancel"
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "leave": "Leave",
+    "join": "Join",
+    "cancel": "Cancel",
+    "add": "Add",
+    "set": "Set",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "noname": "No name",
+    "select": "Select",
+    "confirm": "Are you sure you want to {action} {item}?",
+    "previous": "Previous",
+    "next": "Next"
   },
   "loginForm": {
     "login": {
@@ -72,10 +86,11 @@
       "reset-submit": "Submit"
     },
     "placeholder": {
-      "username":"Username",
-      "password":"Password",
+      "username": "Username",
+      "password": "Password",
       "password-confirm": "Confirm password"
-    }
+    },
+    "forgotPassword": "Forgot your password?"
   },
   "section": {
     "dashboard": "Dashboard",
@@ -99,7 +114,7 @@
     "commonsManage": {
       "edit": "Manage",
       "new": "Create new",
-      "join": "Join"
+      "join": "Join" 
     },
     "membersManage": {
       "edit": "Manage",
@@ -109,15 +124,67 @@
     "reset": "Password reset"
   },
   "common": {
-    "volume": "volume",
-    "difference": "volume",
-    "energy": "energy",
-    "temperature": "temperature",
-    "duration": "duration"
+    "sortby": "Sort by",
+    "found": "Found",
+    "chart": "Chart",
+    "user": "User",
+    "date": "Date",
+    "time": "Time",
+    "download": "Download"
   },
   "dashboard": {
     "hello": "Welcome {name}!",
-    "add": "Add widget"
+    "add": "Add widget",
+    "add-widget-placeholder": "Enter title...",
+    "save": "Save changes?"
+  },
+  "widget": {
+    "shower-average": "Average shower",
+    "explore": "See more",
+    "explore-showers": "Explore all showers",
+    "explore-last-shower": "See details",
+    "explore-swm": "Explore consumption",
+    "explore-comparisons": "Explore shower comparisons",
+    "titles": {
+      "totalVolumeStatAmphiro": "Shower Volume (metric)",
+      "totalVolumeChartAmphiro": "Shower Volume (progress)",
+      "totalVolumeStatSWM": "Water consumption (metric)",
+      "totalVolumeChartSWM": "Water consumption (progress)",
+      "totalEnergyStat": "Shower Energy (metric)",
+      "totalEnergyChart": "Shower Energy (progress)",
+      "totalTemperatureStat": "Shower Temperature (metric)",
+      "totalTemperatureChart": "Shower Temperature (progress)",
+      "last": "Last shower",
+      "efficiencyEnergy": "Energy efficiency",
+      "ranking": "Shower ranking",
+      "breakdown": "Water breakdown",
+      "forecast": "Forecast - this year",
+      "pricing": "Pricing - this month",
+      "comparison": "Comparison - last month",
+      "budget": "Monthly budget",
+      "wateriqStat": "Water IQ - last month",
+      "wateriqChart": "Water IQ Comparison - last month"
+    },
+    "descriptions": {
+      "totalVolumeStatAmphiro": "A stat widget displaying the total consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
+      "totalVolumeChartAmphiro": "A chart widget presenting the consumption for your last 10 showers for all installed devices. You can later change this to show the last 20 or 50 showers.",
+      "totalVolumeStatSWM": "A widget displaying your households total water consumption for the last month. You can later change it to daily, weekly or yearly consumption.",
+      "totalVolumeChartSWM": "A chart widget displaying your households total water consumption progress for the last month. You can later change it to daily, weekly or yearly consumption.",
+      "totalEnergyStat": "A stat widget displaying the total energy consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.", 
+      "totalEnergyChart": "A chart widget displaying the total energy progress for your last 10 showers. You can later change this to show the last 20 or 50 showers.", 
+      "totalTemperatureStat": "A widget displaying the average temperature for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
+      "totalTemperatureChart": "A widget displaying the average temperature variation for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
+      "last": "A widget displaying the last shower recorded for all your devices.",
+      "efficiencyEnergy": "A widget displaying your shower energy score for the last 10 showers. You can later change this to see the energy efficiency for the last 20 or 50 showers.",
+      "ranking": "A widget displaying the household members ranking based on average shower water consumption.",
+      "breakdown": "A chart widget displaying your computed water use per household appliance.", 
+      "forecast": "A chart widget depicting our estimations for your water use for the next month based on your use so far! You can later change this to see estimations for the next day, week, or year.",
+      "pricing": "A chart widget showing your monthly consumption within the price ranges",
+      "comparison": "A widget showing your consumption in comparison to others, like your neighbors or your city average for the previous month.",
+      "budget": "A widget showing your consumption based on your daily budget.",
+      "wateriqStat": "A widget showing your Water IQ for the previous month.",
+      "wateriqChart": "A chart widget showing your Water IQ for the previous month against your city, neighbors and similar users."
+    }
   },
   "shower": {
     "details": "Shower details"
@@ -126,13 +193,23 @@
     "showers": "Showers",
     "duration": "Duration",
     "volume": "Volume",
+    "totalVolume": "Total",
     "temperature": "Temperature",
     "energy": "Energy",
+    "forecasted": "Forecasted",
     "count": "Total Showers",
     "device": "Device",
+    "id": "ID",
+    "real": "Real",
+    "statistics": "Stats",
     "wateriq": "Water IQ",
     "cost": "Cost",
+    "breakdown": "Water breakdown",
     "forecast": "Forecast",
+    "breakdownUse": "Use",
+    "member-filter": "Member",
+    "compare-against": "Compare against",
+    "in-detail": "In detail",
     "volumeDetails": "Total water used for this shower",
     "temperatureDetails": "Average water temperature",
     "energyDetails": "Estimated energy used for hot water",
@@ -142,6 +219,7 @@
     "wateriqDetails": "Water IQ is a...",
     "costDetails": "Cost is calculated...",
     "limitedData": "Oops, limited data...",
+    "not-a-shower": "Not a shower!",
     "inPicturesHover": "Approximately {number} times the {metric} of a {scale}!",
     "bottle": "bottle",
     "bucket": "bucket",
@@ -170,7 +248,13 @@
     "user": "You",
     "last": "{comparison}",
     "common": "{comparison}",
-    "member": "{comparison}"
+    "member": "{comparison}",
+    "better": "{percent}% better than last {period}",
+    "worse": "{percent}% worse than last {period}",
+    "no-data": "No comparison data",
+    "wateriq-best": "{month} is the best ({value}) of the last six months",
+    "wateriq-worst": "{month} is the worst ({value}) of the last six months",
+    "wateriq-no-data": "Water IQ not computed yet"
   },
   "breakdown": {
     "shower": "Shower",
@@ -189,13 +273,14 @@
     "locale": "Language",
     "username": "Username",
     "email": "Email",
+    "fullname": "Full name",
     "firstname": "First name",
     "lastname": "Last name",
     "address": "Address",
     "zip": "Postal code",
     "country": "Country",
     "timezone": "Timezone",
-    "submit": "Update",
+    "changePassword": "Change password",
     "unit": {
       "label": "System unit",
       "default": "Select system unit",
@@ -207,12 +292,17 @@
     "name": "Name",
     "age": "Age",
     "gender": "Gender",
+    "placeholder-name": "Member name",
+    "placeholder-age": "Member age",
+    "placeholder-gender": "Member gender",
     "MALE": "Male",
     "FEMALE": "Female"
   },
   "devices": {
-    "amphiro": "Amphiro",
+    "amphiro": "Shower device",
+    "amphiros": "Shower devices",
     "meter": "Meter",
+    "meters": "Meters",
     "properties": "Properties",
     "name": {
       "label": "Device name"
@@ -259,9 +349,32 @@
       "help": "..."
     }
   },
+  "commonsManage": {
+    "name": "Name",
+    "members": "Members",
+    "description": "Description",
+    "placeholder-name": "Community name",
+    "placeholder-description": "Community description",
+    "setFavorite": "Set favorite community",
+    "resetFavorite": "Reset favorite community",
+    "empty": "No communities found"
+  },
   "commons": {
     "list": "My commons",
     "details": "Details",
-    "members": "Members"
+    "members": "Members",
+    "created": "Created",
+    "updated": "Last updated",
+    "empty": "No communities joined yet",
+    "noCommons": "Not a member of any commmunities yet",
+    "myCommons": "My Communities",
+    "ranking": "ranking",
+    "date-joined": "Date joined",
+    "placeholder-search-members": "Search members...",
+    "select-info": "Click on up to 3 members to compare against",
+    "memberSince": "Member since"
+  },
+  "reports": {
+    "title": "Monthly reports"
   }
 }

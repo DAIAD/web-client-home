@@ -147,7 +147,7 @@ function Device(props) {
           <bs.ButtonInput 
             style={{ marginTop: 20, float: 'right' }} 
             type="submit" 
-            value={_t('forms.submit')} 
+            value={_t('forms.update')} 
           />
           : <div />
       }

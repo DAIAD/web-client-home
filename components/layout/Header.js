@@ -16,7 +16,7 @@ function MainLogo() {
     <Link to="/" className="logo" activeClassName="selected">
       <img 
         src={`${IMAGES}/daiad-logo-navy.svg`} 
-        alt="DAIAD Logo"
+        alt="DAIAD"
         title="DAIAD"
       />
     </Link>
@@ -29,7 +29,7 @@ function UserInfo(props) {
   const { _t } = props;
   return (
     <div className="user-menu" >
-      <div title={_t({ id: 'section.profile' })}>
+      <div title={_t('section.profile')}>
         <Link to="settings/profile">
           <span><b>{props.firstname}</b></span>
           { 

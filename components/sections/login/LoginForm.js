@@ -26,7 +26,7 @@ const Login = React.createClass({
             name="username" 
             type="text" 
             onChange={(e) => { this.username = e.target.value; }}
-            placeholder={_t('loginForm.placehoder.username')} 
+            placeholder={_t('loginForm.placeholder.username')} 
             className="form-control" 
           />
         </div>
@@ -36,7 +36,7 @@ const Login = React.createClass({
             name="password" 
             type="password" 
             onChange={(e) => { this.password = e.target.value; }}
-            placeholder={_t('loginForm.placehoder.password')} 
+            placeholder={_t('loginForm.placeholder.password')} 
             className="form-control" 
           />
         </div>
@@ -47,7 +47,7 @@ const Login = React.createClass({
           <FormattedMessage id="loginForm.button.signin" />
         </button> 
         <div className="link-reset"> 
-          <a onClick={goToResetPassword}>Forgot your password?</a>
+          <a onClick={goToResetPassword}><FormattedMessage id="loginForm.forgotPassword" /></a>
         </div>
       </form>
     );

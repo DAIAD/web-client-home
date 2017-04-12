@@ -13,7 +13,7 @@ const { getDeviceCount, getMeterCount } = require('../utils/device');
 const prepareWidget = require('../utils/widgets');
 const { filterObj, formatMessage } = require('../utils/general');
 
-const { WIDGET_TYPES } = require('../constants/HomeConstants');
+const { DEVICE_TYPES, WIDGET_TYPES } = require('../constants/HomeConstants');
 
 
 function mapStateToProps(state) {
@@ -40,14 +40,8 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  let deviceTypes = [{
-    id: 'AMPHIRO', 
-    title: 'Shower',
-  }, {
-    id: 'METER', 
-    title: 'Smart Water Meter',
-  }];
-  
+  let deviceTypes = DEVICE_TYPES;  
+
   const meterCount = getMeterCount(stateProps.devices);
   const deviceCount = getDeviceCount(stateProps.devices);
 

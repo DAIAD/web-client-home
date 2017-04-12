@@ -41,7 +41,7 @@ function ChangePassword(props) {
       >
         <bs.Modal.Header closeButton>
           <bs.Modal.Title>
-           Change Password
+            <FormattedMessage id="profile.changePassword" />
           </bs.Modal.Title>
         </bs.Modal.Header>
         <bs.Modal.Body>
@@ -73,8 +73,17 @@ function ChangePassword(props) {
 
         </bs.Modal.Body>
         <bs.Modal.Footer>
-          <bs.Button style={{ marginRight: 20 }} onClick={resetChangePassword}>Cancel</bs.Button>
-          <bs.Button type="submit">Update</bs.Button>
+          <bs.Button 
+            style={{ marginRight: 20 }} 
+            onClick={resetChangePassword}
+          >
+          <FormattedMessage id="forms.cancel" />
+        </bs.Button>
+        <bs.Button 
+          type="submit"
+        >
+        <FormattedMessage id="forms.update" />
+      </bs.Button>
         </bs.Modal.Footer>
       </form>
     </bs.Modal> 
@@ -147,7 +156,7 @@ function ProfileForm(props) {
       />
 
       <bs.Button onClick={setChangePassword}>
-        Change password
+        <FormattedMessage id="profile.changePassword" />
       </bs.Button>
       <br />
       <br />
@@ -297,7 +306,7 @@ function ProfileForm(props) {
       <div className="pull-left">
         <bs.ButtonInput 
           type="submit" 
-          value={_t('forms.submit')} 
+          value={_t('forms.update')} 
         />
       </div>
 

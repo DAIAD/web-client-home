@@ -68,7 +68,7 @@ const PasswordResetForm = React.createClass({
           <FormattedMessage id="loginForm.button.reset-submit" />
         </button> 
         <div className="link-reset"> 
-          <a onClick={goToLogin}>Back</a>
+          <a onClick={goToLogin}><FormattedMessage id="forms.back" /></a>
         </div>
       </form>
     );

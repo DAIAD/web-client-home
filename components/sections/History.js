@@ -1,5 +1,5 @@
 const React = require('react');
-const { FormattedDate } = require('react-intl');
+const { FormattedDate, FormattedMessage } = require('react-intl');
 const bs = require('react-bootstrap');
 const CheckboxGroup = require('react-checkbox-group');
 
@@ -19,12 +19,12 @@ const timeUtil = require('../../utils/time');
 const { IMAGES } = require('../../constants/HomeConstants');
 
 function SessionsList(props) {
-  const { sortOptions, sortFilter, sortOrder, handleSortSelect, activeDeviceType, 
+  const { _t, sortOptions, sortFilter, sortOrder, handleSortSelect, activeDeviceType, 
     csvData, time, sessionFields, sessions, setActiveSession, setSortOrder, setSortFilter, onSessionClick } = props;
   return (
     <div className="history-list-area">
       <div className="history-list-header">
-        <h3 style={{ float: 'left' }}>In detail</h3>
+        <h3 style={{ float: 'left' }}><FormattedMessage id="history.in-detail" /></h3>
 
         { 
           csvData ?  
@@ -34,21 +34,21 @@ function SessionsList(props) {
               href={`data:application/csv;charset=utf-8, ${csvData}`}
               download="Data.csv"
             >
-              Download
+              <FormattedMessage id="common.download" />
             </a>
            :
            <span />
         }
         <div style={{ float: 'right' }}> 
-          <h5 style={{ float: 'left', marginTop: 5 }}>Sort by:</h5>
+          <h5 style={{ float: 'left', marginTop: 5 }}><FormattedMessage id="common.sortby" /></h5>
           <div 
             className="sort-options" 
             style={{ float: 'right', marginLeft: 10, textAlign: 'right' }}
           >
             <bs.DropdownButton
               title={sortOptions.find(sort => sort.id === sortFilter) ? 
-                sortOptions.find(sort => sort.id === sortFilter).title
-                : 'Volume'}
+                _t(sortOptions.find(sort => sort.id === sortFilter).title)
+                : _t('history.volume')}
               id="sort-by"
               defaultValue={sortFilter}
               onSelect={handleSortSelect}
@@ -60,7 +60,7 @@ function SessionsList(props) {
                     eventKey={sort.id} 
                     value={sort.id}
                   >
-                    {sort.title}
+                    {_t(sort.title)}
                   </bs.MenuItem>
                 )
               } 
@@ -178,7 +178,7 @@ const History = React.createClass({
                     key={mode.id} 
                     eventKey={mode.id} 
                     image={mode.image ? `${IMAGES}/${mode.image}` : null}
-                    title={mode.title} 
+                    title={_t(mode.title)} 
                   /> 
                 ))
               }
@@ -194,7 +194,7 @@ const History = React.createClass({
                   <Tab 
                     key={metric.id} 
                     eventKey={metric.id} 
-                    title={metric.title} 
+                    title={_t(metric.title)} 
                   /> 
                 ))
               }
@@ -205,7 +205,7 @@ const History = React.createClass({
             <br />
             { this.props.memberFilters && this.props.memberFilters.length > 0 ? 
               <div>
-                <h5 style={{ marginLeft: 20 }}>Member</h5>
+                <h5 style={{ marginLeft: 20 }}><FormattedMessage id="history.member-filter" /></h5>
                 <Tabs
                   activeKey={this.props.memberFilter}
                   onSelect={val => this.props.setQueryAndFetch({ memberFilter: val })}
@@ -237,7 +237,7 @@ const History = React.createClass({
                    <Tab 
                      key={devType.id} 
                      eventKey={devType.id} 
-                     title={devType.title} 
+                     title={_t(devType.title)} 
                    /> 
                  ))
                 }
@@ -280,7 +280,7 @@ const History = React.createClass({
 
             { 
               this.props.compareAgainst && this.props.compareAgainst.length > 0 ?
-                <h5 style={{ marginLeft: 20 }}>Compare against</h5>
+                <h5 style={{ marginLeft: 20 }}><FormattedMessage id="history.compare-against" /></h5>
                 :
                 <span />
             }
@@ -362,6 +362,7 @@ const History = React.createClass({
             <br />
 
             <SessionsList 
+              _t={_t}
               handleSortSelect={this.handleSortSelect}
               activeDeviceType={activeDeviceType}
               {...this.props} 

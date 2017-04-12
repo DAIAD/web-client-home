@@ -120,44 +120,44 @@ module.exports = {
   DEVICE_TYPES: [
     {
       id: 'METER', 
-      title: 'Water meter', 
+      title: 'devices.meter', 
     }, 
     {
       id: 'AMPHIRO', 
-      title: 'Shower devices', 
+      title: 'devices.amphiros', 
     }
   ],
   MODES: {
     AMPHIRO: [
       { 
         id: 'stats', 
-        title: 'Statistics',
+        title: 'history.stats',
       },
     ],
     METER: [
       { 
         id: 'stats', 
-        title: 'Volume',
+        title: 'history.volume',
       },
       {
         id: 'forecasting',
-        title: 'Forecasting',
+        title: 'history.forecast',
       },
       {
         id: 'pricing',
-        title: 'Pricing',
+        title: 'history.cost',
         periods: ['month'],
       },
       {
         id: 'breakdown',
-        title: 'Breakdown',
+        title: 'history.breakdown',
         periods: ['week', 'month', 'year'],
         comparisons: ['last'],
         sort: ['volume'],
       },
       {
         id: 'wateriq',
-        title: 'Water IQ',
+        title: 'history.wateriq',
         periods: ['year'],
         comparisons: ['all', 'nearest', 'similar'],
       },
@@ -295,29 +295,29 @@ module.exports = {
     METER: [
       {
         id: 'volume', 
-        title: 'Volume',
+        title: 'history.volume',
       },
       {
         id: 'total',
-        title: 'Total',
+        title: 'history.total',
       },
     ],
     AMPHIRO: [
       {
         id: 'volume', 
-        title: 'Volume',
+        title: 'history.volume',
       },
       {
         id: 'energy', 
-        title: 'Energy',
+        title: 'history.energy',
       },
       {
         id: 'duration', 
-        title: 'Duration',
+        title: 'history.duration',
       },
       {
         id: 'temperature', 
-        title: 'Temperature',
+        title: 'history.temperature',
       },
     ],
   },
@@ -325,87 +325,83 @@ module.exports = {
     METER: [
       {
         id: 'timestamp', 
-        title: 'Time',
+        title: 'common.time',
       }, 
       {
         id: 'volume', 
-        title: 'Volume',
+        title: 'history.volume',
       },
     ],
     AMPHIRO: [
       {
         id: 'id', 
-        title: 'ID',
+        title: 'history.id',
       }, 
       {
         id: 'timestamp', 
-        title: 'Time',
+        title: 'common.time',
       }, 
       {
         id: 'volume', 
-        title: 'Volume',
+        title: 'history.volume',
       }, 
       {
         id: 'devName', 
-        title: 'Device',
+        title: 'history.device',
       }, 
       {
         id: 'energy', 
-        title: 'Energy',
+        title: 'history.energy',
       }, 
       {
         id: 'temperature', 
-        title: 'Temperature',
+        title: 'history.temperature',
       }, 
       {
         id: 'duration', 
-        title: 'Duration',
+        title: 'history.duration',
       },
     ],
   },
   COMMONS_USER_SORT: [
     {
       id: 'RANKING',
-      title: 'Ranking',
+      title: 'commons.ranking',
     },
     {
       id: 'FIRSTNAME',
-      title: 'First name',
+      title: 'profile.firstname',
     },
     {
       id: 'LASTNAME',
-      title: 'Last name',
+      title: 'profile.lastname',
     },
     {
       id: 'DATE_JOINED',
-      title: 'Date joined',
+      title: 'commons.date-joined',
     },
   ],
   STATBOX_DISPLAYS: [
     {
       id: 'stat', 
-      title: 'Stat',
+      title: 'widget.display-stat',
     }, 
     {
       id: 'chart', 
-      title: 'Chart',
+      title: 'widget.display-chart',
     },
   ],
   WIDGET_TYPES: {
     AMPHIRO: [
       {
-        id: 'totalVolumeStat', 
-        title: 'Shower Volume Stat', 
-        description: 'A stat widget displaying the total consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
+        id: 'totalVolumeStatAmphiro', 
         type: 'total', 
         metric: 'volume', 
         display: 'stat',
         period: 'ten',
       },
       {
-        id: 'totalVolumeChart', 
-        title: 'Shower Volume Chart', 
-        description: 'A chart widget presenting the consumption for your last 10 showers for all installed devices. You can later change this to show the last 20 or 50 showers.', 
+        id: 'totalVolumeChartAmphiro', 
         type: 'total', 
         metric: 'volume', 
         display: 'chart',
@@ -413,8 +409,6 @@ module.exports = {
       },
       {
         id: 'totalEnergyStat', 
-        title: 'Shower Energy Stat', 
-        description: 'A stat widget displaying the total energy consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
         type: 'total', 
         metric: 'energy', 
         display: 'stat',
@@ -422,8 +416,6 @@ module.exports = {
       },
       {
         id: 'totalEnergyChart', 
-        title: 'Shower Energy Chart', 
-        description: 'A chart widget displaying the total energy progress for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
         type: 'total', 
         metric: 'energy', 
         display: 'chart',
@@ -431,8 +423,6 @@ module.exports = {
       },
       {
         id: 'totalTemperatureStat', 
-        title: 'Shower Temperature Stat', 
-        description: 'A widget displaying the average temperature for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
         type: 'total', 
         metric: 'temperature', 
         display: 'stat',
@@ -440,8 +430,6 @@ module.exports = {
       }, 
       {
         id: 'totalTemperatureChart', 
-        title: 'Shower Temperature Chart', 
-        description: 'A widget displaying the average temperature variation for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
         type: 'total', 
         metric: 'temperature', 
         display: 'chart',
@@ -449,8 +437,6 @@ module.exports = {
       },
       {
         id: 'last', 
-        title: 'Last shower', 
-        description: 'A widget displaying the last shower recorded for all your devices.', 
         type: 'last', 
         metric: 'volume', 
         display: 'chart',
@@ -458,8 +444,6 @@ module.exports = {
       },
       {
         id: 'efficiencyEnergy', 
-        title: 'Energy efficiency', 
-        description: 'A widget displaying your shower energy score for the last 10 showers. You can later change this to see the energy efficiency for the last 20 or 50 showers.', 
         type: 'efficiency', 
         metric: 'energy', 
         display: 'stat',
@@ -467,8 +451,6 @@ module.exports = {
       },
       {
         id: 'ranking', 
-        title: 'Member ranking', 
-        description: 'A widget displaying the household members ranking based on average shower water consumption.', 
         type: 'ranking', 
         metric: 'volume', 
         display: 'chart',
@@ -477,18 +459,14 @@ module.exports = {
     ],
     METER: [
       {
-        id: 'totalDifferenceStat', 
-        title: 'Total Volume Stat', 
-        description: 'A widget displaying your household\'s total water consumption for the last month. You can later change it to daily, weekly or yearly consumption.',
+        id: 'totalVolumeStatSWM', 
         type: 'total', 
         metric: 'volume', 
         display: 'stat',
         period: 'month',
       }, 
       {
-        id: 'totalDifferenceChart', 
-        title: 'Total Volume Chart', 
-        description: 'A chart widget displaying your household\'s total water consumption progress for the last month. You can later change it to daily, weekly or yearly consumption.', 
+        id: 'totalVolumeChartSWM', 
         type: 'total', 
         metric: 'volume', 
         display: 'chart',
@@ -496,8 +474,6 @@ module.exports = {
       }, 
       {
         id: 'breakdown', 
-        title: 'Water breakdown', 
-        description: 'A chart widget displaying your computed water use per household appliance.', 
         type: 'breakdown', 
         metric: 'volume', 
         display: 'chart',
@@ -505,17 +481,13 @@ module.exports = {
       },
       {
         id: 'forecast', 
-        title: 'Forecast', 
-        description: 'A chart widget depicting our estimations for your water use for the next month based on your use so far! You can later change this to see estimations for the next day, week, or year.', 
         type: 'forecast', 
         metric: 'volume', 
         display: 'chart',
-        period: 'month',
+        period: 'year',
       },
       {
         id: 'pricing', 
-        title: 'Pricing', 
-        description: 'A chart widget showing your monthly consumption within the price ranges', 
         type: 'pricing', 
         metric: 'volume', 
         display: 'chart',
@@ -523,8 +495,6 @@ module.exports = {
       },
       {
         id: 'comparison', 
-        title: 'Comparison', 
-        description: 'A widget showing your consumption in comparison to others, like your neighbors or your city average for the previous month.', 
         type: 'comparison', 
         metric: 'volume', 
         display: 'chart',
@@ -533,8 +503,6 @@ module.exports = {
       },
       {
         id: 'budget', 
-        title: 'Monthly Budget', 
-        description: 'A widget showing your consumption based on your daily budget.', 
         type: 'budget', 
         metric: 'volume', 
         display: 'chart', 
@@ -542,8 +510,6 @@ module.exports = {
       },
       {
         id: 'wateriqStat', 
-        title: 'Water IQ Stat', 
-        description: 'A widget showing your Water IQ for the previous month.', 
         type: 'wateriq', 
         metric: 'volume', 
         display: 'stat',
@@ -552,8 +518,6 @@ module.exports = {
       },
       {
         id: 'wateriqChart', 
-        title: 'Water IQ Comparison',
-        description: 'A chart widget showing your Water IQ for the previous month against your city, neighbors and similar users.', 
         type: 'wateriq', 
         metric: 'volume', 
         display: 'chart',
@@ -568,7 +532,6 @@ module.exports = {
     {
       id: 'heating-system',
       type: 'select',
-      //options: ['electricity', 'oil', 'gas'],
       options: [0, 1, 2],
     },
     {

@@ -54,7 +54,7 @@ function EditMembers(props) {
                       alt="member" 
                     />
                     }
-                    {member.name || 'No name'}
+                    {member.name || _t('forms.noname')}
                   </h3> 
                 }
               >
@@ -80,7 +80,7 @@ function EditMembers(props) {
                     <bs.ButtonInput 
                       type="submit" 
                       style={{ float: 'right', marginRight: 10 }} 
-                      value={_t('forms.submit')} 
+                      value={_t('forms.update')} 
                     />
                     {
                       member.index !== 0 ?
@@ -91,7 +91,7 @@ function EditMembers(props) {
                             confirmDeleteMember(memberForm);
                           }}
                         >
-                          Delete
+                          <FormattedMessage id="forms.delete" />
                         </bs.Button>
                         :
                           <span />

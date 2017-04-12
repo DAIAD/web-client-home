@@ -55,7 +55,7 @@ function MemberFormFields(props) {
       <bs.Input 
         type="text" 
         label={_t('member.name')}
-        placeholder="Member name"
+        placeholder={_t('member.placeholder-name')}
         onChange={(e) => { updateMemberForm({ name: e.target.value }); }}
         value={member.name}
       />
@@ -63,7 +63,7 @@ function MemberFormFields(props) {
       <bs.Input 
         type="number"
         min="0"
-        placeholder="Member age"
+        placeholder={_t('member.placeholder-age')}
         label={_t('member.age')}
         onChange={(e) => { updateMemberForm({ age: parseInt(e.target.value, 0) }); }}
         value={member.age}
@@ -83,7 +83,7 @@ function MemberFormFields(props) {
           title={member.gender ? 
             _t(`member.${member.gender}`) 
             : 
-            'Select gender'}
+            _t('member.placeholder-gender')}
           id="gender-switcher"
           onSelect={(e, val) => { 
             updateMemberForm({ gender: val });

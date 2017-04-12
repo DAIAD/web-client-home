@@ -20,17 +20,17 @@ const amphiroLastShower = function (widget, devices, intl) {
 
   const lastSession = getShowerById(data.find(d => d.deviceKey === device), showerId);
   const measurements = lastSession ? lastSession.measurements : [];
-  const chartCategories = measurements.map(m => moment(m.timestamp).format('hh:mm:ss'));
+  const chartCategories = Array.isArray(measurements) ? measurements.map(m => moment(m.timestamp).format('hh:mm:ss')) : [];
   const chartData = [{
     name: getDeviceNameByKey(devices, device) || '', 
-    data: measurements.map(m => m ? m[metric] : null),
+    data: Array.isArray(measurements) ? measurements.map(m => m ? m[metric] : null) : [],
   }];
   const mu = getMetricMu(metric);
 
   return {
     ...widget,
     icon: 'shower.svg',
-    more: 'See more details',
+    more: intl.formatMessage({ id: 'widget.explore-last-shower' }),
     chartCategories,
     timeDisplay: intl.formatRelative(timestamp),
     chartData,
@@ -73,7 +73,7 @@ const amphiroMembersRanking = function (widget, devices, intl) {
   
   const chartCategories = membersData.map(m => m.name); 
   const chartData = [{
-    name: 'Average shower',
+    name: intl.formatMessage({ id: 'widget.shower-average' }),
     data: membersData.map(x => x.average),
   }];
   const mu = getMetricMu(metric);
@@ -83,7 +83,7 @@ const amphiroMembersRanking = function (widget, devices, intl) {
   return {
     ...widget,
     icon: 'goals.svg',
-    more: 'See shower comparisons',
+    more: intl.formatMessage({ id: 'widget.explore-comparisons' }),
     periods,
     chartCategories,
     chartData,
@@ -154,7 +154,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   return {
     ...widget,
     icon: `${metric}.svg`,
-    more: `Explore ${deviceType === 'AMPHIRO' ? 'all showers' : 'SWM consumption'}`,
+    more: deviceType === 'AMPHIRO' ? intl.formatMessage({ id: 'widget.explore-showers' }) : intl.formatMessage({ id: 'widget.explore-swm' }),
     time,
     periods,
     highlight: {
@@ -165,11 +165,16 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     info: [
       {
         icon: better ? 'arrow-down green' : 'arrow-up red',
-        text: `${comparePercentage}% ${str} than previous ${period}!`,
+        text: intl.formatMessage({ 
+          id: `comparisons.${str}`, 
+        }, {
+          percent: comparePercentage, 
+          period, 
+        }),
         display: hasComparison,
       },
       {
-        text: 'No comparison data!',
+        text: intl.formatMessage({ id: 'comparisons.no-data' }),
         display: !hasComparison,
       }
     ].filter(i => i.display),
@@ -216,11 +221,16 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
     info: [
       {
         icon: better ? 'arrow-down green' : 'arrow-up red',
-        text: `${comparePercentage}% ${str} than previous ${period}!`,
+        text: intl.formatMessage({ 
+          id: `comparisons.${str}`,
+        }, { 
+          percent: comparePercentage, 
+          period, 
+        }),
         display: hasComparison,
       },
       {
-        text: 'No comparison data!',
+        text: intl.formatMessage({ id: 'comparisons.no-data' }),
         display: !hasComparison,
       }
     ].filter(i => i.display),
@@ -247,7 +257,7 @@ const meterForecast = function (widget, devices, intl) {
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
   
   const chartData = data.map(devData => ({ 
-      name: 'SWM', 
+      name: intl.formatMessage({ id: 'devices.meter' }), 
       data: getChartMeterData(devData.sessions, 
                               xCategories,
                               time,
@@ -256,7 +266,7 @@ const meterForecast = function (widget, devices, intl) {
     }));
 
   const forecastChartData = Array.isArray(forecastData) ? [{
-    name: 'Forecast',
+    name: intl.formatMessage({ id: 'history.forecast' }),
     data: getChartMeterData(forecastData,
                             xCategories, 
                             time,
@@ -298,12 +308,11 @@ const meterPricing = function (widget, devices, intl) {
   const priceBrackets = getChartPriceBrackets(xCategories, brackets, intl);
 
   const chartData = data.map(devData => ({ 
-      name: 'Consumption', 
+      name: intl.formatMessage({ id: `history.${metric}` }), 
       data: getChartMeterData(devData.sessions, 
                               xCategories,
                               time,
-                              metric,
-                              true // augmental
+                              metric
                              ),
     }));
 
@@ -350,7 +359,7 @@ const meterBreakdown = function (widget, devices, intl) {
   const chartColorFormatter = colorFormatterSingle(chartColors);
   const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.id}` }).split(' ').join('\n'));
   const chartData = [{
-    name: 'Consumption',
+    name: intl.formatMessage({ id: `history.${metric}` }),
     data: sessions.map(x => x[metric]),
   }];
   
@@ -384,7 +393,9 @@ const meterComparison = function (widget, devices, intl) {
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
   const chartColorFormatter = colorFormatterSingle(chartColors);
 
-  const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison.id}` })) : []; 
+  const chartCategories = Array.isArray(comparisons) ? 
+    comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison.id}` })) 
+    : []; 
 
   const chartData = [{ 
     name: 'Comparison', 
@@ -438,7 +449,7 @@ const waterIQ = function (widget, devices, intl) {
   const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison}` })) : []; 
 
   const chartData = [{ 
-    name: 'Water IQ', 
+    name: intl.formatMessage({ id: 'history.wateriq' }), 
     data: Array.isArray(comparisons) ? 
       comparisons.map(comparison => current ? waterIQToNumeral(current[comparison]) : 0) 
       : [],
@@ -452,16 +463,26 @@ const waterIQ = function (widget, devices, intl) {
     info: [
       {
         icon: 'arrow-up green',
-        text: `${intl.formatDate(best.timestamp, { month: 'long' })} is the best (${best.user}) of the last six months!`,
+        text: intl.formatMessage({
+          id: 'comparisons.wateriq-best',
+        }, {
+          value: best.user,
+          month: intl.formatDate(best.timestamp, { month: 'long' }),
+        }),
         display: hasWaterIQ,
       },
       {
         icon: 'arrow-down red',
-        text: `${intl.formatDate(worst.timestamp, { month: 'long' })} is the worst (${worst.user}) of the last six months!`,
+        text: intl.formatMessage({
+          id: 'comparisons.wateriq-worst',
+        }, {
+          value: worst.user,
+          month: intl.formatDate(worst.timestamp, { month: 'long' }),
+        }),
         display: hasWaterIQ,
       },
       {
-        text: 'Water IQ data not computed yet!',
+        text: intl.formatMessage({ id: 'comparisons.wateriq-no-data' }),
         display: !hasWaterIQ,
       }
     ].filter(i => i.display),

@@ -38,7 +38,7 @@ const Reports = React.createClass({
             
             <div style={{ margin: '40px 30px', textAlign: 'center' }}>
               <h3>
-                Monthly reports
+                <FormattedMessage id="reports.title" />
               </h3>
               <TimeNavigator 
                 handlePrevious={this.handlePrevious} 

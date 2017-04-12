@@ -18,7 +18,7 @@ function Picture(props) {
       title={_t('history.inPicturesHover',
         {
           number: items, 
-          metric: _t(`common.${metric}`),
+          metric: _t(`history.${metric}`).toLowerCase(),
           scale: _t(`history.${display}`),
         })
       }
@@ -190,7 +190,7 @@ function SessionInfo(props) {
                     .then(() => disableEditShower())
                     }
                   >
-                    Set
+                   <FormattedMessage id="forms.set" />
                   </a>
                 </div>
                 :
@@ -280,7 +280,7 @@ function Session(props) {
     arrowClass = 'fa fa-arrow-up red';
   }
   const percentDifference = data.percentDiff != null ? 
-    ` ${Math.abs(data.percentDiff)}%` 
+    Math.abs(data.percentDiff) 
     : '';
     
   if (devType === 'AMPHIRO' && (history === true || !measurements || (Array.isArray(measurements) && measurements.length === 0))) {
@@ -291,13 +291,15 @@ function Session(props) {
             <h3><FormattedMessage id="history.limitedData" /></h3>
             <h5>
               <i className={arrowClass} />
-              <b>{percentDifference}</b>
               <span>
                 {
                   better != null ? 
-                    `  ${betterStr} than last shower`
+                    _t(`comparisons.${betterStr}`, {
+                      percent: percentDifference,
+                      period: _t('section.shower').toLowerCase(), 
+                    }) 
                     : 
-                   'No comparison data'
+                   _t('comparisons.no-data')
                 }
               </span>
             </h5>
@@ -379,12 +381,14 @@ function Session(props) {
             <br />
             <div>
               <i className={arrowClass} />
-              <b>{percentDifference}</b>
               {
                 better != null ? 
-                  `  ${betterStr} than last measurement!` 
+                  _t(`comparisons.${betterStr}`, {
+                      percent: percentDifference,
+                      period, 
+                    })
                   : 
-                    'No comparison data'
+                   _t('comparisons.no-data')
               }
             </div>
           </h4>
@@ -438,7 +442,7 @@ const SessionModal = React.createClass({
                 <span>
                   { 
                     data.ignored ? 
-                      <span>Not a shower!</span>
+                      <span><FormattedMessage id="history.not-a-shower" /></span>
                       :
                         <div>
                           <FormattedMessage id="section.shower" />
@@ -457,8 +461,8 @@ const SessionModal = React.createClass({
           </div>
         </bs.Modal.Body>
         <bs.Modal.Footer>
-          { disabledPrevious ? <span /> : <a className="pull-left" onClick={this.onPrevious}>Previous</a> }
-          { disabledNext ? <span /> : <a className="pull-right" onClick={this.onNext}>Next</a> }
+          { disabledPrevious ? <span /> : <a className="pull-left" onClick={this.onPrevious}><FormattedMessage id="forms.previous" /></a> }
+          { disabledNext ? <span /> : <a className="pull-right" onClick={this.onNext}><FormattedMessage id="forms.next" /></a> }
         </bs.Modal.Footer>
       </bs.Modal> 
     );

@@ -9,7 +9,7 @@ const CreateCommons = React.createClass({
     this.props.actions.clearCommonForm();
   },
   render: function () {
-    const { commonForm, actions } = this.props;
+    const { _t, commonForm, actions } = this.props;
     const { confirmCreateCommon, updateCommonForm } = actions;
     return (
       <form 
@@ -21,6 +21,7 @@ const CreateCommons = React.createClass({
         }}
       >
         <CommonFormFields
+          _t={_t}
           values={commonForm}
           onChange={updateCommonForm}
           disabled={false}
@@ -30,7 +31,7 @@ const CreateCommons = React.createClass({
           type="submit"
           style={{ float: 'right' }} 
         >
-          Create
+          <FormattedMessage id="forms.create" />
         </button>
       </form>
     );

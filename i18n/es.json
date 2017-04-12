@@ -89,7 +89,8 @@
     "day": "Día",
     "ten": "Ultimas 10",
     "twenty": "Ultimas 20",
-    "fifty": "Ultimas 50"
+    "fifty": "Ultimas 50",
+    "all": "Todas"
   },
   "profile": {
     "locale": "Idioma",

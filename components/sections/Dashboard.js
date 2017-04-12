@@ -111,7 +111,7 @@ const WidgetItem = React.createClass({
           }
         </div>
         <div className="widget-footer">
-          <a onClick={() => linkToHistory(widget)}>{widget.more || 'See more'}</a>
+          <a onClick={() => linkToHistory(widget)}>{widget.more || _t('widget.explore')}</a>
         </div>
       </div>
     );
@@ -174,12 +174,12 @@ function ButtonToolbar(props) {
         onClick={() => switchMode('add')} 
         active={false}
       >
-        Add Widget
+        <FormattedMessage id="dashboard.add" />
       </a>
       {
         dirty ? 
           <div className="dashboard-save">
-            <h6>Save changes?</h6>
+            <h6><FormattedMessage id="dashboard.save" /></h6>
             <div className="dashboard-save-prompt">
               <button 
                 className="btn dashboard-save-btn" 
@@ -189,14 +189,14 @@ function ButtonToolbar(props) {
                 }} 
                 active={false}
               >
-                Yes
+                <FormattedMessage id="forms.yes" />
               </button>
               <button 
                 className="btn dashboard-discard-btn" 
                 onClick={() => resetDirty()} 
                 active={false}
               >
-                No
+                <FormattedMessage id="forms.no" />
               </button>
             </div>
           </div>
@@ -208,7 +208,7 @@ function ButtonToolbar(props) {
 }
 
 function AddWidgetForm(props) {
-  const { widgetToAdd, widgetTypes, deviceTypes, setForm, activeDeviceType, setDeviceType, setWidgetToAdd, onSubmit } = props;
+  const { widgetToAdd, widgetTypes, deviceTypes, setForm, activeDeviceType, setDeviceType, setWidgetToAdd, onSubmit, _t } = props;
   const { title, description, id } = widgetToAdd;
   return (
     <form onSubmit={onSubmit}>
@@ -224,7 +224,7 @@ function AddWidgetForm(props) {
             <bs.Tab 
               key={devType.id} 
               eventKey={devType.id} 
-              title={devType.title} 
+              title={_t(devType.title)} 
             />
             )
         } 
@@ -238,10 +238,13 @@ function AddWidgetForm(props) {
                   <li key={idx}>
                     <a 
                       className={id === t.id ? 'selected' : ''}  
-                      onClick={() => setWidgetToAdd(t)} 
+                      onClick={() => setWidgetToAdd({ 
+                        ...t, 
+                        title: _t(`widget.titles.${t.id}`), 
+                      })} 
                       value={t.id}
                     >
-                      {t.title}
+                      {_t(`widget.titles.${t.id}`)}
                     </a>
                   </li>
                 )
@@ -253,13 +256,13 @@ function AddWidgetForm(props) {
           <div style={{ padding: 10 }}>
             <input 
               type="text" 
-              placeholder="Enter title..."
+              placeholder={_t('dashboard.add-widget-placeholder')}
               readOnly={title == null}
               value={title}
               onChange={e => setWidgetToAdd({ title: e.target.value })}
             />
             <p>
-              { description }
+              { id ? _t(`widget.descriptions.${id}`) : null }
             </p>
           </div>
         </div>
@@ -270,7 +273,7 @@ function AddWidgetForm(props) {
 
 function AddWidgetModal(props) {
   const { widgetToAdd, showModal, switchMode, addWidget, metrics, widgetTypes, deviceTypes, 
-    setForm, activeDeviceType, setDeviceType, setWidgetToAdd } = props;
+    setForm, activeDeviceType, setDeviceType, setWidgetToAdd, _t } = props;
     
   const onSubmit = (e) => { 
     e.preventDefault();
@@ -302,17 +305,20 @@ function AddWidgetModal(props) {
             activeDeviceType,
             setWidgetToAdd,
             onSubmit,
+            _t,
             
           }} 
         /> 
       </bs.Modal.Body>
       <bs.Modal.Footer>
-        <a onClick={() => switchMode('normal')}>Cancel</a>
+        <a onClick={() => switchMode('normal')}>
+          <FormattedMessage id="forms.cancel" />
+        </a>
         <a 
           style={{ marginLeft: 20 }} 
           onClick={onSubmit}
         >
-          Add
+          <FormattedMessage id="forms.add" />
         </a>
       </bs.Modal.Footer>
     </bs.Modal> 
@@ -334,7 +340,7 @@ const Dashboard = React.createClass({
     const { firstname, mode, dirty, switchMode, addWidget, saveToProfile, 
       setDirty, resetDirty, deviceCount, meterCount, metrics, widgetTypes, 
       deviceTypes, widgetToAdd, setForm, activeDeviceType, setDeviceType, 
-      setWidgetToAdd } = this.props;
+      setWidgetToAdd, _t } = this.props;
     return (
       <MainSection id="section.dashboard">
         <div className="dashboard">
@@ -353,6 +359,7 @@ const Dashboard = React.createClass({
                 activeDeviceType, 
                 setDeviceType,
                 setWidgetToAdd,
+                _t,
               }} 
             />
 
@@ -363,38 +370,52 @@ const Dashboard = React.createClass({
             <div className="dashboard-device-info">
               <Link to="/settings/devices">
                 <h6>
-                  <img src={`${IMAGES}/amphiro_small.svg`} alt="devices" />
-                  <span>
-                    {
-                      (() => {
-                        if (deviceCount > 1) { 
-                          return `${deviceCount} devices`;
-                        } else if (deviceCount === 1) {
-                          return '1 device';
-                        }
-                        return 'No devices';
+                  {
+                    (() => {
+                      if (deviceCount > 1) { 
+                        return (
+                          <span>
+                          <img src={`${IMAGES}/amphiro_small.svg`} alt="devices" />
+                          {deviceCount} <FormattedMessage id="devices.amphiros" />
+                        </span>
+                        );
+                      } else if (deviceCount === 1) {
+                        return (
+                          <span>
+                          <img src={`${IMAGES}/amphiro_small.svg`} alt="devices" />
+                            1 <FormattedMessage id="devices.amphiro" />
+                          </span>
+                          );
                       }
-                      )()
+                      return <span />;
                     }
-                  </span>
+                    )()
+                  }
                 </h6>
               </Link>
               <Link to="/settings/devices">
                 <h6>
-                  <img src={`${IMAGES}/water-meter.svg`} alt="meters" />
-                  <span>
-                    {
-                      (() => {
-                        if (meterCount > 1) { 
-                          return `${meterCount} SWMs`;
-                        } else if (meterCount === 1) {
-                          return '1 SWM';
-                        }
-                        return 'No SWMs';
+                  {
+                    (() => {
+                      if (meterCount > 1) { 
+                        return (
+                          <span>
+                          <img src={`${IMAGES}/water-meter.svg`} alt="meters" />
+                          {meterCount} <FormattedMessage id="devices.meters" />
+                        </span>
+                        );
+                      } else if (meterCount === 1) {
+                        return (
+                          <span>
+                          <img src={`${IMAGES}/water-meter.svg`} alt="meters" />
+                          1 <FormattedMessage id="devices.meter" />
+                        </span>
+                        );
                       }
-                      )()
+                      return <span />;
                     }
-                  </span>
+                    )()
+                  }
                 </h6>
               </Link>
             </div>

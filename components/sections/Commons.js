@@ -85,7 +85,7 @@ function MembersArea(props) {
         >
           <input 
             type="text"
-            placeholder="Search member..."
+            placeholder={_t('commons.placeholder-search-members')}
             onChange={(e) => { 
               setMemberSearchFilter(e.target.value);
               debounce(() => { 
@@ -103,15 +103,15 @@ function MembersArea(props) {
       </div>
 
       <div className="members-sort" style={{ float: 'right', marginRight: 10 }}> 
-        <h5 style={{ float: 'left', marginTop: 5 }}>Sort by:</h5>
+        <h5 style={{ float: 'left', marginTop: 5 }}><FormattedMessage id="common.sortby" /></h5>
         <div 
           className="sort-options" 
           style={{ float: 'right', marginLeft: 10, textAlign: 'right' }}
         >
           <bs.DropdownButton
             title={COMMONS_USER_SORT.find(sort => sort.id === sortFilter) ? 
-              COMMONS_USER_SORT.find(sort => sort.id === sortFilter).title
-              : 'Last name'}
+              _t(COMMONS_USER_SORT.find(sort => sort.id === sortFilter).title)
+              : _t('profile.lastname')}
             id="sort-by"
             defaultValue={sortFilter}
             onSelect={handleSortSelect}
@@ -123,7 +123,7 @@ function MembersArea(props) {
                   eventKey={sort.id}
                   value={sort.id}
                 >
-                  {sort.title}
+                  {_t(sort.title)}
                 </bs.MenuItem>
               )
             }
@@ -145,8 +145,8 @@ function MembersArea(props) {
       
       <br />
       <div>
-        <p style={{ marginLeft: 20 }}><b>Found:</b> {memberCount}</p>
-        <p style={{ marginLeft: 20 }}><i className="fa fa-info-circle" />&nbsp;<i>Click on up to 3 members to compare against</i></p>
+        <p style={{ marginLeft: 20 }}><b><FormattedMessage id="common.found" />:</b> {memberCount}</p>
+        <p style={{ marginLeft: 20 }}><i className="fa fa-info-circle" />&nbsp;<i><FormattedMessage id="commons.select-info" /></i></p>
       </div>
 
       <Table
@@ -251,8 +251,9 @@ const Commons = React.createClass({
                   </div>
                 :
                 <div>
-                  <h3 style={{ marginTop: 20, marginLeft: 40 }}>My commons</h3>
-                  <p style={{ marginLeft: 40 }}>Please select a community from the list, or join one in Settings</p>
+                  <h3 style={{ marginTop: 20, marginLeft: 40 }}>
+                    <FormattedMessage id="commons.myCommons" />
+                  </h3>
                 </div>
               }
    
@@ -290,12 +291,12 @@ const Commons = React.createClass({
                 {
                   myCommons.length === 0 ? 
                     <div>
-                      <span>Not a member of any commmunities yet</span>
+                      <FormattedMessage id="commons.noCommons" />
                       <button
                         style={{ width: '100%', marginTop: 20 }}
                         onClick={goToJoin}
                       >
-                        Join
+                        <FormattedMessage id="forms.join" />
                       </button>
                     </div>
 
@@ -305,7 +306,7 @@ const Commons = React.createClass({
                        className="commons-select-active"
                        style={{ width: 120 }}
                        pullRight
-                       title={active ? active.name : 'Select'}
+                       title={active ? active.name : _t('forms.select')}
                        id="select-commons"
                        value={active ? active.id : null}
                        onSelect={(e, val) => { 
@@ -319,16 +320,17 @@ const Commons = React.createClass({
                               eventKey={common.key} 
                               value={common.key}
                             >
-                            { common.name || 'No name'}
+                            { common.name || _t('forms.noname')}
                             </bs.MenuItem>
                           )
                         }	
                       </bs.DropdownButton>
                       { active ? 
                         <p>
-                          <span><i className="fa fa-info-circle" />&nbsp; {active.description}</span>
-                          <br />
-                          <span>{`${memberCount} members`}</span>
+                          <span>
+                            <i className="fa fa-info-circle" />
+                            &nbsp; {active.description}
+                          </span>
                         </p>
                         :
                         <span />
@@ -350,7 +352,7 @@ const Commons = React.createClass({
                          <bs.Tab 
                            key={devType.id} 
                            eventKey={devType.id} 
-                           title={devType.title} 
+                           title={_t(devType.title)} 
                          /> 
                        ))
                       }

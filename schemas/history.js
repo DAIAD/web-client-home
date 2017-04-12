@@ -6,7 +6,7 @@ const { getMetricMu } = require('../utils/general');
 const meter = [
   {
     id: 'volume',
-    name: 'Volume',
+    name: <FormattedMessage id="history.volume" />,
     value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
         { value ? 
@@ -54,12 +54,12 @@ const meter = [
   },
   {
     id: 'member',
-    name: 'User',
+    name: <FormattedMessage id="common.user" />,
     icon: 'user',
   },
   {
     id: 'date',
-    name: 'Date',
+    name: <FormattedMessage id="common.date" />,
     icon: 'calendar',
   },
   {
@@ -75,7 +75,7 @@ const meter = [
 const amphiro = [
   {
     id: 'volume',
-    name: 'Volume',
+    name: <FormattedMessage id="history.volume" />,
     value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
         {value}
@@ -97,37 +97,37 @@ const amphiro = [
   },
   {
     id: 'member',
-    name: 'User',
+    name: <FormattedMessage id="common.user" />,
     icon: 'user',
   },
   {
     id: 'date',
-    name: 'Date',
+    name: <FormattedMessage id="common.date" />,
     icon: 'calendar',
   },
   {
     id: 'devName',
-    name: 'Device',
+    name: <FormattedMessage id="history.device" />,
   },
   {
     id: 'friendlyDuration',
-    name: 'Dur',
+    name: '',
     icon: 'clock-o',
   },
   {
     id: 'energyClass',
-    name: 'En',
+    name: '',
     icon: 'flash',
   },
   {
     id: 'temperature',
-    name: 'Temp',
+    name: '',
     icon: 'temperature',
     value: (value, row) => `${value} ºC`
   },
   {
     id: 'real',
-    name: 'Real',
+    name: <FormattedMessage id="history.real" />,
     value: (value, row) => value ? 
       <i className="fa fa-check" />
       :
@@ -135,7 +135,7 @@ const amphiro = [
   },
   {
     id: 'id',
-    name: 'Id',
+    name: '#',
     //value: (value, row) => `${value}`,
   },
   {
@@ -150,7 +150,7 @@ const amphiro = [
 const breakdown = [
   {
     id: 'title',
-    name: 'Usage',
+    name: <FormattedMessage id="history.breakdownUse" />,
     value: (value, row) => (
       <span style={{ fontSize: '1.5em' }}>
         <img src={`${IMAGES}/${row.id}.svg`} alt={value} style={{ marginRight: 10 }} />
@@ -160,7 +160,7 @@ const breakdown = [
   },
   {
     id: 'volume',
-    name: 'Volume',
+    name: <FormattedMessage id="history.volume" />,
     value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
         {value}
@@ -169,12 +169,12 @@ const breakdown = [
   },
   {
     id: 'member',
-    name: 'User',
+    name: <FormattedMessage id="common.user" />,
     icon: 'user',
   },
   {
     id: 'date',
-    name: 'Date',
+    name: <FormattedMessage id="common.date" />,
     icon: 'calendar',
   },
   {
@@ -189,7 +189,7 @@ const breakdown = [
 const forecast = [
   {
     id: 'forecast',
-    name: 'Forecasted',
+    name: <FormattedMessage id="history.forecasted" />,
     value: value => 
       <span style={{ fontSize: '2.5em' }}>
         { value ? 
@@ -208,7 +208,7 @@ const forecast = [
 const wateriq = [
   {
     id: 'wateriq',
-    name: 'Water IQ',
+    name: <FormattedMessage id="history.wateriq" />,
     value: value => <span style={{ fontSize: '2.5em', marginLeft: 20 }}>{value}</span>,
   },
   ...meter,
@@ -217,15 +217,15 @@ const wateriq = [
 const pricing = [
   {
     id: 'cost',
-    name: 'Cost',
+    name: <FormattedMessage id="history.cost" />,
     icon: 'euro',
     value: value => <span style={{ fontSize: '2.5em' }}>{`${value} ${getMetricMu('cost')}`}</span>,
   },
   {
     id: 'total',
-    name: 'Total',
+    name: <FormattedMessage id="history.totalVolume" />,
     value: (value, row) => 
-      <span style={{ fontSize: '2.0em' }}>
+      <span style={{ fontSize: '2.5em' }}>
         {value}
         <span style={{ fontSize: '0.6em' }}> {getMetricMu('total')}</span>
       </span>,
