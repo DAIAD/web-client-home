@@ -82,7 +82,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     periods, 
     compareAgainst, 
     sortOptions] = ['periods', 'comparisons', 'sort']
-    .map(x => activeMode[x] ? 
+    .map(x => activeMode && activeMode[x] ? 
          allOptions[x].filter(y => activeMode[x].includes(y.id)) 
            : allOptions[x]
         );

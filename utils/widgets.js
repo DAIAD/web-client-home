@@ -383,7 +383,7 @@ const meterBreakdown = function (widget, devices, intl) {
     chartData,
     mu,
     clearComparisons: true,
-    mode: 'breakdown',
+    mode: 'stats',
   };
 };
 

@@ -148,13 +148,15 @@ module.exports = {
         title: 'history.cost',
         periods: ['month'],
       },
+      /*
       {
         id: 'breakdown',
         title: 'history.breakdown',
         periods: ['week', 'month', 'year'],
         comparisons: ['last'],
         sort: ['volume'],
-      },
+        },
+        */
       {
         id: 'wateriq',
         title: 'history.wateriq',
