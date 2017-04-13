@@ -159,6 +159,7 @@ function Session(props) {
 const SessionModal = React.createClass({
   onClose: function () {
     this.props.resetActiveSession();
+    this.props.disableEditShower();
   },
   onNext: function () {
     const { next: [device, id, timestamp] } = this.props.data;
