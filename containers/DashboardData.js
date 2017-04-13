@@ -5,7 +5,7 @@ const { connect } = require('react-redux');
 const DashboardActions = require('../actions/DashboardActions');
 const { linkToHistory } = require('../actions/HistoryActions');
 const { saveConfiguration } = require('../actions/UserActions');
-const { setForm } = require('../actions/FormActions');
+const { setForm, resetForm } = require('../actions/FormActions');
 
 const Dashboard = require('../components/sections/dashboard/');
 
@@ -36,10 +36,12 @@ function mapDispatchToProps(dispatch) {
     linkToHistory, 
     saveConfiguration, 
     setForm, 
+    resetForm, 
   }, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
+  const _t = formatMessage(ownProps.intl);
   let deviceTypes = DEVICE_TYPES;  
 
   const meterCount = getMeterCount(stateProps.devices);
@@ -55,13 +57,13 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const newWidgetState = {
     widgets: stateProps.widgets.map(widget => filterObj(widget, [
+      'widgetId',
       'id',
       'deviceType',
       'display',
       'metric',
       'period',
       'periodIndex',
-      'title',
       'type',
     ])),
     layout: stateProps.layout,
@@ -73,10 +75,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       }
   const widgetTypes = WIDGET_TYPES[stateProps.activeDeviceType].map(w => ({
     ...w,
+    widgetId: w.id,
+    title: _t(`widget.titles.${w.id}`),
+    description: _t(`widget.descriptions.${w.id}`),
     deviceType: stateProps.activeDeviceType,
   }));
 
   const setWidgetToAdd = data => dispatchProps.setForm('widgetToAdd', data);
+  const resetWidgetToAdd = () => dispatchProps.resetForm('widgetToAdd');
 
   return {
     ...stateProps,
@@ -90,7 +96,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     deviceTypes,
     widgetTypes,
     setWidgetToAdd,
-    _t: formatMessage(ownProps.intl),
+    resetWidgetToAdd,
+    _t,
   };
 }
 

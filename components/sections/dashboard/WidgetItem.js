@@ -23,7 +23,7 @@ const WidgetItem = React.createClass({
   },
   render: function () {
     const { widget, updateWidgetAndFetch, removeWidget, _t, linkToHistory, width } = this.props;
-    const { id, icon, error, period, title, type, display, periods, time, timeDisplay } = widget;
+    const { id, widgetId, icon, error, period, type, display, periods, time, timeDisplay } = widget;
     return (
       <div 
         className="widget"
@@ -41,7 +41,7 @@ const WidgetItem = React.createClass({
                 :
                   <i />
               }
-              {title}
+              { _t(`widget.titles.${widgetId}`) }
             </h4>
           </div>
 

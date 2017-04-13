@@ -33,13 +33,11 @@ function AddWidgetForm(props) {
                   <li key={idx}>
                     <button
                       className={id === t.id ? 'btn-a selected' : 'btn-a'}  
-                      onClick={() => setWidgetToAdd({ 
-                        ...t, 
-                        title: _t(`widget.titles.${t.id}`), 
-                      })} 
+                      onClick={() => setWidgetToAdd(t)} 
                       value={t.id}
+                      title={t.description}
                     >
-                      {_t(`widget.titles.${t.id}`)}
+                      { t.title }
                     </button>
                   </li>
                 )
@@ -48,16 +46,10 @@ function AddWidgetForm(props) {
           </div>
         </div>
         <div className="add-widget-right">
-          <div style={{ padding: 10 }}>
-            <input 
-              type="text" 
-              placeholder={_t('dashboard.add-widget-placeholder')}
-              readOnly={title == null}
-              value={title}
-              onChange={e => setWidgetToAdd({ title: e.target.value })}
-            /> 
+          <div>
+            <h5>{ title }</h5>
             <p>
-              { id ? _t(`widget.descriptions.${id}`) : null }
+              { description }
             </p>
           </div>
         </div>
@@ -68,19 +60,25 @@ function AddWidgetForm(props) {
 
 function AddWidgetModal(props) {
   const { widgetToAdd, showModal, switchMode, addWidget, metrics, widgetTypes, deviceTypes, 
-    setForm, activeDeviceType, setDeviceType, setWidgetToAdd, _t } = props;
+    setForm, activeDeviceType, setDeviceType, setWidgetToAdd, resetWidgetToAdd, _t } = props;
     
   const onSubmit = (e) => { 
     e.preventDefault();
     addWidget(widgetToAdd); 
     switchMode('normal'); 
   };
+  const onHide = (e) => {
+    e.preventDefault();
+    resetWidgetToAdd();
+    switchMode('normal');
+  };
+
   return (
     <bs.Modal 
       animation={false} 
       className="add-widget-modal" 
       show={showModal} 
-      onHide={() => switchMode('normal')} 
+      onHide={onHide} 
       bsSize="large" 
       backdrop="static"
     >
@@ -107,7 +105,7 @@ function AddWidgetModal(props) {
         /> 
       </bs.Modal.Body>
       <bs.Modal.Footer>
-        <button className="btn-a" onClick={() => switchMode('normal')}>
+        <button className="btn-a" onClick={onHide}>
           <FormattedMessage id="forms.cancel" />
         </button>
         <button

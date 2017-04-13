@@ -25,7 +25,7 @@ const Dashboard = React.createClass({
     const { firstname, mode, dirty, switchMode, addWidget, saveToProfile, 
       setDirty, resetDirty, deviceCount, meterCount, metrics, widgetTypes, 
       deviceTypes, widgetToAdd, setForm, activeDeviceType, setDeviceType, 
-      setWidgetToAdd, _t } = this.props;
+      setWidgetToAdd, resetWidgetToAdd, _t } = this.props;
     return (
       <MainSection id="section.dashboard">
         <div className="dashboard">
@@ -44,6 +44,7 @@ const Dashboard = React.createClass({
                 activeDeviceType, 
                 setDeviceType,
                 setWidgetToAdd,
+                resetWidgetToAdd,
                 _t,
               }} 
             />
