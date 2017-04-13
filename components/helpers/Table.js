@@ -86,7 +86,7 @@ function Pagination(props) {
               </button> 
           </div>
           :
-         <div className="navigator-child pull-left" />
+            <div className="navigator-child pull-left">&nbsp;</div>
         }
         {
           total > 0 ? 
@@ -115,7 +115,7 @@ function Pagination(props) {
               </button>
             </div>
         :
-          <div className="navigator-child pull-right" />
+          <div className="navigator-child pull-right">&nbsp;</div>
         }
       </div>
     </div>
