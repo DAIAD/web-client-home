@@ -103,6 +103,7 @@ const amphiroMembersRanking = function (widget, devices, intl) {
   };
 };
 
+// TODO: split into two functions for amphiro / swm
 const amphiroOrMeterTotal = function (widget, devices, intl) {
   const { data = [], period, deviceType, metric, previous } = widget;
   
@@ -128,7 +129,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     :
     getChartMeterCategoryLabels(getChartMeterCategories(time), time.granularity, period, intl);
 
-  const chartData = data ? data.map((devData) => {
+  const chartData = Array.isArray(data) ? data.map((devData) => {
     const sessions = devData.sessions 
     .map(session => ({
       ...session,
@@ -137,7 +138,7 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     }));
     
     return {
-      name: getDeviceNameByKey(devices, devData.deviceKey) || 'SWM', 
+      name: deviceType === 'METER' ? intl.formatMessage({ id: 'devices.meter' }) : getDeviceNameByKey(devices, devData.deviceKey), 
       data: deviceType === 'METER' ? 
         getChartMeterData(sessions, 
                           getChartMeterCategories(time),
@@ -556,7 +557,6 @@ const budget = function (widget, devices, intl) {
 
 const meterCommon = function (widget, devices, intl) {
   const { data = [], period, deviceType, metric, common, commonData } = widget;
-  console.log('meter common util', widget);
   
   if (!common) {
     return {
