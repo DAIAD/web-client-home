@@ -37,7 +37,12 @@ const PasswordResetRequestForm = React.createClass({
           <FormattedMessage id="loginForm.button.reset-request" />
         </button> 
         <div className="link-reset"> 
-          <a onClick={goToLogin}><FormattedMessage id="forms.back" /></a>
+          <button
+            className="btn-a" 
+            onClick={goToLogin}
+          >
+            <FormattedMessage id="forms.back" />
+          </button>
         </div>
       </form>
     );

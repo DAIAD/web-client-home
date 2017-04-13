@@ -1,5 +1,6 @@
 const React = require('react');
 const bs = require('react-bootstrap');
+const { FormattedMessage } = require('react-intl');
 
 function Confirm(props) {
   const { show, onClose, onConfirm, message } = props;
@@ -13,15 +14,26 @@ function Confirm(props) {
     >
       <bs.Modal.Header closeButton>
         <bs.Modal.Title>
-         Confirmation 
+          <FormattedMessage id="forms.confirm-title" />
         </bs.Modal.Title>
       </bs.Modal.Header>
       <bs.Modal.Body>
         <span>{message}</span>
       </bs.Modal.Body>
       <bs.Modal.Footer>
-        <a style={{ marginRight: 20 }} onClick={onClose}>No</a>
-        <a onClick={onConfirm}>Yes</a>
+        <button 
+          className="btn-a"
+          style={{ marginRight: 20 }} 
+          onClick={onClose}
+        >
+          <FormattedMessage id="forms.no" />
+        </button>
+        <button 
+          className="btn-a"
+          onClick={onConfirm}
+        >
+          <FormattedMessage id="forms.yes" />
+        </button>
       </bs.Modal.Footer>
     </bs.Modal> 
   );

@@ -24,11 +24,14 @@ function NotificationList(props) {
                   key={notification.id} 
                   className={classNames(notificationClass, activeClass)} 
                 >
-                  <a onClick={() => onItemClick(notification.id, notification.type)}>
-                    <i /> 
-                    <span>{notification.title}</span>
-                  </a>
-                </li>
+                <button 
+                  className="btn-a"
+                  onClick={() => onItemClick(notification.id, notification.type)}
+                >
+                  <i /> 
+                  <span>{notification.title}</span>
+                </button>
+              </li>
               );
             })
           }

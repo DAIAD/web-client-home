@@ -71,9 +71,12 @@
     "back": "Back",
     "noname": "No name",
     "select": "Select",
+    "confirm-title": "Confirmation",
     "confirm": "Are you sure you want to {action} {item}?",
     "previous": "Previous",
-    "next": "Next"
+    "next": "Next",
+    "clear": "Clear",
+    "download": "Download"
   },
   "loginForm": {
     "login": {
@@ -130,7 +133,7 @@
     "user": "User",
     "date": "Date",
     "time": "Time",
-    "download": "Download"
+    "me": "Me"
   },
   "dashboard": {
     "hello": "Welcome {name}!",
@@ -148,8 +151,8 @@
     "titles": {
       "totalVolumeStatAmphiro": "Shower Volume (metric)",
       "totalVolumeChartAmphiro": "Shower Volume (progress)",
-      "totalVolumeStatSWM": "Water consumption (metric)",
-      "totalVolumeChartSWM": "Water consumption (progress)",
+      "totalVolumeStatSWM": "Water (metric)",
+      "totalVolumeChartSWM": "Water (progress)",
       "totalEnergyStat": "Shower Energy (metric)",
       "totalEnergyChart": "Shower Energy (progress)",
       "totalTemperatureStat": "Shower Temperature (metric)",
@@ -209,6 +212,8 @@
     "breakdownUse": "Use",
     "member-filter": "Member",
     "compare-against": "Compare against",
+    "consumption-min": "Minimum consumption this {period}. Well done!",
+    "consumption-max": "Maximum consumption this {period}",
     "in-detail": "In detail",
     "volumeDetails": "Total water used for this shower",
     "temperatureDetails": "Average water temperature",
@@ -226,7 +231,8 @@
     "pool": "pool",
     "light-bulb": "light bulb",
     "home-energy": "home",
-    "city": "city"
+    "city": "city",
+    "shower-delete": "Delete shower"
   },
   "periods": {
     "always": "Since the beginning of time",

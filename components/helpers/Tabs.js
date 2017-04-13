@@ -7,7 +7,14 @@ function Tab(props) {
       role="presentation" 
       className={props.active ? 'active' : ''}
     >
-    <a role="tab" onClick={() => props.onSelect(props.eventKey)}>
+    <a 
+      role="tab" 
+      tabIndex={props.index}
+      onClick={(e) => {
+        e.preventDefault();
+        props.onSelect(props.eventKey);
+      }}
+    >
       {
         props.image ? 
           <img 
@@ -36,9 +43,10 @@ function Tabs(props) {
     <div className={`${props.className} clearfix`}>
       <ul className={`col-xs-20 nav ${horizontal ? 'nav-tabs' : 'nav-pills nav-stacked'}`}>
         {
-          props.children.map(child => (
+          props.children.map((child, index) => (
             <Tab 
               {...child.props}
+              index={index}
               multi={props.multi}
               active={props.multi ? props.activeKeys.includes(child.props.eventKey) : props.activeKey === child.props.eventKey}
               onSelect={props.onSelect}

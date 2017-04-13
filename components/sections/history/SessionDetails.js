@@ -53,7 +53,8 @@ function SessionDetails(props) {
       {
         activeDeviceType === 'AMPHIRO' && editShower ?
           <div className="ignore-shower">
-            <a 
+            <button
+              className="btn-a" 
               onClick={() => ignoreShower({ 
                 deviceKey, 
                 sessionId, 
@@ -62,8 +63,8 @@ function SessionDetails(props) {
               .then(() => disableEditShower())
               }
             >
-              Delete shower
-            </a>
+              <FormattedMessage id="history.shower-delete" />
+            </button>
           </div>
           :
           <span />
@@ -97,7 +98,8 @@ function SessionDetails(props) {
                     }}
                   /> 
                   &nbsp;
-                  <a 
+                  <button
+                    className="btn-a"  
                     onClick={() => setShowerReal({ 
                       deviceKey, 
                       sessionId,
@@ -108,7 +110,7 @@ function SessionDetails(props) {
                     }
                   >
                    <FormattedMessage id="forms.set" />
-                  </a>
+                  </button>
                 </div>
                 :
                 <span>
@@ -135,9 +137,19 @@ function SessionDetails(props) {
           <div className="edit-shower-control">
           {
              editShower ? 
-              <a onClick={disableEditShower}><i className="fa fa-times" /></a>
+               <button 
+                 className="btn-a"  
+                 onClick={disableEditShower}
+               >
+                <i className="fa fa-times" />
+              </button>
               :
-              <a onClick={enableEditShower}><i className="fa fa-pencil" /></a>
+              <button
+                className="btn-a"  
+                onClick={enableEditShower}
+              >
+                <i className="fa fa-pencil" />
+              </button>
           }
         </div> 
         :

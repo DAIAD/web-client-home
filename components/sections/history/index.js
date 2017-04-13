@@ -225,12 +225,13 @@ const History = React.createClass({
               </TabsMulti>
             {
               this.props.comparisons.length > 0 ?
-                <a 
+                <button
+                  className="btn-a"
                   style={{ float: 'right', marginTop: 10, marginRight: 20 }} 
                   onClick={() => this.props.setQueryAndFetch({ clearComparisons: true })}
                 >
-                  Clear
-                </a>
+                  <FormattedMessage id="forms.clear" />
+                </button>
                 :
                 <div />
             }

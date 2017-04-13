@@ -67,17 +67,19 @@ function ChangePasswordModal(props) {
 
         </bs.Modal.Body>
         <bs.Modal.Footer>
-          <bs.Button 
+          <button 
+            className="btn-a"
             style={{ marginRight: 20 }} 
             onClick={resetChangePassword}
           >
           <FormattedMessage id="forms.cancel" />
-        </bs.Button>
-        <bs.Button 
+        </button>
+        <button 
+          className="btn-a"
           type="submit"
         >
         <FormattedMessage id="forms.update" />
-      </bs.Button>
+      </button>
         </bs.Modal.Footer>
       </form>
     </bs.Modal> 

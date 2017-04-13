@@ -42,20 +42,21 @@ const NotificationsMenuItem = React.createClass({
                   loadMore={this.props.fetchMoreAll}
                 />
                 <div className="footer">
-                  <a 
-                    className="notifications-show-all"
+                  <button 
+                    className="btn-a notifications-show-all"
                     onClick={() => {
                       this.node.hide();
                       this.props.goTo(link);
                     }}
                   >
                     {_t('notifications.showAll')}
-                  </a>
+                  </button>
                 </div>
               </bs.Popover>
             }
           >
-            <a
+            <button
+              className="btn-a"
               onMouseEnter={() => this.setState({ hover: true })}
               onMouseLeave={() => this.setState({ hover: false })} 
             >
@@ -66,7 +67,7 @@ const NotificationsMenuItem = React.createClass({
                                         'fa-bell' : 'fa-bell-o'
                                      )} 
               />
-            </a>
+            </button>
           </bs.OverlayTrigger>  
         </div>
       </div>

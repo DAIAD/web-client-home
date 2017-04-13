@@ -49,18 +49,24 @@ function Notification(props) {
       <div className="notification-pagination">
         {
           previousMessageId != null ? 
-            <a className="pull-left" onClick={() => setActiveMessage(previousMessageId, notification.type)}>
+            <button 
+              className="btn-a pull-left" 
+              onClick={() => setActiveMessage(previousMessageId, notification.type)}
+            >
               <img alt="previous" src={`${IMAGES}/arrow-big-left.svg`} />
               <FormattedMessage id="forms.previous" />
-            </a>
+            </button>
         : <span />
         }
         {
           nextMessageId != null ? 
-            <a className="pull-right" onClick={() => setActiveMessage(nextMessageId, notification.type)}>
+            <button 
+              className="btn-a pull-right" 
+              onClick={() => setActiveMessage(nextMessageId, notification.type)}
+            >
               <FormattedMessage id="forms.next" />
               <img alt="next" src={`${IMAGES}/arrow-big-right.svg`} />
-            </a>
+            </button>
             : <span />
         }
       </div>

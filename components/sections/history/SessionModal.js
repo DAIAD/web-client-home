@@ -111,7 +111,10 @@ function Session(props) {
               min ? 
                 <h5>
                   <i className="fa fa-check green " />&nbsp;&nbsp;
-                  <span>{_t(`periods.${period}`) + ' with minimum consumption. Well done!'}</span>
+                  <FormattedMessage 
+                    id="history.consumption-min" 
+                    values={{ period: _t(`periods.${period}`).toLowerCase() }} 
+                  />
                 </h5>
                 :
                 <span />
@@ -120,7 +123,10 @@ function Session(props) {
                max ?
                 <h5>
                   <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
-                  <span>{_t(`periods.${period}`) + ' with maximum consumption'}</span>
+                  <FormattedMessage 
+                    id="history.consumption-max" 
+                    values={{ period: _t(`periods.${period}`).toLowerCase() }} 
+                  />
                 </h5>
                 :
                 <span />
@@ -209,8 +215,28 @@ const SessionModal = React.createClass({
           </div>
         </bs.Modal.Body>
         <bs.Modal.Footer>
-          { disabledPrevious ? <span /> : <a className="pull-left" onClick={this.onPrevious}><FormattedMessage id="forms.previous" /></a> }
-          { disabledNext ? <span /> : <a className="pull-right" onClick={this.onNext}><FormattedMessage id="forms.next" /></a> }
+          { 
+            disabledPrevious ? 
+              <span /> 
+              : 
+              <button 
+                className="btn-a pull-left" 
+                onClick={this.onPrevious}
+              >
+              <FormattedMessage id="forms.previous" />
+            </button> 
+         }
+         { 
+           disabledNext ? 
+             <span /> 
+             : 
+             <button 
+               className="btn-a pull-right" 
+               onClick={this.onNext}
+             >
+              <FormattedMessage id="forms.next" />
+            </button> 
+         }
         </bs.Modal.Footer>
       </bs.Modal> 
     );

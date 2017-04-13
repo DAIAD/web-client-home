@@ -50,29 +50,24 @@ const WidgetItem = React.createClass({
               { timeDisplay }
               {
                 periods && periods.map(p => (
-                  <a 
+                  <button
+                    className={`btn-a widget-period ${p.id === period ? 'active' : ''}`}
                     key={p.id} 
                     onClick={() => updateWidgetAndFetch(id, { period: p.id })} 
-                    style={{ marginLeft: 5 }}
                   >
-                    {
-                      p.id === period ? 
-                        <u>{_t(p.title)}</u>
-                        :
-                         _t(p.title)
-                    }
-                  </a>
+                    { _t(p.title) }
+                  </button>
                   ))
               }
             </div> 
             {
-              <a 
-                className="widget-x" 
+              <button
+                className="btn-a widget-x" 
                 style={{ float: 'right', marginLeft: 5, marginRight: 5 }} 
                 onClick={() => removeWidget(widget.id)}
               >
                 <i className="fa fa-times" />
-              </a>
+              </button>
             }
           </div>
         </div>
@@ -91,7 +86,12 @@ const WidgetItem = React.createClass({
           }
         </div>
         <div className="widget-footer">
-          <a onClick={() => linkToHistory(widget)}>{widget.more || _t('widget.explore')}</a>
+          <button 
+            className="btn-a"
+            onClick={() => linkToHistory(widget)}
+          >
+            {widget.more || _t('widget.explore')}
+          </button>
         </div>
       </div>
     );

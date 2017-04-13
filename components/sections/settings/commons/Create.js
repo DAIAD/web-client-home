@@ -28,6 +28,7 @@ const CreateCommons = React.createClass({
         />
 
         <button 
+          className="btn"
           type="submit"
           style={{ float: 'right' }} 
         >

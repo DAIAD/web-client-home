@@ -12,15 +12,15 @@ const Logout = React.createClass({
       return (<div />);
     }
     return (
-      <a 
+      <button
         id="logout"
-        className="logout"
+        className="btn-a logout"
         title={_t('loginForm.button.signout')}
         onClick={this.onLogout}
         type="submit"
       >
         <i className={classNames('fa', 'fa-md', 'fa-sign-out', 'navy')} />
-      </a>
+      </button>
     );
   } 
 });

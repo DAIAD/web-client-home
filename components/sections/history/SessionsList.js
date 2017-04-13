@@ -19,7 +19,7 @@ function SessionsList(props) {
               href={`data:application/csv;charset=utf-8, ${csvData}`}
               download="Data.csv"
             >
-              <FormattedMessage id="common.download" />
+              <FormattedMessage id="forms.download" />
             </a>
            :
            <span />
@@ -54,13 +54,19 @@ function SessionsList(props) {
             <div style={{ float: 'right', marginLeft: 10 }}>
               {
                 sortOrder === 'asc' ? 
-                  <a onClick={() => setSortOrder('desc')}>
+                  <button 
+                    className="btn-a"
+                    onClick={() => setSortOrder('desc')}
+                  >
                     <i className="fa fa-arrow-up" />
-                  </a>
+                  </button>
                  :
-                 <a onClick={() => setSortOrder('asc')}>
+                 <button 
+                   className="btn-a"
+                   onClick={() => setSortOrder('asc')}
+                 >
                    <i className="fa fa-arrow-down" />
-                 </a>
+                 </button>
               }
             </div>
           </div>

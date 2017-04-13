@@ -47,7 +47,12 @@ const Login = React.createClass({
           <FormattedMessage id="loginForm.button.signin" />
         </button> 
         <div className="link-reset"> 
-          <a onClick={goToResetPassword}><FormattedMessage id="loginForm.forgotPassword" /></a>
+          <button 
+            className="btn-a"
+            onClick={goToResetPassword}
+          >
+            <FormattedMessage id="loginForm.forgotPassword" />
+          </button>
         </div>
       </form>
     );

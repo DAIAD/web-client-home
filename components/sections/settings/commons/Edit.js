@@ -64,25 +64,29 @@ function UpdateCommons(props) {
               }}
             >
             { favorite === common.key ?
-              <a 
+              <button
+                className="btn-a" 
                 title={_t('commonsManage.resetFavorite')}
                 style={{ float: 'right' }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   saveFavoriteCommon(null);
               }}
               >
                 <i style={{ float: 'right' }} className="fa fa-star" />
-              </a>
+              </button>
               :
-              <a 
+              <button
+                className="btn-a"   
                 title={_t('commonsManage.setFavorite')}
                 style={{ float: 'right' }}
-                onClick={() => {
+                onClick={(e) => {
+                  e.preventDefault();
                   saveFavoriteCommon(common.key);
               }}
               >
                 <i style={{ float: 'right' }} className="fa fa-star-o" />
-              </a>
+              </button>
              }
               <CommonFormFields
                 _t={_t}

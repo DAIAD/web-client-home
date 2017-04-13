@@ -106,13 +106,13 @@ const Dashboard = React.createClass({
             </div>
             
             <div className="dashboard-button-toolbar">
-              <a 
+              <button
                 className="btn dashboard-add-btn" 
                 onClick={() => switchMode('add')} 
                 active={false}
               >
                 <FormattedMessage id="dashboard.add" />
-              </a>
+              </button>
               {
                 dirty ? 
                   <div className="dashboard-save">

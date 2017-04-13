@@ -6,7 +6,7 @@ function AddWidgetForm(props) {
   const { widgetToAdd, widgetTypes, deviceTypes, setForm, activeDeviceType, setDeviceType, setWidgetToAdd, onSubmit, _t } = props;
   const { title, description, id } = widgetToAdd;
   return (
-    <form onSubmit={onSubmit}>
+    <div>
       <bs.Tabs 
         className="history-time-nav" 
         position="top" 
@@ -31,8 +31,8 @@ function AddWidgetForm(props) {
               {
                 widgetTypes.map((t, idx) =>
                   <li key={idx}>
-                    <a 
-                      className={id === t.id ? 'selected' : ''}  
+                    <button
+                      className={id === t.id ? 'btn-a selected' : 'btn-a'}  
                       onClick={() => setWidgetToAdd({ 
                         ...t, 
                         title: _t(`widget.titles.${t.id}`), 
@@ -40,7 +40,7 @@ function AddWidgetForm(props) {
                       value={t.id}
                     >
                       {_t(`widget.titles.${t.id}`)}
-                    </a>
+                    </button>
                   </li>
                 )
               }
@@ -55,14 +55,14 @@ function AddWidgetForm(props) {
               readOnly={title == null}
               value={title}
               onChange={e => setWidgetToAdd({ title: e.target.value })}
-            />
+            /> 
             <p>
               { id ? _t(`widget.descriptions.${id}`) : null }
             </p>
           </div>
         </div>
       </div>
-    </form>
+    </div>
   );
 }
 
@@ -107,15 +107,16 @@ function AddWidgetModal(props) {
         /> 
       </bs.Modal.Body>
       <bs.Modal.Footer>
-        <a onClick={() => switchMode('normal')}>
+        <button className="btn-a" onClick={() => switchMode('normal')}>
           <FormattedMessage id="forms.cancel" />
-        </a>
-        <a 
+        </button>
+        <button
+          className="btn-a"
           style={{ marginLeft: 20 }} 
           onClick={onSubmit}
         >
           <FormattedMessage id="forms.add" />
-        </a>
+        </button>
       </bs.Modal.Footer>
     </bs.Modal> 
   );
