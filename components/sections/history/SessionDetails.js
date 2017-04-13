@@ -155,21 +155,25 @@ function SessionDetails(props) {
         :
           <span />
       }
-          
-        <ShowerMember 
-          {...{ 
-            deviceKey, 
-            sessionId, 
-            member, 
-            memberFilter,
-            members, 
-            assignToMember, 
-            editShower, 
-            enableEditShower, 
-            disableEditShower,
-            fetchAndSetQuery,
-          }} 
-        /> 
+       { 
+        activeDeviceType === 'AMPHIRO' ? 
+          <ShowerMember 
+            {...{ 
+              deviceKey, 
+              sessionId, 
+              member, 
+              memberFilter,
+              members, 
+              assignToMember, 
+              editShower, 
+              enableEditShower, 
+              disableEditShower,
+              fetchAndSetQuery,
+            }} 
+          /> 
+            :
+           <span />
+       }
     </div> 
     <ul className="sessions-list" >
       {

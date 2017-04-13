@@ -40,10 +40,17 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
                       hasChartData: Array.isArray(session.measurements) && 
                         session.measurements.length > 0,
                       member: member ? member.name : user,
-                      date: getTimeLabelByGranularity(session.timestamp, 
-                                                      granularity, 
-                                                      intl
-                                                     ),
+                      date: devType === 'AMPHIRO' ? 
+                        intl.formatDate(new Date(session.timestamp), { 
+                          weekday: 'short', 
+                          day: 'numeric', 
+                          month: 'numeric', 
+                          year: 'numeric' 
+                        })
+                        : getTimeLabelByGranularity(session.timestamp, 
+                                                    granularity, 
+                                                    intl
+                                                   ),
                     };
                   }))
                 .reduce((p, c) => [...p, ...c], []);

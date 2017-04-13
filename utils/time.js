@@ -241,27 +241,18 @@ const bringPastSessionsToPresent = function (sessions, period) {
 
 const getTimeLabelByGranularity = function (timestamp, granularity, intl) {
     if (granularity === 5) {
-      return moment(timestamp).get('year');
+      return intl.formatDate(new Date(timestamp), { year: 'numeric' }); 
     } else if (granularity === 4) {
-    return intl.formatMessage({ id: `months.${moment(timestamp).get('month')}` }) + 
-      ' ' +
-      moment(timestamp).format('YYYY'); 
+      return intl.formatDate(new Date(timestamp), { year: 'numeric', month: 'long' }); 
   } else if (granularity === 3) {
     return intl.formatMessage({ id: 'periods.week' }) + 
       ' ' +
       moment(timestamp).get('isoweek') + 
-      ', ' +
-      intl.formatMessage({ id: `months.${moment(timestamp).get('month')}` }) + 
-      ' ' +
-      moment(timestamp).format('YYYY');
+      intl.formatDate(new Date(timestamp), { year: 'numeric', month: 'long' }); 
   } else if (granularity === 2) {
-    return intl.formatMessage({ id: `weekdays.${moment(timestamp).get('day')}` }) + 
-      ' ' +
-      moment(timestamp).format(' DD / MM / YYYY');
-  }
-  return intl.formatMessage({ id: `weekdays.${moment(timestamp).get('day')}` }) + 
-    ' ' +
-    moment(timestamp).format('DD/ MM/ YYYY hh:mm a');
+    return intl.formatDate(new Date(timestamp), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' }); 
+  } 
+  return intl.formatDate(new Date(timestamp), { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric', hour: 'numeric', minute: 'numeric' }); 
 };
 
 const getPeriodTimeLabel = function (timestamp, period, intl) {
@@ -273,21 +264,17 @@ const getPeriodTimeLabel = function (timestamp, period, intl) {
 
 const getTimeLabelByGranularityShort = function (timestamp, granularity, period, intl) {
   if (granularity === 4) {
-    return intl.formatMessage({ 
-      id: `months.${moment(timestamp).get('month')}`,
-    });
+    return intl.formatDate(new Date(timestamp), { month: 'short' });
   } else if (granularity === 3 && period === 'month') {
     return intl.formatMessage({ id: 'periods.week' }) + 
       ' ' +
       moment(timestamp).get('isoweek');
   } else if (granularity === 2 && (period === 'month' || period === 'custom')) {
-    return moment(timestamp).format('DD/MM');
+    return intl.formatDate(new Date(timestamp), { day: 'numeric', month: 'numeric' }); 
   } else if (granularity === 2) {
-    return intl.formatMessage({ 
-      id: `weekdays.${moment(timestamp).get('day')}`,
-    });
+    return intl.formatDate(new Date(timestamp), { weekday: 'short' });
   } else if (granularity === 1 || granularity === 0) { 
-    return moment(timestamp).format('hh:mm');
+    return intl.formatDate(new Date(timestamp), { hour: 'numeric', minute: 'numeric' }); 
   }
   return ' ';
 };

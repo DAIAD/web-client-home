@@ -103,7 +103,7 @@ function Session(props) {
   }
   return (
     <div className="shower-container">
-      <div className="shower-chart-area">
+      <div className="meter-chart-area">
         <div className="limited-data-text">
           <h4>
             <div> 
@@ -170,7 +170,7 @@ const SessionModal = React.createClass({
     this.props.setActiveSession(device, id, timestamp);
   },
   render: function () {
-    const { data } = this.props;
+    const { data, activeDeviceType } = this.props;
     if (!data) return <div />;
     const { next, prev } = data;
     const disabledNext = !Array.isArray(next);
@@ -180,7 +180,11 @@ const SessionModal = React.createClass({
         animation={false} 
         show={this.props.showModal} 
         onHide={this.onClose} 
-        dialogClassName="session-modal"
+        dialogClassName={activeDeviceType === 'AMPHIRO' ? 
+          'shower-modal' 
+           : 
+          'session-modal'
+        }
         bsSize="large"
         onKeyDown={(e) => { 
           if (e.keyCode === 39 && !disabledNext) {
@@ -195,15 +199,12 @@ const SessionModal = React.createClass({
             {
               data.id ?
                 <span>
-                  { 
-                    data.ignored ? 
-                      <span><FormattedMessage id="history.not-a-shower" /></span>
-                      :
-                        <div>
-                          <FormattedMessage id="section.shower" />
-                          <span>{` ${data.id}`}</span>
-                        </div>
-                  }
+                  <div>
+                    <img src={`${IMAGES}/shower.svg`} alt="shower" />
+                    &nbsp;&nbsp;
+                    <FormattedMessage id="section.shower" />
+                    <span>{` #${data.id}`}</span>
+                  </div>
                 </span>
                 :
                 <FormattedMessage id="section.shower-aggregated" />
