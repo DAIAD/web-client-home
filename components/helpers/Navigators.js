@@ -37,14 +37,17 @@ function CustomTimeNavigator(props) {
 }
 
 function TimeNavigator(props) {
-  const { time, hasNext, handlePrevious, handleNext } = props;
+  const { time, hasNext = true, handlePrevious, handleNext } = props;
 
   if (!time.startDate || !time.endDate) return (<div />);
   return (
     <div className="navigator">
-      <a className="navigator-child pull-left" onClick={handlePrevious}>
+      <button 
+        className="btn-a navigator-child pull-left" 
+        onClick={handlePrevious}
+      >
         <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
-      </a>
+      </button>
       <div className="navigator-child">
         <FormattedDate 
           value={time.startDate} 
@@ -61,9 +64,12 @@ function TimeNavigator(props) {
         />
       </div>
       { hasNext ? 
-        <a className="navigator-child pull-right" onClick={handleNext}>
+        <button 
+          className="btn-a navigator-child pull-right" 
+          onClick={handleNext}
+        >
           <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
-        </a>
+        </button>
         :
         <div className="navigator-child pull-right">&nbsp;</div>
       }
@@ -77,9 +83,12 @@ function ShowerNavigator(props) {
     <div className="navigator">
       { 
         hasPrevious ? 
-          <a className="navigator-child pull-left" onClick={handlePrevious}>
+          <button 
+            className="btn-a navigator-child pull-left" 
+            onClick={handlePrevious}
+          >
             <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
-          </a>
+          </button>
           :
           <div className="navigator-child pull-left">
             &nbsp;
@@ -102,9 +111,12 @@ function ShowerNavigator(props) {
       </div>
       {
         hasNext ?
-          <a className="navigator-child pull-right" onClick={handleNext}>
+          <button 
+            className="btn-a navigator-child pull-right" 
+            onClick={handleNext}
+          >
             <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
-          </a>
+          </button>
           :
           <div className="navigator-child pull-right">
             &nbsp;
