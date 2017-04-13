@@ -64,6 +64,7 @@ const initHome = function (profile) {
       }
       if (configuration.favoriteCommon) {
         dispatch(CommonsManageActions.setFavorite(configuration.favoriteCommon));
+        dispatch(CommonsActions.setActive(configuration.favoriteCommon));
       }
     }
 
@@ -88,21 +89,18 @@ const initHome = function (profile) {
     
     dispatch(FormActions.setForm('profileForm', profileForm));
 
-    dispatch(HistoryActions.initPriceBrackets());
-    dispatch(HistoryActions.initWaterBreakdown());
-
-    const fetchCommonsData = dispatch(CommonsActions.getMyCommons())
-    .then(commons => Array.isArray(commons) && commons.length > 0 ? 
-          dispatch(CommonsActions.setActive(commons[0].key)) 
-          : null);
-
-    const fetchWidgetsData = dispatch(DashboardActions.fetchAllWidgetsData());
-
-    return Promise.all([fetchCommonsData, fetchWidgetsData])
-    .then(() => {
+    if (profile.locale) {
       dispatch(LocaleActions.setLocale(profile.locale));
-      return Promise.resolve({ success: true, profile });
-    });
+    }
+
+    // need to perform following actions sequentially 
+    return [
+      HistoryActions.initPriceBrackets(),
+      HistoryActions.initWaterBreakdown(),
+      CommonsActions.getMyCommons(),
+      DashboardActions.fetchAllWidgetsData(),
+    ]
+    .reduce((prev, curr) => prev.then(() => dispatch(curr)), Promise.resolve());
   };
 };
 
