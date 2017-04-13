@@ -306,13 +306,12 @@ const fetchData = function () {
     });
   };
 };
-
-const setDataQueryAndFetch = function (query) {
+const setQuery = function (query) {
   return function (dispatch, getState) {
     if (!query) return;
-    const { timeFilter, time, deviceType, active, members } = query;
+    const { period, time, deviceType, active, members } = query;
     
-    if (timeFilter != null) dispatch(setTimeFilter(timeFilter));
+    if (period != null) dispatch(setTimeFilter(period));
 
     if (time != null) dispatch(updateTime(time));
     if (deviceType != null) dispatch(setActiveDeviceType(deviceType));
@@ -324,8 +323,20 @@ const setDataQueryAndFetch = function (query) {
       dispatch(searchCommonMembers());
     }
     if (members != null) dispatch(setSelectedMembers(members));
+  };
+};
 
+const setDataQueryAndFetch = function (query) {
+  return function (dispatch, getState) {
+    dispatch(setQuery(query));
     dispatch(fetchData());
+  };
+};
+
+const linkToCommons = function (query) {
+  return function (dispatch, getState) {
+    dispatch(setQuery(query));
+    dispatch(push('commons'));
   };
 };
 
@@ -403,4 +414,5 @@ module.exports = {
   setDataQueryAndFetch,
   fetchData,
   getMyCommons,
+  linkToCommons,
 };

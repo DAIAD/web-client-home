@@ -3,9 +3,9 @@ const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 
 const DashboardActions = require('../actions/DashboardActions');
-const { linkToHistory } = require('../actions/HistoryActions');
 const { saveConfiguration } = require('../actions/UserActions');
 const { setForm, resetForm } = require('../actions/FormActions');
+const { linkToSection } = require('../actions/InitActions');
 
 const Dashboard = require('../components/sections/dashboard/');
 
@@ -33,10 +33,10 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
     ...DashboardActions, 
-    linkToHistory, 
     saveConfiguration, 
     setForm, 
-    resetForm, 
+    resetForm,
+    linkToSection,
   }, dispatch);
 }
 

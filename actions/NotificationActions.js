@@ -183,8 +183,9 @@ const setActiveMessage = function (id, type) {
  * @param {String} options.id - Message id to set active 
  * @param {Array} options.category - Message category to set active 
  */
-const linkToMessage = function (id, type) {
+const linkToNotification = function (query) {
   return function (dispatch, getState) {
+    const { id, type } = query;
     dispatch(setActiveMessage(id, type));
     dispatch(push('/notifications'));
   };
@@ -322,7 +323,7 @@ const fetchInitial = function () {
 };
 
 module.exports = {
-  linkToMessage,
+  linkToNotification,
   fetch,
   fetchInitial,
   fetchMoreAll,

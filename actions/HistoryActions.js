@@ -723,7 +723,7 @@ const fetchAndSetQuery = function (query) {
 const linkToHistory = function (options) {
   return function (dispatch, getState) {
     dispatch(setQuery(options));
-    dispatch(push('/history'));
+    dispatch(push('history'));
   };
 };
 

@@ -22,8 +22,8 @@ const WidgetItem = React.createClass({
     };
   },
   render: function () {
-    const { widget, updateWidgetAndFetch, removeWidget, _t, linkToHistory, width } = this.props;
-    const { id, widgetId, icon, error, period, type, display, periods, time, timeDisplay } = widget;
+    const { widget, updateWidgetAndFetch, removeWidget, _t, linkToSection, width } = this.props;
+    const { id, widgetId, icon, error, period, type, display, periods, time, timeDisplay, linkTo = 'history' } = widget;
     return (
       <div 
         className="widget"
@@ -88,7 +88,7 @@ const WidgetItem = React.createClass({
         <div className="widget-footer">
           <button 
             className="btn-a"
-            onClick={() => linkToHistory(widget)}
+            onClick={() => linkToSection(linkTo, widget)}
           >
             {widget.more || _t('widget.explore')}
           </button>

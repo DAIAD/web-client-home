@@ -13,7 +13,7 @@ const CommonsActions = require('./CommonsActions');
 const CommonsManageActions = require('./CommonsManageActions');
 const FormActions = require('./FormActions');
 const { letTheRightOneIn } = require('./UserActions');
-const { fetchInitial: fetchAllMessages } = require('./NotificationActions');
+const NotificationActions = require('./NotificationActions');
 
 const { getMeterCount } = require('../utils/device');
 const { filterObj } = require('../utils/general');
@@ -30,6 +30,21 @@ const setReady = function () {
   };
 };
 
+const linkToSection = function (section, options) {
+  return function (dispatch, getState) {
+    switch (section) {
+      case 'history':
+        return dispatch(HistoryActions.linkToHistory(options));
+      case 'notifications': 
+        return dispatch(NotificationActions.linkToNotification(options.id, options.type));
+      case 'commons':
+        return dispatch(CommonsActions.linkToCommons(options));
+      default:
+        return Promise.resolve();
+    }
+  };
+};
+
 
 /**
  * Call all necessary actions to initialize app with profile data 
@@ -38,7 +53,7 @@ const setReady = function () {
  */
 const initHome = function (profile) {
   return function (dispatch, getState) { 
-    dispatch(fetchAllMessages());
+    dispatch(NotificationActions.fetchInitial());
     if (profile.configuration) {
       const configuration = JSON.parse(profile.configuration);
       if (configuration.widgets) {
@@ -94,4 +109,5 @@ const initHome = function (profile) {
 module.exports = {
   initHome,
   setReady,
+  linkToSection,
 };

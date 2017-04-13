@@ -31,7 +31,7 @@ const Commons = React.createClass({
   },
   handlePeriodSelect: function (key) {
     const time = timeUtil.getTimeByPeriod(key);
-    if (time) this.props.actions.setDataQueryAndFetch({ timeFilter: key, time });
+    if (time) this.props.actions.setDataQueryAndFetch({ period: key, time });
   }, 
   handlePrevious: function () { 
     this.props.actions.setDataQueryAndFetch({ time: this.props.previousPeriod });
@@ -202,9 +202,8 @@ const Commons = React.createClass({
                     </bs.Tabs>
                   :
                   <span />
-                  }
-
-              </div>
+                }
+            </div>
           </SidebarRight>
 
         </div>
