@@ -524,6 +524,13 @@ module.exports = {
         period: 'month',
         periodIndex: -1,
       },
+      {
+        id: 'commons',
+        type: 'commons',
+        metric: 'volume',
+        display: 'chart',
+        period: 'year',
+      },
     ],
   },
   HEATING_SYSTEMS: ['electricity', 'oil', 'gas'],

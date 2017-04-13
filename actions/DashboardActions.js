@@ -180,6 +180,7 @@ const fetchWidgetData = function (id) {
     const members = getState().user.profile.household.members;
     const brackets = getState().section.history.priceBrackets;
     const breakdown = getState().section.history.waterBreakdown;
+    const common = getState().section.commons.myCommons.find(c => c.key === getState().section.settings.commons.favorite);
 
     return dispatch(QueryActions.fetchWidgetData({ 
       ...widget, 
@@ -187,6 +188,7 @@ const fetchWidgetData = function (id) {
       members,
       brackets,
       breakdown,
+      common,
     }))
     .then(res => dispatch(setWidgetData(id, res)))
     .catch((error) => { 
@@ -277,7 +279,6 @@ const setDeviceType = function (deviceType) {
     deviceType,
   };
 };
-
 
 module.exports = {
   resetDirty,

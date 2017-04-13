@@ -554,6 +554,60 @@ const budget = function (widget, devices, intl) {
   };
 };
 
+const meterCommon = function (widget, devices, intl) {
+  const { data = [], period, deviceType, metric, common, commonData } = widget;
+  console.log('meter common util', widget);
+  
+  if (!common) {
+    return {
+      ...widget,
+      error: intl.formatMessage({ id: 'commons.empty' }),
+    };
+  }
+  const time = widget.time ? widget.time : getTimeByPeriod(period);
+  const periods = PERIODS.METER.filter(p => p.id !== 'custom' && p.id !== 'day');
+
+  const reduced = reduceMetric(devices, data, metric);
+  const mu = getMetricMu(metric);
+
+  const xCategories = getChartMeterCategories(time);
+  const chartCategories = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
+
+  
+  const chartData = data.map(devData => ({ 
+      name: intl.formatMessage({ id: 'common.me' }), 
+      data: getChartMeterData(devData.sessions, 
+                              xCategories,
+                              time,
+                              metric
+                             ),
+    }));
+
+  
+  const commonChartData = Array.isArray(commonData) ? [{
+    name: common.name,
+    data: getChartMeterData(commonData,
+                            xCategories, 
+                            time,
+                            metric
+                           ),
+    fill: 0.1,
+    symbol: 'emptyRectangle',
+  }]
+  : [];
+
+  return {
+    ...widget,
+    chartType: 'line',
+    time,
+    periods,
+    chartCategories: chartCategories,
+    chartData: [...chartData, ...commonChartData],
+    mu,
+    linkTo: 'commons',
+  };
+};
+
 const prepareWidget = function (widget, devices, intl) {
   switch (widget.type) {
     case 'tip': 
@@ -578,6 +632,8 @@ const prepareWidget = function (widget, devices, intl) {
       return budget(widget, devices, intl);
     case 'wateriq': 
       return waterIQ(widget, devices, intl);
+    case 'commons':
+      return meterCommon(widget, devices, intl);
     default:
       return widget;
   }

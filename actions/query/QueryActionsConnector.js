@@ -351,7 +351,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
    */
   const fetchWidgetData = function (options) {
     return function (dispatch, getState) {
-      const { type, userKey, deviceType, deviceKey = null, period, periodIndex, members, brackets, breakdown } = options;
+      const { type, userKey, deviceType, deviceKey = null, period, periodIndex, members, brackets, breakdown, common } = options;
 
       if (!type || !deviceType) {
         console.error('fetchWidgetData: Insufficient data provided (need type, deviceType):', options);
@@ -407,6 +407,22 @@ const connectActionsToQueryBackend = function (QueryBackend) {
             return { ...res, brackets };
           } else if (type === 'breakdown') {
             return { ...res, breakdown };
+          } else if (type === 'commons') {
+            return dispatch(queryDataAverage({
+              time,
+              source: 'METER',
+              population: [{ 
+                type: 'GROUP',
+                group: common.key,
+              }],
+            }))
+            .then(populations => Array.isArray(populations) && populations.length > 0 ?
+                 populations[0] : [])  
+            .then(commonData => ({
+              ...res,
+              common,
+              commonData,
+            }));
           }
           return Promise.resolve(res);
         });

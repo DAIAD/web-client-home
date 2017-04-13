@@ -147,8 +147,8 @@
     "explore": "See more",
     "explore-showers": "Explore all showers",
     "explore-last-shower": "See details",
-    "explore-swm": "Explore consumption",
-    "explore-comparisons": "Explore shower comparisons",
+    "explore-swm": "See more",
+    "explore-comparisons": "See comparisons",
     "titles": {
       "totalVolumeStatAmphiro": "Shower Volume (metric)",
       "totalVolumeChartAmphiro": "Shower Volume (progress)",
@@ -167,7 +167,8 @@
       "comparison": "Comparison - last month",
       "budget": "Monthly budget",
       "wateriqStat": "Water IQ - last month",
-      "wateriqChart": "Water IQ Comparison - last month"
+      "wateriqChart": "Water IQ Comparison - last month",
+      "commons": "Community comparison"
     },
     "descriptions": {
       "totalVolumeStatAmphiro": "A stat widget displaying the total consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
@@ -187,7 +188,8 @@
       "comparison": "A widget showing your consumption in comparison to others, like your neighbors or your city average for the previous month.",
       "budget": "A widget showing your consumption based on your daily budget.",
       "wateriqStat": "A widget showing your Water IQ for the previous month.",
-      "wateriqChart": "A chart widget showing your Water IQ for the previous month against your city, neighbors and similar users."
+      "wateriqChart": "A chart widget showing your Water IQ for the previous month against your city, neighbors and similar users.",
+      "commons": "A chart widget showing your consumption against your favorite community for the current month. You can later change this to weekly, or monthly period. You can select your favorite community in the settings section."
     }
   },
   "shower": {
