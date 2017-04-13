@@ -191,7 +191,7 @@ function RankingWidget(props) {
     <div>
       <ChartWidget 
         {...props} 
-        height={props.height - 30}
+        height={props.height - 40}
       />
       <div style={{ padding: '0 10px' }}>
       {

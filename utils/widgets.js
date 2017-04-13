@@ -68,8 +68,9 @@ const amphiroMembersRanking = function (widget, devices, intl) {
     average: reduceMetric(devices, m.sessions, metric, true),
     showers: m.sessions.reduce((p, c) => p + c.sessions.length, 0),
   }))
+  .filter(x => x.showers > 0)
   .sort((a, b) => a.average - b.average)
-  .filter((x, i) => i < 3);
+  .filter((x, i) => i < 5);
   
   const chartCategories = membersData.map(m => m.name); 
   const chartData = [{
@@ -77,7 +78,8 @@ const amphiroMembersRanking = function (widget, devices, intl) {
     data: membersData.map(x => x.average),
   }];
   const mu = getMetricMu(metric);
-  const chartColors = ['#7AD3AB', '#2d3480', '#abaecc'];
+  const chartColors = ['#7AD3AB', '#abaecc', '#2d3480', '#808285', '#CD4D3E'];
+
   const chartColorFormatter = colorFormatterSingle(chartColors);
 
   return {
