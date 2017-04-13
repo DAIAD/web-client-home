@@ -58,9 +58,10 @@ const editMember = function (data) {
     const { index } = data;
     const { members } = getState().user.profile.household;
 
-    if (!index || index === -1) {
+    if (index == null || index === -1) {
       return dispatch(addMember(data));
     }
+
     const newMembers = members.map(m => m.index === index ? { ...m, ...data, active: true } : m);
 
     return dispatch(saveMembers(newMembers));
