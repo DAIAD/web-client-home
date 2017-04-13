@@ -248,7 +248,7 @@ const meterForecast = function (widget, devices, intl) {
     console.error('only meter forecast supported');
   }
   const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
-  const periods = PERIODS.METER.filter(p => p.id !== 'custom');
+  const periods = []; 
 
   const device = getDeviceKeysByType(devices, deviceType);
   
@@ -259,7 +259,7 @@ const meterForecast = function (widget, devices, intl) {
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
   
   const chartData = data.map(devData => ({ 
-      name: intl.formatMessage({ id: 'devices.meter' }), 
+      name: intl.formatMessage({ id: 'widget.consumption' }), 
       data: getChartMeterData(devData.sessions, 
                               xCategories,
                               time,
@@ -274,12 +274,17 @@ const meterForecast = function (widget, devices, intl) {
                             time,
                             metric
                            ),
+    lineType: 'dashed',
+    color: '#2d3480',
+    fill: 0.1,
+    symbol: 'emptyRectangle',
   }]
   : [];
 
   return {
     ...widget,
-    chartType: 'bar',
+    chartType: 'line',
+    timeDisplay: moment(time.startDate).year(),
     time,
     periods,
     chartCategories: xCategoryLabels,
