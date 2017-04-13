@@ -221,7 +221,6 @@ const getForecastData = function (props) {
     ...statsData.sessions.find(s => s.timestamp === session.timestamp),
     devName: 'SWM',
     forecast: Math.round(session.volume * 100) / 100,
-    member: props.user.firstname,
     timestamp: session.timestamp,
     date: getTimeLabelByGranularity(session.timestamp, 
                                     props.time.granularity, 

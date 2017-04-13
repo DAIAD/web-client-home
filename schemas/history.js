@@ -24,38 +24,55 @@ const meter = [
     name: '',
     csv: false,
     value: (value, row) => {
-      const { min, max } = row;
       if (row.percentDiff == null) {
         return (
           <span>
             <i className="dash" />
-            &nbsp;
-            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
-            { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
           </span>
         );
       } else if (row.percentDiff < 0) {
         return (
           <span>
             <i className="fa fa-arrow-down green" />
-            &nbsp;
-            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
           </span>
         );
       }
       return (
         <span>
           <i className="fa fa-arrow-up red" />
-          &nbsp;
-          { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
         </span>
       );
     },
   },
   {
-    id: 'member',
-    name: <FormattedMessage id="common.user" />,
-    icon: 'user',
+    id: 'min-max',
+    name: '', 
+    csv: false,
+    value: (value, row) => {
+      const { min, max } = row;
+      if (min) {
+        return (
+          <span>
+            <i className="fa fa-check green " />&nbsp;&nbsp;
+            <FormattedMessage 
+              id="history.consumption-min-short" 
+              values={{ period: row.period }} 
+            />
+          </span>
+        );
+      } else if (max) {
+        return (
+          <span>
+            <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
+            <FormattedMessage 
+              id="history.consumption-max-short" 
+              values={{ period: row.period }} 
+            />
+          </span>
+        );
+      }
+      return <span />;
+    },
   },
   {
     id: 'date',
