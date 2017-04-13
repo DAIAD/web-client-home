@@ -260,19 +260,19 @@ const fetchData = function () {
 
     const common = {
       type: 'GROUP',
-      name: active.name,
+      label: active.name,
       group: active.key,
     };
 
     const myself = {
       type: 'USER',
-      name: 'Me',
+      label: 'common.me',
       users: [getState().user.profile.key],
     };
 
     const selected = selectedMembers.map(user => ({
       type: 'USER',
-      name: `${user.firstname} ${user.lastname}`,
+      label: `${user.firstname} ${user.lastname}`,
       users: [user.key],
     }));
 
@@ -283,21 +283,18 @@ const fetchData = function () {
     ];
 
     dispatch(setSessions([]));
+    
     // serialize query to take advantage of cache (?)
     populations.forEach((population) => {
-      dispatch(QueryActions.queryData({ 
+      dispatch(QueryActions.queryDataAverage({ 
         time,
         source: activeDeviceType,
         population: [population],
-        metrics: ['AVERAGE', 'SUM'],
       }))
-      .then((dataRes) => { 
-        const sessions = [...dataRes.meters, ...dataRes.devices].map(x => ({ 
-          label: populations.find(p => p.label === x.label) ? populations.find(p => p.label === x.label).name : '', 
-          sessions: x.points.map(y => ({ 
-            ...y, 
-            volume: y.volume.AVERAGE || y.volume.SUM 
-          })),
+      .then((series) => { 
+        const sessions = series.map(s => ({ 
+          label: population.label,
+          sessions: s,
         }));
         dispatch(appendSessions(sessions));
         dispatch(setDataSynced());

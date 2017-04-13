@@ -32,6 +32,7 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
+  const _t = formatMessage(ownProps.intl);
   const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
   
   const periods = PERIODS.METER
@@ -46,7 +47,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, stateProps.time.granularity, stateProps.timeFilter, ownProps.intl);
 
   const chartData = stateProps.data.map((data, i) => ({
-    name: data.label || '', 
+    name: _t(data.label) || '', 
     data: getChartMeterData(data.sessions,
                             xCategories, 
                             stateProps.time,
@@ -73,7 +74,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     nextPeriod: timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.endDate),
     chartData,
     chartCategories: xCategoryLabels,
-    _t: formatMessage(ownProps.intl),
+    _t,
   };
 }
 
