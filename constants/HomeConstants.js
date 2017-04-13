@@ -527,7 +527,7 @@ module.exports = {
     ],
   },
   HEATING_SYSTEMS: ['electricity', 'oil', 'gas'],
-  SYSTEM_UNITS: ['metric', 'imperial'],
+  SYSTEM_UNITS: ['METRIC', 'IMPERIAL'],
   AMPHIRO_PROPERTIES: [
     {
       id: 'heating-system',

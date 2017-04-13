@@ -290,8 +290,8 @@
     "unit": {
       "label": "System unit",
       "default": "Select system unit",
-      "metric": "Metric",
-      "imperial": "Imperial"
+      "METRIC": "Metric",
+      "IMPERIAL": "Imperial"
     }
   },
   "member": {

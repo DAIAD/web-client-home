@@ -123,11 +123,11 @@ function ProfileForm(props) {
         _t={_t}
         id="unit"
         label="profile.unit.label"
-        defaultValue="metric"
+        defaultValue="METRIC"
         titlePrefix="profile.unit"
         value={profile.unit}
         update={val => updateProfileForm({ unit: val })}
-        options={SYSTEM_UNITS.map(u => u.toLowerCase())}
+        options={SYSTEM_UNITS}
       />
 
     
