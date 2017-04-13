@@ -9,7 +9,7 @@ const meter = [
     name: <FormattedMessage id="history.volume" />,
     value: (value, row) => 
       <span style={{ fontSize: '2.5em' }}>
-        { value ? 
+        { value != null ? 
           <div>
           <span>{value}</span>
           <span style={{ fontSize: '0.6em' }}> {getMetricMu('volume')}</span>
