@@ -14,7 +14,7 @@ function AmphiroProperties(props) {
           if (property.type === 'input') {
             return (
               <bs.Input
-                id={property.id}
+                id={`${deviceForm.name}-${property.id}`}
                 style={{ maxWidth: 200 }}
                 type={property.type}
                 value={deviceForm[property.id]}
@@ -28,7 +28,7 @@ function AmphiroProperties(props) {
             return (
               <Dropdown
                 _t={_t}
-                id={property.id}
+                id={`${deviceForm.name}-${property.id}`}
                 label={`devices.${property.id}.label`}
                 titlePrefix={`devices.${property.id}`}
                 value={deviceForm[property.id]}

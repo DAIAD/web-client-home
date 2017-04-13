@@ -14,7 +14,6 @@ const CreateCommons = React.createClass({
     return (
       <form 
         id="form-common-create"
-        style={{ width: '50%', minWidth: 200 }}
         onSubmit={(e) => { 
           e.preventDefault();
           confirmCreateCommon();

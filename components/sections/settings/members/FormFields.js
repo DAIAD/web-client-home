@@ -10,7 +10,7 @@ const { PNG_IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 function MemberFormFields(props) {
   const { _t, errors, member, fetchProfile, updateMemberForm, setError, dismissError, goTo } = props;
   return (
-    <div> 
+    <div className="member-form-fields"> 
       { 
         member.photo ? 
           <img 

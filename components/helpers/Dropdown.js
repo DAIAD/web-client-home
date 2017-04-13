@@ -8,15 +8,14 @@ function Dropdown(props) {
   return (
     <div className="form-group">
       <label 
-        className="control-label col-md-3" 
-        style={{ paddingLeft: 0 }} 
-        htmlFor={`${id}-switcher`}
+        className="control-label" 
+        htmlFor={id}
       >
         <span><FormattedMessage id={label} /></span>
       </label>
       <bs.DropdownButton
         title={_t(`${titlePrefix}.${value}`)} 
-        id={`${id}-switcher`}
+        id={id}
         value={value}
         onSelect={(e, val) => { 
           update(val);

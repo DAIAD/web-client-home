@@ -22,7 +22,7 @@ const JoinCommons = React.createClass({
     return (
       <div style={{ margin: 20 }}>
         <form 
-          className="search-field"
+          className="search-field commons-join-search"
           onSubmit={(e) => { 
             e.preventDefault(); 
             setCommonsQueryAndFetch({ index: 0 }); 

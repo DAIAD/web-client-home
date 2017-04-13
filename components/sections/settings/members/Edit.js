@@ -75,22 +75,25 @@ function EditMembers(props) {
                   />
             
                   <div>
-                    <bs.ButtonInput 
+                    <button
                       type="submit" 
+                      className="btn"
                       style={{ float: 'right', marginRight: 10 }} 
-                      value={_t('forms.update')} 
-                    />
+                    >
+                      <FormattedMessage id="forms.update" />
+                    </button>
                     {
                       member.index !== 0 ?
-                        <bs.Button 
+                        <button 
                           style={{ float: 'right', marginRight: 10 }} 
+                          className="btn"
                           bsStyle="danger"
                           onClick={() => { 
                             confirmDeleteMember(memberForm);
                           }}
                         >
                           <FormattedMessage id="forms.delete" />
-                        </bs.Button>
+                        </button>
                         :
                           <span />
                    }

@@ -9,7 +9,7 @@ const { IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 function CommonForm(props) {
   const { _t, values, onChange, disabled, errors } = props;
   return (
-    <div>
+    <div className="commons-form-fields">
       { 
         values.image ? 
           <img 
