@@ -8,52 +8,85 @@ const getSessionsCount = function (devices, data) {
   return data.map(dev => dev.sessions.length).reduce((p, c) => p + c, 0);
 };
 
+
+const calculateIndexes = function (sessions) { 
+  return sessions.map((session, idx, array) => ({
+    ...session, 
+    prev: array[idx + 1] ? 
+    [
+      array[idx + 1].device, 
+      array[idx + 1].id, 
+      array[idx + 1].timestamp,
+    ]
+    : null,
+    next: array[idx - 1] ? 
+    [
+      array[idx - 1].device, 
+      array[idx - 1].id, 
+      array[idx - 1].timestamp,
+    ]
+    : null,
+  }));
+};
+
+const sortSessions = function (psessions, by = 'timestamp', order = 'desc') {
+  const sessions = [...psessions];
+  const sorted = order === 'asc' ? 
+    sessions.sort((a, b) => a[by] - b[by]) 
+    : 
+    sessions.sort((a, b) => b[by] - a[by]);
+  return calculateIndexes(sorted);
+};
+
 // reduces array of devices with multiple sessions arrays
 // to single array of sessions 
 // and prepare for table presentation
 const prepareSessionsForTable = function (devices, data, members, user, granularity, intl) {
   if (!devices || !data) return [];
-  const sessions = data.map(device => device.sessions 
-                  .map((session, idx, array) => {
-                    const devType = getDeviceTypeByKey(devices, device.deviceKey);
-                    const vol = 'volume'; 
-                    const diff = array[idx - 1] != null ? (array[idx][vol] - array[idx - 1][vol]) : null;
-                    const member = session.member && session.member.index && Array.isArray(members) ? members.find(m => session.member.index === m.index) : null;
-                    return {
-                      ...session,
-                      real: !session.history,
-                      index: idx, 
-                      devType,
-                      vol: session.volume,
-                      device: device.deviceKey,
-                      devName: getDeviceNameByKey(devices, device.deviceKey) || 'SWM',
-                      duration: session.duration ? Math.floor(session.duration / 60) : null,
-                      friendlyDuration: getFriendlyDuration(session.duration), 
-                      temperature: session.temperature ? 
-                        Math.round(session.temperature * 10) / 10 
-                        : null,
-                      energy: session.energy ? Math.round((session.energy / 1000) * 100) / 100 : null,
-                      energyClass: getEnergyClass(session.energy), 
-                      percentDiff: (diff != null && array[idx - 1][vol] !== 0) ? 
-                        Math.round(10000 * (diff / array[idx - 1][vol])) / 100 
-                        : null,
-                      hasChartData: Array.isArray(session.measurements) && 
-                        session.measurements.length > 0,
-                      member: member ? member.name : user,
-                      date: devType === 'AMPHIRO' ? 
-                        intl.formatDate(new Date(session.timestamp), { 
-                          weekday: 'short', 
-                          day: 'numeric', 
-                          month: 'numeric', 
-                          year: 'numeric' 
-                        })
-                        : getTimeLabelByGranularity(session.timestamp, 
-                                                    granularity, 
-                                                    intl
-                                                   ),
-                    };
-                  }))
-                .reduce((p, c) => [...p, ...c], []);
+  const sessions = data.map((device) => { 
+    const devType = getDeviceTypeByKey(devices, device.deviceKey);
+    const sortBy = devType === 'AMPHIRO' ? 'id' : 'timestamp';
+    return sortSessions(device.sessions, sortBy, 'asc')
+    .map((session, idx, array) => {
+      const vol = 'volume'; 
+      const diff = array[idx - 1] != null ? (array[idx][vol] - array[idx - 1][vol]) : null;
+      const member = session.member && session.member.index && Array.isArray(members) ? members.find(m => session.member.index === m.index) : null;
+      return {
+        ...session,
+        real: !session.history,
+        index: idx, 
+        devType,
+        vol: session.volume,
+        device: device.deviceKey,
+        devName: getDeviceNameByKey(devices, device.deviceKey) || 'SWM',
+        duration: session.duration ? Math.floor(session.duration / 60) : null,
+        friendlyDuration: getFriendlyDuration(session.duration), 
+        temperature: session.temperature ? 
+          Math.round(session.temperature * 10) / 10 
+          : null,
+        energy: session.energy ? Math.round((session.energy / 1000) * 100) / 100 : null,
+        energyClass: getEnergyClass(session.energy), 
+        percentDiff: (diff != null && array[idx - 1][vol] !== 0) ? 
+          Math.round(10000 * (diff / array[idx - 1][vol])) / 100 
+          : null,
+        hasChartData: Array.isArray(session.measurements) && 
+          session.measurements.length > 0,
+        member: member ? member.name : user,
+        date: devType === 'AMPHIRO' ? 
+          intl.formatDate(new Date(session.timestamp), { 
+            weekday: 'short', 
+            day: 'numeric', 
+            month: 'numeric', 
+            year: 'numeric' 
+          })
+          : getTimeLabelByGranularity(session.timestamp, 
+                                      granularity, 
+                                      intl
+                                     ),
+      };
+    }); 
+  })
+  .reduce((p, c) => [...p, ...c], []);
                 
   if (sessions.length === 0) { return []; }
   
@@ -128,35 +161,6 @@ const reduceMetric = function (devices, data, metric, average = false) {
     reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 10) / 10) : 0;
   }
   return reducedMetric;
-};
-
-const calculateIndexes = function (sessions) { 
-  return sessions.map((session, idx, array) => ({
-    ...session, 
-    prev: array[idx + 1] ? 
-    [
-      array[idx + 1].device, 
-      array[idx + 1].id, 
-      array[idx + 1].timestamp,
-    ]
-    : null,
-    next: array[idx - 1] ? 
-    [
-      array[idx - 1].device, 
-      array[idx - 1].id, 
-      array[idx - 1].timestamp,
-    ]
-    : null,
-  }));
-};
-
-const sortSessions = function (psessions, by = 'timestamp', order = 'desc') {
-  const sessions = [...psessions];
-  const sorted = order === 'asc' ? 
-    sessions.sort((a, b) => a[by] - b[by]) 
-    : 
-    sessions.sort((a, b) => b[by] - a[by]);
-  return calculateIndexes(sorted);
 };
 
 const getSessionById = function (sessions, id) {
