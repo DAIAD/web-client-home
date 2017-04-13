@@ -181,29 +181,7 @@ const Commons = React.createClass({
                      </div>
                      }
                    </div>
-                
-                   {
-                     active ? 
-                      <bs.Tabs 
-                        position="left" 
-                        tabWidth={20} 
-                        activeKey={activeDeviceType} 
-                        onSelect={this.handleDeviceTypeSelect}
-                      >
-                      {
-                       deviceTypes.map(devType => ( 
-                         <bs.Tab 
-                           key={devType.id} 
-                           eventKey={devType.id} 
-                           title={_t(devType.title)} 
-                         /> 
-                       ))
-                      }
-                    </bs.Tabs>
-                  :
-                  <span />
-                }
-            </div>
+                 </div>
           </SidebarRight>
 
         </div>
