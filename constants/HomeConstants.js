@@ -348,10 +348,6 @@ module.exports = {
         title: 'history.volume',
       }, 
       {
-        id: 'devName', 
-        title: 'history.device',
-      }, 
-      {
         id: 'energy', 
         title: 'history.energy',
       }, 
