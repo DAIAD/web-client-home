@@ -219,7 +219,7 @@ const validatePassword = function (password, confirmPassword) {
 const tableToCSV = function (schema, data) {
   const fields = schema.filter(field => field.csv !== false);
   return data.map(row => fields.map(field => row[field.id]).join('%2C'))
-  .reduce((p, c) => [p, c].join('%0A'), fields.map(field => field.name).join(', '));
+  .reduce((p, c) => [p, c].join('%0A'), fields.map(field => field.id).join(', '));
 };
 
 // Estimates how many bottles/buckets/pools the given volume corresponds to
