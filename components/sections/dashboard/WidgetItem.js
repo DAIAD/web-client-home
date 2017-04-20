@@ -4,6 +4,7 @@ const { Widget } = require('../../helpers/Widgets');
 
 const { IMAGES } = require('../../../constants/HomeConstants');
 
+
 function WidgetErrorDisplay(props) {
   return props.errors ? 
     <div style={{ zIndex: 100 }}>
@@ -13,7 +14,6 @@ function WidgetErrorDisplay(props) {
     :
     <div />;
 }
-
 
 const WidgetItem = React.createClass({
   getInitialState: function () {
@@ -35,7 +35,7 @@ const WidgetItem = React.createClass({
               { icon ? 
                 <img 
                   style={{ marginRight: 10, maxHeight: 25 }} 
-                  src={`${IMAGES}/${icon}`} 
+                  src={icon} 
                   alt="icon" 
                 />
                 :

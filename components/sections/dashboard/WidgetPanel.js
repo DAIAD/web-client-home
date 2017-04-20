@@ -12,9 +12,9 @@ function WidgetPanel(props) {
     <ResponsiveGridLayout 
       className="layout"
       layouts={{ lg: layout, md: layout, sm: layout }}
-      breakpoints={{ lg: 1080, md: 650, sm: 200 }}
-      cols={{ lg: 4, md: 4, sm: 2 }}
-      rowHeight={160}
+      breakpoints={{ lg: 1200, md: 800, sm: 200 }}
+      cols={{ lg: 6, md: 4, sm: 2 }}
+      rowHeight={165}
       measureBeforeMount
       draggableHandle=".widget-header"
       resizable
@@ -25,10 +25,6 @@ function WidgetPanel(props) {
       onDragStop={(newLayout) => {
         updateLayout(newLayout); 
       }} 
-      onLayoutChange={(newLayout) => {
-      }}
-      onBreakpointChange={(newBreakpoint) => {
-      }}
     >
       {
        widgets.map(widget => (

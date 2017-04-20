@@ -2,6 +2,8 @@ const React = require('react');
 const { FormattedMessage } = require('react-intl');
 const bs = require('react-bootstrap');
 
+const { PNG_IMAGES } = require('../../../constants/HomeConstants');
+
 function AddWidgetForm(props) {
   const { widgetToAdd, widgetTypes, deviceTypes, setForm, activeDeviceType, setDeviceType, setWidgetToAdd, onSubmit, _t } = props;
   const { title, description, id } = widgetToAdd;
@@ -30,14 +32,35 @@ function AddWidgetForm(props) {
             <ul className="add-widget-types">
               {
                 widgetTypes.map((t, idx) =>
-                  <li key={idx}>
+                  <li  
+                    key={idx} 
+                    className={`
+                      add-widget-type 
+                      ${t.display} 
+                      ${t.id === id ? 'selected' : ''}
+                      `}
+                  >
                     <button
-                      className={id === t.id ? 'btn-a selected' : 'btn-a'}  
+                      className="btn-a"
                       onClick={() => setWidgetToAdd(t)} 
                       value={t.id}
                       title={t.description}
                     >
-                      { t.title }
+                    { t.image ? 
+                      <div className="wrapper"> 
+                        <img
+                          src={`${PNG_IMAGES}/${t.image}`} 
+                          alt={t.id}
+                        />
+                        <span className="mask" />
+                        <h6 className="title">{t.title}</h6>
+                    </div>
+                      :
+                        <div className="wrapper"> 
+                          <span className="mask" />
+                          <h6 className="title">{t.title}</h6>
+                        </div>
+                      }
                     </button>
                   </li>
                 )
@@ -65,6 +88,7 @@ function AddWidgetModal(props) {
   const onSubmit = (e) => { 
     e.preventDefault();
     addWidget(widgetToAdd); 
+    resetWidgetToAdd();
     switchMode('normal'); 
   };
   const onHide = (e) => {
