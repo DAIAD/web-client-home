@@ -121,10 +121,12 @@ module.exports = {
     {
       id: 'METER', 
       title: 'devices.meter', 
+      image: 'water-meter.svg',
     }, 
     {
       id: 'AMPHIRO', 
       title: 'devices.amphiros', 
+      image: 'amphiro_small.svg',
     }
   ],
   MODES: {
@@ -138,14 +140,17 @@ module.exports = {
       { 
         id: 'stats', 
         title: 'history.volume',
+        image: 'volume.svg',
       },
       {
         id: 'forecasting',
         title: 'history.forecast',
+        image: 'stats.svg',
       },
       {
         id: 'pricing',
         title: 'history.cost',
+        image: 'money-navy.svg',
         periods: ['month'],
       },
       /*
@@ -298,28 +303,34 @@ module.exports = {
       {
         id: 'volume', 
         title: 'history.volume',
+        image: 'volume.svg',
       },
       {
         id: 'total',
         title: 'history.total',
+        image: 'volume.svg',
       },
     ],
     AMPHIRO: [
       {
         id: 'volume', 
         title: 'history.volume',
+        image: 'volume.svg',
       },
       {
         id: 'energy', 
         title: 'history.energy',
+        image: 'energy.svg',
       },
       {
         id: 'duration', 
         title: 'history.duration',
+        image: 'duration.svg',
       },
       {
         id: 'temperature', 
         title: 'history.temperature',
+        image: 'temperature.svg',
       },
     ],
   },

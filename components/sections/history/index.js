@@ -1,7 +1,6 @@
 const React = require('react');
 const { FormattedDate, FormattedMessage } = require('react-intl');
 const bs = require('react-bootstrap');
-const CheckboxGroup = require('react-checkbox-group');
 
 const MainSection = require('../../layout/MainSection');
 const Topbar = require('../../layout/Topbar');
@@ -16,7 +15,7 @@ const SessionData = require('../../../containers/SessionData');
 
 //utils
 const timeUtil = require('../../../utils/time');
-const { IMAGES } = require('../../../constants/HomeConstants');
+const { IMAGES, PNG_IMAGES, BASE64 } = require('../../../constants/HomeConstants');
 
 const History = React.createClass({
   componentWillMount: function () {
@@ -53,9 +52,11 @@ const History = React.createClass({
   handleModeSelect: function (val) {
     this.props.setQueryAndFetch({ mode: val });
   },
-  handleActiveDevicesChanged: function (vals) {
+  handleActiveDevicesChanged: function (val) {
     const switchDevType = this.props.activeDeviceType === 'METER' ? { deviceType: 'AMPHIRO' } : {};
-    this.props.setQueryAndFetch({ device: vals, ...switchDevType });
+    const found = this.props.activeDevice.find(d => d === val);
+    const device = found ? this.props.activeDevice.filter(d => d !== val) : [...this.props.activeDevice, val];
+    this.props.setQueryAndFetch({ device, ...switchDevType });
   },
   handleComparisonSelect: function (val) {
     this.props.setQueryAndFetch({ comparisons: [val] });
@@ -108,7 +109,7 @@ const History = React.createClass({
                 ))
               }
             </Tabs>
-            : <i /> }
+            : <span /> }
             { this.props.activeDeviceType === 'AMPHIRO' ? 
             <Tabs 
               activeKey={this.props.filter} 
@@ -120,17 +121,17 @@ const History = React.createClass({
                     key={metric.id} 
                     eventKey={metric.id} 
                     title={_t(metric.title)} 
+                    image={`${IMAGES}/${metric.image}`}
                   /> 
                 ))
               }
             </Tabs>
-            : <i /> 
+            : <span /> 
             }
             <br />
             <br />
             { this.props.memberFilters && this.props.memberFilters.length > 0 ? 
               <div>
-                <h5 style={{ marginLeft: 20 }}><FormattedMessage id="history.member-filter" /></h5>
                 <Tabs
                   activeKey={this.props.memberFilter}
                   onSelect={val => this.props.setQueryAndFetch({ memberFilter: val })}
@@ -141,6 +142,8 @@ const History = React.createClass({
                       key={filter.id}
                       eventKey={filter.id}
                       title={filter.title}
+                      className="member-tab"
+                      image={filter.image ? `${BASE64}${filter.image}` : `${PNG_IMAGES}/daiad-consumer.png`}
                     />
                     ))
                 }
@@ -163,42 +166,28 @@ const History = React.createClass({
                      key={devType.id} 
                      eventKey={devType.id} 
                      title={_t(devType.title)} 
+                     image={`${IMAGES}/${devType.image}`}
                    /> 
                  ))
                 }
               </Tabs>
             }
-            <CheckboxGroup 
-              name="amphiro-devices" 
-              className="amphiro-devices" 
-              value={activeDeviceType === 'AMPHIRO' ? 
-                activeDevice
-                : []} 
-              onChange={this.handleActiveDevicesChanged}
+            
+            <TabsMulti
+              activeKeys={this.props.activeDevice}
+              onSelect={this.handleActiveDevicesChanged}
             >
-              {
-                Checkbox => (
-                  <div className="shower-devices">
-                    {
-                      amphiros.map(device => (
-                        <label 
-                          key={device.deviceKey} 
-                          className="shower-device-checkbox"
-                          htmlFor={device.deviceKey}
-                        >
-                          <Checkbox 
-                            id={device.deviceKey} 
-                            value={device.deviceKey} 
-                          /> 
-                          <label htmlFor={device.deviceKey} />
-                          {device.name || device.macAddress || device.serial}
-                        </label>
-                        ))
-                    }
-                  </div>
-                  )
-              }
-            </CheckboxGroup>
+            {
+              this.props.amphiros.map(device => (
+                <Tab
+                  key={device.deviceKey}
+                  eventKey={device.deviceKey}
+                  title={device.name}
+                  className={`amphiro-tab ${this.props.activeDeviceType !== 'AMPHIRO' ? 'blur' : ''}`}
+                />
+                ))
+            }
+            </TabsMulti>
             <br />
             
             <br />
@@ -220,6 +209,7 @@ const History = React.createClass({
                     eventKey={comparison.id}
                     icon={comparison.icon}
                     title={comparison.title}
+                    className="compare-tab"
                   />
                 ))}
               </TabsMulti>

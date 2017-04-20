@@ -44,11 +44,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const memberFilters = devType === 'AMPHIRO' ?
     [{
       id: 'all',
-      title: 'All',
+      title: _t('history.member-filter'),
     },
     ...members.map(member => ({
       id: member.index,
       title: member.name,
+      image: member.photo,
     })),
     ]
     :
@@ -64,7 +65,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                               stateProps.timeFilter, 
                               favoriteCommonName, 
                               members, 
-                              _t
+                              ownProps.intl
                              ),
   }));   
 
@@ -81,7 +82,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const [
     periods, 
     compareAgainst, 
-    sortOptions] = ['periods', 'comparisons', 'sort']
+    sortOptions
+  ] = ['periods', 'comparisons', 'sort']
     .map(x => activeMode && activeMode[x] ? 
          allOptions[x].filter(y => activeMode[x].includes(y.id)) 
            : allOptions[x]

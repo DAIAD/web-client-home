@@ -5,7 +5,7 @@ function Tab(props) {
     <li 
       key={props.key} 
       role="presentation" 
-      className={props.active ? 'active' : ''}
+      className={props.active ? `${props.className} active` : props.className}
     >
     <a 
       role="tab" 
@@ -21,9 +21,19 @@ function Tab(props) {
             className="tab-icon"
             src={props.image} 
             alt={props.key} 
+            style={{ maxWidth: 20, maxHeight: 25, marginRight: 5 }}
           />
          :
          <i />
+      }
+      {
+        props.icon ? 
+          <i 
+            className={`fa fa-${props.icon} navy`} 
+            style={{ width: 20, height: 20, marginRight: 5 }}
+          />
+          :
+          <i />
       }
       <span>{props.title}</span>
       {
