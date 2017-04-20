@@ -1,25 +1,25 @@
 const { getComparisonPeriod } = require('./time');
 
-const getMeterComparisonTitle = function (comparison, start, period, favCommon, _t) {
+const getMeterComparisonTitle = function (comparison, start, period, favCommon, intl) {
   let extra = '';
   if (comparison === 'last') {
-    extra = getComparisonPeriod(start, period, _t);
+    extra = getComparisonPeriod(start, period, intl);
   } else if (comparison === 'common') {
     extra = favCommon;
   }
-  return _t(`comparisons.${comparison}`, { comparison: extra });
+  return intl.formatMessage({ id: `comparisons.${comparison}` }, { comparison: extra });
 };
 
-const getAmphiroComparisonTitle = function (comparison, members, _t) {
+const getAmphiroComparisonTitle = function (comparison, members, intl) {
   const member = members.find(m => String(m.index) === comparison);
-  return _t('comparisons.member', { comparison: member ? member.name : '' });
+  return intl.formatMessage({ id: 'comparisons.member' }, { comparison: member ? member.name : '' });
 };
 
-const getComparisonTitle = function (devType, comparison, start, period, favCommon, members, _t) {
+const getComparisonTitle = function (devType, comparison, start, period, favCommon, members, intl) {
   if (devType === 'METER') {
-    return getMeterComparisonTitle(comparison, start, period, favCommon, _t);
+    return getMeterComparisonTitle(comparison, start, period, favCommon, intl);
   } else if (devType === 'AMPHIRO') {
-    return getAmphiroComparisonTitle(comparison, members, _t);
+    return getAmphiroComparisonTitle(comparison, members, intl);
   }
   return '';
 };

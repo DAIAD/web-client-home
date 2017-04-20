@@ -81,7 +81,7 @@ const getStatsMeterData = function (props) {
                                props.timeFilter, 
                                props.favoriteCommonName, 
                                props.members,
-                               props._t
+                               props.intl
                               ),
      data: getChartMeterData(compSessions, 
                       xCategories, 
@@ -158,7 +158,7 @@ const getStatsAmphiroData = function (props) {
                                props.timeFilter, 
                                props.favoriteCommonName, 
                                props.members,
-                               props._t
+                               props.intl
                               ) + ' (' + dev.name + ')',
      data: getChartAmphiroData(dev.sessions, xCategories, props.filter),
      fill: 0.1,
@@ -305,7 +305,7 @@ const getPricingData = function (props) {
                                  props.timeFilter, 
                                  props.favoriteCommonName, 
                                  props.members,
-                                 props._t
+                                 props.intl
                                 ),
        data: getChartMeterData(sessionsToCompare, 
                         xCategories, 
@@ -361,7 +361,7 @@ const getBreakdownData = function (props) {
                              props.timeFilter, 
                              props.favoriteCommonName, 
                              props.members,
-                             props._t
+                             props.intl
                             ),
     data: prepareBreakdownSessions(props.devices,
                                    [{ sessions: comparison.sessions }],
@@ -418,7 +418,7 @@ const getWaterIQData = function (props) {
                                           props.timeFilter, 
                                           props.favoriteCommonName, 
                                           props.members,
-                                          props._t
+                                          props.intl
                                          ),
      data: getChartMeterData(waterIQData,
                              statsData.xCategories, 
