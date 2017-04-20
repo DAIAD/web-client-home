@@ -8,6 +8,48 @@ const SessionDetails = require('./SessionDetails');
 const theme = require('../../chart/themes/session');
 const { IMAGES } = require('../../../constants/HomeConstants'); 
 
+function BetterOrWorse(props) {
+  const { better, percentDifference, period, _t } = props;
+  const betterStr = better ? 'better' : 'worse';
+  if (better === null) {
+    return (
+      <div>
+        { _t('comparisons.no-data') }
+      </div>
+    );
+  } else if (better) {
+    return (
+      <div>
+        <img 
+          src={`${IMAGES}/better.svg`} 
+          style={{ height: 25, marginRight: 10 }}
+          alt="better" 
+        />
+      {
+        _t(`comparisons.${betterStr}`, {
+          percent: percentDifference,
+          period, 
+        }) 
+      }
+    </div>
+    );
+  } 
+  return (
+    <div>
+      <img 
+        src={`${IMAGES}/worse.svg`} 
+        style={{ height: 25, marginRight: 10 }}
+        alt="worse" 
+      />
+      {
+      _t(`comparisons.${betterStr}`, {
+        percent: percentDifference,
+        period, 
+      }) 
+    }
+  </div>
+  );
+}
 
 function Session(props) {
   const { _t, data, chartData, chartCategories, chartFormatter, setSessionFilter, 
@@ -18,15 +60,7 @@ function Session(props) {
   
   const better = data.percentDiff != null ? data.percentDiff < 0 : null;
   const betterStr = better ? 'better' : 'worse';
-  let arrowClass;
- 
-  if (better == null) {
-    arrowClass = '';
-  } else if (better) {
-    arrowClass = 'fa fa-arrow-down green';
-  } else {
-    arrowClass = 'fa fa-arrow-up red';
-  }
+
   const percentDifference = data.percentDiff != null ? 
     Math.abs(data.percentDiff) 
     : '';
@@ -38,18 +72,12 @@ function Session(props) {
           <div className="limited-data-text">
             <h3><FormattedMessage id="history.limitedData" /></h3>
             <h5>
-              <i className={arrowClass} />
-              <span>
-                {
-                  better != null ? 
-                    _t(`comparisons.${betterStr}`, {
-                      percent: percentDifference,
-                      period: _t('section.shower').toLowerCase(), 
-                    }) 
-                    : 
-                   _t('comparisons.no-data')
-                }
-              </span>
+              <BetterOrWorse 
+                better={better} 
+                percentDifference={percentDifference}
+                period={_t('section.shower').toLowerCase()}
+                _t={_t}
+              />
             </h5>
           </div> 
         </div> 
@@ -133,18 +161,13 @@ function Session(props) {
             }
             </div>
             <br />
-            <div>
-              <i className={arrowClass} />
-              {
-                better != null ? 
-                  _t(`comparisons.${betterStr}`, {
-                      percent: percentDifference,
-                      period, 
-                    })
-                  : 
-                   _t('comparisons.no-data')
-              }
-            </div>
+            
+            <BetterOrWorse 
+              better={better} 
+              percentDifference={percentDifference}
+              period={period}
+              _t={_t}
+            />
           </h4>
         </div>
       </div>

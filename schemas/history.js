@@ -33,13 +33,21 @@ const meter = [
       } else if (row.percentDiff < 0) {
         return (
           <span>
-            <i className="fa fa-arrow-down green" />
+            <img 
+              src={`${IMAGES}/better.svg`} 
+              style={{ height: 25 }}
+              alt="better" 
+            />
           </span>
         );
       }
       return (
         <span>
-          <i className="fa fa-arrow-up red" />
+          <img 
+            src={`${IMAGES}/worse.svg`} 
+            style={{ height: 25 }}
+            alt="worse" 
+          />
         </span>
       );
     },
@@ -107,9 +115,21 @@ const amphiro = [
       if (row.percentDiff == null) {
         return <i className="dash" />;
       } else if (row.percentDiff < 0) {
-        return <i className="fa fa-arrow-down green" />;
+        return ( 
+          <img 
+            src={`${IMAGES}/better.svg`} 
+            style={{ height: 25 }}
+            alt="better" 
+          />
+        );
       }
-      return <i className="fa fa-arrow-up red" />;
+      return ( 
+          <img 
+            src={`${IMAGES}/worse.svg`} 
+            style={{ height: 25 }}
+            alt="worse" 
+          />
+        );
     },
   },
   {

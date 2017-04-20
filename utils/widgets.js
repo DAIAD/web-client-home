@@ -191,7 +191,7 @@ const amphiroOrMeterTotal = function (widget, intl) {
     mu,
     info: [
       {
-        icon: better ? 'arrow-down green' : 'arrow-up red',
+        image: better ? `${IMAGES}/better.svg` : `${IMAGES}/worse.svg`,
         text: intl.formatMessage({ 
           id: `comparisons.${str}`, 
         }, {
@@ -247,7 +247,7 @@ const amphiroEnergyEfficiency = function (widget, intl) {
     },
     info: [
       {
-        icon: better ? 'arrow-down green' : 'arrow-up red',
+        image: better ? `${IMAGES}/better.svg` : `${IMAGES}/worse.svg`,
         text: intl.formatMessage({ 
           id: `comparisons.${str}`,
         }, { 
@@ -489,7 +489,7 @@ const waterIQ = function (widget, intl) {
     periods,
     info: [
       {
-        icon: 'arrow-up green',
+        image: `${IMAGES}/better.svg`,
         text: intl.formatMessage({
           id: 'comparisons.wateriq-best',
         }, {
@@ -499,7 +499,7 @@ const waterIQ = function (widget, intl) {
         display: hasWaterIQ,
       },
       {
-        icon: 'arrow-down red',
+        image: `${IMAGES}/worse.svg`,
         text: intl.formatMessage({
           id: 'comparisons.wateriq-worst',
         }, {
@@ -617,6 +617,8 @@ const meterCommon = function (widget, intl) {
 
   return {
     ...widget,
+    icon: `${BASE64}${common.image}`,
+    more: intl.formatMessage({ id: 'widget.explore-common' }),
     chartType: 'line',
     time,
     periods,
