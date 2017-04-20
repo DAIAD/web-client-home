@@ -10,8 +10,8 @@ const { reduceMetric, getShowerById, getSessionsCount, prepareBreakdownSessions 
 const { stripTags } = require('./messages');
 
 const tip = function (widget, intl) {
-  const { tips } = widget;
-  const currTip = Array.isArray(tips) && tips.length > 0 && tips[0];
+  const { tips, tipIndex = 0 } = widget;
+  const currTip = Array.isArray(tips) && tips.length > tipIndex && tips[tipIndex];
   if (!Array.isArray(tips) || tips.length === 0 || !currTip) {
     return {
       ...widget,
