@@ -88,7 +88,8 @@ function EditMembers(props) {
                           style={{ float: 'right', marginRight: 10 }} 
                           className="btn"
                           bsStyle="danger"
-                          onClick={() => { 
+                          onClick={(e) => { 
+                            e.preventDefault();
                             confirmDeleteMember(memberForm);
                           }}
                         >
