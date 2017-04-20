@@ -351,7 +351,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
    */
   const fetchWidgetData = function (options) {
     return function (dispatch, getState) {
-      const { type, userKey, deviceType, deviceKey = null, period, periodIndex, members, brackets, breakdown, common } = options;
+      const { type, userKey, deviceType, deviceKey = null, period, periodIndex, members, common } = options;
 
       if (!type || !deviceType) {
         console.error('fetchWidgetData: Insufficient data provided (need type, deviceType):', options);
@@ -404,9 +404,9 @@ const connectActionsToQueryBackend = function (QueryBackend) {
             }))
             .then(data => ({ ...res, data }));
           } else if (type === 'pricing') {
-            return { ...res, brackets };
+            return res;
           } else if (type === 'breakdown') {
-            return { ...res, breakdown };
+            return res;
           } else if (type === 'commons') {
             return dispatch(queryDataAverage({
               time,

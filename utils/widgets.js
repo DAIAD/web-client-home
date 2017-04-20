@@ -15,8 +15,8 @@ const tip = function (widget) {
   };
 };
 
-const amphiroLastShower = function (widget, devices, intl) {
-  const { data = [], device, showerId, metric, timestamp } = widget;
+const amphiroLastShower = function (widget, intl) {
+  const { data = [], devices, device, showerId, metric, timestamp } = widget;
 
   const lastSession = getShowerById(data.find(d => d.deviceKey === device), showerId);
   const measurements = lastSession ? lastSession.measurements : [];
@@ -59,8 +59,8 @@ const amphiroLastShower = function (widget, devices, intl) {
   };
 };
 
-const amphiroMembersRanking = function (widget, devices, intl) {
-  const { device, metric, data = [] } = widget;
+const amphiroMembersRanking = function (widget, intl) {
+  const { devices, device, metric, data = [] } = widget;
   
   const periods = PERIODS.AMPHIRO;
   const membersData = data.map(m => ({ 
@@ -104,8 +104,8 @@ const amphiroMembersRanking = function (widget, devices, intl) {
 };
 
 // TODO: split into two functions for amphiro / swm
-const amphiroOrMeterTotal = function (widget, devices, intl) {
-  const { data = [], period, deviceType, metric, previous } = widget;
+const amphiroOrMeterTotal = function (widget, intl) {
+  const { data = [], period, device, deviceType, metric, previous } = widget;
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
@@ -188,8 +188,8 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   };
 };
 
-const amphiroEnergyEfficiency = function (widget, devices, intl) {
-  const { data = [], period, deviceType, metric, previous } = widget;
+const amphiroEnergyEfficiency = function (widget, intl) {
+  const { data = [], period, devices, deviceType, metric, previous } = widget;
 
   if (metric !== 'energy') {
     console.error('only energy efficiency supported');
@@ -242,7 +242,7 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
   };
 };
 
-const meterForecast = function (widget, devices, intl) {
+const meterForecast = function (widget, intl) {
   const { data = [], forecastData, period, periodIndex, deviceType, metric, previous } = widget;
   
   if (deviceType !== 'METER') {
@@ -251,8 +251,6 @@ const meterForecast = function (widget, devices, intl) {
   const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
   const periods = []; 
 
-  const device = getDeviceKeysByType(devices, deviceType);
-  
   const chartColors = ['#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'];
 
   const mu = getMetricMu(metric);
@@ -296,7 +294,7 @@ const meterForecast = function (widget, devices, intl) {
   };
 };
 
-const meterPricing = function (widget, devices, intl) {
+const meterPricing = function (widget, intl) {
   const { data = [], period, deviceType, metric, brackets } = widget;
   
   if (deviceType !== 'METER') {
@@ -307,8 +305,6 @@ const meterPricing = function (widget, devices, intl) {
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const periods = [];
 
-  const device = getDeviceKeysByType(devices, deviceType);
-  
   const mu = getMetricMu(metric);
   const xCategories = getChartMeterCategories(time);
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
@@ -339,8 +335,8 @@ const meterPricing = function (widget, devices, intl) {
   };
 };
 
-const meterBreakdown = function (widget, devices, intl) {
-  const { data = [], period, deviceType, metric, breakdown = [] } = widget;
+const meterBreakdown = function (widget, intl) {
+  const { data = [], period, devices, deviceType, metric, breakdown = [] } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter breakdown makes sense');
@@ -348,7 +344,6 @@ const meterBreakdown = function (widget, devices, intl) {
 
   const periods = PERIODS.METER.filter(p => p.id === 'month' || p.id === 'year');
 
-  const device = getDeviceKeysByType(devices, deviceType);
   const reduced = reduceMetric(devices, data, metric);
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
@@ -388,7 +383,7 @@ const meterBreakdown = function (widget, devices, intl) {
   };
 };
 
-const meterComparison = function (widget, devices, intl) {
+const meterComparison = function (widget, intl) {
   const { data, period, periodIndex, deviceType, metric, comparisons } = widget;
   
   if (deviceType !== 'METER') {
@@ -430,7 +425,7 @@ const meterComparison = function (widget, devices, intl) {
   };
 };
 
-const waterIQ = function (widget, devices, intl) {
+const waterIQ = function (widget, intl) {
   const { data, period, periodIndex, deviceType, metric } = widget;
   
   if (deviceType !== 'METER') {
@@ -510,8 +505,8 @@ const waterIQ = function (widget, devices, intl) {
   };
 };
 
-const budget = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+const budget = function (widget, intl) {
+  const { data, period, devices, deviceType, metric, previous } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter comparison supported');
@@ -555,8 +550,8 @@ const budget = function (widget, devices, intl) {
   };
 };
 
-const meterCommon = function (widget, devices, intl) {
-  const { data = [], period, deviceType, metric, common, commonData } = widget;
+const meterCommon = function (widget, intl) {
+  const { data = [], period, devices, deviceType, metric, common, commonData } = widget;
   
   if (!common) {
     return {
@@ -608,32 +603,32 @@ const meterCommon = function (widget, devices, intl) {
   };
 };
 
-const prepareWidget = function (widget, devices, intl) {
+const prepareWidget = function (widget, intl) {
   switch (widget.type) {
     case 'tip': 
       return tip();
     case 'last': 
-      return amphiroLastShower(widget, devices, intl);
+      return amphiroLastShower(widget, intl);
     case 'ranking': 
-      return amphiroMembersRanking(widget, devices, intl);
+      return amphiroMembersRanking(widget, intl);
     case 'total':
-      return amphiroOrMeterTotal(widget, devices, intl); 
+      return amphiroOrMeterTotal(widget, intl); 
     case 'efficiency':
-      return amphiroEnergyEfficiency(widget, devices, intl); 
+      return amphiroEnergyEfficiency(widget, intl); 
     case 'forecast':
-      return meterForecast(widget, devices, intl); 
+      return meterForecast(widget, intl); 
     case 'pricing':
-      return meterPricing(widget, devices, intl); 
+      return meterPricing(widget, intl); 
     case 'breakdown':
-      return meterBreakdown(widget, devices, intl);  
+      return meterBreakdown(widget, intl);  
     case 'comparison':
-      return meterComparison(widget, devices, intl);
+      return meterComparison(widget, intl);
     case 'budget':
-      return budget(widget, devices, intl);
+      return budget(widget, intl);
     case 'wateriq': 
-      return waterIQ(widget, devices, intl);
+      return waterIQ(widget, intl);
     case 'commons':
-      return meterCommon(widget, devices, intl);
+      return meterCommon(widget, intl);
     default:
       return widget;
   }

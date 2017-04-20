@@ -70,10 +70,12 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const activeMessageIndex = messages.findIndex(m => m.id === stateProps.activeMessageId);
 
   const widget = activeMessage && activeMessage.extra ? 
-    prepareWidget(activeMessage.extra, 
-                  stateProps.devices, 
-                  ownProps.intl
-                 ) : {}; 
+    prepareWidget({
+      ...activeMessage.extra,
+      devices: stateProps.devices, 
+    },
+    ownProps.intl) 
+    : {}; 
   return {
     ...stateProps,
     ...dispatchProps,

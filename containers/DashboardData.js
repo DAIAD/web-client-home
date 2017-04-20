@@ -25,6 +25,8 @@ function mapStateToProps(state) {
     dirty: state.section.dashboard.dirty,
     widgets: state.section.dashboard.widgets,
     widgetToAdd: state.forms.widgetToAdd,
+    brackets: state.section.history.priceBrackets,
+    breakdown: state.section.history.waterBreakdown,
     activeDeviceType: state.section.dashboard.widgetDeviceType,
     width: state.viewport.width,
   };
@@ -89,7 +91,13 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...dispatchProps,
     ...ownProps,
     widgets: stateProps.widgets.map(widget => 
-      prepareWidget(widget, stateProps.devices, ownProps.intl)),   
+                    prepareWidget({ 
+                      ...widget,
+                      devices: stateProps.devices,
+                      breakdown: stateProps.breakdown,
+                      brackets: stateProps.brackets,
+                    },
+                    ownProps.intl)),   
     deviceCount: getDeviceCount(stateProps.devices),
     meterCount: getMeterCount(stateProps.devices),
     saveToProfile: () => dispatchProps.saveConfiguration(newWidgetState),

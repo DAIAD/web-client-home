@@ -178,16 +178,12 @@ const fetchWidgetData = function (id) {
 
     const userKey = getState().user.profile.key;
     const members = getState().user.profile.household.members;
-    const brackets = getState().section.history.priceBrackets;
-    const breakdown = getState().section.history.waterBreakdown;
     const common = getState().section.commons.myCommons.find(c => c.key === getState().section.settings.commons.favorite);
 
     return dispatch(QueryActions.fetchWidgetData({ 
       ...widget, 
       userKey, 
       members,
-      brackets,
-      breakdown,
       common,
     }))
     .then(res => dispatch(setWidgetData(id, res)))
