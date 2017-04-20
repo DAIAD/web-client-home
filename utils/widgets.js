@@ -1,17 +1,41 @@
 const moment = require('moment');
 
-const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS } = require('../constants/HomeConstants');
+const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS, BASE64, IMAGES } = require('../constants/HomeConstants');
 
 const { getFriendlyDuration, getEnergyClass, getMetricMu, waterIQToNumeral, numeralToWaterIQ } = require('./general');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets, colorFormatterSingle } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
 const { reduceMetric, getShowerById, getSessionsCount, prepareBreakdownSessions } = require('./sessions');
+const { stripTags } = require('./messages');
 
-const tip = function (widget) {
+const tip = function (widget, intl) {
+  const { tips } = widget;
+  const currTip = Array.isArray(tips) && tips.length > 0 && tips[0];
+  if (!Array.isArray(tips) || tips.length === 0 || !currTip) {
+    return {
+      ...widget,
+      highlight: {},
+      info: [{
+        text: intl.formatMessage({ id: 'widget.no-tips' }),
+      }],
+      notificationType: 'RECOMMENDATION_STATIC',
+      linkTo: 'notifications',
+    };
+  }
+  const description = String(stripTags(currTip).description);
+  const text = description.substring(0, String(description).indexOf('.', 120));
   return {
     ...widget,
-    highlight: STATIC_RECOMMENDATIONS[Math.floor(Math.random() * 3)].description,
+    highlight: {
+      image: `${BASE64}${currTip.imageEncoded}`,
+    },
+    info: [{
+      text: `${text}...`,
+    }],
+    notificationType: 'RECOMMENDATION_STATIC',
+    notificationId: currTip.id,
+    linkTo: 'notifications',
   };
 };
 
@@ -29,27 +53,27 @@ const amphiroLastShower = function (widget, intl) {
 
   return {
     ...widget,
-    icon: 'shower.svg',
+    icon: `${IMAGES}/shower.svg`,
     more: intl.formatMessage({ id: 'widget.explore-last-shower' }),
     chartCategories,
     timeDisplay: intl.formatRelative(timestamp),
     chartData,
     highlight: {
-      image: 'volume.svg',
+      image: `${IMAGES}/volume.svg`,
       text: lastSession ? lastSession[metric] : null,
       mu,
     },
     info: lastSession ? [
       {
-        image: 'energy.svg',
+        image: `${IMAGES}/energy.svg`,
         text: `${Math.round(lastSession.energy / 10) / 100} ${getMetricMu('energy')}`,
       },
       {
-        image: 'timer-on.svg',
+        image: `${IMAGES}/timer-on.svg`,
         text: getFriendlyDuration(lastSession.duration),
       },
       {
-        image: 'temperature.svg',
+        image: `${IMAGES}/temperature.svg`,
         text: `${lastSession.temperature} ${getMetricMu('temperature')}`,
       }
     ] : [],
@@ -84,7 +108,7 @@ const amphiroMembersRanking = function (widget, intl) {
 
   return {
     ...widget,
-    icon: 'goals.svg',
+    icon: `${IMAGES}/goals.svg`,
     more: intl.formatMessage({ id: 'widget.explore-comparisons' }),
     periods,
     chartCategories,
@@ -95,7 +119,7 @@ const amphiroMembersRanking = function (widget, intl) {
     mode: 'stats',
     mu,
     info: membersData.map((m, i) => ({
-      image: `rank-${i + 1}.svg`,
+      image: `${IMAGES}/rank-${i + 1}.svg`,
     })),
     data: null,
     memberFilter: membersData.length > 0 ? membersData[0].index : null,
@@ -105,7 +129,7 @@ const amphiroMembersRanking = function (widget, intl) {
 
 // TODO: split into two functions for amphiro / swm
 const amphiroOrMeterTotal = function (widget, intl) {
-  const { data = [], period, device, deviceType, metric, previous } = widget;
+  const { data = [], period, devices, deviceType, metric, previous } = widget;
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
@@ -156,7 +180,7 @@ const amphiroOrMeterTotal = function (widget, intl) {
   const str = better ? 'better' : 'worse';
   return {
     ...widget,
-    icon: `${metric}.svg`,
+    icon: `${IMAGES}/${metric}.svg`,
     more: deviceType === 'AMPHIRO' ? intl.formatMessage({ id: 'widget.explore-showers' }) : intl.formatMessage({ id: 'widget.explore-swm' }),
     time,
     periods,
@@ -215,7 +239,7 @@ const amphiroEnergyEfficiency = function (widget, intl) {
   const str = better ? 'better' : 'worse';
   return {
     ...widget,
-    icon: 'energy.svg',
+    icon: `${IMAGES}/energy.svg`,
     periods,
     highlight: {
       text: highlight,
@@ -322,7 +346,7 @@ const meterPricing = function (widget, intl) {
 
   return {
     ...widget,
-    icon: 'money.svg',
+    icon: `${IMAGES}/money-navy.svg`,
     chartType: 'line',
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
@@ -370,7 +394,7 @@ const meterBreakdown = function (widget, intl) {
 
   return {
     ...widget,
-    icon: 'stats-side.svg',
+    icon: `${IMAGES}/stats-side.svg`,
     time,
     periods,
     chartType: 'horizontal-bar',
@@ -411,7 +435,7 @@ const meterComparison = function (widget, intl) {
  
   return {
     ...widget,
-    icon: 'stats-side.svg',
+    icon: `${IMAGES}/stats-side.svg`,
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
     periods,
@@ -444,7 +468,7 @@ const waterIQ = function (widget, intl) {
   const worst = hasWaterIQ ? data.reduce((p, c) => c.user > p.user ? c : p, data[0]) : {};
 
   const highlight = hasWaterIQ ? null : '-';
-  const highlightImg = hasWaterIQ ? `energy-${current.user}.svg` : null;
+  const highlightImg = hasWaterIQ ? `${IMAGES}/energy-${current.user}.svg` : null;
 
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
   const chartColorFormatter = colorFormatterSingle(chartColors);
@@ -459,7 +483,7 @@ const waterIQ = function (widget, intl) {
   }];
   return {
     ...widget,
-    icon: 'stats-side.svg',
+    icon: `${IMAGES}/stats-side.svg`,
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     //time,
     periods,
@@ -606,7 +630,7 @@ const meterCommon = function (widget, intl) {
 const prepareWidget = function (widget, intl) {
   switch (widget.type) {
     case 'tip': 
-      return tip();
+      return tip(widget, intl);
     case 'last': 
       return amphiroLastShower(widget, intl);
     case 'ranking': 

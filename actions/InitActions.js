@@ -36,7 +36,7 @@ const linkToSection = function (section, options) {
       case 'history':
         return dispatch(HistoryActions.linkToHistory(options));
       case 'notifications': 
-        return dispatch(NotificationActions.linkToNotification(options.id, options.type));
+        return dispatch(NotificationActions.linkToNotification(options));
       case 'commons':
         return dispatch(CommonsActions.linkToCommons(options));
       default:

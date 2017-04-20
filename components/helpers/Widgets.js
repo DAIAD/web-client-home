@@ -23,7 +23,7 @@ function StatWidget(props) {
                 maxHeight: 50, 
                 float: 'left', 
               }} 
-              src={`${imgPrefix}/${highlight.image}`} 
+              src={highlight.image}
               alt={highlight.image} 
             /> 
             :
@@ -41,7 +41,7 @@ function StatWidget(props) {
             info.map((line, idx) => (
               <div key={idx}>
                 <i className={`fa fa-${line.icon}`} />
-                { line.image ? <img style={{ maxHeight: 30, maxWidth: 30 }} src={`${imgPrefix}/${line.image}`} alt={line.id} /> : <i /> }
+                { line.image ? <img style={{ height: '100%', width: '100%', maxHeight: 25, maxWidth: 30 }} src={line.image} alt={line.id} /> : <i /> }
                 &nbsp;
                 <span>{line.text}</span>
               </div>
@@ -208,7 +208,7 @@ function RankingWidget(props) {
             line.image ? 
               <img
                 style={{ maxHeight: 30, maxWidth: 30 }} 
-                src={`${props.imgPrefix}/${line.image}`} 
+                src={line.image}
                 alt={line.id} 
               /> 
                 : <i /> 
@@ -231,7 +231,7 @@ function LastShowerWidget(props) {
       />
       <div style={{ padding: '0 10px' }}>
         <div style={{ float: 'left', textAlign: 'center' }}>
-          <img style={{ height: 40, width: 40, float: 'left' }} src={`${props.imgPrefix}/${props.highlight.image}`} alt={props.highlight.image} /> 
+          <img style={{ height: 40, width: 40, float: 'left' }} src={props.highlight.image} alt={props.highlight.image} /> 
           <h2 style={{ float: 'left' }}>
             <span>{props.highlight.text}</span>
             <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{props.highlight.mu}</span>
@@ -252,7 +252,7 @@ function LastShowerWidget(props) {
             line.image ? 
               <img
                 style={{ maxHeight: 30, maxWidth: 30 }} 
-                src={`${props.imgPrefix}/${line.image}`} 
+                src={line.image} 
                 alt={line.id} 
               /> 
                 : <i /> 
@@ -267,6 +267,42 @@ function LastShowerWidget(props) {
   );
 }
 
+function TipWidget(props) {
+  const { highlight, info = [], period, mu, imgPrefix } = props;
+  return (
+    <div>
+      <div style={{ float: 'left', width: '30%', marginRight: 10 }}>
+          { highlight && highlight.image ? 
+            <img 
+              style={{ 
+                maxWidth: '100%',
+              }} 
+              src={highlight.image}
+              alt={highlight.image} 
+            /> 
+            :
+            <i />
+          }
+        </div>
+      <div style={{ float: 'left', width: '65%' }}>
+        <div>
+          { 
+            info.map((line, idx) => (
+              <div key={idx}>
+                <i className={`fa fa-${line.icon}`} />
+                { line.image ? <img style={{ height: '100%', width: '100%', maxHeight: 25, maxWidth: 30 }} src={line.image} alt={line.id} /> : <i /> }
+                &nbsp;
+                <span>{line.text}</span>
+              </div>
+              ))
+          }
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
 function Widget(props) {
   const { type } = props;
   switch (type) {
@@ -274,6 +310,8 @@ function Widget(props) {
       return <RankingWidget {...props} />;
     case 'last':
       return <LastShowerWidget {...props} />;
+    case 'tip':
+      return <TipWidget {...props} />;
     default:
       return <DefaultWidgetByDisplay {...props} />;
   }

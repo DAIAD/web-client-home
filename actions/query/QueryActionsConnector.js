@@ -364,6 +364,9 @@ const connectActionsToQueryBackend = function (QueryBackend) {
       }
       const time = options.time ? options.time : timeUtils.getTimeByPeriod(period, periodIndex);
 
+      if (type === 'tip') {
+        return Promise.resolve(); 
+      }
       if (deviceType === 'METER') {      
         const prevTime = timeUtils.getPreviousPeriodSoFar(period, time.startDate);
         return dispatch(queryMeterHistory({ 

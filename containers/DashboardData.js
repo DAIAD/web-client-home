@@ -27,6 +27,7 @@ function mapStateToProps(state) {
     widgetToAdd: state.forms.widgetToAdd,
     brackets: state.section.history.priceBrackets,
     breakdown: state.section.history.waterBreakdown,
+    tips: state.section.messages.tips,
     activeDeviceType: state.section.dashboard.widgetDeviceType,
     width: state.viewport.width,
   };
@@ -96,6 +97,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                       devices: stateProps.devices,
                       breakdown: stateProps.breakdown,
                       brackets: stateProps.brackets,
+                      tips: stateProps.tips,
                     },
                     ownProps.intl)),   
     deviceCount: getDeviceCount(stateProps.devices),

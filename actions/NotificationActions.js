@@ -185,8 +185,8 @@ const setActiveMessage = function (id, type) {
  */
 const linkToNotification = function (query) {
   return function (dispatch, getState) {
-    const { id, type } = query;
-    dispatch(setActiveMessage(id, type));
+    const { notificationId, notificationType } = query;
+    dispatch(setActiveMessage(notificationId, notificationType));
     dispatch(push('/notifications'));
   };
 };
