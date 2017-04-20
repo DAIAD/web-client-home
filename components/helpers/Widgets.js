@@ -19,7 +19,7 @@ function StatWidget(props) {
           { highlight && highlight.image ? 
             <img 
               style={{ 
-                height: props.height, 
+                height: props.height || 50, 
                 maxHeight: 50, 
                 float: 'left', 
               }} 
@@ -191,7 +191,7 @@ function RankingWidget(props) {
     <div>
       <ChartWidget 
         {...props} 
-        height={props.height - 40}
+        height={props.height ? props.height - 40 : 220}
       />
       <div style={{ padding: '0 10px' }}>
       {
