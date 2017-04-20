@@ -143,11 +143,11 @@ const amphiro = [
     icon: 'calendar',
   },
   {
-    id: 'devName',
+    id: 'deviceName',
     name: <FormattedMessage id="history.device" />,
   },
   {
-    id: 'friendlyDuration',
+    id: 'duration',
     name: '',
     icon: 'clock-o',
   },

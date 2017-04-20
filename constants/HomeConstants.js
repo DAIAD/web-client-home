@@ -173,13 +173,14 @@ module.exports = {
         title: 'history.wateriq',
         periods: ['year'],
         comparisons: ['all', 'nearest', 'similar'],
+        image: 'default-ranking.svg',
       },
     ],
   },
   METRICS: {
     METER: [
       {
-        id: 'devName',  
+        id: 'deviceName',  
         title: 'history.device', 
         icon: 'water-meter.svg', 
         details: 'history.deviceDetails', 
@@ -224,12 +225,12 @@ module.exports = {
         id: 'cost',
         title: 'history.cost',
         details: 'history.costDetails',
-        icon: 'money.svg',
+        icon: 'money-navy.svg',
       },
     ],
     AMPHIRO: [
       {
-        id: 'devName',  
+        id: 'deviceName',  
         title: 'history.device', 
         icon: 'amphiro_small.svg', 
         details: 'history.durationDetails', 
@@ -255,7 +256,7 @@ module.exports = {
         icon: 'energy.svg', 
       }, 
       {
-        id: 'friendlyDuration', 
+        id: 'duration', 
         title: 'history.duration', 
         details: 'history.durationDetails', 
         icon: 'duration.svg', 

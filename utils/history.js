@@ -219,7 +219,7 @@ const getForecastData = function (props) {
     
   const sessions = Array.isArray(props.forecastData.sessions) ? sortSessions(props.forecastData.sessions.map(session => ({
     ...statsData.sessions.find(s => s.timestamp === session.timestamp),
-    devName: 'SWM',
+    deviceName: props.intl.formatMessage({ id: 'devices.meter' }),
     forecast: Math.round(session.volume * 100) / 100,
     timestamp: session.timestamp,
     date: getTimeLabelByGranularity(session.timestamp, 
