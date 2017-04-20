@@ -1,11 +1,12 @@
 const types = require('../constants/ActionTypes');
 
 const { updateOrAppendToSession } = require('../utils/sessions');
-const { getMonth } = require('../utils/time');
+const { getYear } = require('../utils/time');
 
 const initialState = {
-  timeFilter: 'month',
-  time: getMonth(),
+  timeFilter: 'year',
+  time: getYear(),
+  reports: [],
 };
  
 const reports = function (state = initialState, action) {
@@ -23,6 +24,12 @@ const reports = function (state = initialState, action) {
       return {
         ...state,
         timeFilter: action.filter,
+      };
+    
+    case types.REPORTS_SET: 
+      return {
+        ...state,
+        reports: action.reports,
       };
 
     case types.USER_RECEIVED_LOGOUT:

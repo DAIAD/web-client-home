@@ -3,12 +3,13 @@ const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
 const { push } = require('react-router-redux');
+const moment = require('moment');
 
 const Reports = require('../components/sections/reports/');
 
 const ReportsActions = require('../actions/ReportsActions');
 
-const { formatMessage } = require('../utils/general');
+const { formatMessage, formatBytes } = require('../utils/general');
 const timeUtil = require('../utils/time');
 
 const { PERIODS } = require('../constants/HomeConstants');
@@ -22,8 +23,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
       ...ReportsActions,
-      //goToManage: () => push('/settings/commons'),
-      //goToJoin: () => push('/settings/commons/join'),
     }, dispatch);
 }
 
@@ -34,9 +33,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       ...dispatchProps,
     },
     ...ownProps,
+    reports: stateProps.reports.map(report => ({
+      ...report,
+      period: ownProps.intl.formatDate(moment({ month: report.month - 1, year: report.year }).valueOf(), { month: 'long', year: 'numeric' }),
+      size: formatBytes(report.size, 0),
+    })), 
     previousPeriod: timeUtil.getPreviousPeriod(stateProps.timeFilter, stateProps.time.endDate),
     nextPeriod: timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.endDate),
-    isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
+    isAfterToday: stateProps.time.endDate > moment().subtract(1, 'month').valueOf(),  
     _t: formatMessage(ownProps.intl),
   };
 }

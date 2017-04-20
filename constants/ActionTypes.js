@@ -117,6 +117,7 @@ module.exports = keyMirror({
   
   SETTINGS_SET_CHANGE_PASSWORD: null,
 
+  REPORTS_SET: null,
   REPORTS_SET_TIME: null,
   REPORTS_SET_TIME_FILTER: null,
 });

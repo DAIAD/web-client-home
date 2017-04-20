@@ -356,14 +356,18 @@
     "empty": "No communities joined yet",
     "noCommons": "Not a member of any commmunities yet",
     "myCommons": "My Communities",
-    "ranking": "ranking",
+    "ranking": "Ranking",
     "date-joined": "Date joined",
     "placeholder-search-members": "Search members...",
     "select-info": "Click on up to 3 members to compare against",
     "memberSince": "Member since"
   },
   "reports": {
-    "title": "Monthly reports"
+    "report": "Report",
+    "period": "Period",
+    "empty": "No reports for this year",
+    "created": "Created",
+    "size": "Size"
   },
   "footer": {
     "contact": "Contact",

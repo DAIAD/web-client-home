@@ -10,6 +10,9 @@ const { push } = require('react-router-redux');
 
 const QueryActions = require('./QueryActions');
 
+const reportsAPI = require('../api/reports');
+const { throwServerError } = require('../utils/general');
+
 const { PERIODS } = require('../constants/HomeConstants');
 
 /**
@@ -42,7 +45,59 @@ const setTime = function (time) {
   };
 };
 
+const setReports = function (reports) {
+  return {
+    type: types.REPORTS_SET,
+    reports,
+  };
+};
+
+const getReportsStatus = function () {
+  return function (dispatch, getState) {
+    const { time } = getState().section.reports;
+    
+    dispatch(QueryActions.requestedQuery());
+    const data = {
+      year: new Date(time.startDate).getFullYear(),
+      csrf: getState().user.csrf,
+    };
+    return reportsAPI.status(data)
+    .then((response) => {
+      dispatch(QueryActions.receivedQuery(true));
+      dispatch(QueryActions.resetSuccess());
+
+      if (!response || !response.success) {
+        throwServerError(response);  
+      }
+
+      return response.reports;
+    })
+    .then(reports => dispatch(setReports(reports)))
+    .catch((error) => {
+      console.error('caught error on get reports status', error);
+    });
+  };
+};
+
+const setQuery = function (query) {
+  return function (dispatch, getState) {
+    const { time, timeFilter } = query;
+
+    if (time) dispatch(setTime(time));
+    if (timeFilter) dispatch(setTimeFilter(timeFilter));
+  };
+};
+
+const setQueryAndFetch = function (query) {
+  return function (dispatch, getState) {
+    dispatch(setQuery(query));
+    dispatch(getReportsStatus());
+  };
+};
+
 module.exports = {
   setTime,
   setTimeFilter,
+  setQueryAndFetch,
+  getReportsStatus,
 };
