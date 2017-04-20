@@ -16,7 +16,6 @@ function ChangePasswordModal(props) {
       show={showChangePassword}
       onHide={resetChangePassword} 
       dialogClassName="password-change-modal"
-      bsSize="md"
     >
       <form
         id="form-change-password"
