@@ -268,7 +268,9 @@ const energyToPictures = function (energy) {
 };
 const getAllMembers = function (members) {
   if (!Array.isArray(members)) return [];
-  return members.filter(member => member.active || member.index === 0);
+  return members
+  .filter(member => member.active || member.index === 0)
+  .sort((a, b) => a.index - b.index);
 };
 
 const memberFilterToMembers = function (filter) {
