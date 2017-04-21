@@ -43,6 +43,7 @@ function CommonsChart(props) {
           ...s,
         }))}
       />
+      <div style={{ marginTop: 20 }} />
     </div>
   );
 }

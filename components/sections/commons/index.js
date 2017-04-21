@@ -136,6 +136,7 @@ const Commons = React.createClass({
                     <div>
                       <FormattedMessage id="commons.noCommons" />
                       <button
+                        className="btn"
                         style={{ width: '100%', marginTop: 20 }}
                         onClick={goToJoin}
                       >

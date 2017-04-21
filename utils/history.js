@@ -431,12 +431,17 @@ const getWaterIQData = function (props) {
                                props.time)
                                .map(val => val ? [val.id, val.timestamp] : [null, null]),
     },
-     //color: '#2d3480',
-     fill: 0,
-     //symbol: 'emptyRectangle',
-     }));
+    label: {
+      position: 'top',
+      // TODO: implement label color in react-echarts
+      color: 'red',
+    }, 
+    // TODO: implement bar width in react-echarts
+    barWidth: 0,
+  }));
  
   const chartFormatter = y => numeralToWaterIQ(y);
+
   return {
     ...statsData,
     sessions,
