@@ -6,9 +6,8 @@ const { TimeNavigator, CustomTimeNavigator } = require('../../helpers/Navigators
 const theme = require('../../chart/themes/history');
 
 function CommonsChart(props) {
-  const { _t, isAfterToday, handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, actions } = props;
+  const { _t, isAfterToday, handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, chartFormatter, actions } = props;
   const { setDataQueryAndFetch } = actions;
-  const mu = 'lt';
   return (
     <div className="history-chart-area">
       { 
@@ -36,7 +35,7 @@ function CommonsChart(props) {
           boundaryGap: true,
         }}
         yAxis={{
-          formatter: y => `${y} ${mu}`,
+          formatter: chartFormatter,
         }}
         colors={theme.colors}
         series={chartData.map(s => ({

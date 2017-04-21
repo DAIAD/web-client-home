@@ -180,24 +180,6 @@ module.exports = {
   METRICS: {
     METER: [
       {
-        id: 'deviceName',  
-        title: 'history.device', 
-        icon: 'water-meter.svg', 
-        details: 'history.deviceDetails', 
-      }, 
-      {
-        id: 'devType',  
-        title: 'history.deviceType', 
-        icon: 'water-meter.svg', 
-        details: 'history.deviceDetails', 
-      }, 
-      {
-        id: 'count',
-        title: 'history.count', 
-        details: 'history.countDetails', 
-        icon: 'default-ranking.svg', 
-      },  
-      {
         id: 'volume', 
         title: 'history.volume', 
         details: 'history.volumeDetails', 

@@ -4,7 +4,7 @@ const schemas = require('../schemas/history');
 
 const { bringPastSessionsToPresent, convertGranularityToPeriod, getTimeLabelByGranularity } = require('./time');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { formatMessage, getMetricMu, waterIQToNumeral, numeralToWaterIQ } = require('./general');
+const { formatMessage, getMetricMu, waterIQToNumeral, numeralToWaterIQ, formatMetric } = require('./general');
 
 const { getComparisons, getComparisonTitle } = require('./comparisons');
 
@@ -43,19 +43,18 @@ const getStatsMeterData = function (props) {
                 );
                 
     
-  const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   const mu = getMetricMu(props.filter);
-  const highlight = `${reducedMetric} ${mu}`;
+  const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
     
   // CHART
 
-  const chartFormatter = y => `${y} ${mu}`;
+  const chartFormatter = y => formatMetric([y, mu]);
   const xCategories = getChartMeterCategories(props.time);
       
   const chartCategories = getChartMeterCategoryLabels(xCategories, props.time.granularity, props.timeFilter, props.intl);
      
   const chartData = props.data.map(devData => ({
-    name: 'SWM',
+    name: props.intl.formatMessage({ id: 'devices.meter' }),
     data: getChartMeterData(devData.sessions,
                             xCategories, 
                             props.time,
@@ -64,8 +63,9 @@ const getStatsMeterData = function (props) {
     metadata: {
       ids: mapMeterDataToChart(devData.sessions, 
                                xCategories, 
-                               props.time)
-                               .map(val => val ? [val.id, val.timestamp] : [null, null]),
+                               props.time
+                              )
+                              .map(val => val ? [val.id, val.timestamp] : [null, null]),
     },
   }));
       
@@ -96,8 +96,7 @@ const getStatsMeterData = function (props) {
     //Table
     sessions,
     sessionFields: schemas.meter,
-    reducedMetric,
-    highlight,
+    reducedMetric: [reducedMetric, mu],
     //Chart
     xCategories,
     chartType: 'line',
@@ -124,16 +123,15 @@ const getStatsAmphiroData = function (props) {
                                     props.sortOrder
                 );
                 
-  const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   const mu = getMetricMu(props.filter);
-  const highlight = `${reducedMetric} ${mu}`;
+  const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   
   // CHART
 
   const xCategories = getChartAmphiroCategories(props.timeFilter, getLastShowerIdFromMultiple(props.data));
       
   const chartCategories = xCategories;
-  const chartFormatter = y => `${y} ${mu}`;
+  const chartFormatter = y => formatMetric([y, mu]);
      
   const chartData = props.data.map((devData) => {  
     const memberName = props.memberFilter === 'all' ? 'All' : props.members.find(m => props.memberFilter === m.index).name;
@@ -168,8 +166,7 @@ const getStatsAmphiroData = function (props) {
     //Table
     sessions,
     sessionFields: schemas.amphiro,
-    reducedMetric,
-    highlight,
+    reducedMetric: [reducedMetric, mu],
     //Chart
     xCategories,
     chartType: 'line',
@@ -219,8 +216,7 @@ const getForecastData = function (props) {
     
   const sessions = Array.isArray(props.forecastData.sessions) ? sortSessions(props.forecastData.sessions.map(session => ({
     ...statsData.sessions.find(s => s.timestamp === session.timestamp),
-    deviceName: props.intl.formatMessage({ id: 'devices.meter' }),
-    forecast: Math.round(session.volume * 100) / 100,
+    forecast: [Math.round(session.volume * 100) / 100, getMetricMu(props.filter)],
     timestamp: session.timestamp,
     date: getTimeLabelByGranularity(session.timestamp, 
                                     props.time.granularity, 
@@ -257,7 +253,6 @@ const getPricingData = function (props) {
                                );
   
   const reducedMetric = reduceMetric(props.devices, [{ sessions }], 'cost');
-  const highlight = `${reducedMetric} ${getMetricMu('cost')}`;
 
   // CHART
 
@@ -266,13 +261,13 @@ const getPricingData = function (props) {
   const chartPriceBrackets = props.pricing && props.priceBrackets ? 
     getChartPriceBrackets(xCategories, props.priceBrackets, props.intl) 
     : [];
-
-  const chartFormatter = y => `${y} ${getMetricMu(props.filter)}`;
+  const mu = getMetricMu(props.filter);
+  const chartFormatter = y => formatMetric([y, mu]);
 
   const chartCategories = getChartMeterCategoryLabels(xCategories, props.time.granularity, props.timeFilter, props.intl);
      
   const chartData = [{
-    name: 'SWM total',
+    name: props.intl.formatMessage({ id: 'devices.meter' }),
     data: getChartMeterData(sessions,
                             xCategories, 
                             props.time,
@@ -316,10 +311,14 @@ const getPricingData = function (props) {
       });
   }); 
   return {
-    sessions,
+    sessions: sessions.map(s => ({ 
+      ...s,
+      volume: [s.volume, mu], 
+      total: [s.total, mu],
+      cost: [s.cost, getMetricMu('cost')],
+    })),
     sessionFields: schemas.pricing,
-    reducedMetric,
-    highlight,
+    reducedMetric: [reducedMetric, getMetricMu('cost')],
     chartCategories,
     chartFormatter,
     chartData: [

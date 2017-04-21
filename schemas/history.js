@@ -1,23 +1,14 @@
 const React = require('react');
 const { FormattedDate, FormattedMessage } = require('react-intl');
+const FormatMetric = require('../components/helpers/FormatMetric');
+
 const { IMAGES } = require('../constants/HomeConstants');
-const { getMetricMu } = require('../utils/general');
 
 const meter = [
   {
     id: 'volume',
     name: <FormattedMessage id="history.volume" />,
-    value: (value, row) => 
-      <span style={{ fontSize: '2.5em' }}>
-        { value != null ? 
-          <div>
-          <span>{value}</span>
-          <span style={{ fontSize: '0.6em' }}> {getMetricMu('volume')}</span>
-        </div>
-        :
-        <span>-</span>
-        }
-      </span>,
+    value: value => <FormatMetric className="table-highlight" value={value} />,
   },
   {
     id: 'comparison',
@@ -101,11 +92,7 @@ const amphiro = [
   {
     id: 'volume',
     name: <FormattedMessage id="history.volume" />,
-    value: (value, row) => 
-      <span style={{ fontSize: '2.5em' }}>
-        {value}
-        <span style={{ fontSize: '0.6em' }}> {getMetricMu('volume')}</span>
-      </span>,
+    value: value => <FormatMetric className="table-highlight" value={value} />,
   },
   {
     id: 'comparison',
@@ -150,6 +137,7 @@ const amphiro = [
     id: 'duration',
     name: '',
     icon: 'clock-o',
+    value: value => <FormatMetric value={value} />,
   },
   {
     id: 'energyClass',
@@ -160,7 +148,7 @@ const amphiro = [
     id: 'temperature',
     name: '',
     icon: 'temperature',
-    value: (value, row) => `${value} ºC`
+    value: value => <FormatMetric value={value} />,
   },
   {
     id: 'real',
@@ -198,16 +186,7 @@ const breakdown = [
   {
     id: 'volume',
     name: <FormattedMessage id="history.volume" />,
-    value: (value, row) => 
-      <span style={{ fontSize: '2.5em' }}>
-        {value}
-        <span style={{ fontSize: '0.6em' }}> {getMetricMu('volume')}</span>
-      </span>,
-  },
-  {
-    id: 'member',
-    name: <FormattedMessage id="common.user" />,
-    icon: 'user',
+    value: value => <FormatMetric className="table-highlight" value={value} />,
   },
   {
     id: 'date',
@@ -227,17 +206,7 @@ const forecast = [
   {
     id: 'forecast',
     name: <FormattedMessage id="history.forecasted" />,
-    value: value => 
-      <span style={{ fontSize: '2.5em' }}>
-        { value ? 
-          <div>
-          <span>{value}</span>
-          <span style={{ fontSize: '0.6em' }}> {getMetricMu('forecst')}</span>
-        </div>
-        :
-        <span>-</span>
-        }
-      </span>,
+    value: value => <FormatMetric className="table-highlight" value={value} />,
   },
   ...meter,
 ];
@@ -246,7 +215,7 @@ const wateriq = [
   {
     id: 'wateriq',
     name: <FormattedMessage id="history.wateriq" />,
-    value: value => <span style={{ fontSize: '2.5em', marginLeft: 20 }}>{value}</span>,
+    value: value => <FormatMetric className="table-highlight" value={value} />,
   },
   ...meter,
 ];
@@ -256,16 +225,12 @@ const pricing = [
     id: 'cost',
     name: <FormattedMessage id="history.cost" />,
     icon: 'euro',
-    value: value => <span style={{ fontSize: '2.5em' }}>{`${value} ${getMetricMu('cost')}`}</span>,
+    value: value => <FormatMetric className="table-highlight" value={value} />,
   },
   {
     id: 'total',
-    name: <FormattedMessage id="history.totalVolume" />,
-    value: (value, row) => 
-      <span style={{ fontSize: '2.5em' }}>
-        {value}
-        <span style={{ fontSize: '0.6em' }}> {getMetricMu('total')}</span>
-      </span>,
+    name: <FormattedMessage id="history.volumeTotal" />,
+    value: value => <FormatMetric className="table-highlight" value={value} />,
   },
   ...meter,
 ];

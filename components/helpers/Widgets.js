@@ -4,12 +4,6 @@ const lineTheme = require('../chart/themes/default');
 const horizontalBarTheme = require('../chart/themes/horizontal-bar');
 const verticalBarTheme = require('../chart/themes/vertical-bar');
 
-function defaultFormatter(mu) {
-  return function (y) {
-    return `${y} ${mu}`;
-  };
-}
-
 function StatWidget(props) {
   const { highlight, info = [], period, mu, imgPrefix } = props;
   return (
@@ -55,7 +49,6 @@ function StatWidget(props) {
 
 function LineChartWidget(props) {
   const { id, chartData = [], chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
-  const formatter = chartFormatter || defaultFormatter(mu);
   return (
     <LineChart
       height={height || 240}
@@ -72,7 +65,7 @@ function LineChartWidget(props) {
       }}
       yAxis={{
         min: 0,
-        formatter,
+        formatter: chartFormatter,
       }}
       series={chartData.map(s => ({
         fill: 0.55,
@@ -85,7 +78,6 @@ function LineChartWidget(props) {
 
 function BarChartWidget(props) {
   const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
-  const formatter = chartFormatter || defaultFormatter(mu);
   return (
     <BarChart
       height={height || 240}
@@ -100,7 +92,7 @@ function BarChartWidget(props) {
       }}
       yAxis={{
         min: 0,
-        formatter,
+        formatter: chartFormatter,
       }}
       series={chartData.map((s, idx) => ({ 
         ...s, 
@@ -116,7 +108,6 @@ function BarChartWidget(props) {
 
 function HorizontalBarChartWidget(props) {
   const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
-  const formatter = chartFormatter || defaultFormatter(mu);
   return (
     <BarChart
       height={height || 240}
@@ -132,7 +123,7 @@ function HorizontalBarChartWidget(props) {
       }}
       yAxis={{
         min: 0,
-        formatter,
+        formatter: chartFormatter,
       }}
       series={chartData.map(s => ({ 
         ...s, 

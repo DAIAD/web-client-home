@@ -1,5 +1,6 @@
 const moment = require('moment');
 const { convertGranularityToPeriod, getLowerGranularityPeriod, getTimeLabelByGranularityShort, timeToBuckets } = require('./time');
+const { getMetricMu } = require('./general');
 const { BRACKET_COLORS } = require('../constants/HomeConstants');
 
 const getChartMeterCategories = function (time) {
@@ -89,7 +90,7 @@ const getChartPriceBrackets = function (xCategories, brackets, intl) {
     brackets
     .filter(bracket => bracket.maxVolume != null)
     .map((bracket, i) => ({
-      name: `${bracket.minVolume} to ${bracket.maxVolume} \u33A5: ${bracket.price}\u20AC`,
+      name: `${bracket.minVolume} to ${bracket.maxVolume} ${getMetricMu('volume')} ${bracket.price} ${getMetricMu('cost')}`,
       data: xCategories.map(() => bracket.maxVolume * 1000),
       label: false,
       lineType: 'dashed',

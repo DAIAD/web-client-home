@@ -1,18 +1,20 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl');
+const FormatMetric = require('../../helpers/FormatMetric');
+
 const DatetimeInput = require('react-datetime');
 
 const ShowerMember = require('./ShowerMember');
 const InPictures = require('./InPictures');
 
-const { volumeToPictures, energyToPictures, getMetricMu } = require('../../../utils/general'); 
+const { volumeToPictures, energyToPictures } = require('../../../utils/general'); 
 
 const { IMAGES } = require('../../../constants/HomeConstants'); 
 
 function SessionDetailsLine(props) {
   const { id, name, title, icon, data, _t } = props;
-  return data == null ? <div /> : (
+  return data == null && id !== 'volume' ? <div /> : (
   <li className="session-item" >
     <span>
       <h4 style={{ float: 'left' }}>
@@ -29,15 +31,15 @@ function SessionDetailsLine(props) {
       </h4>
       {
         (() => {
-          if (id === 'difference' || id === 'volume') {
-            return <InPictures {...{ ...volumeToPictures(data), metric: id, _t }} />;
+          if (id === 'volume') {
+            return <InPictures {...{ ...volumeToPictures(data && data[0]), metric: id, _t }} />;
           } else if (id === 'energy') {
-            return <InPictures {...{ ...energyToPictures(data), metric: id, _t }} />;
+            return <InPictures {...{ ...energyToPictures(data && data[0]), metric: id, _t }} />;
           }
           return <span />;
         })()
       }
-      <h4 style={{ float: 'right' }}>{data} <span>{getMetricMu(id)}</span></h4>
+      <h4 style={{ float: 'right' }}><FormatMetric value={data} /></h4>
     </span>
   </li>
   );

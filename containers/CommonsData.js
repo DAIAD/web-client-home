@@ -13,7 +13,7 @@ const { getAvailableDeviceTypes, getDeviceCount, getMeterCount } = require('../u
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
 
 const { PERIODS } = require('../constants/HomeConstants');
-const { formatMessage } = require('../utils/general');
+const { formatMessage, formatMetric, getMetricMu } = require('../utils/general');
 
 function mapStateToProps(state) {
   return {
@@ -55,6 +55,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                            ),
   }));
 
+  const mu = getMetricMu(stateProps.filter);
+  const chartFormatter = y => formatMetric([y, mu]);
   return {
     ...stateProps,
     actions: {
@@ -74,6 +76,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     nextPeriod: timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.endDate),
     chartData,
     chartCategories: xCategoryLabels,
+    chartFormatter,
     _t,
   };
 }

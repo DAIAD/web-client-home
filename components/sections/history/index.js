@@ -9,6 +9,7 @@ const { TimeNavigator, CustomTimeNavigator, ShowerNavigator } = require('../../h
 const { Tabs, TabsMulti, Tab } = require('../../helpers/Tabs');
 const HistoryChart = require('./HistoryChart');
 const SessionsList = require('./SessionsList');
+const FormatMetric = require('../../helpers/FormatMetric');
 
 //sub-containers
 const SessionData = require('../../../containers/SessionData');
@@ -228,9 +229,9 @@ const History = React.createClass({
           </SidebarRight>
           <div className="primary"> 
             <div className="history-chart-area">
-              <h4 style={{ textAlign: 'center', margin: '10px 0 0 0' }}>
-                {this.props.reducedMetric}
-              </h4>
+              <h3 style={{ textAlign: 'center', margin: '10px 0 0 0' }}>
+                <FormatMetric value={this.props.reducedMetric} />
+              </h3>
               { 
                 (() => {
                   if (activeDeviceType === 'METER') {

@@ -39,7 +39,7 @@ const getFriendlyDuration = function (seconds) {
     return `${addZero(Math.floor(seconds / 60))}' ` +
       `${addZero(Math.floor(seconds / 60) % 60)}"`;
   }
-  return `00:${addZero(seconds)}`;
+  return '00\'  ' + addZero(seconds) + '"';
 };
 
 const getEnergyClass = function (energy) {
@@ -94,10 +94,10 @@ const getEnergyClass = function (energy) {
 
 const getMetricMu = function (metric) {
   if (metric === 'showers') return '';
-  else if (metric === 'volume' || metric === 'difference' || metric === 'total' || metric === 'forecast') return 'lt';
+  else if (metric === 'volume' || metric === 'total' || metric === 'forecast') return 'lt';
   //else if (metric === 'total' || metric === 'volumeCubic') return '\u33A5';
   else if (metric === 'energy') return 'kWh';
-  else if (metric === 'duration') return 'min';
+  else if (metric === 'duration') return '';
   else if (metric === 'temperature') return '°C';
   else if (metric === 'cost') return '\u20AC';
   return '';
@@ -301,6 +301,18 @@ const formatBytes = function (bytes, decimals) {
   return parseFloat((bytes / (k ** i)).toFixed(dm)) + ' ' + sizes[i];
 };
 
+const validateMetric = function (metric) {
+  if (!Array.isArray(metric)) {
+    return [metric, null];
+  }
+  return metric;
+};
+
+const formatMetric = function (metric) {
+  const validated = validateMetric(metric);
+  return `${validated[0]} ${validated[1]}`;
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
@@ -325,4 +337,6 @@ module.exports = {
   waterIQToNumeral,
   numeralToWaterIQ,
   formatBytes,
+  formatMetric,
+  validateMetric,
 };

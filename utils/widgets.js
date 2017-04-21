@@ -2,7 +2,7 @@ const moment = require('moment');
 
 const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS, BASE64, IMAGES } = require('../constants/HomeConstants');
 
-const { getFriendlyDuration, getEnergyClass, getMetricMu, waterIQToNumeral, numeralToWaterIQ } = require('./general');
+const { getFriendlyDuration, getEnergyClass, getMetricMu, waterIQToNumeral, numeralToWaterIQ, formatMetric } = require('./general');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets, colorFormatterSingle } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
@@ -50,7 +50,7 @@ const amphiroLastShower = function (widget, intl) {
     data: Array.isArray(measurements) ? measurements.map(m => m ? m[metric] : null) : [],
   }];
   const mu = getMetricMu(metric);
-
+  const chartFormatter = y => formatMetric([y, mu]);
   return {
     ...widget,
     icon: `${IMAGES}/shower.svg`,
@@ -58,6 +58,7 @@ const amphiroLastShower = function (widget, intl) {
     chartCategories,
     timeDisplay: intl.formatRelative(timestamp),
     chartData,
+    chartFormatter,
     highlight: {
       image: `${IMAGES}/volume.svg`,
       text: lastSession ? lastSession[metric] : null,
@@ -105,6 +106,7 @@ const amphiroMembersRanking = function (widget, intl) {
   const chartColors = ['#7AD3AB', '#abaecc', '#2d3480', '#808285', '#CD4D3E'];
 
   const chartColorFormatter = colorFormatterSingle(chartColors);
+  const chartFormatter = y => formatMetric([y, mu]);
 
   return {
     ...widget,
@@ -112,6 +114,7 @@ const amphiroMembersRanking = function (widget, intl) {
     more: intl.formatMessage({ id: 'widget.explore-comparisons' }),
     periods,
     chartCategories,
+    chartFormatter,
     chartData,
     legend: false,
     chartColorFormatter,
@@ -153,6 +156,7 @@ const amphiroOrMeterTotal = function (widget, intl) {
     :
     getChartMeterCategoryLabels(getChartMeterCategories(time), time.granularity, period, intl);
 
+  const chartFormatter = y => formatMetric([y, mu]);
   const chartData = Array.isArray(data) ? data.map((devData) => {
     const sessions = devData.sessions 
     .map(session => ({
@@ -206,6 +210,7 @@ const amphiroOrMeterTotal = function (widget, intl) {
       }
     ].filter(i => i.display),
     chartCategories,
+    chartFormatter,
     chartData,
     mode: 'stats',
     clearComparisons: true,
@@ -281,6 +286,7 @@ const meterForecast = function (widget, intl) {
   const xCategories = getChartMeterCategories(time);
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
   
+  const chartFormatter = y => formatMetric([y, mu]);
   const chartData = data.map(devData => ({ 
       name: intl.formatMessage({ id: 'widget.consumption' }), 
       data: getChartMeterData(devData.sessions, 
@@ -311,6 +317,7 @@ const meterForecast = function (widget, intl) {
     time,
     periods,
     chartCategories: xCategoryLabels,
+    chartFormatter,
     chartData: [...chartData, ...forecastChartData],
     mu,
     mode: 'forecasting',
@@ -334,6 +341,8 @@ const meterPricing = function (widget, intl) {
   const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
 
   const priceBrackets = getChartPriceBrackets(xCategories, brackets, intl);
+  
+  const chartFormatter = y => formatMetric([y, mu]);
 
   const chartData = data.map(devData => ({ 
       name: intl.formatMessage({ id: `history.${metric}` }), 
@@ -352,6 +361,7 @@ const meterPricing = function (widget, intl) {
     time,
     periods,
     chartCategories: xCategoryLabels,
+    chartFormatter,
     chartData: [...chartData, ...priceBrackets],
     mu,
     mode: 'pricing',
@@ -384,14 +394,15 @@ const meterBreakdown = function (widget, intl) {
 
   const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
   const chartColorFormatter = colorFormatterSingle(chartColors);
+
+  const mu = getMetricMu(metric);
+  const chartFormatter = y => formatMetric([y, mu]);
   const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.id}` }).split(' ').join('\n'));
   const chartData = [{
     name: intl.formatMessage({ id: `history.${metric}` }),
     data: sessions.map(x => x[metric]),
   }];
   
-  const mu = getMetricMu(metric);
-
   return {
     ...widget,
     icon: `${IMAGES}/stats-side.svg`,
@@ -400,6 +411,7 @@ const meterBreakdown = function (widget, intl) {
     chartType: 'horizontal-bar',
     chartCategories,
     chartColorFormatter,
+    chartFormatter,
     chartData,
     mu,
     clearComparisons: true,
@@ -431,7 +443,8 @@ const meterComparison = function (widget, intl) {
       : [],
   }];
 
-  const mu = 'lt';
+  const mu = getMetricMu(metric);
+  const chartFormatter = y => formatMetric([y, mu]);
  
   return {
     ...widget,
@@ -442,6 +455,7 @@ const meterComparison = function (widget, intl) {
     chartType: 'horizontal-bar',
     chartCategories,
     chartColorFormatter,
+    chartFormatter,
     chartData,
     mu,
     mode: 'stats',
@@ -548,6 +562,7 @@ const budget = function (widget, intl) {
   const percent = `${Math.round((consumed / (consumed + remaining)) * 100)}%`;
   //percent = isNaN(percent) ? '' : `${percent}%`;
 
+  const chartFormatter = y => formatMetric([y, mu]);
   const chartData = [{
     name: percent, 
     data: [{
@@ -570,6 +585,7 @@ const budget = function (widget, intl) {
       mu,
     },
     chartData,
+    chartFormatter,
     chartColors,
   };
 };
@@ -591,6 +607,7 @@ const meterCommon = function (widget, intl) {
 
   const xCategories = getChartMeterCategories(time);
   const chartCategories = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
+  const chartFormatter = y => formatMetric([y, mu]);
 
   
   const chartData = data.map(devData => ({ 
@@ -623,6 +640,7 @@ const meterCommon = function (widget, intl) {
     time,
     periods,
     chartCategories: chartCategories,
+    chartFormatter,
     chartData: [...chartData, ...commonChartData],
     mu,
     linkTo: 'commons',

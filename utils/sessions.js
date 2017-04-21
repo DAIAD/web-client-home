@@ -1,4 +1,4 @@
-const { getFriendlyDuration, getEnergyClass } = require('./general');
+const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
 const { getTimeLabelByGranularity, getPeriodTimeLabel } = require('./time');
 
@@ -48,25 +48,24 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
     const sortBy = devType === 'AMPHIRO' ? 'id' : 'timestamp';
     return sortSessions(device.sessions, sortBy, 'asc')
     .map((session, idx, array) => {
-      const vol = 'volume'; 
-      const diff = array[idx - 1] != null ? (array[idx][vol] - array[idx - 1][vol]) : null;
+      const diff = array[idx - 1] != null ? (array[idx].volume - array[idx - 1].volume) : null;
       const member = session.member && session.member.index && Array.isArray(members) ? members.find(m => session.member.index === m.index) : null;
       return {
         ...session,
         real: !session.history,
         index: idx, 
         devType,
-        vol: session.volume,
         device: device.deviceKey,
-        deviceName: getDeviceNameByKey(devices, device.deviceKey) || 'SWM',
-        duration: getFriendlyDuration(session.duration), 
-        temperature: session.temperature ? 
-          Math.round(session.temperature * 10) / 10 
-          : null,
-        energy: session.energy ? Math.round((session.energy / 1000) * 100) / 100 : null,
+        deviceName: getDeviceNameByKey(devices, device.deviceKey) || intl.formatMessage({ id: 'devices.meter' }), 
+        volume: [session.volume, getMetricMu('volume')],
+        duration: [getFriendlyDuration(session.duration), getMetricMu('duration')],
+        temperature: [session.temperature ? 
+          Math.round(session.temperature * 10) / 10
+          : null, getMetricMu('temperature')],
+        energy: [session.energy ? Math.round((session.energy / 1000) * 100) / 100 : null, getMetricMu('energy')],
         energyClass: getEnergyClass(session.energy), 
-        percentDiff: (diff != null && array[idx - 1][vol] !== 0) ? 
-          Math.round(10000 * (diff / array[idx - 1][vol])) / 100 
+        percentDiff: (diff != null && array[idx - 1].volume !== 0) ? 
+          Math.round(10000 * (diff / array[idx - 1].volume)) / 100 
           : null,
         hasChartData: Array.isArray(session.measurements) && 
           session.measurements.length > 0,
@@ -224,7 +223,6 @@ const prepareBreakdownSessions = function (devices, data, metric, breakdown, use
     const title = intl.formatMessage({ id: `breakdown.${id}` });
     return {
       id,
-      devName: 'SWM',
       devType: title,
       title,
       volume: Math.round(total * (item.percent / 100)),
@@ -262,8 +260,6 @@ const preparePricingSessions = function (sessions, brackets, granularity, user, 
     const diff = arr[i - 1] != null ? (arr[i].volume - arr[i - 1].volume) : null;
     return {
       ...session,
-      devName: 'SWM',
-      member: user,
       total: totalVolume,
       percentDiff: (diff != null && arr[i - 1].volume !== 0) ? 
                         Math.round(10000 * (diff / arr[i - 1].volume)) / 100 
