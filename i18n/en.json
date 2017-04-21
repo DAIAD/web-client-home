@@ -121,11 +121,13 @@
   "widget": {
     "shower-average": "Average shower",
     "consumption": "Consumption",
+    "no-tips": "Sorry, no tips available",
     "explore": "See more",
     "explore-showers": "Explore all showers",
     "explore-last-shower": "See details",
     "explore-swm": "See more",
     "explore-comparisons": "See comparisons",
+    "explore-common": "Explore community",
     "titles": {
       "totalVolumeStatAmphiro": "Shower Volume (metric)",
       "totalVolumeChartAmphiro": "Shower Volume (progress)",
@@ -145,13 +147,14 @@
       "budget": "Monthly budget",
       "wateriqStat": "Water IQ - last month",
       "wateriqChart": "Water IQ Comparison - last month",
-      "commons": "Community comparison"
+      "commons": "Community comparison",
+      "tip": "Latest tip"
     },
     "descriptions": {
       "totalVolumeStatAmphiro": "A stat widget displaying the total consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
       "totalVolumeChartAmphiro": "A chart widget presenting the consumption for your last 10 showers for all installed devices. You can later change this to show the last 20 or 50 showers.",
-      "totalVolumeStatSWM": "A widget displaying your households total water consumption for the last month. You can later change it to daily, weekly or yearly consumption.",
-      "totalVolumeChartSWM": "A chart widget displaying your households total water consumption progress for the last month. You can later change it to daily, weekly or yearly consumption.",
+      "totalVolumeStatSWM": "A widget displaying your household's total water consumption for the last month. You can later change it to daily, weekly or yearly consumption.",
+      "totalVolumeChartSWM": "A chart widget displaying your household's total water consumption progress in the last month. You can later change it to daily, weekly or yearly consumption.",
       "totalEnergyStat": "A stat widget displaying the total energy consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.", 
       "totalEnergyChart": "A chart widget displaying the total energy progress for your last 10 showers. You can later change this to show the last 20 or 50 showers.", 
       "totalTemperatureStat": "A widget displaying the average temperature for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
@@ -166,7 +169,8 @@
       "budget": "A widget showing your consumption based on your daily budget.",
       "wateriqStat": "A widget showing your Water IQ for the previous month.",
       "wateriqChart": "A chart widget showing your Water IQ for the previous month against your city, neighbors and similar users.",
-      "commons": "A chart widget showing your consumption against your favorite community for the current month. You can later change this to weekly, or monthly period. You can select your favorite community in the settings section."
+      "commons": "A chart widget showing your consumption against your favorite community for the current month. You can later change this to weekly, or monthly period. You can select your favorite community in the settings section.",
+      "tip": "A widget displaying a tip to help you reduce consumption"
     }
   },
   "shower": {
@@ -190,7 +194,7 @@
     "breakdown": "Water breakdown",
     "forecast": "Forecast",
     "breakdownUse": "Use",
-    "member-filter": "Member",
+    "member-filter": "Everyone",
     "compare-against": "Compare against",
     "consumption-min": "Minimum consumption this {period}. Well done!",
     "consumption-min-short": "Minimum consumption",
@@ -288,8 +292,8 @@
   "devices": {
     "amphiro": "Shower device",
     "amphiros": "Shower devices",
-    "meter": "Meter",
-    "meters": "Meters",
+    "meter": "Water Meter",
+    "meters": "Water Meters",
     "properties": "Properties",
     "no-properties": "No properties",
     "name": {
