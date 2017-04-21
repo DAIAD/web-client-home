@@ -373,6 +373,10 @@
     "created": "Created",
     "size": "Size"
   },
+  "404": {
+    "title": "reasons you shouldn't be here",
+    "link": "Go back"
+  },
   "footer": {
     "contact": "Contact",
     "terms": "Terms of service"

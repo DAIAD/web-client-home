@@ -25,6 +25,7 @@ const Login = require('../containers/Login');
 const LoginForm = require('../components/sections/login/LoginForm');
 const PasswordReset = require('../components/sections/login/PasswordReset');
 const PasswordResetRequest = require('../components/sections/login/PasswordResetRequest');
+const NotFound = require('../components/sections/404');
 
 const routes = () => (
   <Route path="/" component={HomeApp} >
@@ -53,6 +54,7 @@ const routes = () => (
       <Route path="/password/reset/" component={PasswordResetRequest} />
       <Route path="/password/reset/:token" component={PasswordReset} />
     </Route>
+    <Route path="*" component={NotFound} />
   </Route>
 );
 
