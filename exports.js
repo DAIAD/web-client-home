@@ -1,13 +1,21 @@
+const QueryActions = require('./actions/query/QueryActionsConnector');
+
+const Widgets = require('./components/helpers/Widgets');
+
+const widgetUtils = require('./utils/widgets');
+const genUtils = require('./utils/general');
+const devUtils = require('./utils/device');
+
 module.exports = {
   actions: {
-    QueryActions: require('./actions/query/QueryActionsConnector'),
+    QueryActions,
   },
   components: {
-    Widgets: require('./components/helpers/Widgets'),
+    Widgets,
   },
   utils: {
-    widgets: require('./utils/widgets'),
-    general: require('./utils/general'),
-    device: require('./utils/device'),
+    widgets: widgetUtils,
+    general: genUtils,
+    device: devUtils,
   },
 };
