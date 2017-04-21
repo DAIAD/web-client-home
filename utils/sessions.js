@@ -58,9 +58,8 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
         devType,
         vol: session.volume,
         device: device.deviceKey,
-        devName: getDeviceNameByKey(devices, device.deviceKey) || 'SWM',
-        duration: session.duration ? Math.floor(session.duration / 60) : null,
-        friendlyDuration: getFriendlyDuration(session.duration), 
+        deviceName: getDeviceNameByKey(devices, device.deviceKey) || 'SWM',
+        duration: getFriendlyDuration(session.duration), 
         temperature: session.temperature ? 
           Math.round(session.temperature * 10) / 10 
           : null,
