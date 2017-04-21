@@ -34,7 +34,10 @@ const queryData = function (options) {
     const { time, population, source, metrics } = options;
     
     const data = {
-      query: options,
+      query: {
+        ...options,
+        usingPreAggregation: properties.dataApiUseAggregatedData,
+      },
       csrf: getState().user.csrf,
     };
 
@@ -141,7 +144,10 @@ const fetchDeviceSession = function (options) {
 const queryMeterForecast = function (options) {
   return function (dispatch, getState) {
     const data = {
-      query: options,
+      query: {
+        ...options,
+        usingPreAggregation: properties.dataApiUseAggregatedData,
+      },
       csrf: getState().user.csrf,
     };
 

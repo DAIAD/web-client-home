@@ -56,11 +56,12 @@ const getReportsStatus = function () {
   return function (dispatch, getState) {
     const { time } = getState().section.reports;
     
-    dispatch(QueryActions.requestedQuery());
     const data = {
       year: new Date(time.startDate).getFullYear(),
       csrf: getState().user.csrf,
     };
+    
+    dispatch(QueryActions.requestedQuery());
     return reportsAPI.status(data)
     .then((response) => {
       dispatch(QueryActions.receivedQuery(true));
