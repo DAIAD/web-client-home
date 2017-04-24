@@ -1,4 +1,4 @@
-const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
+const { getFriendlyDuration, getEnergyClass, formatMetric } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
 const { getTimeLabelByGranularity, getPeriodTimeLabel } = require('./time');
 
@@ -41,7 +41,7 @@ const sortSessions = function (psessions, by = 'timestamp', order = 'desc') {
 // reduces array of devices with multiple sessions arrays
 // to single array of sessions 
 // and prepare for table presentation
-const prepareSessionsForTable = function (devices, data, members, user, granularity, intl) {
+const prepareSessionsForTable = function (devices, data, members, user, granularity, unit, intl) {
   if (!devices || !data) return [];
   const sessions = data.map((device) => { 
     const devType = getDeviceTypeByKey(devices, device.deviceKey);
@@ -57,12 +57,10 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
         devType,
         device: device.deviceKey,
         deviceName: getDeviceNameByKey(devices, device.deviceKey) || intl.formatMessage({ id: 'devices.meter' }), 
-        volume: [session.volume, getMetricMu('volume')],
-        duration: [getFriendlyDuration(session.duration), getMetricMu('duration')],
-        temperature: [session.temperature ? 
-          Math.round(session.temperature * 10) / 10
-          : null, getMetricMu('temperature')],
-        energy: [session.energy ? Math.round((session.energy / 1000) * 100) / 100 : null, getMetricMu('energy')],
+        volume: formatMetric(session.volume, 'volume', unit),
+        duration: formatMetric(session.duration, 'duration', unit),
+        temperature: formatMetric(session.temperature, 'temperature', unit),
+        energy: formatMetric(session.energy, 'energy', unit),
         energyClass: getEnergyClass(session.energy), 
         percentDiff: (diff != null && array[idx - 1].volume !== 0) ? 
           Math.round(10000 * (diff / array[idx - 1].volume)) / 100 
@@ -148,10 +146,8 @@ const reduceMetric = function (devices, data, metric, average = false) {
   if (metric === 'temperature' || average) {
     reducedMetric /= sessions;
   } else if (metric === 'duration') {
-    reducedMetric = (reducedMetric / sessions) / 60;
-  } else if (metric === 'energy') {
-    reducedMetric /= 1000;
-  }
+    reducedMetric /= sessions;
+  } 
 
   if (metric === 'cost') {
     reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 100) / 100) : 0;

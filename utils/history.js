@@ -4,7 +4,7 @@ const schemas = require('../schemas/history');
 
 const { bringPastSessionsToPresent, convertGranularityToPeriod, getTimeLabelByGranularity } = require('./time');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { formatMessage, getMetricMu, waterIQToNumeral, numeralToWaterIQ, formatMetric } = require('./general');
+const { formatMessage, waterIQToNumeral, numeralToWaterIQ, formatMetric, displayMetric } = require('./general');
 
 const { getComparisons, getComparisonTitle } = require('./comparisons');
 
@@ -36,6 +36,7 @@ const getStatsMeterData = function (props) {
                                                         props.members,
                                                         props.user.firstname, 
                                                         props.time.granularity,
+                                                        props.unit,
                                                         props.intl
                                                        ),
                                     props.sortFilter, 
@@ -43,12 +44,11 @@ const getStatsMeterData = function (props) {
                 );
                 
     
-  const mu = getMetricMu(props.filter);
   const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
     
   // CHART
 
-  const chartFormatter = y => formatMetric([y, mu]);
+  const chartFormatter = y => displayMetric(formatMetric(y, props.filter, props.unit));
   const xCategories = getChartMeterCategories(props.time);
       
   const chartCategories = getChartMeterCategoryLabels(xCategories, props.time.granularity, props.timeFilter, props.intl);
@@ -96,7 +96,7 @@ const getStatsMeterData = function (props) {
     //Table
     sessions,
     sessionFields: schemas.meter,
-    reducedMetric: [reducedMetric, mu],
+    reducedMetric: formatMetric(reducedMetric, props.filter, props.unit, reducedMetric),
     //Chart
     xCategories,
     chartType: 'line',
@@ -106,7 +106,6 @@ const getStatsMeterData = function (props) {
       ...chartData,
       ...comparisonsData,
     ],
-    mu,
   };
 };
 
@@ -117,13 +116,13 @@ const getStatsAmphiroData = function (props) {
                                                         props.members,
                                                         props.user.firstname, 
                                                         props.time.granularity,
+                                                        props.unit,
                                                         props.intl
                                                        ),
                                     props.sortFilter, 
                                     props.sortOrder
                 );
                 
-  const mu = getMetricMu(props.filter);
   const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
   
   // CHART
@@ -131,7 +130,7 @@ const getStatsAmphiroData = function (props) {
   const xCategories = getChartAmphiroCategories(props.timeFilter, getLastShowerIdFromMultiple(props.data));
       
   const chartCategories = xCategories;
-  const chartFormatter = y => formatMetric([y, mu]);
+  const chartFormatter = y => displayMetric(formatMetric(y, props.filter, props.unit));
      
   const chartData = props.data.map((devData) => {  
     const memberName = props.memberFilter === 'all' ? 'All' : props.members.find(m => props.memberFilter === m.index).name;
@@ -166,7 +165,7 @@ const getStatsAmphiroData = function (props) {
     //Table
     sessions,
     sessionFields: schemas.amphiro,
-    reducedMetric: [reducedMetric, mu],
+    reducedMetric: formatMetric(reducedMetric, props.filter, props.unit, reducedMetric),
     //Chart
     xCategories,
     chartType: 'line',
@@ -176,7 +175,6 @@ const getStatsAmphiroData = function (props) {
       ...chartData,
       ...comparisonsData,
     ],
-    mu,
   };
 };
 
@@ -195,7 +193,7 @@ const getForecastData = function (props) {
   const statsData = getStatsData(props);
   const forecastData = props.forecasting && props.forecastData && Array.isArray(props.forecastData.sessions) ? 
     [{
-      name: 'Forecast',
+      name: props.intl.formatMessage({ id: 'history.forecast' }),
       data: getChartMeterData(props.forecastData.sessions,
                         statsData.xCategories, 
                         props.time,
@@ -216,7 +214,7 @@ const getForecastData = function (props) {
     
   const sessions = Array.isArray(props.forecastData.sessions) ? sortSessions(props.forecastData.sessions.map(session => ({
     ...statsData.sessions.find(s => s.timestamp === session.timestamp),
-    forecast: [Math.round(session.volume * 100) / 100, getMetricMu(props.filter)],
+    forecast: formatMetric(session.volume, props.filter, props.unit),
     timestamp: session.timestamp,
     date: getTimeLabelByGranularity(session.timestamp, 
                                     props.time.granularity, 
@@ -259,10 +257,9 @@ const getPricingData = function (props) {
   const xCategories = getChartMeterCategories(props.time);
 
   const chartPriceBrackets = props.pricing && props.priceBrackets ? 
-    getChartPriceBrackets(xCategories, props.priceBrackets, props.intl) 
+    getChartPriceBrackets(xCategories, props.priceBrackets, props.unit, props.intl) 
     : [];
-  const mu = getMetricMu(props.filter);
-  const chartFormatter = y => formatMetric([y, mu]);
+    const chartFormatter = y => displayMetric(formatMetric(y, props.filter, props.unit, Math.max(...props.priceBrackets.map(x => x.minVolume))));
 
   const chartCategories = getChartMeterCategoryLabels(xCategories, props.time.granularity, props.timeFilter, props.intl);
      
@@ -313,12 +310,12 @@ const getPricingData = function (props) {
   return {
     sessions: sessions.map(s => ({ 
       ...s,
-      volume: [s.volume, mu], 
-      total: [s.total, mu],
-      cost: [s.cost, getMetricMu('cost')],
+      volume: formatMetric(s.volume, 'volume', props.unit, Math.max(...sessions.map(x => x.volume))), 
+      total: formatMetric(s.total, 'volume', props.unit, Math.max(...sessions.map(x => x.total))),
+      cost: formatMetric(s.cost, 'cost', props.unit),
     })),
     sessionFields: schemas.pricing,
-    reducedMetric: [reducedMetric, getMetricMu('cost')],
+    reducedMetric: formatMetric(reducedMetric, 'cost', props.unit),
     chartCategories,
     chartFormatter,
     chartData: [
@@ -347,7 +344,7 @@ const getBreakdownData = function (props) {
   const sessionsSorted = sortSessions(sessions, props.sortFilter, props.sortOrder);
   const chartCategories = sessions.map(x => props._t(`breakdown.${x.id}`));
   const chartData = [{
-    name: 'Consumption',
+    name: props.intl.formatMessage({ id: 'history.volume' }),
     data: sessions.map(x => x[props.filter]),
     metadata: {
       ids: sessions.map(x => x ? [x.id, x.timestamp] : [null, null]),

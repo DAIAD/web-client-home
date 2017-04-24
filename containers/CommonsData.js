@@ -11,13 +11,14 @@ const timeUtil = require('../utils/time');
 const { getLastShowerIdFromMultiple } = require('../utils/sessions');
 const { getAvailableDeviceTypes, getDeviceCount, getMeterCount } = require('../utils/device');
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
+const { formatMessage, formatMetric, displayMetric } = require('../utils/general');
 
 const { PERIODS } = require('../constants/HomeConstants');
-const { formatMessage, formatMetric, getMetricMu } = require('../utils/general');
 
 function mapStateToProps(state) {
   return {
     devices: state.user.profile.devices,
+    unit: state.user.profile.unit,
     favorite: state.section.settings.commons.favorite,
     ...state.section.commons,
   };
@@ -55,8 +56,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                            ),
   }));
 
-  const mu = getMetricMu(stateProps.filter);
-  const chartFormatter = y => formatMetric([y, mu]);
+  const chartFormatter = y => displayMetric(formatMetric(y, 'volume', stateProps.unit));
   return {
     ...stateProps,
     actions: {

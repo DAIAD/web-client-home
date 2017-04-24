@@ -11,9 +11,9 @@ module.exports = {
   VOLUME_BOTTLE: 1.5,
   VOLUME_BUCKET: 40,
   VOLUME_POOL: 10000,
-  ENERGY_BULB: 0.03,
-  ENERGY_HOUSE: 1,
-  ENERGY_CITY: 1000,
+  ENERGY_BULB: 30,
+  ENERGY_HOUSE: 1000,
+  ENERGY_CITY: 1000000,
   BRACKET_COLORS: ['green', 'orange', 'red', 'black'],
   LOCALES: ['en', 'el', 'de', 'es'],
   COUNTRIES: ['United Kingdom', 'Spain', 'Greece'],
@@ -193,8 +193,8 @@ module.exports = {
       },
       {
         id: 'total', 
-        title: 'history.volumeTotal', 
-        details: 'history.volumeTotalDetails', 
+        title: 'history.total', 
+        details: 'history.totalDetails', 
         icon: 'volume.svg',
       },
       {

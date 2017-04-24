@@ -20,6 +20,7 @@ function mapStateToProps(state) {
   return {
     firstname: state.user.profile.firstname,
     devices: state.user.profile.devices,
+    unit: state.user.profile.unit,
     layout: state.section.dashboard.layout,
     mode: state.section.dashboard.mode,
     dirty: state.section.dashboard.dirty,
@@ -95,6 +96,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                     prepareWidget({ 
                       ...widget,
                       devices: stateProps.devices,
+                      unit: stateProps.unit,
                       breakdown: stateProps.breakdown,
                       brackets: stateProps.brackets,
                       tips: stateProps.tips,

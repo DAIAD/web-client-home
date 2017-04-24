@@ -92,25 +92,6 @@ const getEnergyClass = function (energy) {
 };
 
 
-const getMetricMu = function (metric) {
-  if (metric === 'showers') return '';
-  else if (metric === 'volume' || metric === 'total' || metric === 'forecast') return 'lt';
-  //else if (metric === 'total' || metric === 'volumeCubic') return '\u33A5';
-  else if (metric === 'energy') return 'kWh';
-  else if (metric === 'duration') return '';
-  else if (metric === 'temperature') return '°C';
-  else if (metric === 'cost') return '\u20AC';
-  return '';
-  //throw new Error(`unrecognized metric ${metric}`);
-};
-
-const getShowerMetricMu = function (metric) {
-  if (metric === 'volume') return 'lt';
-  else if (metric === 'energy') return 'W';
-  else if (metric === 'temperature') return '°C';
-  throw new Error(`unrecognized metric ${metric}`);
-};
-
 const showerFilterToLength = function (filter) {
   if (filter === 'ten') return 10;
   else if (filter === 'twenty') return 20;
@@ -301,16 +282,50 @@ const formatBytes = function (bytes, decimals) {
   return parseFloat((bytes / (k ** i)).toFixed(dm)) + ' ' + sizes[i];
 };
 
-const validateMetric = function (metric) {
+const normalizeMetric = function (metric) {
   if (!Array.isArray(metric)) {
     return [metric, null];
   }
   return metric;
 };
 
-const formatMetric = function (metric) {
-  const validated = validateMetric(metric);
-  return `${validated[0]} ${validated[1]}`;
+const formatMetric = function (value, metric, unit, maxValue) {
+  switch (metric) {
+    case 'volume':
+    case 'total':
+      switch (unit) {
+        case 'IMPERIAL': 
+          return [Math.round(value * 0.264172 * 10) / 10, 'gl'];
+        default:
+          if (maxValue > 1000) {
+            return [Math.round((value / 1000) * 1000) / 1000, '\u33A5'];
+          }
+          return [Math.round(value * 100) / 100, 'lt'];
+      }
+    case 'energy':
+      if (maxValue > 1000) {
+        return [Math.round((value / 1000) * 100) / 100, 'KWh'];
+      }
+      return [Math.round(value), 'Wh'];
+    case 'temperature':
+      switch (unit) {
+        case 'IMPERIAL':
+          return [Math.round((value * 1.8) + 32), '°F'];
+        default:
+          return [Math.round(value * 10) / 10, '°C'];
+      }
+    case 'duration':
+      return [getFriendlyDuration(value), ''];
+    case 'cost': 
+      return [Math.round(value * 100) / 100, '\u20AC'];
+    default:
+      return [null, null];
+  }
+};
+
+const displayMetric = function (value) {
+  const normalized = normalizeMetric(value);
+  return normalized.join(' ');
 };
 
 module.exports = {
@@ -318,8 +333,6 @@ module.exports = {
   flattenMessages,
   getFriendlyDuration,
   getEnergyClass,
-  getMetricMu,
-  getShowerMetricMu,
   showerFilterToLength,
   getShowersPagingIndex,
   debounce,
@@ -338,5 +351,6 @@ module.exports = {
   numeralToWaterIQ,
   formatBytes,
   formatMetric,
-  validateMetric,
+  normalizeMetric,
+  displayMetric,
 };

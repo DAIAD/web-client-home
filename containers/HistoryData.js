@@ -20,6 +20,7 @@ function mapStateToProps(state) {
   return {
     user: state.user.profile,
     devices: state.user.profile.devices,
+    unit: state.user.profile.unit,
     myCommons: state.section.commons.myCommons,
     favoriteCommon: state.section.settings.commons.favorite,
     members: state.user.profile.household.members,

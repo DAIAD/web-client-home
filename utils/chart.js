@@ -1,6 +1,6 @@
 const moment = require('moment');
 const { convertGranularityToPeriod, getLowerGranularityPeriod, getTimeLabelByGranularityShort, timeToBuckets } = require('./time');
-const { getMetricMu } = require('./general');
+const { formatMetric, displayMetric } = require('./general');
 const { BRACKET_COLORS } = require('../constants/HomeConstants');
 
 const getChartMeterCategories = function (time) {
@@ -44,14 +44,7 @@ const mapAmphiroDataToChart = function (sessions, categories, filter) {
 const getChartAmphiroData = function (sessions, categories, filter) {
   return mapAmphiroDataToChart(sessions, categories, filter)
   .map(x => x ? x[filter] : null)
-  .map((x) => {
-    if (filter === 'duration') {
-      return Math.round(100 * (x / 60)) / 100;
-    } else if (filter === 'energy') {
-      return Math.round(100 * (x / 1000)) / 100;
-    } 
-    return Math.round(100 * x) / 100;
-  });
+  .map(x => Math.round(100 * x) / 100);
 };
 
 const mapMeterDataToChart = function (sessions, categories, time) {
@@ -85,13 +78,14 @@ const getChartMeterData = function (sessions, categories, time, filter) {
          Math.round(100 * x[filter]) / 100 : null);
 };
 
-const getChartPriceBrackets = function (xCategories, brackets, intl) {
+const getChartPriceBrackets = function (xCategories, brackets, unit, intl) {
+  const max = Math.max(...brackets.map(b => b.minVolume));
   return Array.isArray(brackets) ? 
     brackets
     .filter(bracket => bracket.maxVolume != null)
     .map((bracket, i) => ({
-      name: `${bracket.minVolume} to ${bracket.maxVolume} ${getMetricMu('volume')} ${bracket.price} ${getMetricMu('cost')}`,
-      data: xCategories.map(() => bracket.maxVolume * 1000),
+      name: `${displayMetric(formatMetric(bracket.minVolume, 'volume', unit, max))} to ${displayMetric(formatMetric(bracket.maxVolume, 'volume', unit, max))}: ${displayMetric(formatMetric(bracket.price, 'cost', unit))}`,
+      data: xCategories.map(() => formatMetric(bracket.maxVolume, 'total', unit)[0]),
       label: false,
       lineType: 'dashed',
       symbol: 'none',

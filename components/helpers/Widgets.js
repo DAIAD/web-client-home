@@ -1,5 +1,7 @@
 const React = require('react');
 const { Chart, LineChart, BarChart } = require('react-echarts');
+const DisplayMetric = require('./DisplayMetric');
+
 const lineTheme = require('../chart/themes/default');
 const horizontalBarTheme = require('../chart/themes/horizontal-bar');
 const verticalBarTheme = require('../chart/themes/vertical-bar');
@@ -24,8 +26,7 @@ function StatWidget(props) {
             <i />
           }
           <h2>
-            <span>{highlight.text}</span>
-            <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{highlight.mu}</span>
+            <DisplayMetric value={highlight.text} />
           </h2>
         </div>
       </div>
@@ -223,10 +224,9 @@ function LastShowerWidget(props) {
       <div style={{ padding: '0 10px' }}>
         <div style={{ float: 'left', textAlign: 'center' }}>
           <img style={{ height: 40, width: 40, float: 'left' }} src={props.highlight.image} alt={props.highlight.image} /> 
-          <h2 style={{ float: 'left' }}>
-            <span>{props.highlight.text}</span>
-            <span style={{ fontSize: '0.5em', marginLeft: 5 }}>{props.highlight.mu}</span>
-          </h2>
+          <h3 style={{ float: 'left' }}>
+            <DisplayMetric value={props.highlight.text} /> 
+          </h3>
         </div>
         {
         props.info.map((line, idx) => (

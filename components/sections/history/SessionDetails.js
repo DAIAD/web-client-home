@@ -1,7 +1,7 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedTime, FormattedDate } = require('react-intl');
-const FormatMetric = require('../../helpers/FormatMetric');
+const DisplayMetric = require('../../helpers/DisplayMetric');
 
 const DatetimeInput = require('react-datetime');
 
@@ -39,7 +39,7 @@ function SessionDetailsLine(props) {
           return <span />;
         })()
       }
-      <h4 style={{ float: 'right' }}><FormatMetric value={data} /></h4>
+      <h4 style={{ float: 'right' }}><DisplayMetric value={data} /></h4>
     </span>
   </li>
   );

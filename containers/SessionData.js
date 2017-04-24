@@ -12,7 +12,7 @@ const { ignoreShower, assignToMember, setShowerReal } = require('../actions/Show
 const { setForm } = require('../actions/FormActions');
 
 const { getChartAmphiroData } = require('../utils/chart');
-const { getMetricMu, getShowerMetricMu, getAllMembers, formatMessage } = require('../utils/general');
+const { getAllMembers, formatMessage, formatMetric, displayMetric } = require('../utils/general');
 const { convertGranularityToPeriod, getLowerGranularityPeriod } = require('../utils/time');
 const { METRICS } = require('../constants/HomeConstants');
 
@@ -30,6 +30,7 @@ function mapStateToProps(state) {
     editShower: state.section.history.editShower,
     showerTime: state.forms.shower.time,
     width: state.viewport.width,
+    unit: state.user.profile.unit,
   };
 }
 function mapDispatchToProps(dispatch) {
@@ -50,8 +51,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                                 || s.timestamp === stateProps.activeSession[1]))
    : {};
 
-  const mu = getMetricMu(stateProps.activeSessionFilter);   
-  const chartFormatter = y => `${y} ${mu}`;
+  const chartFormatter = y => displayMetric(formatMetric(y, stateProps.activeSessionFilter, stateProps.unit));
+
   const measurements = data && data.measurements ? data.measurements : [];
 
   const chartCategories = measurements.map(measurement => moment(measurement.timestamp).format('hh:mm:ss'));

@@ -1,6 +1,6 @@
 const React = require('react');
 const { FormattedDate, FormattedMessage } = require('react-intl');
-const FormatMetric = require('../components/helpers/FormatMetric');
+const DisplayMetric = require('../components/helpers/DisplayMetric');
 
 const { IMAGES } = require('../constants/HomeConstants');
 
@@ -8,7 +8,7 @@ const meter = [
   {
     id: 'volume',
     name: <FormattedMessage id="history.volume" />,
-    value: value => <FormatMetric className="table-highlight" value={value} />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   {
     id: 'comparison',
@@ -92,7 +92,7 @@ const amphiro = [
   {
     id: 'volume',
     name: <FormattedMessage id="history.volume" />,
-    value: value => <FormatMetric className="table-highlight" value={value} />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   {
     id: 'comparison',
@@ -137,7 +137,7 @@ const amphiro = [
     id: 'duration',
     name: '',
     icon: 'clock-o',
-    value: value => <FormatMetric value={value} />,
+    value: value => <DisplayMetric value={value} />,
   },
   {
     id: 'energyClass',
@@ -148,7 +148,7 @@ const amphiro = [
     id: 'temperature',
     name: '',
     icon: 'temperature',
-    value: value => <FormatMetric value={value} />,
+    value: value => <DisplayMetric value={value} />,
   },
   {
     id: 'real',
@@ -186,7 +186,7 @@ const breakdown = [
   {
     id: 'volume',
     name: <FormattedMessage id="history.volume" />,
-    value: value => <FormatMetric className="table-highlight" value={value} />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   {
     id: 'date',
@@ -206,7 +206,7 @@ const forecast = [
   {
     id: 'forecast',
     name: <FormattedMessage id="history.forecasted" />,
-    value: value => <FormatMetric className="table-highlight" value={value} />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   ...meter,
 ];
@@ -215,7 +215,7 @@ const wateriq = [
   {
     id: 'wateriq',
     name: <FormattedMessage id="history.wateriq" />,
-    value: value => <FormatMetric className="table-highlight" value={value} />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   ...meter,
 ];
@@ -225,12 +225,12 @@ const pricing = [
     id: 'cost',
     name: <FormattedMessage id="history.cost" />,
     icon: 'euro',
-    value: value => <FormatMetric className="table-highlight" value={value} />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   {
     id: 'total',
-    name: <FormattedMessage id="history.volumeTotal" />,
-    value: value => <FormatMetric className="table-highlight" value={value} />,
+    name: <FormattedMessage id="history.total" />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   ...meter,
 ];
