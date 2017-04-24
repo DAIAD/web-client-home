@@ -2,7 +2,6 @@ const { getComparisonPeriod } = require('./time');
 const { BASE64, IMAGES, PNG_IMAGES } = require('../constants/HomeConstants');
 
 const getMeterComparisonDetails = function (comparison, start, period, favCommon, intl) {
-  console.log('meter comparison det', favCommon);
   let extra = '';
   let image = null;
   if (comparison === 'last') {
