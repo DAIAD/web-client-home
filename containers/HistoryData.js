@@ -38,7 +38,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const devType = stateProps.activeDeviceType;  
   const members = getAllMembers(stateProps.members); 
-  const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
+  const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : null;
  
   const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
 
@@ -57,7 +57,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       [];
 
 
-  const availableComparisons = getComparisons(devType, stateProps.memberFilter, members)
+  const availableComparisons = getComparisons(devType, favoriteCommon, stateProps.memberFilter, members)
   .map(c => ({
     id: c,
     ...getComparisonDetails(stateProps.activeDeviceType,

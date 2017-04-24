@@ -9,7 +9,7 @@ const getMeterComparisonDetails = function (comparison, start, period, favCommon
     image = `${IMAGES}/challenge-daily.svg`;
   } else if (comparison === 'common') {
     extra = favCommon.name;
-    image = `${BASE64}${favCommon.image}`;
+    image = favCommon.image ? `${BASE64}${favCommon.image}` : null;
   } else if (comparison === 'all') {
     image = `${IMAGES}/city.svg`;
   } else if (comparison === 'nearest') {
@@ -40,9 +40,10 @@ const getComparisonDetails = function (devType, comparison, start, period, favCo
   return '';
 };
 
-const getComparisons = function (devType, memberFilter, members) {
+const getComparisons = function (devType, favCommon, memberFilter, members) {
    if (devType === 'METER') {
-     return ['last', 'all', 'common', 'nearest', 'similar'];
+     return ['last', 'all', 'common', 'nearest', 'similar']
+     .filter(c => favCommon == null ? c !== 'common' : c);
    } else if (devType === 'AMPHIRO') {
      return memberFilter !== 'all' ? 
        members.filter(m => m.index !== memberFilter).map(m => String(m.index))

@@ -6,7 +6,7 @@ const { bringPastSessionsToPresent, convertGranularityToPeriod, getTimeLabelByGr
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
 const { formatMessage, waterIQToNumeral, numeralToWaterIQ, formatMetric, displayMetric } = require('./general');
 
-const { getComparisons, getComparisonDetails } = require('./comparisons');
+const { getComparisonDetails } = require('./comparisons');
 
 const { 
   getChartMeterData, 

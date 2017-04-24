@@ -128,6 +128,7 @@
     "explore-swm": "See more",
     "explore-comparisons": "See comparisons",
     "explore-common": "Explore community",
+    "empty-or-no-fav-common": "No communities joined yet or no favorite community set",
     "titles": {
       "totalVolumeStatAmphiro": "Shower Volume (metric)",
       "totalVolumeChartAmphiro": "Shower Volume (progress)",

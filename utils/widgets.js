@@ -583,7 +583,7 @@ const meterCommon = function (widget, intl) {
   if (!common) {
     return {
       ...widget,
-      error: intl.formatMessage({ id: 'commons.empty' }),
+      error: intl.formatMessage({ id: 'widget.empty-or-no-fav-common' }),
     };
   }
   const time = widget.time ? widget.time : getTimeByPeriod(period);
