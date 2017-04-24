@@ -8,13 +8,13 @@ const History = require('../components/sections/history/');
 
 const { getAvailableDevices, getAvailableDeviceTypes } = require('../utils/device');
 const { prepareSessionsForTable, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
-const { getComparisons, getComparisonTitle } = require('../utils/comparisons');
+const { getComparisons, getComparisonDetails } = require('../utils/comparisons');
 const timeUtil = require('../utils/time');
 const { getMetricMu, formatMessage, getAllMembers, tableToCSV } = require('../utils/general');
 const { getHistoryData } = require('../utils/history');
 
 
-const { FILTER_METRICS, PERIODS, SORT, MODES } = require('../constants/HomeConstants');
+const { FILTER_METRICS, PERIODS, SORT, MODES, BASE64, PNG_IMAGES } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
@@ -38,7 +38,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const devType = stateProps.activeDeviceType;  
   const members = getAllMembers(stateProps.members); 
-  const favoriteCommonName = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon).name : '';
+  const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : {};
  
   const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
 
@@ -50,7 +50,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     ...members.map(member => ({
       id: member.index,
       title: member.name,
-      image: member.photo,
+      image: member.photo ? `${BASE64}${member.photo}` : `${PNG_IMAGES}/daiad-consumer.png`,
     })),
     ]
     :
@@ -60,14 +60,14 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const availableComparisons = getComparisons(devType, stateProps.memberFilter, members)
   .map(c => ({
     id: c,
-    title: getComparisonTitle(stateProps.activeDeviceType,
-                              c, 
-                              stateProps.time.startDate, 
-                              stateProps.timeFilter, 
-                              favoriteCommonName, 
-                              members, 
-                              ownProps.intl
-                             ),
+    ...getComparisonDetails(stateProps.activeDeviceType,
+                            c, 
+                            stateProps.time.startDate, 
+                            stateProps.timeFilter, 
+                            favoriteCommon, 
+                            members, 
+                            ownProps.intl
+                           ),
   }));   
 
   const modes = MODES[devType];
@@ -102,7 +102,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     chartColors,
     chartYMax,
     mu,
-  } = getHistoryData({ ...stateProps, ...ownProps, _t, members, favoriteCommonName });
+  } = getHistoryData({ ...stateProps, ...ownProps, _t, members, favoriteCommon });
 
   const csvData = tableToCSV(sessionFields, sessions);
   return {

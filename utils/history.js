@@ -6,7 +6,7 @@ const { bringPastSessionsToPresent, convertGranularityToPeriod, getTimeLabelByGr
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');
 const { formatMessage, waterIQToNumeral, numeralToWaterIQ, formatMetric, displayMetric } = require('./general');
 
-const { getComparisons, getComparisonTitle } = require('./comparisons');
+const { getComparisons, getComparisonDetails } = require('./comparisons');
 
 const { 
   getChartMeterData, 
@@ -75,14 +75,14 @@ const getStatsMeterData = function (props) {
       : 
       comparison.sessions;
     return ({
-      name: getComparisonTitle(props.activeDeviceType,
-                               comparison.id, 
-                               props.time.startDate,
-                               props.timeFilter, 
-                               props.favoriteCommonName, 
-                               props.members,
-                               props.intl
-                              ),
+      name: getComparisonDetails(props.activeDeviceType,
+                                 comparison.id, 
+                                 props.time.startDate,
+                                 props.timeFilter, 
+                                 props.favoriteCommon, 
+                                 props.members,
+                                 props.intl
+                                ).title,
      data: getChartMeterData(compSessions, 
                       xCategories, 
                       props.time, 
@@ -150,14 +150,14 @@ const getStatsAmphiroData = function (props) {
   });
   
   const comparisonsData = props.comparisons.map(comparison => comparison.sessions.map(dev => ({
-      name: getComparisonTitle(props.activeDeviceType,
-                               comparison.id, 
-                               props.time.startDate,
-                               props.timeFilter, 
-                               props.favoriteCommonName, 
-                               props.members,
-                               props.intl
-                              ) + ' (' + dev.name + ')',
+      name: getComparisonDetails(props.activeDeviceType,
+                                 comparison.id, 
+                                 props.time.startDate,
+                                 props.timeFilter, 
+                                 props.favoriteCommon, 
+                                 props.members,
+                                 props.intl
+                                ).title + ' (' + dev.name + ')',
      data: getChartAmphiroData(dev.sessions, xCategories, props.filter),
      fill: 0.1,
     }))).reduce((p, c) => [...p, ...c], []);
@@ -292,14 +292,14 @@ const getPricingData = function (props) {
                                                        props.intl
                                                       );
       return ({
-        name: getComparisonTitle(props.activeDeviceType,
-                                 comparison.id, 
-                                 props.time.startDate,
-                                 props.timeFilter, 
-                                 props.favoriteCommonName, 
-                                 props.members,
-                                 props.intl
-                                ),
+        name: getComparisonDetails(props.activeDeviceType,
+                                   comparison.id, 
+                                   props.time.startDate,
+                                   props.timeFilter, 
+                                   props.favoriteCommon, 
+                                   props.members,
+                                   props.intl
+                                  ).title,
        data: getChartMeterData(sessionsToCompare, 
                         xCategories, 
                         props.time, 
@@ -351,14 +351,14 @@ const getBreakdownData = function (props) {
     }, 
   },
   ...props.comparisons.map(comparison => ({
-    name: getComparisonTitle(props.activeDeviceType,
-                             comparison.id, 
-                             props.time.startDate,
-                             props.timeFilter, 
-                             props.favoriteCommonName, 
-                             props.members,
-                             props.intl
-                            ),
+    name: getComparisonDetails(props.activeDeviceType,
+                               comparison.id, 
+                               props.time.startDate,
+                               props.timeFilter, 
+                               props.favoriteCommon, 
+                               props.members,
+                               props.intl
+                              ).title,
     data: prepareBreakdownSessions([{ sessions: comparison.sessions }],
                                    props.filter,
                                    props.waterBreakdown,
@@ -407,14 +407,14 @@ const getWaterIQData = function (props) {
     }, 
     ...props.comparisons
   ].map(c => ({
-      name: c.title || getComparisonTitle(props.activeDeviceType,
-                                          c.id, 
-                                          props.time.startDate,
-                                          props.timeFilter, 
-                                          props.favoriteCommonName, 
-                                          props.members,
-                                          props.intl
-                                         ),
+      name: c.title || getComparisonDetails(props.activeDeviceType,
+                                            c.id, 
+                                            props.time.startDate,
+                                            props.timeFilter, 
+                                            props.favoriteCommon, 
+                                            props.members,
+                                            props.intl
+                                           ).title,
      data: getChartMeterData(waterIQData,
                              statsData.xCategories, 
                              props.time,

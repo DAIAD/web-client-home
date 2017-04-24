@@ -144,7 +144,7 @@ const History = React.createClass({
                       eventKey={filter.id}
                       title={filter.title}
                       className="member-tab"
-                      image={filter.image ? `${BASE64}${filter.image}` : `${PNG_IMAGES}/daiad-consumer.png`}
+                      image={filter.image}
                     />
                     ))
                 }
@@ -208,7 +208,7 @@ const History = React.createClass({
                   <Tab
                     key={comparison.id}
                     eventKey={comparison.id}
-                    icon={comparison.icon}
+                    image={comparison.image}
                     title={comparison.title}
                     className="compare-tab"
                   />
