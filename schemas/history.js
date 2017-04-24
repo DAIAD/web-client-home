@@ -76,7 +76,13 @@ const meter = [
   {
     id: 'date',
     name: <FormattedMessage id="common.date" />,
+    csv: false,
     icon: 'calendar',
+  },
+  {
+    id: 'timestamp',
+    name: '',
+    value: () => null,
   },
   {
     id: 'showMore',
@@ -127,7 +133,13 @@ const amphiro = [
   {
     id: 'date',
     name: <FormattedMessage id="common.date" />,
+    csv: false,
     icon: 'calendar',
+  },
+  {
+    id: 'timestamp',
+    name: '',
+    value: () => null,
   },
   {
     id: 'deviceName',
