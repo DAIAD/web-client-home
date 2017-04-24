@@ -197,9 +197,60 @@ const validatePassword = function (password, confirmPassword) {
   return Promise.resolve();
 };
 
+const normalizeMetric = function (metric) {
+  if (!Array.isArray(metric)) {
+    return [metric, null];
+  }
+  return metric;
+};
+
+const displayMetric = function (value) {
+  const normalized = normalizeMetric(value);
+  return normalized.join(' ');
+};
+
+const displayMetricCSV = function (value) {
+  const normalized = normalizeMetric(value);
+  return normalized[0];
+};
+
+const formatMetric = function (value, metric, unit, maxValue) {
+  switch (metric) {
+    case 'volume':
+    case 'total':
+      switch (unit) {
+        case 'IMPERIAL': 
+          return [Math.round(value * 0.264172 * 10) / 10, 'gal'];
+        default:
+          if (maxValue > 1000) {
+            return [Math.round((value / 1000) * 1000) / 1000, '\u33A5'];
+          }
+          return [Math.round(value * 100) / 100, 'lt'];
+      }
+    case 'energy':
+      if (maxValue > 1000) {
+        return [Math.round((value / 1000) * 100) / 100, 'KWh'];
+      }
+      return [Math.round(value), 'Wh'];
+    case 'temperature':
+      switch (unit) {
+        case 'IMPERIAL':
+          return [Math.round((value * 1.8) + 32), '°F'];
+        default:
+          return [Math.round(value * 10) / 10, '°C'];
+      }
+    case 'duration':
+      return [getFriendlyDuration(value), ''];
+    case 'cost': 
+      return [Math.round(value * 100) / 100, '\u20AC'];
+    default:
+      return [null, null];
+  }
+};
+
 const tableToCSV = function (schema, data) {
   const fields = schema.filter(field => field.csv !== false);
-  return data.map(row => fields.map(field => row[field.id]).join('%2C'))
+  return data.map(row => fields.map(field => displayMetricCSV(row[field.id])).join('%2C'))
   .reduce((p, c) => [p, c].join('%0A'), fields.map(field => field.id).join(', '));
 };
 
@@ -280,52 +331,6 @@ const formatBytes = function (bytes, decimals) {
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / (k ** i)).toFixed(dm)) + ' ' + sizes[i];
-};
-
-const normalizeMetric = function (metric) {
-  if (!Array.isArray(metric)) {
-    return [metric, null];
-  }
-  return metric;
-};
-
-const formatMetric = function (value, metric, unit, maxValue) {
-  switch (metric) {
-    case 'volume':
-    case 'total':
-      switch (unit) {
-        case 'IMPERIAL': 
-          return [Math.round(value * 0.264172 * 10) / 10, 'gl'];
-        default:
-          if (maxValue > 1000) {
-            return [Math.round((value / 1000) * 1000) / 1000, '\u33A5'];
-          }
-          return [Math.round(value * 100) / 100, 'lt'];
-      }
-    case 'energy':
-      if (maxValue > 1000) {
-        return [Math.round((value / 1000) * 100) / 100, 'KWh'];
-      }
-      return [Math.round(value), 'Wh'];
-    case 'temperature':
-      switch (unit) {
-        case 'IMPERIAL':
-          return [Math.round((value * 1.8) + 32), '°F'];
-        default:
-          return [Math.round(value * 10) / 10, '°C'];
-      }
-    case 'duration':
-      return [getFriendlyDuration(value), ''];
-    case 'cost': 
-      return [Math.round(value * 100) / 100, '\u20AC'];
-    default:
-      return [null, null];
-  }
-};
-
-const displayMetric = function (value) {
-  const normalized = normalizeMetric(value);
-  return normalized.join(' ');
 };
 
 module.exports = {
