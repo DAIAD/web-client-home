@@ -33,7 +33,7 @@ const assignToMember = function (options) {
         throwServerError(response);  
       }
 
-      dispatch(clearCacheItems('AMPHIRO', deviceKey, sessionId));
+      dispatch(clearCacheItems(getState().query.cache, 'AMPHIRO', deviceKey, sessionId));
 
       return response;
     })
@@ -68,7 +68,7 @@ const ignoreShower = function (options) {
         throwServerError(response);  
       }
       
-      dispatch(clearCacheItems('AMPHIRO', deviceKey, sessionId));
+      dispatch(clearCacheItems(getState().query.cache, 'AMPHIRO', deviceKey, sessionId));
 
       return response;
     }) 
@@ -101,7 +101,7 @@ const setShowerReal = function (options) {
         throwServerError(response);  
       }
       
-      dispatch(clearCacheItems('AMPHIRO', deviceKey, sessionId));
+      dispatch(clearCacheItems(getState().query.cache, 'AMPHIRO', deviceKey, sessionId));
 
       return response;
     }) 

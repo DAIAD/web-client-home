@@ -1,4 +1,5 @@
 const connectActionsToQueryBackend = require('./query/QueryActionsConnector');
-const CacheActions = require('./query/CacheActions');
+const ApiActions = require('./query/ApiActions');
+const connectCacheToQueryBackend = require('./query/CacheActionsConnector');
 
-module.exports = connectActionsToQueryBackend(CacheActions);
+module.exports = connectActionsToQueryBackend(connectCacheToQueryBackend(ApiActions));

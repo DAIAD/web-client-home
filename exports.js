@@ -1,4 +1,5 @@
 const QueryActions = require('./actions/query/QueryActionsConnector');
+const CacheActions = require('./actions/query/CacheActionsConnector');
 
 const Widgets = require('./components/helpers/Widgets');
 
@@ -9,6 +10,7 @@ const devUtils = require('./utils/device');
 module.exports = {
   actions: {
     QueryActions,
+    CacheActions,
   },
   components: {
     Widgets,

@@ -18,16 +18,14 @@ const setCache = function (cache) {
   };
 };
 
-const clearCacheItems = function (deviceType, ...rest) {
+const clearCacheItems = function (cache, deviceType, ...rest) {
   return function (dispatch, getState) {
-    const { cache } = getState().query;
     dispatch(setCache(cacheUtils.filterCacheItems(cache, deviceType, ...rest)));
   };
 };
 
-const saveToCache = function (cacheKey, data) {
+const saveToCache = function (cache, cacheKey, data) {
   return function (dispatch, getState) {
-    const { cache } = getState().query;
     if (!cacheKey) return;
     if (Object.keys(cache).length >= CACHE_SIZE) {
       console.warn('Cache limit exceeded, making space by emptying LRU...');
@@ -51,11 +49,11 @@ const saveToCache = function (cacheKey, data) {
   };
 };
 
-const fetchFromCache = function (cacheKey) {
+const fetchFromCache = function (cache, cacheKey) {
   return function (dispatch, getState) {
-    if (getState().query.cache[cacheKey]) {
+    if (cache[cacheKey]) {
       dispatch(cacheItemRequested(cacheKey));
-      const { data } = getState().query.cache[cacheKey];
+      const { data } = cache[cacheKey];
       return Promise.resolve(data);
     }
     return Promise.reject('notFound');
