@@ -44,7 +44,7 @@ const getStatsMeterData = function (props) {
                 );
                 
     
-  const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
+  const reducedMetric = reduceMetric(props.data, props.filter);
     
   // CHART
 
@@ -123,7 +123,8 @@ const getStatsAmphiroData = function (props) {
                                     props.sortOrder
                 );
                 
-  const reducedMetric = reduceMetric(props.devices, props.data, props.filter);
+  const average = props.filter === 'temperature' || props.filter === 'duration';
+  const reducedMetric = reduceMetric(props.data, props.filter, average);
   
   // CHART
 
@@ -250,7 +251,7 @@ const getPricingData = function (props) {
                                 props.sortOrder
                                );
   
-  const reducedMetric = reduceMetric(props.devices, [{ sessions }], 'cost');
+  const reducedMetric = reduceMetric([{ sessions }], 'cost');
 
   // CHART
 
@@ -331,8 +332,7 @@ const getBreakdownData = function (props) {
 
   const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
 
-  const sessions = prepareBreakdownSessions(props.devices,
-                                            props.data,
+  const sessions = prepareBreakdownSessions(props.data,
                                             props.filter,
                                             props.waterBreakdown,
                                             props.user.firstname,
@@ -359,8 +359,7 @@ const getBreakdownData = function (props) {
                              props.members,
                              props.intl
                             ),
-    data: prepareBreakdownSessions(props.devices,
-                                   [{ sessions: comparison.sessions }],
+    data: prepareBreakdownSessions([{ sessions: comparison.sessions }],
                                    props.filter,
                                    props.waterBreakdown,
                                    props.user.firstname,

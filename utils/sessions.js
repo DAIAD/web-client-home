@@ -4,7 +4,7 @@ const { getTimeLabelByGranularity, getPeriodTimeLabel } = require('./time');
 
 const { SHOWERS_PAGE } = require('../constants/HomeConstants');
 
-const getSessionsCount = function (devices, data) {
+const getSessionsCount = function (data) {
   return data.map(dev => dev.sessions.length).reduce((p, c) => p + c, 0);
 };
 
@@ -42,7 +42,7 @@ const sortSessions = function (psessions, by = 'timestamp', order = 'desc') {
 // to single array of sessions 
 // and prepare for table presentation
 const prepareSessionsForTable = function (devices, data, members, user, granularity, unit, intl) {
-  if (!devices || !data) return [];
+  if (!data) return [];
   const sessions = data.map((device) => { 
     const devType = getDeviceTypeByKey(devices, device.deviceKey);
     const sortBy = devType === 'AMPHIRO' ? 'id' : 'timestamp';
@@ -131,29 +131,18 @@ const getShowerById = function (data, id) {
   return data.sessions.find(session => session.id === id);
 };
 
-const reduceMetric = function (devices, data, metric, average = false) {
-  if (!devices || !data || !metric) return 0;
-  const sessions = getSessionsCount(devices, data);
+const reduceMetric = function (data, metric, average = false) {
+  if (!data || !metric) return 0;
+  const sessions = getSessionsCount(data);
 
-  let reducedMetric = data
+  const reducedMetric = data
   .map(d => d.sessions 
        .map(it => it[metric] ? it[metric] : 0)
        .reduce(((p, c) => p + c), 0)
   )
   .reduce(((p, c) => p + c), 0);
-
-  //if (metric === 'temperature') {
-  if (metric === 'temperature' || average) {
-    reducedMetric /= sessions;
-  } else if (metric === 'duration') {
-    reducedMetric /= sessions;
-  } 
-
-  if (metric === 'cost') {
-    reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 100) / 100) : 0;
-  } else {
-    reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 10) / 10) : 0;
-  }
+  
+  if (average) return reducedMetric / sessions;
   return reducedMetric;
 };
 
@@ -212,8 +201,8 @@ const hasShowersBefore = function (data) {
   return data.reduce((p, c) => c.range.first !== 1 && c.range.first != null ? c.range.first : p, null) != null;
 };
 
-const prepareBreakdownSessions = function (devices, data, metric, breakdown, user, time, timeFilter, intl) {
-  const total = reduceMetric(devices, data, metric);
+const prepareBreakdownSessions = function (data, metric, breakdown, user, time, timeFilter, intl) {
+  const total = reduceMetric(data, metric);
   return breakdown.map((item) => {
     const id = String(item.label).toLowerCase().replace(' ', '-');
     const title = intl.formatMessage({ id: `breakdown.${id}` });

@@ -7,7 +7,7 @@ const HistoryActions = require('../actions/HistoryActions');
 const History = require('../components/sections/history/');
 
 const { getAvailableDevices, getAvailableDeviceTypes } = require('../utils/device');
-const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter, prepareBreakdownSessions } = require('../utils/sessions');
+const { prepareSessionsForTable, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
 const { getComparisons, getComparisonTitle } = require('../utils/comparisons');
 const timeUtil = require('../utils/time');
 const { getMetricMu, formatMessage, getAllMembers, tableToCSV } = require('../utils/general');

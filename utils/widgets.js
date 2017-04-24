@@ -87,7 +87,7 @@ const amphiroMembersRanking = function (widget, intl) {
   const periods = PERIODS.AMPHIRO;
   const membersData = data.map(m => ({ 
     ...m, 
-    average: reduceMetric(devices, m.sessions, metric, true),
+    average: reduceMetric(m.sessions, metric, true),
     showers: m.sessions.reduce((p, c) => p + c.sessions.length, 0),
   }))
   .filter(x => x.showers > 0)
@@ -136,8 +136,9 @@ const amphiroOrMeterTotal = function (widget, intl) {
     : 
     PERIODS.METER.filter(p => p.id !== 'custom');
 
-  const reduced = reduceMetric(devices, data, metric);
-  const previousReduced = reduceMetric(devices, previous, metric);
+  const average = deviceType === 'AMPHIRO' && (metric === 'temperature' || metric === 'duration');
+  const reduced = reduceMetric(data, metric, average);
+  const previousReduced = reduceMetric(previous, metric, average);
 
   const better = reduced < previousReduced;
   const comparePercentage = previousReduced === 0 ?
@@ -220,8 +221,8 @@ const amphiroEnergyEfficiency = function (widget, intl) {
   const device = getDeviceKeysByType(devices, deviceType);
   const periods = PERIODS.AMPHIRO.filter(p => p.id !== 'all');
 
-  const reduced = reduceMetric(devices, data, metric);
-  const previousReduced = reduceMetric(devices, previous, metric);
+  const reduced = reduceMetric(data, metric, true);
+  const previousReduced = reduceMetric(previous, metric, true);
   
   const better = reduced < previousReduced;
 
@@ -230,7 +231,7 @@ const amphiroEnergyEfficiency = function (widget, intl) {
     : 
     Math.round((Math.abs(reduced - previousReduced) / previousReduced) * 100);
  
-  const showers = getSessionsCount(devices, data);
+  const showers = getSessionsCount(data);
   const highlight = (showers === 0 || reduced === 0) ? null : getEnergyClass(reduced / showers);
   const hasComparison = better != null && comparePercentage != null;
   const str = better ? 'better' : 'worse';
@@ -373,12 +374,11 @@ const meterBreakdown = function (widget, intl) {
 
   const periods = PERIODS.METER.filter(p => p.id === 'month' || p.id === 'year');
 
-  const reduced = reduceMetric(devices, data, metric);
+  const reduced = reduceMetric(data, metric);
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
 
-  const sessions = prepareBreakdownSessions(devices,
-                                            data,
+  const sessions = prepareBreakdownSessions(data,
                                             metric,
                                             breakdown,
                                             null,
@@ -542,7 +542,7 @@ const budget = function (widget, intl) {
   }
 
   const periods = PERIODS.METER.filter(p => p.id !== 'custom');
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
+  const reduced = reduceMetric(data, metric);
   
   // dummy data based on real user data
   // TODO: static
@@ -589,7 +589,7 @@ const meterCommon = function (widget, intl) {
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const periods = PERIODS.METER.filter(p => p.id !== 'custom' && p.id !== 'day');
 
-  const reduced = reduceMetric(devices, data, metric);
+  const reduced = reduceMetric(data, metric);
 
   const xCategories = getChartMeterCategories(time);
   const chartCategories = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
