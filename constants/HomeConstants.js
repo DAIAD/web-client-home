@@ -504,6 +504,7 @@ module.exports = {
         display: 'chart',
         period: 'month',
         periodIndex: -1,
+        image: 'wateriqChart.png',
       },
 
       {
@@ -528,6 +529,7 @@ module.exports = {
         metric: 'total', 
         display: 'chart',
         period: 'month',
+        image: 'pricing.png',
       },
       {
         id: 'comparison', 
@@ -536,14 +538,17 @@ module.exports = {
         display: 'chart',
         period: 'month',
         periodIndex: -1,
+        image: 'comparison.png',
       },
+      /*
       {
         id: 'budget', 
         type: 'budget', 
         metric: 'volume', 
         display: 'chart', 
         period: 'month',
-      },
+        },
+        */
       {
         id: 'commons',
         type: 'commons',
