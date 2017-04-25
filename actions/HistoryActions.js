@@ -737,7 +737,7 @@ const setPriceBrackets = function (brackets) {
 const initPriceBrackets = function () {
   return function (dispatch, getState) {
     dispatch(QueryActions.fetchPriceBrackets())
-    .then(brackets => Array.isArray(brackets) ? brackets.map(bracket => ({
+    .then(brackets => Array.isArray(brackets) ? brackets.filter(bracket => bracket.maxVolume).map(bracket => ({
       ...bracket,
       // convert cubic meters to liters for consistency
       minVolume: bracket.minVolume * 1000,
