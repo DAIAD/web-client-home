@@ -190,9 +190,6 @@ const History = React.createClass({
             }
             </TabsMulti>
             <br />
-            
-            <br />
-
             { 
               this.props.compareAgainst && this.props.compareAgainst.length > 0 ?
                 <h5 style={{ marginLeft: 20 }}><FormattedMessage id="history.compare-against" /></h5>
