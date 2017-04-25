@@ -94,7 +94,10 @@ const getStatsMeterData = function (props) {
 
   return {
     //Table
-    sessions,
+    sessions: sessions.map(session => ({
+      ...session,
+      volume: formatMetric(session.volume, 'volume', props.unit, session.volume),
+    })),
     sessionFields: schemas.meter,
     reducedMetric: formatMetric(reducedMetric, props.filter, props.unit, reducedMetric),
     //Chart
@@ -164,7 +167,13 @@ const getStatsAmphiroData = function (props) {
 
   return {
     //Table
-    sessions,
+    sessions: sessions.map(session => ({
+      ...session,
+      volume: formatMetric(session.volume, 'volume', props.unit, session.volume),
+      duration: formatMetric(session.duration, 'duration', props.unit),
+      temperature: formatMetric(session.temperature, 'temperature', props.unit),
+      energy: formatMetric(session.energy, 'energy', props.unit, session.energy),
+    })),
     sessionFields: schemas.amphiro,
     reducedMetric: formatMetric(reducedMetric, props.filter, props.unit, reducedMetric),
     //Chart

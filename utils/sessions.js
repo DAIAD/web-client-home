@@ -57,10 +57,6 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
         devType,
         device: device.deviceKey,
         deviceName: getDeviceNameByKey(devices, device.deviceKey) || intl.formatMessage({ id: 'devices.meter' }), 
-        volume: formatMetric(session.volume, 'volume', unit),
-        duration: formatMetric(session.duration, 'duration', unit),
-        temperature: formatMetric(session.temperature, 'temperature', unit),
-        energy: formatMetric(session.energy, 'energy', unit),
         energyClass: getEnergyClass(session.energy), 
         percentDiff: (diff != null && array[idx - 1].volume !== 0) ? 
           Math.round(10000 * (diff / array[idx - 1].volume)) / 100 
