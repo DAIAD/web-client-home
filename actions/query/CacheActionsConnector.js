@@ -22,8 +22,8 @@ const connectCacheActionsToQueryBackend = function (QueryBackend, cachePath = de
       const inCache = populationWithLabels
       .filter(group => cache[group.label] != null);
 
-      const notInCache = populationWithLabels.
-        filter(group => inCache.indexOf(group) === -1);
+      const notInCache = populationWithLabels
+      .filter(group => inCache.indexOf(group) === -1);
 
       const inCachePromise = Promise.all(inCache.map(group => dispatch(fetchFromCache(cache, group.label))));
 
