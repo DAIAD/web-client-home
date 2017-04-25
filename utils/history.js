@@ -1,6 +1,6 @@
 const moment = require('moment');
 
-const schemas = require('../schemas/history');
+const schemas = require('../components/schemas/history');
 
 const { bringPastSessionsToPresent, convertGranularityToPeriod, getTimeLabelByGranularity } = require('./time');
 const { getDeviceNameByKey, getDeviceKeysByType } = require('./device');

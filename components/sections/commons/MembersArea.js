@@ -4,7 +4,7 @@ const { FormattedMessage, FormattedDate } = require('react-intl');
 
 const Table = require('../../helpers/Table');
 
-const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSchema } = require('../../../schemas/commons');
+const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSchema } = require('../../schemas/commons');
 
 const { debounce } = require('../../../utils/general');
 

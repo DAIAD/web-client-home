@@ -13,7 +13,7 @@ const { SidebarRight } = require('../../layout/Sidebars');
 const Table = require('../../helpers/Table');
 const { TimeNavigator } = require('../../helpers/Navigators');
 
-const { reports: reportsFields } = require('../../../schemas/reports');
+const { reports: reportsFields } = require('../../schemas/reports');
 
 const { IMAGES } = require('../../../constants/HomeConstants');
 

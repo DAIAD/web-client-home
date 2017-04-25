@@ -1,8 +1,8 @@
 const React = require('react');
 const { FormattedDate, FormattedMessage } = require('react-intl');
-const DisplayMetric = require('../components/helpers/DisplayMetric');
+const DisplayMetric = require('../helpers/DisplayMetric');
 
-const { IMAGES } = require('../constants/HomeConstants');
+const { IMAGES } = require('../../constants/HomeConstants');
 
 const meter = [
   {

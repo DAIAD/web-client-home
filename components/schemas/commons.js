@@ -1,6 +1,6 @@
 const React = require('react');
 const { FormattedMessage, FormattedDate } = require('react-intl');
-const { IMAGES } = require('../constants/HomeConstants');
+const { IMAGES } = require('../../constants/HomeConstants');
 
 const commons = [
   {
