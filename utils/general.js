@@ -97,7 +97,8 @@ const showerFilterToLength = function (filter) {
   else if (filter === 'twenty') return 20;
   else if (filter === 'fifty') return 50;
   else if (filter === 'all') return 5000;
-  throw new Error(`unrecognized filter ${filter}`);
+  else if (!isNaN(filter)) return filter;
+  return null;
 };
 
 const getShowersPagingIndex = function (length, index) {

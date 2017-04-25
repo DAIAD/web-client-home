@@ -1,6 +1,6 @@
 const moment = require('moment');
 const { convertGranularityToPeriod, getLowerGranularityPeriod, getTimeLabelByGranularityShort, timeToBuckets } = require('./time');
-const { formatMetric, displayMetric } = require('./general');
+const { formatMetric, displayMetric, showerFilterToLength } = require('./general');
 const { BRACKET_COLORS } = require('../constants/HomeConstants');
 
 const getChartMeterCategories = function (time) {
@@ -12,14 +12,8 @@ const getChartMeterCategoryLabels = function (xData, granularity, period, intl) 
 };
 
 const getChartAmphiroCategories = function (period, last) {
-  let length = 0;
-  if (period === 'ten') {
-    length = 10;
-  } else if (period === 'twenty') {
-    length = 20;
-  } else if (period === 'fifty') {
-    length = 50;
-  } else if (period === 'all') {
+  let length = showerFilterToLength(period);
+  if (period === 'all') {
     length = last;
   } 
   return Array.from({ length }, (v, i) => `${i + 1}`);
