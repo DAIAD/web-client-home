@@ -5,7 +5,7 @@ module.exports = {
 
   bar: {
     barGap: 0,
-    barCategoryGap: 0,
+    barCategoryGap: '20%',
     horizontal: true,
     itemStyle: {
       normal: {
