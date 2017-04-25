@@ -78,7 +78,7 @@ const connectCacheActionsToQueryBackend = function (QueryBackend, cachePath = de
           length: SHOWERS_PAGE,
           startIndex,
           userKey,
-          deviceKey: null, //null for all user devices
+          deviceKey,
         };
         
         return dispatch(QueryBackend.queryDeviceSessions(newOptions))
