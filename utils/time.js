@@ -77,7 +77,6 @@ const getTimeByPeriod = function (period, index) {
   else if (period === 'week') return getWeek(moment().add(index, period).valueOf());
   else if (period === 'day') return getDay(moment().add(index, period).valueOf());
   return {};
-  //throw new Error(`Period unrecognized ${period}`);
 };
 
 const getPeriod = function (period, timestamp = moment().valueOf()) {
@@ -126,10 +125,16 @@ const getPreviousPeriodSoFar = function (period, timestamp = moment().valueOf())
     .subtract(1, period)
     .startOf(sPeriod)
     .valueOf(),
-    endDate: moment(timestamp)
-    .endOf(getLowerGranularityPeriod(period))
-    .subtract(1, period)
-    .valueOf(),
+    // ends later than now ?
+    endDate: moment(timestamp).endOf(period).valueOf() > moment().valueOf() ? 
+      moment()
+      .subtract(1, period)
+      .valueOf() 
+      :
+      moment(timestamp)
+      .subtract(1, period)
+      .endOf(sPeriod)
+      .valueOf(),
     granularity: convertPeriodToGranularity(period),
   };
 };

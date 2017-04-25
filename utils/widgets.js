@@ -190,7 +190,7 @@ const amphiroOrMeterTotal = function (widget, intl) {
       {
         image: better ? `${IMAGES}/better.svg` : `${IMAGES}/worse.svg`,
         text: intl.formatMessage({ 
-          id: `comparisons.${str}`, 
+          id: `comparisons.${str}-${deviceType}`, 
         }, {
           percent: comparePercentage, 
           period, 
@@ -246,7 +246,7 @@ const amphiroEnergyEfficiency = function (widget, intl) {
       {
         image: better ? `${IMAGES}/better.svg` : `${IMAGES}/worse.svg`,
         text: intl.formatMessage({ 
-          id: `comparisons.${str}`,
+          id: `comparisons.${str}-${deviceType}`,
         }, { 
           percent: comparePercentage, 
           period, 
