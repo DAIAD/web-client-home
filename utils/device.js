@@ -1,4 +1,4 @@
-const { AMPHIRO_PROPERTIES } = require('../constants/HomeConstants');
+const { DEVICE_TYPES, AMPHIRO_PROPERTIES } = require('../constants/HomeConstants');
 
 const getAvailableDevices = function (devices) {
   if (!devices) return [];
@@ -72,10 +72,6 @@ const getDeviceNameByKey = function (devices, key) {
   return device.name || device.serial || device.macAddress || device.deviceKey;
 };
 
-const filterDataByDeviceKeys = function (data, deviceKeys) {
-  return data.filter(x => deviceKeys.findIndex(k => k === x.deviceKey) > -1);
-};
-
 const getDeviceProperty = function (properties, key) {
   if (!Array.isArray(properties)) {
     throw new Error('Properties argument provided to getDeviceProperty needs to be array');
@@ -122,6 +118,15 @@ const deviceFormToDevice = function (deviceForm) {
   };
 };
 
+const getAvailableDeviceTypes = function (devices) {
+  const meterCount = getMeterCount(devices);
+  const deviceCount = getDeviceCount(devices);
+
+  return DEVICE_TYPES
+  .filter(type => meterCount === 0 ? type.id !== 'METER' : true)
+  .filter(type => deviceCount === 0 ? type.id !== 'AMPHIRO' : true);
+};
+
 module.exports = {
   getDefaultDevice,
   getDeviceTypeByKey,
@@ -134,7 +139,7 @@ module.exports = {
   getDeviceByKey,
   getDeviceKeyByName,
   getDeviceKeysByType,
-  filterDataByDeviceKeys,
   deviceToDeviceForm,
   deviceFormToDevice,
+  getAvailableDeviceTypes,
 };

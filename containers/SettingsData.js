@@ -4,17 +4,17 @@ const { injectIntl } = require('react-intl');
 const { push } = require('react-router-redux');
 
 //const CommonsActions = require('../actions/CommonsActions');
+const { setDataUnsynced: setHistoryDataUnsynced } = require('../actions/HistoryActions');
 const CommonsManageActions = require('../actions/CommonsManageActions');
 const MembersManageActions = require('../actions/MembersManageActions');
 const { setLocale } = require('../actions/LocaleActions');
-const { saveToProfile, fetchProfile, changePassword, setChangePassword, resetChangePassword, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
+const { saveToProfile, saveConfiguration, fetchProfile, changePassword, setChangePassword, resetChangePassword, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
 const { setForm, resetForm, setConfirm, resetConfirm } = require('../actions/FormActions');
 const { setError, dismissError } = require('../actions/QueryActions');
 
 const Settings = require('../components/sections/settings/');
 
-const { formatMessage } = require('../utils/general');
-const { getAllMembers } = require('../utils/sessions');
+const { getAllMembers, formatMessage } = require('../utils/general');
 
 function matches(str1, str2) {
   return str1.toLowerCase().indexOf(str2.toLowerCase()) !== -1;
@@ -46,6 +46,7 @@ function mapDispatchToProps(dispatch) {
       setForm,
       resetForm, 
       saveToProfile, 
+      saveConfiguration,
       fetchProfile,
       changePassword,
       setChangePassword,
@@ -54,6 +55,7 @@ function mapDispatchToProps(dispatch) {
       dismissError,
       setConfirm,
       resetConfirm,
+      setHistoryDataUnsynced,
       goTo: route => push(route),
       updateDevice,
     }, dispatch);
@@ -66,6 +68,10 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       ...dispatchProps,
       //profile
       updateProfileForm: data => dispatchProps.setForm('profileForm', data),
+      resetChangePassword: () => {
+        dispatchProps.resetChangePassword();
+        dispatchProps.setForm('profileForm', { password: null, confirmPassword: null });
+      },
       //members
       updateMemberForm: data => dispatchProps.setForm('memberForm', data),
       clearMemberForm: () => dispatchProps.resetForm('memberForm'),
@@ -86,6 +92,11 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       confirmDeleteCommon: () => dispatchProps.setConfirm('delete', stateProps.commonForm),
       confirmJoinCommon: () => dispatchProps.setConfirm('join', stateProps.commonForm),
       confirmLeaveCommon: () => dispatchProps.setConfirm('leave', stateProps.commonForm),
+      saveFavoriteCommon: (key) => { 
+        dispatchProps.setFavorite(key);
+        dispatchProps.saveConfiguration({ favoriteCommon: key });
+        dispatchProps.setHistoryDataUnsynced();
+      },
     },
     ...ownProps,
     members: getAllMembers(stateProps.members),

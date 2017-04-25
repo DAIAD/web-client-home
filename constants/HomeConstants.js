@@ -1,6 +1,7 @@
 module.exports = {
   IMAGES: '/assets/images/home/svg',
   PNG_IMAGES: '/assets/images/home/png',
+  BASE64: 'data:image/png;base64,',
   NOTIFICATION_TITLE_LENGTH: 50,
   CACHE_SIZE: 20,
   SHOWERS_PAGE: 1000,
@@ -13,6 +14,7 @@ module.exports = {
   ENERGY_BULB: 30,
   ENERGY_HOUSE: 1000,
   ENERGY_CITY: 1000000,
+  BRACKET_COLORS: ['green', 'orange', 'red', 'black'],
   LOCALES: ['en', 'el', 'de', 'es'],
   COUNTRIES: ['United Kingdom', 'Spain', 'Greece'],
   TIMEZONES: [
@@ -30,32 +32,44 @@ module.exports = {
   MAIN_MENU: [{
     name: 'dashboard',
     title: 'section.dashboard',
-    image: 'dashboard-menu.svg',
-    route: '/dashboard',
+    image: 'dashboard-menu-inactive.svg',
+    activeImage: 'dashboard-menu.svg',
+    route: '/',
     children: [],
   },
   {
     name: 'history',
     title: 'section.history',
-    image: 'stats-menu.svg',
+    image: 'stats-menu-inactive.svg',
+    activeImage: 'stats-menu.svg',
     route: '/history',
   },
   {
     name: 'notifications',
     title: 'section.notifications',
-    image: 'notifications-menu.svg',
+    image: 'notifications-menu-inactive.svg',
+    activeImage: 'notifications-menu.svg',
     route: '/notifications',
+  },
+  {
+    name: 'reports',
+    title: 'section.reports',
+    image: 'reports-menu-inactive.svg',
+    activeImage: 'reports-menu.svg',
+    route: '/reports',
   },
   {
     name: 'commons',
     title: 'section.commons',
-    image: 'commons-menu.svg',
+    image: 'commons-menu-inactive.svg',
+    activeImage: 'commons-menu.svg',
     route: '/commons',
   },
   {
     name: 'settings',
     title: 'section.settings',
-    image: 'settings-menu.svg',
+    image: 'settings-menu-inactive.svg',
+    activeImage: 'settings-menu.svg',
     route: '/settings',
     children: [
       {
@@ -109,343 +123,448 @@ module.exports = {
       }
     ],
   }],
-  METER_AGG_METRICS: [
+  DEVICE_TYPES: [
     {
-      id: 'devName',  
-      mu: '', 
-      title: 'history.device', 
-      icon: 'amphiro_small.svg', 
-      details: 'history.durationDetails', 
-      clickable: false,
+      id: 'METER', 
+      title: 'devices.meter', 
+      image: 'water-meter.svg',
     }, 
     {
-      id: 'count',
-      mu: '', 
-      title: 'history.count', 
-      details: 'history.countDetails', 
-      icon: 'default-ranking.svg', 
-      clickable: true,
-    },  
-    {
-      id: 'difference', 
-      mu: 'lt',
-      title: 'history.volume', 
-      details: 'history.volumeDetails', 
-      icon: 'volume.svg',
-      clickable: true,
-    },
+      id: 'AMPHIRO', 
+      title: 'devices.amphiros', 
+      image: 'amphiro_small.svg',
+    }
   ],
-  SHOWER_METRICS: [
-    {
-      id: 'devName',  
-      mu: '', 
-      title: 'history.device', 
-      icon: 'amphiro_small.svg', 
-      details: 'history.durationDetails', 
-      clickable: false,
-    }, 
-    {
-      id: 'volume', 
-      mu: 'lt',
-      title: 'history.volume', 
-      details: 'history.volumeDetails', 
-      icon: 'volume.svg', 
-      clickable: true,
-    }, 
-    {
-      id: 'temperature', 
-      mu: 'ºC',
-      title: 'history.temperature', 
-      details: 'history.temperatureDetails',
-      icon: 'temperature.svg', 
-      clickable: true,
-    }, 
-    {
-      id: 'energy',
-      mu: 'W', 
-      title: 'history.energy', 
-      details: 'history.energyDetails',
-      icon: 'energy.svg', 
-      clickable: true,
-    }, 
-    {
-      id: 'friendlyDuration', 
-      mu: '', 
-      title: 'history.duration', 
-      details: 'history.durationDetails', 
-      icon: 'duration.svg', 
-      clickable: false,
-    }, 
-  ],
-  METER_PERIODS: [
-    {
-      id: 'day', 
-      title: 'periods.day',
-    },
-    {
-      id: 'week', 
-      title: 'periods.week',
-    },
-    {
-      id: 'month', 
-      title: 'periods.month',
-    },
-    {
-      id: 'year', 
-      title: 'periods.year',
-    },
-    {
-      id: 'custom', 
-      title: 'periods.custom',
-    },
-  ],
-  DEV_PERIODS: [
-    {
-      id: 'ten', 
-      title: 'periods.ten',
-    },
-    {
-      id: 'twenty', 
-      title: 'periods.twenty',
-    },
-    {
-      id: 'fifty', 
-      title: 'periods.fifty',
-    },
-    {
-      id: 'all', 
-      title: 'periods.all',
-    },
-  ],
-  METER_METRICS: [
-    {
-      id: 'difference', 
-      title: 'Volume',
-    },
-  ],
-  DEV_METRICS: [
-    {
-      id: 'volume', 
-      title: 'Volume',
-    },
-    {
-      id: 'energy', 
-      title: 'Energy',
-    },
-    {
-      id: 'duration', 
-      title: 'Duration',
-    },
-    {
-      id: 'temperature', 
-      title: 'Temperature',
-    },
-  ],
-  METER_SORT: [
-    {
-      id: 'timestamp', 
-      title: 'Time',
-    }, 
-    {
-      id: 'difference', 
-      title: 'Volume',
-    },
-  ],
-  DEV_SORT: [
-    {
-      id: 'id', 
-      title: 'ID',
-    }, 
-    {
-      id: 'timestamp', 
-      title: 'Time',
-    }, 
-    {
-      id: 'volume', 
-      title: 'Volume',
-    }, 
-    {
-      id: 'devName', 
-      title: 'Device',
-    }, 
-    {
-      id: 'energy', 
-      title: 'Energy',
-    }, 
-    {
-      id: 'temperature', 
-      title: 'Temperature',
-    }, 
-    {
-      id: 'duration', 
-      title: 'Duration',
-    },
-  ],
+  MODES: {
+    AMPHIRO: [
+      { 
+        id: 'stats', 
+        title: 'history.stats',
+      },
+    ],
+    METER: [
+      { 
+        id: 'stats', 
+        title: 'history.volume',
+        image: 'volume.svg',
+      },
+      {
+        id: 'forecasting',
+        title: 'history.forecast',
+        image: 'stats.svg',
+      },
+      {
+        id: 'pricing',
+        title: 'history.cost',
+        image: 'money-navy.svg',
+        periods: ['month'],
+      },
+      /*
+      {
+        id: 'breakdown',
+        title: 'history.breakdown',
+        periods: ['week', 'month', 'year'],
+        comparisons: ['last'],
+        sort: ['volume'],
+        },
+        */
+      {
+        id: 'wateriq',
+        title: 'history.wateriq',
+        periods: ['year'],
+        comparisons: ['all', 'nearest', 'similar'],
+        image: 'default-ranking.svg',
+      },
+    ],
+  },
+  METRICS: {
+    METER: [
+      {
+        id: 'volume', 
+        title: 'history.volume', 
+        details: 'history.volumeDetails', 
+        icon: 'volume.svg',
+      },
+      {
+        id: 'forecast',
+        title: 'history.forecast',
+        details: 'history.forecastDetails',
+        icon: 'volume.svg',
+      },
+      {
+        id: 'total', 
+        title: 'history.total', 
+        details: 'history.totalDetails', 
+        icon: 'volume.svg',
+      },
+      {
+        id: 'wateriq',
+        title: 'history.wateriq',
+        details: 'history.wateriqDetails',
+        icon: 'default-ranking.svg',
+      },
+      {
+        id: 'cost',
+        title: 'history.cost',
+        details: 'history.costDetails',
+        icon: 'money-navy.svg',
+      },
+    ],
+    AMPHIRO: [
+      {
+        id: 'deviceName',  
+        title: 'history.device', 
+        icon: 'amphiro_small.svg', 
+        details: 'history.durationDetails', 
+      }, 
+      {
+        id: 'volume', 
+        title: 'history.volume', 
+        details: 'history.volumeDetails', 
+        icon: 'volume.svg', 
+        clickable: true,
+      }, 
+      {
+        id: 'temperature', 
+        title: 'history.temperature', 
+        details: 'history.temperatureDetails',
+        icon: 'temperature.svg', 
+        clickable: true,
+      }, 
+      {
+        id: 'energy',
+        title: 'history.energy', 
+        details: 'history.energyDetails',
+        icon: 'energy.svg', 
+      }, 
+      {
+        id: 'duration', 
+        title: 'history.duration', 
+        details: 'history.durationDetails', 
+        icon: 'duration.svg', 
+      }, 
+    ],
+  },
+  PERIODS: {
+    METER: [
+      {
+        id: 'day', 
+        title: 'periods.day',
+      },
+      {
+        id: 'week', 
+        title: 'periods.week',
+      },
+      {
+        id: 'month', 
+        title: 'periods.month',
+      },
+      {
+        id: 'year', 
+        title: 'periods.year',
+      },
+      {
+        id: 'custom', 
+        title: 'periods.custom',
+      },
+    ],
+    AMPHIRO: [
+      {
+        id: 'ten', 
+        title: 'periods.ten',
+      },
+      {
+        id: 'twenty', 
+        title: 'periods.twenty',
+      },
+      {
+        id: 'fifty', 
+        title: 'periods.fifty',
+      },
+      {
+        id: 'all', 
+        title: 'periods.all',
+      },
+    ],
+  },
+  FILTER_METRICS: {
+    METER: [
+      {
+        id: 'volume', 
+        title: 'history.volume',
+        image: 'volume.svg',
+      },
+      {
+        id: 'total',
+        title: 'history.total',
+        image: 'volume.svg',
+      },
+    ],
+    AMPHIRO: [
+      {
+        id: 'volume', 
+        title: 'history.volume',
+        image: 'volume.svg',
+      },
+      {
+        id: 'energy', 
+        title: 'history.energy',
+        image: 'energy.svg',
+      },
+      {
+        id: 'duration', 
+        title: 'history.duration',
+        image: 'duration.svg',
+      },
+      {
+        id: 'temperature', 
+        title: 'history.temperature',
+        image: 'temperature.svg',
+      },
+    ],
+  },
+  SORT: {
+    METER: [
+      {
+        id: 'timestamp', 
+        title: 'common.time',
+      }, 
+      {
+        id: 'volume', 
+        title: 'history.volume',
+      },
+    ],
+    AMPHIRO: [
+      {
+        id: 'id', 
+        title: 'history.id',
+      }, 
+      {
+        id: 'timestamp', 
+        title: 'common.time',
+      }, 
+      {
+        id: 'volume', 
+        title: 'history.volume',
+      }, 
+      {
+        id: 'energy', 
+        title: 'history.energy',
+      }, 
+      {
+        id: 'temperature', 
+        title: 'history.temperature',
+      }, 
+      {
+        id: 'duration', 
+        title: 'history.duration',
+      },
+    ],
+  },
   COMMONS_USER_SORT: [
     {
       id: 'RANKING',
-      title: 'Ranking',
+      title: 'commons.ranking',
     },
     {
       id: 'FIRSTNAME',
-      title: 'First name',
+      title: 'profile.firstname',
     },
     {
       id: 'LASTNAME',
-      title: 'Last name',
+      title: 'profile.lastname',
     },
     {
       id: 'DATE_JOINED',
-      title: 'Date joined',
+      title: 'commons.date-joined',
     },
   ],
   STATBOX_DISPLAYS: [
     {
       id: 'stat', 
-      title: 'Stat',
+      title: 'widget.display-stat',
     }, 
     {
       id: 'chart', 
-      title: 'Chart',
+      title: 'widget.display-chart',
     },
   ],
-  AMPHIRO_WIDGET_TYPES: [
-    {
-      id: 'totalVolumeStat', 
-      title: 'Shower Volume Stat', 
-      description: 'A stat widget displaying the total consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
-      type: 'total', 
-      metric: 'volume', 
-      display: 'stat',
-      period: 'ten',
-    },
-    {
-      id: 'totalVolumeChart', 
-      title: 'Shower Volume Chart', 
-      description: 'A chart widget presenting the consumption for your last 10 showers for all installed devices. You can later change this to show the last 20 or 50 showers.', 
-      type: 'total', 
-      metric: 'volume', 
-      display: 'chart',
-      period: 'ten',
-    },
-    {
-      id: 'totalEnergyStat', 
-      title: 'Shower Energy Stat', 
-      description: 'A stat widget displaying the total energy consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
-      type: 'total', 
-      metric: 'energy', 
-      display: 'stat',
-      period: 'ten',
-    },
-    {
-      id: 'totalEnergyChart', 
-      title: 'Shower Energy Chart', 
-      description: 'A chart widget displaying the total energy progress for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
-      type: 'total', 
-      metric: 'energy', 
-      display: 'chart',
-      period: 'ten',
-    },
-    {
-      id: 'totalTemperatureStat', 
-      title: 'Shower Temperature Stat', 
-      description: 'A widget displaying the average temperature for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
-      type: 'total', 
-      metric: 'temperature', 
-      display: 'stat',
-      period: 'ten',
-    }, 
-    {
-      id: 'totalTemperatureChart', 
-      title: 'Shower Temperature Chart', 
-      description: 'A widget displaying the average temperature variation for your last 10 showers. You can later change this to show the last 20 or 50 showers.', 
-      type: 'total', 
-      metric: 'temperature', 
-      display: 'chart',
-      period: 'ten',
-    },
-    {
-      id: 'last', 
-      title: 'Last shower', 
-      description: 'A widget displaying the last shower recorded for all your devices.', 
-      type: 'last', 
-      metric: 'volume', 
-      display: 'chart',
-      period: 'ten',
-    },
-    {
-      id: 'efficiencyEnergy', 
-      title: 'Energy efficiency', 
-      description: 'A widget displaying your shower energy score for the last 10 showers. You can later change this to see the energy efficiency for the last 20 or 50 showers.', 
-      type: 'efficiency', 
-      metric: 'energy', 
-      display: 'stat',
-      period: 'ten',
-    },
-  ],
-  METER_WIDGET_TYPES: [
-    {
-      id: 'totalDifferenceStat', 
-      title: 'Total Volume Stat', 
-      description: 'A widget displaying your household\'s total water consumption for the last month. You can later change it to daily, weekly or yearly consumption.',
-      type: 'total', 
-      metric: 'difference', 
-      display: 'stat',
-      period: 'month',
-    }, 
-    {
-      id: 'totalDifferenceChart', 
-      title: 'Total Volume Chart', 
-      description: 'A chart widget displaying your household\'s total water consumption progress for the last month. You can later change it to daily, weekly or yearly consumption.', 
-      type: 'total', 
-      metric: 'difference', 
-      display: 'chart',
-      period: 'month',
-    }, 
-    {
-      id: 'breakdown', 
-      title: 'Water breakdown', 
-      description: 'A chart widget displaying your computed water use per household appliance.', 
-      type: 'breakdown', 
-      metric: 'difference', 
-      display: 'chart',
-      period: 'month',
-    },
-    {
-      id: 'forecast', 
-      title: 'Forecast', 
-      description: 'A chart widget depicting our estimations for your water use for the next month based on your use so far! You can later change this to see estimations for the next day, week, or year.', 
-      type: 'forecast', 
-      metric: 'difference', 
-      display: 'chart',
-      period: 'month',
-    },
-    {
-      id: 'comparison', 
-      title: 'Comparison', 
-      description: 'A widget showing your consumption in comparison to others, like your neighbors or your city average for the last month. You can later change this to see comparison data for the current day, week, or year.', 
-      type: 'comparison', 
-      metric: 'difference', 
-      display: 'chart',
-      period: 'month',
-    },
-    {
-      id: 'budget', 
-      title: 'Monthly Budget', 
-      description: 'A widget showing your consumption based on your daily budget.', 
-      type: 'budget', 
-      metric: 'difference', 
-      display: 'chart', 
-      period: 'month',
-    },
-  ],
+  WIDGET_TYPES: {
+    AMPHIRO: [
+      {
+        id: 'totalVolumeStatAmphiro', 
+        type: 'total', 
+        metric: 'volume', 
+        display: 'stat',
+        period: 'ten',
+        image: 'totalVolumeStatAmphiro.png',
+      },
+      {
+        id: 'totalEnergyStat', 
+        type: 'total', 
+        metric: 'energy', 
+        display: 'stat',
+        period: 'ten',
+        image: 'totalEnergyStat.png',
+      },
+      {
+        id: 'totalTemperatureStat', 
+        type: 'total', 
+        metric: 'temperature', 
+        display: 'stat',
+        period: 'ten',
+        image: 'totalTemperatureStat.png',
+      },
+      {
+        id: 'totalVolumeChartAmphiro', 
+        type: 'total', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'ten',
+        image: 'totalVolumeChartAmphiro.png',
+      },  
+      {
+        id: 'totalEnergyChart', 
+        type: 'total', 
+        metric: 'energy', 
+        display: 'chart',
+        period: 'ten',
+        image: 'totalEnergyChart.png',
+      }, 
+      {
+        id: 'totalTemperatureChart', 
+        type: 'total', 
+        metric: 'temperature', 
+        display: 'chart',
+        period: 'ten',
+        image: 'totalTemperatureChart.png',
+      },
+      {
+        id: 'last', 
+        type: 'last', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'ten',
+        image: 'last.png',
+      },
+      {
+        id: 'ranking', 
+        type: 'ranking', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'all',
+        image: 'ranking.png',
+      },
+      {
+        id: 'efficiencyEnergy', 
+        type: 'efficiency', 
+        metric: 'energy', 
+        display: 'stat',
+        period: 'ten',
+        image: 'efficiency.png',
+      },
+
+    ],
+    METER: [
+      {
+        id: 'totalVolumeStatSWM', 
+        type: 'total', 
+        metric: 'volume', 
+        display: 'stat',
+        period: 'month',
+        image: 'totalVolumeStatSWM.png',
+      }, 
+      {
+        id: 'wateriqStat', 
+        type: 'wateriq', 
+        metric: 'volume', 
+        display: 'stat',
+        period: 'month',
+        periodIndex: -1,
+        image: 'wateriqStat.png',
+      },
+      {
+        id: 'tip',
+        type: 'tip',
+        display: 'stat',
+        image: 'tip.png',
+      },
+      {
+        id: 'totalVolumeChartSWM', 
+        type: 'total', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'month',
+        image: 'totalVolumeChartSWM.png',
+      }, 
+      {
+        id: 'wateriqChart', 
+        type: 'wateriq', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'month',
+        periodIndex: -1,
+        image: 'wateriqChart.png',
+      },
+
+      {
+        id: 'breakdown', 
+        type: 'breakdown', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'month',
+        image: 'breakdown.png',
+      },
+      {
+        id: 'forecast', 
+        type: 'forecast', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'year',
+        image: 'forecast.png',
+      },
+      {
+        id: 'pricing', 
+        type: 'pricing', 
+        metric: 'total', 
+        display: 'chart',
+        period: 'month',
+        image: 'pricing.png',
+      },
+      {
+        id: 'comparison', 
+        type: 'comparison', 
+        metric: 'volume', 
+        display: 'chart',
+        period: 'month',
+        periodIndex: -1,
+        image: 'comparison.png',
+      },
+      /*
+      {
+        id: 'budget', 
+        type: 'budget', 
+        metric: 'volume', 
+        display: 'chart', 
+        period: 'month',
+        },
+        */
+      {
+        id: 'commons',
+        type: 'commons',
+        metric: 'volume',
+        display: 'chart',
+        period: 'year',
+        image: 'common.png',
+      },
+    ],
+  },
   HEATING_SYSTEMS: ['electricity', 'oil', 'gas'],
-  SYSTEM_UNITS: ['metric', 'imperial'],
+  SYSTEM_UNITS: ['METRIC', 'IMPERIAL'],
   AMPHIRO_PROPERTIES: [
     {
       id: 'heating-system',
       type: 'select',
-      //options: ['electricity', 'oil', 'gas'],
       options: [0, 1, 2],
     },
     {

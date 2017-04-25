@@ -31,9 +31,9 @@ const createWidget = function (data) {
 const appendLayout = function (id, display, type) {
   let layout = { x: 0, y: 0, w: 1, h: 1, static: false, i: id };
   
-  if (display === 'stat' || (display === 'chart' && type === 'budget')) {
+  if (display === 'stat') {
     layout = { ...layout, w: 2, minW: 2, minH: 1, maxH: 1 };
-  } else if (display === 'chart') {
+  } else if (display === 'chart' || display === 'hybrid') {
     layout = { ...layout, w: 2, h: 2, minW: 2, minH: 2 };
   }
   return {
@@ -148,6 +148,13 @@ const setWidgetData = function (id, update) {
   };
 };
 
+const setWidgetTypeUnsynced = function (widgetType) {
+  return {
+    type: types.DASHBOARD_SET_WIDGET_TYPE_UNSYNCED,
+    widgetType,
+  };
+};
+
 /**
  * Updates an existing widget with provided options.
  * Important: This action triggers data fetch 
@@ -158,26 +165,40 @@ const setWidgetData = function (id, update) {
  * 
  */
 const updateWidget = function (id, update) {
+  return {
+    type: types.DASHBOARD_UPDATE_WIDGET,
+    id,
+    update,
+  };
+};
+
+const fetchWidgetData = function (id) {
   return function (dispatch, getState) {
-    dispatch({
-      type: types.DASHBOARD_UPDATE_WIDGET,
-      id,
-      update: { ...update, synced: false },
-    });
-    /*
-    if (Object.keys(data).length > 0) {
-      dispatch(updateLayoutItem(id, data.display, data.type));
-      dispatch(setDirty()); 
-    }
-    */
     const widget = getState().section.dashboard.widgets.find(i => i.id === id);
 
-    return dispatch(QueryActions.fetchWidgetData(widget))
+    const userKey = getState().user.profile.key;
+    const members = getState().user.profile.household.members;
+    const common = getState().section.commons.myCommons.find(c => c.key === getState().section.settings.commons.favorite);
+
+    return dispatch(QueryActions.fetchWidgetData({ 
+      ...widget, 
+      userKey, 
+      members,
+      common,
+    }))
     .then(res => dispatch(setWidgetData(id, res)))
     .catch((error) => { 
       console.error('Caught error in widget data fetch:', error); 
       dispatch(setWidgetData(id, { data: [], error: 'Oops sth went wrong, please refresh the page.' })); 
     });
+  };
+};
+
+const updateWidgetAndFetch = function (id, update) {
+  return function (dispatch, getState) {
+    dispatch(setDirty());
+    dispatch(updateWidget(id, update));
+    return dispatch(fetchWidgetData(id));
   };
 };
 
@@ -208,12 +229,11 @@ const addWidget = function (options) {
       id,
     };
 
+    dispatch(setDirty());
     dispatch(createWidget(newWidget));
     dispatch(appendLayout(id, display, type));
 
-    // fetch data
-    dispatch(setDirty()); 
-    dispatch(updateWidget(id, {}));
+    dispatch(fetchWidgetData(id));
     return id;
   };
 };
@@ -244,7 +264,7 @@ const fetchAllWidgetsData = function () {
    * sequential execution to take advantage of cache
    */
     return getState().section.dashboard.widgets
-    .map(widget => updateWidget(widget.id, {}))
+    .map(widget => fetchWidgetData(widget.id))
     .reduce((prev, curr) => prev.then(() => dispatch(curr)), Promise.resolve());
   };
 };
@@ -256,13 +276,14 @@ const setDeviceType = function (deviceType) {
   };
 };
 
-
 module.exports = {
   resetDirty,
   setDirty,
   switchMode,
   addWidget,
   updateWidget,
+  fetchWidgetData,
+  updateWidgetAndFetch,
   setWidgetData,
   setWidgets,
   updateLayoutItem,
@@ -270,5 +291,6 @@ module.exports = {
   removeWidget,
   fetchAllWidgetsData,
   setDeviceType,
+  setWidgetTypeUnsynced,
 };
 

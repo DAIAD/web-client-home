@@ -4,22 +4,25 @@ const { injectIntl } = require('react-intl');
 
 const HistoryActions = require('../actions/HistoryActions');
 
-const History = require('../components/sections/History');
+const History = require('../components/sections/history/');
 
-const { getAvailableDevices, getDeviceCount, getMeterCount } = require('../utils/device');
-const { prepareSessionsForTable, reduceMetric, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
+const { getAvailableDevices, getAvailableDeviceTypes } = require('../utils/device');
+const { prepareSessionsForTable, sortSessions, meterSessionsToCSV, deviceSessionsToCSV, hasShowersBefore, hasShowersAfter } = require('../utils/sessions');
+const { getComparisons, getComparisonDetails } = require('../utils/comparisons');
 const timeUtil = require('../utils/time');
-const { getMetricMu, formatMessage } = require('../utils/general');
-const { getTimeLabelByGranularity } = require('../utils/chart');
+const { getMetricMu, formatMessage, getAllMembers, tableToCSV } = require('../utils/general');
+const { getHistoryData } = require('../utils/history');
 
-const { meter: meterSessionSchema, amphiro: amphiroSessionSchema } = require('../schemas/history');
 
-const { DEV_METRICS, METER_METRICS, DEV_PERIODS, METER_PERIODS, DEV_SORT, METER_SORT } = require('../constants/HomeConstants');
+const { FILTER_METRICS, PERIODS, SORT, MODES, BASE64, PNG_IMAGES } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
-    firstname: state.user.profile.firstname,
+    user: state.user.profile,
     devices: state.user.profile.devices,
+    unit: state.user.profile.unit,
+    myCommons: state.section.commons.myCommons,
+    favoriteCommon: state.section.settings.commons.favorite,
     members: state.user.profile.household.members,
     ...state.section.history,
   };
@@ -30,127 +33,78 @@ function mapDispatchToProps(dispatch) {
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  const devType = stateProps.activeDeviceType;  
-  const members = stateProps.members.filter(member => member.active);
-
-  const sessions = sortSessions(prepareSessionsForTable(stateProps.devices, 
-                                                        stateProps.data, 
-                                                        members,
-                                                        stateProps.firstname, 
-                                                        stateProps.time.granularity,
-                                                        ownProps.intl
-                                                       ),
-                                stateProps.sortFilter, 
-                                stateProps.sortOrder
-                               );
-
-  const sessionFields = stateProps.activeDeviceType === 'METER' ? 
-    meterSessionSchema
-      :
-    amphiroSessionSchema;
-    
-  const csvData = stateProps.activeDeviceType === 'METER' ? 
-    meterSessionsToCSV(sessions) 
-    : 
-    deviceSessionsToCSV(sessions);
-
-  let deviceTypes = [{
-    id: 'METER', 
-    title: 'Water meter', 
-    image: 'water-meter.svg',
-  }, {
-    id: 'AMPHIRO', 
-    title: 'Shower devices', 
-    image: 'amphiro_small.svg',
-  }];
-
+  const _t = formatMessage(ownProps.intl);
   const amphiros = getAvailableDevices(stateProps.devices); 
-  const meterCount = getMeterCount(stateProps.devices);
-  const deviceCount = getDeviceCount(stateProps.devices);
 
-  if (meterCount === 0) {
-    deviceTypes = deviceTypes.filter(x => x.id !== 'METER');
-  }
-  
-  if (deviceCount === 0) {
-    deviceTypes = deviceTypes.filter(x => x.id !== 'AMPHIRO');
-  }
-
-  const metrics = devType === 'AMPHIRO' ? DEV_METRICS : METER_METRICS;
-
-  //const periods = devType === 'AMPHIRO' ? DEV_PERIODS : METER_PERIODS;
-  
-  const sortOptions = devType === 'AMPHIRO' ? DEV_SORT : METER_SORT;
-
-  const comparisons = stateProps.timeFilter !== 'custom' && devType !== 'AMPHIRO' ?
-  [{
-    id: 'last', 
-    title: timeUtil.getComparisonPeriod(stateProps.time.startDate, 
-                                        stateProps.time.granularity, 
-                                        ownProps.intl
-                                       ),
-  }]
-  : 
-    [];
+  const devType = stateProps.activeDeviceType;  
+  const members = getAllMembers(stateProps.members); 
+  const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : null;
+ 
+  const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
 
   const memberFilters = devType === 'AMPHIRO' ?
     [{
       id: 'all',
-      title: 'All',
-    },
-    {
-      id: 'default',
-      title: stateProps.firstname,
+      title: _t('history.member-filter'),
     },
     ...members.map(member => ({
       id: member.index,
       title: member.name,
+      image: member.photo ? `${BASE64}${member.photo}` : `${PNG_IMAGES}/daiad-consumer.png`,
     })),
     ]
     :
       [];
 
-  const reducedMetric = reduceMetric(stateProps.devices, stateProps.data, stateProps.filter);
-  /*
-  let info = null;
-  if (stateProps.timeFilter === 'month' && stateProps.pricing) {
-    if (reducedMetric < 9000) {
-      info = 'You are in the lowest price bracket so far this month. ' +
-        `There are ${9000 - reducedMetric} lt left to remain in the same category`;
-    } else if (reducedMetric < 30000) { 
-      info = 'You have reached the middle price bracket. ' +
-        `There are ${30000 - reducedMetric} lt left to remain in the same category`;
-    } else {
-      info = 'This month\'s consumption so far is in the highest price bracket. ' +
-        'Be careful next month!';
-    }
-    }
-    */
-  const AMPHIRO_MODES = [{ 
-    id: 'stats', 
-    title: 'Statistics',
-    periods: DEV_PERIODS, 
-  }];
-  const METER_MODES = [{ 
-    id: 'stats', 
-    title: 'Statistics',
-    periods: METER_PERIODS,
-  },
-  {
-    id: 'forecasting',
-    title: 'Forecasting',
-    periods: METER_PERIODS.filter(p => p.id !== 'custom'),
-  },
-  {
-    id: 'pricing',
-    title: 'Pricing',
-    periods: METER_PERIODS.filter(p => p.id === 'month'),
-  },
-  ];
 
-  const modes = devType === 'AMPHIRO' ? AMPHIRO_MODES : METER_MODES;
-  const periods = modes.find(m => m.id === stateProps.mode) ? modes.find(m => m.id === stateProps.mode).periods : [];
+  const availableComparisons = getComparisons(devType, favoriteCommon, stateProps.memberFilter, members)
+  .map(c => ({
+    id: c,
+    ...getComparisonDetails(stateProps.activeDeviceType,
+                            c, 
+                            stateProps.time.startDate, 
+                            stateProps.timeFilter, 
+                            favoriteCommon, 
+                            members, 
+                            ownProps.intl
+                           ),
+  }));   
 
+  const modes = MODES[devType];
+  const metrics = FILTER_METRICS[devType];
+  const activeMode = modes.find(m => m.id === stateProps.mode);
+
+  const allOptions = {
+    periods: PERIODS[devType],
+    comparisons: availableComparisons,
+    sort: SORT[devType],
+  };
+
+  const [
+    periods, 
+    compareAgainst, 
+    sortOptions
+  ] = ['periods', 'comparisons', 'sort']
+    .map(x => activeMode && activeMode[x] ? 
+         allOptions[x].filter(y => activeMode[x].includes(y.id)) 
+           : allOptions[x]
+        );
+
+  const { 
+    sessions,
+    sessionFields,
+    reducedMetric,
+    highlight,
+    chartType,
+    chartData,
+    chartCategories,
+    chartFormatter,
+    chartColors,
+    chartYMax,
+    mu,
+  } = getHistoryData({ ...stateProps, ...ownProps, _t, members, favoriteCommon });
+
+  const csvData = tableToCSV(sessionFields, sessions);
   return {
     ...stateProps,
     ...dispatchProps,
@@ -165,18 +119,42 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     periods,
     modes,
     metrics,
-    comparisons,
+    compareAgainst,
     memberFilters,
     sortOptions,
+    hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
+    hasShowersBefore: () => hasShowersBefore(stateProps.data), 
+    onSessionClick: session => dispatchProps.setActiveSession(session.device, session.id, session.timestamp),
+    _t,
     sessions,
+    //sessionFields: stateProps.mode === 'breakdown' ? breakdownSessionSchema : sessionFields,
     sessionFields,
     deviceTypes,
     csvData,
-    //extraInfo: info,
-    reducedMetric: `${reducedMetric} ${getMetricMu(stateProps.filter)}`,
-    hasShowersAfter: () => hasShowersAfter(stateProps.showerIndex),
-    hasShowersBefore: () => hasShowersBefore(stateProps.data),
-    _t: formatMessage(ownProps.intl),
+    reducedMetric,
+    mu,
+    isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
+    chart: {
+      //chart width = viewport width - main menu - sidebar left - sidebar right - padding
+      width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),
+      chartType,
+      chartData,
+      chartCategories,
+      chartColors,
+      chartFormatter,
+      chartYMax,
+      onPointClick: (series, index) => {
+        const device = chartData[series] ? 
+          chartData[series].metadata.device 
+          : null;
+          
+        const [id, timestamp] = chartData[series] 
+         && chartData[series].metadata.ids ? 
+           chartData[series].metadata.ids[index] 
+           : [null, null];
+        dispatchProps.setActiveSession(device, id, timestamp);
+      },
+    },
   };
 }
 

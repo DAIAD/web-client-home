@@ -1,67 +1,145 @@
 const moment = require('moment');
 
-const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, DEV_PERIODS, METER_PERIODS } = require('../constants/HomeConstants');
+const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS, BASE64, IMAGES } = require('../constants/HomeConstants');
 
-const { getFriendlyDuration, getEnergyClass, getMetricMu } = require('./general');
-const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('./chart');
+const { getFriendlyDuration, getEnergyClass, waterIQToNumeral, numeralToWaterIQ, displayMetric, formatMetric } = require('./general');
+const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets, colorFormatterSingle } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
-const { reduceMetric, getDataSessions, getShowerMeasurementsById, getSessionsCount } = require('./sessions');
+const { reduceMetric, getShowerById, getSessionsCount, prepareBreakdownSessions, preparePricingSessions } = require('./sessions');
+const { stripTags } = require('./messages');
 
-const tip = function (widget) {
+const tip = function (widget, intl) {
+  const { tips, tipIndex = 0 } = widget;
+  const currTip = Array.isArray(tips) && tips.length > tipIndex && tips[tipIndex];
+  if (!Array.isArray(tips) || tips.length === 0 || !currTip) {
+    return {
+      ...widget,
+      highlight: {},
+      info: [{
+        text: intl.formatMessage({ id: 'widget.no-tips' }),
+      }],
+      notificationType: 'RECOMMENDATION_STATIC',
+      linkTo: 'notifications',
+    };
+  }
+  const description = String(stripTags(currTip).description);
+  const text = description.substring(0, String(description).indexOf('.', 120));
   return {
     ...widget,
-    highlight: STATIC_RECOMMENDATIONS[Math.floor(Math.random() * 3)].description,
+    highlight: {
+      image: `${BASE64}${currTip.imageEncoded}`,
+    },
+    info: [{
+      text: `${text}...`,
+    }],
+    notificationType: 'RECOMMENDATION_STATIC',
+    notificationId: currTip.id,
+    linkTo: 'notifications',
   };
 };
 
-const amphiroLastShower = function (widget, devices, intl) {
-  const { data, device, showerId, metric } = widget;
-  const last = data ? data.find(d => d.deviceKey === device) : null;
-  const measurements = last ? getShowerMeasurementsById(last, showerId) : [];
-  const chartCategories = measurements.map(m => moment(m.timestamp).format('hh:mm:ss'));
+const amphiroLastShower = function (widget, intl) {
+  const { data = [], devices, device, showerId, metric, timestamp, unit } = widget;
+
+  const lastSession = getShowerById(data.find(d => d.deviceKey === device), showerId);
+  const measurements = lastSession ? lastSession.measurements : [];
+  const chartCategories = Array.isArray(measurements) ? measurements.map(m => moment(m.timestamp).format('hh:mm:ss')) : [];
   const chartData = [{
     name: getDeviceNameByKey(devices, device) || '', 
-    data: measurements.map(m => m ? m[metric] : null),
+    data: Array.isArray(measurements) ? measurements.map(m => m ? m[metric] : null) : [],
   }];
-  const mu = getMetricMu(metric);
-
-  const highlight = measurements.map(s => s[metric]).reduce((p, c) => p + c, 0);
-
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
   return {
     ...widget,
+    icon: `${IMAGES}/shower.svg`,
+    more: intl.formatMessage({ id: 'widget.explore-last-shower' }),
     chartCategories,
+    timeDisplay: intl.formatRelative(timestamp),
     chartData,
-    highlight,
-    mu,
+    chartFormatter,
+    highlight: {
+      image: `${IMAGES}/volume.svg`,
+      text: lastSession ? formatMetric(lastSession[metric], metric, unit) : null,
+    },
+    info: lastSession ? [
+      {
+        image: `${IMAGES}/energy.svg`,
+        text: displayMetric(formatMetric(lastSession.energy, 'energy', unit)),
+      },
+      {
+        image: `${IMAGES}/timer-on.svg`,
+        text: getFriendlyDuration(lastSession.duration),
+      },
+      {
+        image: `${IMAGES}/temperature.svg`,
+        text: displayMetric(formatMetric(lastSession.temperature, 'temperature', unit)),
+      }
+    ] : [],
+    mode: 'stats',
+    clearComparisons: true,
   };
 };
 
-const amphiroOrMeterTotal = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+const amphiroMembersRanking = function (widget, intl) {
+  const { devices, device, metric, data = [], unit } = widget;
+  
+  const periods = PERIODS.AMPHIRO;
+  const membersData = data.map(m => ({ 
+    ...m, 
+    average: reduceMetric(m.sessions, metric, true),
+    showers: m.sessions.reduce((p, c) => p + c.sessions.length, 0),
+  }))
+  .filter(x => x.showers > 0)
+  .sort((a, b) => a.average - b.average)
+  .filter((x, i) => i < 5);
+  
+  const chartCategories = membersData.map(m => m.name); 
+  const chartData = [{
+    name: intl.formatMessage({ id: 'widget.shower-average' }),
+    data: membersData.map(x => x.average),
+  }];
+  const chartColors = ['#7AD3AB', '#abaecc', '#2d3480', '#808285', '#CD4D3E'];
+
+  const chartColorFormatter = colorFormatterSingle(chartColors);
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
+
+  return {
+    ...widget,
+    icon: `${IMAGES}/goals.svg`,
+    more: intl.formatMessage({ id: 'widget.explore-comparisons' }),
+    periods,
+    chartCategories,
+    chartFormatter,
+    chartData,
+    legend: false,
+    chartColorFormatter,
+    chartType: 'bar',
+    mode: 'stats',
+    info: membersData.map((m, i) => ({
+      image: `${IMAGES}/rank-${i + 1}.svg`,
+    })),
+    data: null,
+    memberFilter: membersData.length > 0 ? membersData[0].index : null,
+    comparisons: membersData.filter((x, i) => i > 0).map(x => String(x.index)),
+  };
+};
+
+// TODO: split into two functions for amphiro / swm
+const amphiroOrMeterTotal = function (widget, intl) {
+  const { data = [], period, devices, deviceType, metric, previous, unit } = widget;
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
   const periods = deviceType === 'AMPHIRO' ? 
-    DEV_PERIODS.filter(p => p.id !== 'all') 
+    PERIODS.AMPHIRO.filter(p => p.id !== 'all') 
     : 
-    METER_PERIODS.filter(p => p.id !== 'custom');
+    PERIODS.METER.filter(p => p.id !== 'custom');
 
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-  
-  // TODO: static
-  let fac = 1.1;
-  if (period === 'ten') fac = 1.2;
-  else if (period === 'twenty') fac = 0.8;
-  else if (period === 'fifty') fac = 0.75;
+  const average = deviceType === 'AMPHIRO' && (metric === 'temperature' || metric === 'duration');
+  const reduced = reduceMetric(data, metric, average);
+  const previousReduced = reduceMetric(previous, metric, average);
 
-  const previousReduced = (deviceType === 'AMPHIRO' || previous == null) ?
-    reduced * fac 
-    :
-    reduceMetric(devices, previous, metric);
-
-  const highlight = reduced;
-  const mu = getMetricMu(metric);
   const better = reduced < previousReduced;
   const comparePercentage = previousReduced === 0 ?
     null
@@ -71,10 +149,11 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
   const chartCategories = deviceType === 'AMPHIRO' ?
     getChartAmphiroCategories(period)
     :
-    getChartMeterCategoryLabels(getChartMeterCategories(time), time, intl);
+    getChartMeterCategoryLabels(getChartMeterCategories(time), time.granularity, period, intl);
 
-  const chartData = data ? data.map((devData) => {
-    const sessions = getDataSessions(devices, devData)
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
+  const chartData = Array.isArray(data) ? data.map((devData) => {
+    const sessions = devData.sessions 
     .map(session => ({
       ...session,
       duration: Math.round(100 * (session.duration / 60)) / 100,
@@ -82,34 +161,57 @@ const amphiroOrMeterTotal = function (widget, devices, intl) {
     }));
     
     return {
-      name: getDeviceNameByKey(devices, devData.deviceKey) || '', 
+      name: deviceType === 'METER' ? intl.formatMessage({ id: 'devices.meter' }) : getDeviceNameByKey(devices, devData.deviceKey), 
       data: deviceType === 'METER' ? 
         getChartMeterData(sessions, 
                           getChartMeterCategories(time),
-                          time
-                         ).map(x => x ? x[widget.metric] : null)
+                          time,
+                          metric
+                         )
         : 
-          getChartAmphiroData(sessions, getChartAmphiroCategories(period))
-          .map(x => x ? x[widget.metric] : null),
+          getChartAmphiroData(sessions, 
+                              getChartAmphiroCategories(period),
+                              metric
+                             ),
     };
   }) : [];
-  
+  const hasComparison = better != null && comparePercentage != null;
+  const str = better ? 'better' : 'worse';
   return {
     ...widget,
+    icon: `${IMAGES}/${metric}.svg`,
+    more: deviceType === 'AMPHIRO' ? intl.formatMessage({ id: 'widget.explore-showers' }) : intl.formatMessage({ id: 'widget.explore-swm' }),
     time,
     periods,
-    highlight,
-    mu,
-    better,
-    comparePercentage,
-    forecasting: false,
+    highlight: {
+      text: formatMetric(reduced, metric, unit, reduced),
+    },
+    info: [
+      {
+        image: better ? `${IMAGES}/better.svg` : `${IMAGES}/worse.svg`,
+        text: intl.formatMessage({ 
+          id: `comparisons.${str}-${deviceType}`, 
+        }, {
+          percent: comparePercentage, 
+          period, 
+        }),
+        display: hasComparison,
+      },
+      {
+        text: intl.formatMessage({ id: 'comparisons.no-data' }),
+        display: !hasComparison,
+      }
+    ].filter(i => i.display),
     chartCategories,
+    chartFormatter,
     chartData,
+    mode: 'stats',
+    clearComparisons: true,
   };
 };
 
-const amphiroEnergyEfficiency = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+const amphiroEnergyEfficiency = function (widget, intl) {
+  const { data = [], period, devices, deviceType, metric, previous } = widget;
 
   if (metric !== 'energy') {
     console.error('only energy efficiency supported');
@@ -117,17 +219,11 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
     console.error('only amphiro energy efficiency supported');
   }
   const device = getDeviceKeysByType(devices, deviceType);
-  const periods = DEV_PERIODS.filter(p => p.id !== 'all');
+  const periods = PERIODS.AMPHIRO.filter(p => p.id !== 'all');
 
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-
-  // TODO: static
-  let fac; 
-  if (period === 'ten') fac = 0.4;
-  else if (period === 'twenty') fac = 1.1;
-  else if (period === 'fifty') fac = 1.15;
-
-  const previousReduced = previous ? reduceMetric(devices, previous, metric) : reduced * fac; 
+  const reduced = reduceMetric(data, metric, true);
+  const previousReduced = reduceMetric(previous, metric, true);
+  
   const better = reduced < previousReduced;
 
   const comparePercentage = previousReduced === 0 ? 
@@ -135,158 +231,318 @@ const amphiroEnergyEfficiency = function (widget, devices, intl) {
     : 
     Math.round((Math.abs(reduced - previousReduced) / previousReduced) * 100);
  
-  const showers = getSessionsCount(devices, data);
+  const showers = getSessionsCount(data);
   const highlight = (showers === 0 || reduced === 0) ? null : getEnergyClass(reduced / showers);
+  const hasComparison = better != null && comparePercentage != null;
+  const str = better ? 'better' : 'worse';
   return {
     ...widget,
+    icon: `${IMAGES}/energy.svg`,
     periods,
-    highlight,
-    better,
-    comparePercentage,
+    highlight: {
+      text: highlight,
+    },
+    info: [
+      {
+        image: better ? `${IMAGES}/better.svg` : `${IMAGES}/worse.svg`,
+        text: intl.formatMessage({ 
+          id: `comparisons.${str}-${deviceType}`,
+        }, { 
+          percent: comparePercentage, 
+          period, 
+        }),
+        display: hasComparison,
+      },
+      {
+        text: intl.formatMessage({ id: 'comparisons.no-data' }),
+        display: !hasComparison,
+      }
+    ].filter(i => i.display),
+    mode: 'stats',
+    clearComparisons: true,
   };
 };
 
-const meterForecast = function (widget, devices, intl) {
-  const { data, forecastData, period, deviceType, metric, previous } = widget;
+const meterForecast = function (widget, intl) {
+  const { data = [], forecastData, period, periodIndex, deviceType, metric, previous, unit } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter forecast supported');
   }
-  const time = widget.time ? widget.time : getTimeByPeriod(period);
-  const periods = METER_PERIODS.filter(p => p.id !== 'custom');
+  const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
+  const periods = []; 
 
-  const device = getDeviceKeysByType(devices, deviceType);
-  
   const chartColors = ['#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'];
-  const mu = getMetricMu(metric);
-  const xCategories = getChartMeterCategories(time);
-  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time, intl);
-  
-  const chartData = data ? data.map((devData) => {
-    const sessions = getDataSessions(devices, devData);
-    return {
-      name: getDeviceNameByKey(devices, devData.deviceKey) || '', 
-      data: getChartMeterData(sessions, 
-                              xCategories,
-                              time
-                             ).map(x => x ? x[widget.metric] : null),
-    };
-  }) : [];
 
-  const forecastChartData = forecastData ? [{
-    name: 'Forecast',
+  const xCategories = getChartMeterCategories(time);
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
+  
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
+  const chartData = data.map(devData => ({ 
+      name: intl.formatMessage({ id: 'widget.consumption' }), 
+      data: getChartMeterData(devData.sessions, 
+                              xCategories,
+                              time,
+                              metric
+                             ),
+    }));
+
+  const forecastChartData = Array.isArray(forecastData) ? [{
+    name: intl.formatMessage({ id: 'history.forecast' }),
     data: getChartMeterData(forecastData,
                             xCategories, 
-                            time
-                           ).map(x => x && x.volume && x.volume.SUM ? 
-                             Math.round(100 * x.volume.SUM) / 100
-                             : null),
+                            time,
+                            metric
+                           ),
+    lineType: 'dashed',
+    color: '#2d3480',
+    fill: 0.1,
+    symbol: 'emptyRectangle',
   }]
   : [];
 
   return {
     ...widget,
-    forecasting: true,
-    chartType: 'bar',
+    chartType: 'line',
+    timeDisplay: moment(time.startDate).year(),
     time,
     periods,
     chartCategories: xCategoryLabels,
+    chartFormatter,
     chartData: [...chartData, ...forecastChartData],
-    chartColors,
-    mu,
+    mode: 'forecasting',
+    clearComparisons: true,
   };
 };
 
-const meterBreakdown = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+const meterPricing = function (widget, intl) {
+  const { data = [], period, deviceType, metric, brackets, unit } = widget;
+  
+  if (deviceType !== 'METER') {
+    console.error('only meter pricing supported');
+  } else if (period !== 'month') {
+    console.error('only monthly pricing supported');
+  }
+  const time = widget.time ? widget.time : getTimeByPeriod(period);
+  const periods = [];
+
+  const meterSessions = Array.isArray(data) && data.length === 1 ? data[0].sessions : [];
+  const sessions = preparePricingSessions(meterSessions, 
+                                          brackets, 
+                                          time.granularity,
+                                          null,
+                                          intl
+                                         );
+
+  const xCategories = getChartMeterCategories(time);
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
+
+  const priceBrackets = getChartPriceBrackets(xCategories, brackets, unit, intl);
+  
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit, Math.max(...brackets.map(x => x.minVolume))));
+
+  const chartData = data.map(devData => ({ 
+      name: intl.formatMessage({ id: `history.${metric}` }), 
+      data: getChartMeterData(sessions, 
+                              xCategories,
+                              time,
+                              metric
+                             ),
+    }));
+
+  return {
+    ...widget,
+    icon: `${IMAGES}/money-navy.svg`,
+    chartType: 'line',
+    timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
+    time,
+    periods,
+    chartCategories: xCategoryLabels,
+    chartFormatter,
+    chartData: [...chartData, ...priceBrackets],
+    mode: 'pricing',
+    clearComparisons: true,
+  };
+};
+
+const meterBreakdown = function (widget, intl) {
+  const { data = [], period, devices, deviceType, metric, breakdown = [], unit } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter breakdown makes sense');
   }
 
-  const periods = METER_PERIODS.filter(p => p.id === 'month' || p.id === 'year');
+  const periods = PERIODS.METER.filter(p => p.id === 'month' || p.id === 'year');
 
-  const device = getDeviceKeysByType(devices, deviceType);
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
+  const reduced = reduceMetric(data, metric);
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
-  // TODO: static
-  // dummy data
-  const chartCategories = ['toilet', 'faucet', 'shower', 'kitchen'];
+
+  const sessions = prepareBreakdownSessions(data,
+                                            metric,
+                                            breakdown,
+                                            null,
+                                            time.startDate,
+                                            time.granularity,
+                                            intl
+                                           );
+
   const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
+
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
+  const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.id}` }).split(' ').join('\n'));
   const chartData = [{
-    name: 'Consumption', 
-    data: [
-      Math.floor(reduced / 4), 
-      Math.floor(reduced / 4), 
-      Math.floor(reduced / 3), 
-      Math.floor((reduced / 2) - (reduced / 3)),
-    ],
+    name: intl.formatMessage({ id: `history.${metric}` }),
+    data: sessions.map(x => x[metric]),
   }];
-  const mu = getMetricMu(metric);
-  const invertAxis = true;
+  
   return {
     ...widget,
+    icon: `${IMAGES}/stats-side.svg`,
     time,
     periods,
     chartType: 'horizontal-bar',
     chartCategories,
-    chartColors,
+    chartColorFormatter,
+    chartFormatter,
     chartData,
-    mu,
-    invertAxis,
+    clearComparisons: true,
+    mode: 'stats',
   };
 };
 
-const meterComparison = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+const meterComparison = function (widget, intl) {
+  const { data, period, periodIndex, deviceType, metric, comparisons, unit } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter comparison supported');
+    return {};
   }
 
-  const time = widget.time ? widget.time : getTimeByPeriod(period);
-  //const periods = deviceType === 'AMPHIRO' ? DEV_PERIODS : METER_PERIODS.filter(p => p.id !== 'custom');
-  const periods = METER_PERIODS.filter(p => p.id !== 'custom');
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-  // TODO: static
-  // dummy data based on real user data
-  const chartCategories = ['City', 'Neighbors', 'Similar', 'You'];
+  const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
+  const periods = [];
   const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
+
+  const chartCategories = Array.isArray(comparisons) ? 
+    comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison.id}` })) 
+    : []; 
+
   const chartData = [{ 
     name: 'Comparison', 
-    data: [
-      reduced - (0.2 * reduced), 
-      reduced + (0.5 * reduced), 
-      reduced / 2, 
-      reduced,
-    ],
+    data: Array.isArray(comparisons) ? 
+      comparisons.map(comparison => comparison.sessions.reduce((p, c) => c ? p + c[metric] : p, 0) : null) 
+      : [],
   }];
-  const mu = getMetricMu(metric);
-  const invertAxis = true;
+
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
+ 
   return {
     ...widget,
+    icon: `${IMAGES}/stats-side.svg`,
+    timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     time,
     periods,
     chartType: 'horizontal-bar',
     chartCategories,
-    chartColors,
+    chartColorFormatter,
+    chartFormatter,
     chartData,
-    mu,
-    invertAxis,
+    mode: 'stats',
+    comparisonData: Array.isArray(comparisons) ? comparisons.filter(c => c.id !== 'user') : [], 
   };
 };
 
-const budget = function (widget, devices, intl) {
-  const { data, period, deviceType, metric, previous } = widget;
+const waterIQ = function (widget, intl) {
+  const { data, period, periodIndex, deviceType, metric } = widget;
+  
+  if (deviceType !== 'METER') {
+    console.error('only meter supported for water iq');
+    return {};
+  }
+
+  const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
+  const periods = [];
+  
+  const current = Array.isArray(data) && data.length > 0 && data.find(s => s.timestamp === time.startDate);
+
+  const hasWaterIQ = current !== false && current != null;
+  
+  const best = hasWaterIQ ? data.reduce((p, c) => c.user < p.user ? c : p, data[0]) : {};
+  const worst = hasWaterIQ ? data.reduce((p, c) => c.user > p.user ? c : p, data[0]) : {};
+
+  const highlight = hasWaterIQ ? null : '-';
+  const highlightImg = hasWaterIQ ? `${IMAGES}/energy-${current.user}.svg` : null;
+
+  const chartColors = ['#f5dbd8', '#ebb7b1', '#a3d4f4', '#2d3480'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
+  const comparisons = ['similar', 'nearest', 'all', 'user']; 
+  const chartCategories = Array.isArray(comparisons) ? comparisons.map(comparison => intl.formatMessage({ id: `comparisons.${comparison}` })) : []; 
+
+  const chartData = [{ 
+    name: intl.formatMessage({ id: 'history.wateriq' }), 
+    data: Array.isArray(comparisons) ? 
+      comparisons.map(comparison => current ? waterIQToNumeral(current[comparison]) : 0) 
+      : [],
+  }];
+  return {
+    ...widget,
+    icon: `${IMAGES}/stats-side.svg`,
+    timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
+    //time,
+    periods,
+    info: [
+      {
+        image: `${IMAGES}/better.svg`,
+        text: intl.formatMessage({
+          id: 'comparisons.wateriq-best',
+        }, {
+          value: best.user,
+          month: intl.formatDate(best.timestamp, { month: 'long' }),
+        }),
+        display: hasWaterIQ,
+      },
+      {
+        image: `${IMAGES}/worse.svg`,
+        text: intl.formatMessage({
+          id: 'comparisons.wateriq-worst',
+        }, {
+          value: worst.user,
+          month: intl.formatDate(worst.timestamp, { month: 'long' }),
+        }),
+        display: hasWaterIQ,
+      },
+      {
+        text: intl.formatMessage({ id: 'comparisons.wateriq-no-data' }),
+        display: !hasWaterIQ,
+      }
+    ].filter(i => i.display),
+    chartType: 'horizontal-bar',
+    chartColorFormatter,
+    chartCategories,
+    chartData,
+    chartFormatter: y => numeralToWaterIQ(y),
+    highlight: {
+      text: highlight,
+      image: highlightImg,
+    },
+    mode: 'wateriq',
+    period: 'year',
+    comparisonData: widget.display === 'chart' ? comparisons.map(c => ({ id: c, sessions: [] })) : [],
+    time: getTimeByPeriod('year'),
+  };
+};
+
+const budget = function (widget, intl) {
+  const { data, period, devices, deviceType, metric, previous } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter comparison supported');
   }
 
-  const periods = METER_PERIODS.filter(p => p.id !== 'custom');
-  const reduced = data ? reduceMetric(devices, data, metric) : 0;
-  const mu = getMetricMu(metric);
+  const periods = PERIODS.METER.filter(p => p.id !== 'custom');
+  const reduced = reduceMetric(data, metric);
   
   // dummy data based on real user data
   // TODO: static
@@ -313,30 +569,95 @@ const budget = function (widget, devices, intl) {
   const chartColors = ['#2d3480', '#abaecc'];
   return {
     ...widget,
-    highlight: reduced,
+    highlight: {
+      text: reduced,
+    },
     chartData,
     chartColors,
   };
 };
 
-const prepareWidget = function (widget, devices, intl) {
+const meterCommon = function (widget, intl) {
+  const { data = [], period, devices, deviceType, metric, common, commonData, unit } = widget;
+  
+  if (!common) {
+    return {
+      ...widget,
+      error: intl.formatMessage({ id: 'widget.empty-or-no-fav-common' }),
+    };
+  }
+  const time = widget.time ? widget.time : getTimeByPeriod(period);
+  const periods = PERIODS.METER.filter(p => p.id !== 'custom' && p.id !== 'day');
+
+  const reduced = reduceMetric(data, metric);
+
+  const xCategories = getChartMeterCategories(time);
+  const chartCategories = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
+
+  
+  const chartData = data.map(devData => ({ 
+      name: intl.formatMessage({ id: 'common.me' }), 
+      data: getChartMeterData(devData.sessions, 
+                              xCategories,
+                              time,
+                              metric
+                             ),
+    }));
+
+  
+  const commonChartData = Array.isArray(commonData) ? [{
+    name: common.name,
+    data: getChartMeterData(commonData,
+                            xCategories, 
+                            time,
+                            metric
+                           ),
+    fill: 0.1,
+    symbol: 'emptyRectangle',
+  }]
+  : [];
+
+  return {
+    ...widget,
+    icon: `${BASE64}${common.image}`,
+    more: intl.formatMessage({ id: 'widget.explore-common' }),
+    chartType: 'line',
+    time,
+    periods,
+    chartCategories: chartCategories,
+    chartFormatter,
+    chartData: [...chartData, ...commonChartData],
+    linkTo: 'commons',
+  };
+};
+
+const prepareWidget = function (widget, intl) {
   switch (widget.type) {
     case 'tip': 
-      return tip();
+      return tip(widget, intl);
     case 'last': 
-      return amphiroLastShower(widget, devices, intl);
+      return amphiroLastShower(widget, intl);
+    case 'ranking': 
+      return amphiroMembersRanking(widget, intl);
     case 'total':
-      return amphiroOrMeterTotal(widget, devices, intl); 
+      return amphiroOrMeterTotal(widget, intl); 
     case 'efficiency':
-      return amphiroEnergyEfficiency(widget, devices, intl); 
+      return amphiroEnergyEfficiency(widget, intl); 
     case 'forecast':
-      return meterForecast(widget, devices, intl); 
+      return meterForecast(widget, intl); 
+    case 'pricing':
+      return meterPricing(widget, intl); 
     case 'breakdown':
-      return meterBreakdown(widget, devices, intl);  
+      return meterBreakdown(widget, intl);  
     case 'comparison':
-      return meterComparison(widget, devices, intl);
+      return meterComparison(widget, intl);
     case 'budget':
-      return budget(widget, devices, intl);
+      return budget(widget, intl);
+    case 'wateriq': 
+      return waterIQ(widget, intl);
+    case 'commons':
+      return meterCommon(widget, intl);
     default:
       return widget;
   }

@@ -230,6 +230,17 @@ const saveToProfile = function (profile) {
   };
 };
 
+const saveConfiguration = function (configuration) {
+  return function (dispatch, getState) {
+    return dispatch(saveToProfile({
+      configuration: JSON.stringify({
+        ...JSON.parse(getState().user.profile.configuration),
+        ...configuration,
+      }),
+    }));
+  };
+};
+
 const updateDevice = function (update) {
   return function (dispatch, getState) {
     const data = {
@@ -364,6 +375,7 @@ module.exports = {
   refreshProfile,
   fetchProfile,
   saveToProfile,
+  saveConfiguration,
   updateDevice,
   letTheRightOneIn,
   requestPasswordReset,

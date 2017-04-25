@@ -4,19 +4,22 @@ const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
 const { push } = require('react-router-redux');
 
-const Commons = require('../components/sections/Commons');
+const Commons = require('../components/sections/commons/');
 
 const CommonsActions = require('../actions/CommonsActions');
-const { queryMeterHistoryCache } = require('../actions/QueryActions');
 const timeUtil = require('../utils/time');
-const { getDeviceKeysByType } = require('../utils/device');
-
-const { getDataSessions, sortSessions, getLastShowerIdFromMultiple } = require('../utils/sessions');
+const { getLastShowerIdFromMultiple } = require('../utils/sessions');
+const { getAvailableDeviceTypes, getDeviceCount, getMeterCount } = require('../utils/device');
 const { getChartMeterData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories } = require('../utils/chart');
-const { formatMessage } = require('../utils/general');
+const { formatMessage, formatMetric, displayMetric } = require('../utils/general');
+
+const { PERIODS } = require('../constants/HomeConstants');
 
 function mapStateToProps(state) {
   return {
+    devices: state.user.profile.devices,
+    unit: state.user.profile.unit,
+    favorite: state.section.settings.commons.favorite,
     ...state.section.commons,
   };
 }
@@ -24,38 +27,36 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
       ...CommonsActions,
-      queryMeterHistoryCache,
       goToManage: () => push('/settings/commons'),
       goToJoin: () => push('/settings/commons/join'),
     }, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
+  const _t = formatMessage(ownProps.intl);
+  const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
+  
+  const periods = PERIODS.METER
+  .filter(period => period.id !== 'day');
+
   const active = stateProps.myCommons.find(common => common.key === stateProps.activeKey);
 
   const members = active ? active.members : [];
   
-  const xCategories = stateProps.activeDeviceType === 'METER' ? 
-    getChartMeterCategories(stateProps.time) : 
-      getChartAmphiroCategories(stateProps.timeFilter, getLastShowerIdFromMultiple(stateProps.data));
+  const xCategories = getChartMeterCategories(stateProps.time);
       
-  const xCategoryLabels = stateProps.activeDeviceType === 'METER' ?
-    getChartMeterCategoryLabels(xCategories, stateProps.time, ownProps.intl)
-     : xCategories;
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, stateProps.time.granularity, stateProps.timeFilter, ownProps.intl);
 
-  const chartData = stateProps.data.map(data => ({
-    name: data.label, 
-    data: getChartMeterData(data.points,
+  const chartData = stateProps.data.map((data, i) => ({
+    name: _t(data.label) || '', 
+    data: getChartMeterData(data.sessions,
                             xCategories, 
-                            stateProps.time
-                           ).map(x => x && x[stateProps.filter] ? 
-                             x[stateProps.filter].AVERAGE 
-                             : null),
-   lineType: active && data.label === active.name ? 'dashed' : 'solid',
-   color: active && data.label === active.name ? '#2d3480' : null,
-   symbol: active && data.label === active.name ? 'emptyRectangle' : null,
+                            stateProps.time,
+                            stateProps.filter
+                           ),
   }));
 
+  const chartFormatter = y => displayMetric(formatMetric(y, 'volume', stateProps.unit));
   return {
     ...stateProps,
     actions: {
@@ -63,6 +64,9 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     },
     ...ownProps,
     active,
+    deviceTypes,
+    periods,
+    isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
     members: {
       ...stateProps.members,
       active: stateProps.members.active.map(m => stateProps.members.selected.map(s => s.key).includes(m.key) ? ({ ...m, selected: true }) : m),
@@ -72,7 +76,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     nextPeriod: timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.endDate),
     chartData,
     chartCategories: xCategoryLabels,
-    _t: formatMessage(ownProps.intl),
+    chartFormatter,
+    _t,
   };
 }
 

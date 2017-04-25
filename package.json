@@ -1,0 +1,23 @@
+{
+  "name": "daiad-home-web",
+  "version": "0.0.1",
+  "description": "A single page application for DAIAD EU project based on React and Redux with some reusable actions/components/utils modules",
+  "main": "lib/exports.js",
+  "author": "Stelios Manousopoulos",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DAIAD/web-client-home.git"
+  },
+  "bugs": {
+    "url": "https://github.com/DAIAD/web-client-home/issues"
+  },
+  "devDependencies": {
+    "babel-core": "~6.7.6",
+    "babel-loader": "~6.2.4",
+    "babel-plugin-transform-object-rest-spread": "~6.6.5",
+    "babel-preset-react": "~6.5.0"
+  },
+  "scripts": {
+    "build": "babel . --ignore lib,node_modules --out-dir lib"
+  } 
+}

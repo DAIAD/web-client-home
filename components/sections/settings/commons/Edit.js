@@ -3,15 +3,15 @@ const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedDate, FormattedTime } = require('react-intl');
 
 const CommonFormFields = require('./Form');
-const { IMAGES } = require('../../../../constants/HomeConstants');
+const { IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 function UpdateCommons(props) {
-  const { myCommons, commonForm, actions } = props;
-  const { confirmUpdateCommon, confirmDeleteCommon, confirmLeaveCommon, updateCommonForm } = actions;
+  const { _t, myCommons, commonForm, favorite, actions } = props;
+  const { confirmUpdateCommon, confirmDeleteCommon, confirmLeaveCommon, updateCommonForm, saveFavoriteCommon } = actions;
   if (myCommons.length === 0) {
     return (
       <div style={{ margin: 20 }}>
-        <h5>No communities joined yet.</h5>
+        <h5><FormattedMessage id="commons.empty" /></h5>
       </div>
     );
   }
@@ -36,7 +36,7 @@ function UpdateCommons(props) {
                     marginRight: 10,
                     border: '1px #2d3580 solid',
                   }} 
-                  src={`data:image/png;base64,${common.image}`} 
+                  src={`${BASE64}${common.image}`} 
                   alt="member" 
                 />
                 :
@@ -51,7 +51,7 @@ function UpdateCommons(props) {
                   alt="member" 
                 />
                 }
-                {common.name || 'No name'}
+                {common.name || _t('forms.noname')}
               </h3>
               }
           >
@@ -63,23 +63,49 @@ function UpdateCommons(props) {
                 confirmUpdateCommon();
               }}
             >
+            { favorite === common.key ?
+              <button
+                className="btn-a" 
+                title={_t('commonsManage.resetFavorite')}
+                style={{ float: 'right' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  saveFavoriteCommon(null);
+              }}
+              >
+                <i style={{ float: 'right' }} className="fa fa-star" />
+              </button>
+              :
+              <button
+                className="btn-a"   
+                title={_t('commonsManage.setFavorite')}
+                style={{ float: 'right' }}
+                onClick={(e) => {
+                  e.preventDefault();
+                  saveFavoriteCommon(common.key);
+              }}
+              >
+                <i style={{ float: 'right' }} className="fa fa-star-o" />
+              </button>
+             }
               <CommonFormFields
+                _t={_t}
                 values={commonForm}
                 onChange={updateCommonForm}
                 disabled={!commonForm.owner}
               />
               
-            <label htmlFor="common-size">Members:</label>
+            <label htmlFor="common-size"><FormattedMessage id="commons.members" />:</label>
             <span id="common-size">{commonForm.size}</span>
 
             <br />
-            <label htmlFor="common-created">Created:</label>
+            <label htmlFor="common-created"><FormattedMessage id="commons.created" /></label>
             <span id="common-created">
               <FormattedDate value={commonForm.createdOn} />
             </span>
             
             <br />
-            <label htmlFor="common-updated">Last updated:</label>
+            <label htmlFor="common-updated"><FormattedMessage id="commons.updated" /></label>
             <span id="common-updated">
               <FormattedDate value={commonForm.updatedOn} />
               &nbsp;
@@ -93,9 +119,8 @@ function UpdateCommons(props) {
                     type="submit"
                     style={{ float: 'right' }} 
                   >
-                    Update
+                    <FormattedMessage id="forms.update" />
                   </bs.Button>
-
                   <bs.Button 
                     style={{ float: 'right', marginRight: 10 }} 
                     bsStyle="danger"
@@ -103,7 +128,7 @@ function UpdateCommons(props) {
                       confirmDeleteCommon();
                     }}
                   >
-                    Delete
+                    <FormattedMessage id="forms.delete" />
                   </bs.Button>
                 </div>
                 :
@@ -115,7 +140,7 @@ function UpdateCommons(props) {
                       confirmLeaveCommon();
                     }}
                   >
-                    Leave
+                    <FormattedMessage id="forms.leave" />
                   </bs.Button>
                 </div>
               }

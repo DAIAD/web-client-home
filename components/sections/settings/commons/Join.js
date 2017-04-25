@@ -22,8 +22,11 @@ const JoinCommons = React.createClass({
     return (
       <div style={{ margin: 20 }}>
         <form 
-          className="search-field"
-          onSubmit={(e) => { e.preventDefault(); setCommonsQueryAndFetch({ index: 0 }); }}
+          className="search-field commons-join-search"
+          onSubmit={(e) => { 
+            e.preventDefault(); 
+            setCommonsQueryAndFetch({ index: 0 }); 
+          }}
         >
           <input 
             type="text"
@@ -39,14 +42,20 @@ const JoinCommons = React.createClass({
           <button 
             className="clear-button" 
             type="reset" 
-            onClick={(e) => { setCommonsQueryAndFetch({ index: 0, name: '' }); }} 
+            onClick={(e) => { 
+              setCommonsQueryAndFetch({ index: 0, name: '' }); 
+            }} 
           />
         </form>
         
       <Table
         className="session-list"
         rowClassName={row => 
-          `session-list-item inverted ${commonForm.key === row.key ? 'selected' : ''}`
+          `
+          session-list-item 
+          inverted 
+          ${commonForm.key === row.key ? 'selected' : ''}
+          `
         }
         fields={allCommonsSchema}
         data={allCommons}
@@ -64,7 +73,11 @@ const JoinCommons = React.createClass({
             updateCommonForm(row);
           }
         }}
-        empty={<h5>No communities found</h5>}
+        empty={
+          <h5 style={{ marginTop: 20 }}>
+            <FormattedMessage id="commonsManage.empty" />
+          </h5>
+          }
       />
       {
         commonForm.key && !commonForm.member ?
@@ -76,7 +89,7 @@ const JoinCommons = React.createClass({
               confirmJoinCommon();
             }}
           >
-            Join
+            <FormattedMessage id="forms.join" />
           </bs.Button>
         :
           <div />

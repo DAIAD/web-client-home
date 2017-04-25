@@ -119,7 +119,7 @@ module.exports = {
     splitArea: {
       show: true,
       areaStyle: {
-        color: []
+        color: ['#fff']
       },
     },
     boundaryGap: [0, 0.1],
@@ -129,7 +129,7 @@ module.exports = {
     x: 75, 
     y: 0, 
     x2: 20, 
-    y2: 50,
+    y2: 30,
   },
 
   line: {

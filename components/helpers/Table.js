@@ -3,7 +3,7 @@ const bs = require('react-bootstrap');
 const { IMAGES } = require('../../constants/HomeConstants');
 
 function Table(props) {
-  const { className, fields, data, empty = 'No results' } = props;
+  const { className, fields, data, empty = '' } = props;
   if (!Array.isArray(fields)) {
     throw new Error('Fields must be array, check Table render');
   }
@@ -77,31 +77,45 @@ function Pagination(props) {
       <div className="navigator">
         {
           active > 1 ?
-        <a className="navigator-child pull-left" onClick={() => onPageClick(active - 1)}>
-          <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
-        </a> 
+            <div className="navigator-child pull-left">
+              <button 
+                className="btn-a" 
+                onClick={() => onPageClick(active - 1)}
+              >
+                <img src={`${IMAGES}/arrow-big-left.svg`} alt="previous" />
+              </button> 
+          </div>
           :
-         <div className="navigator-child pull-left" />
+            <div className="navigator-child pull-left">&nbsp;</div>
         }
         {
           total > 0 ? 
             Array.from({ length: total }, (v, i) => i + 1)
             .map(page => 
-              page === active ? 
-                <u key={page}><a className="pagination-item active" style={{ marginLeft: 10 }} onClick={() => { onPageClick(page); }}>{page}</a></u>
-              :
-              <a key={page} className="pagination-item" style={{ marginLeft: 10 }} onClick={() => { onPageClick(page); }}>{page}</a>
+              <button 
+                key={page} 
+                className={`btn-a pagination-item ${page === active ? 'active' : ''}`}
+                style={{ marginLeft: 10 }} 
+                onClick={() => { onPageClick(page); }}
+              >
+                {page}
+              </button>
               )
-          :
-           <div />
+             :
+             <div />
          }
          {
            active < total ?
-         <a className="navigator-child pull-right" onClick={() => onPageClick(active + 1)}>
-          <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
-        </a>
+             <div className="navigator-child pull-right">
+               <button 
+                 className="btn-a" 
+                 onClick={() => onPageClick(active + 1)}
+               >
+                <img src={`${IMAGES}/arrow-big-right.svg`} alt="next" />
+              </button>
+            </div>
         :
-          <div className="navigator-child pull-right" />
+          <div className="navigator-child pull-right">&nbsp;</div>
         }
       </div>
     </div>

@@ -33,7 +33,7 @@ module.exports = {
   },
 
   grid: {
-    x: 70,
+    x: 85,
     x2: 20, 
     y: -40,
     y2: 30,

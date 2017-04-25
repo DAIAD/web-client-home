@@ -3,28 +3,32 @@ const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 
 const DashboardActions = require('../actions/DashboardActions');
-const { linkToHistory } = require('../actions/HistoryActions');
-const { saveToProfile } = require('../actions/UserActions');
-const { setForm } = require('../actions/FormActions');
+const { saveConfiguration } = require('../actions/UserActions');
+const { setForm, resetForm } = require('../actions/FormActions');
+const { linkToSection } = require('../actions/InitActions');
 
-const Dashboard = require('../components/sections/Dashboard');
+const Dashboard = require('../components/sections/dashboard/');
 
 const { getDeviceCount, getMeterCount } = require('../utils/device');
 const prepareWidget = require('../utils/widgets');
 const { filterObj, formatMessage } = require('../utils/general');
 
-const { AMPHIRO_WIDGET_TYPES, METER_WIDGET_TYPES } = require('../constants/HomeConstants');
+const { DEVICE_TYPES, WIDGET_TYPES } = require('../constants/HomeConstants');
 
 
 function mapStateToProps(state) {
   return {
     firstname: state.user.profile.firstname,
     devices: state.user.profile.devices,
+    unit: state.user.profile.unit,
     layout: state.section.dashboard.layout,
     mode: state.section.dashboard.mode,
     dirty: state.section.dashboard.dirty,
     widgets: state.section.dashboard.widgets,
     widgetToAdd: state.forms.widgetToAdd,
+    brackets: state.section.history.priceBrackets,
+    breakdown: state.section.history.waterBreakdown,
+    tips: state.section.messages.tips,
     activeDeviceType: state.section.dashboard.widgetDeviceType,
     width: state.viewport.width,
   };
@@ -33,21 +37,17 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return bindActionCreators({ 
     ...DashboardActions, 
-    linkToHistory, 
-    saveToProfile, 
+    saveConfiguration, 
     setForm, 
+    resetForm,
+    linkToSection,
   }, dispatch);
 }
 
 function mergeProps(stateProps, dispatchProps, ownProps) {
-  let deviceTypes = [{
-    id: 'AMPHIRO', 
-    title: 'Shower',
-  }, {
-    id: 'METER', 
-    title: 'Smart Water Meter',
-  }];
-  
+  const _t = formatMessage(ownProps.intl);
+  let deviceTypes = DEVICE_TYPES;  
+
   const meterCount = getMeterCount(stateProps.devices);
   const deviceCount = getDeviceCount(stateProps.devices);
 
@@ -61,12 +61,13 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
 
   const newWidgetState = {
     widgets: stateProps.widgets.map(widget => filterObj(widget, [
+      'widgetId',
       'id',
       'deviceType',
       'display',
       'metric',
       'period',
-      'title',
+      'periodIndex',
       'type',
     ])),
     layout: stateProps.layout,
@@ -76,32 +77,39 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       stateProps.activeDeviceType !== 'METER') {
         console.error('Oops, wrong device type', stateProps.activeDeviceType);
       }
-  const widgetTypes = stateProps.activeDeviceType === 'AMPHIRO' ? 
-    AMPHIRO_WIDGET_TYPES.map(w => ({ 
-      ...w, 
-      deviceType: 'AMPHIRO',
-    }))
-    :
-    METER_WIDGET_TYPES.map(w => ({ 
-      ...w, 
-      deviceType: 'METER', 
-    }));
+  const widgetTypes = WIDGET_TYPES[stateProps.activeDeviceType].map(w => ({
+    ...w,
+    widgetId: w.id,
+    title: _t(`widget.titles.${w.id}`),
+    description: _t(`widget.descriptions.${w.id}`),
+    deviceType: stateProps.activeDeviceType,
+  }));
 
   const setWidgetToAdd = data => dispatchProps.setForm('widgetToAdd', data);
+  const resetWidgetToAdd = () => dispatchProps.resetForm('widgetToAdd');
 
   return {
     ...stateProps,
     ...dispatchProps,
     ...ownProps,
     widgets: stateProps.widgets.map(widget => 
-      prepareWidget(widget, stateProps.devices, ownProps.intl)),   
+                    prepareWidget({ 
+                      ...widget,
+                      devices: stateProps.devices,
+                      unit: stateProps.unit,
+                      breakdown: stateProps.breakdown,
+                      brackets: stateProps.brackets,
+                      tips: stateProps.tips,
+                    },
+                    ownProps.intl)),   
     deviceCount: getDeviceCount(stateProps.devices),
     meterCount: getMeterCount(stateProps.devices),
-    saveToProfile: () => dispatchProps.saveToProfile({ configuration: JSON.stringify(newWidgetState) }),
+    saveToProfile: () => dispatchProps.saveConfiguration(newWidgetState),
     deviceTypes,
     widgetTypes,
     setWidgetToAdd,
-    _t: formatMessage(ownProps.intl),
+    resetWidgetToAdd,
+    _t,
   };
 }
 

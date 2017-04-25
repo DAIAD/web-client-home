@@ -1,4 +1,4 @@
-const { SHOWERS_PAGE } = require('../constants/HomeConstants');
+const { SHOWERS_PAGE, VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY } = require('../constants/HomeConstants');
 
 // http://stackoverflow.com/questions/46155/validate-email-address-in-javascript
 const validateEmail = function (email) {
@@ -25,21 +25,21 @@ const flattenMessages = function (nestedMessages, prefix) {
 };
 
 const addZero = function (input) {
-  return input < 10 ? `0${input}` : `${input}`;
+  return input < 10 ? `0${input}` : input;
 };
 
 const getFriendlyDuration = function (seconds) {
   if (!seconds) { return null; }
   
   if (seconds > 3600) {
-    return `${addZero(Math.floor(seconds / 3600))}:` +
-           `${addZero(Math.floor((seconds % 3600) / 60))}:` +
-           `${addZero(Math.floor((seconds % 3600) / 60) % 60)}`;
+    return `${addZero(Math.floor(seconds / 3600))}h ` +
+           `${addZero(Math.floor((seconds % 3600) / 60))}' ` +
+           `${addZero(Math.floor((seconds % 3600) % 60))}"`;
   } else if (seconds > 60) {
-    return `${addZero(Math.floor(seconds / 60))}:` +
-      `${addZero(Math.floor(seconds / 60) % 60)}`;
+    return `${addZero(Math.floor(seconds / 60))}' ` +
+      `${addZero(Math.floor(seconds % 60))}"`;
   }
-  return `00:${addZero(seconds)}`;
+  return '00\'  ' + addZero(seconds) + '"';
 };
 
 const getEnergyClass = function (energy) {
@@ -91,64 +91,18 @@ const getEnergyClass = function (energy) {
   return scale;
 };
 
-const getMetricMu = function (metric) {
-  if (metric === 'showers') return '';
-  else if (metric === 'volume' || metric === 'difference') return 'lt';
-  else if (metric === 'energy') return 'kW';
-  else if (metric === 'duration') return 'min';
-  else if (metric === 'temperature') return '°C';
-  throw new Error(`unrecognized metric ${metric}`);
-};
-
-const getShowerMetricMu = function (metric) {
-  if (metric === 'volume') return 'lt';
-  else if (metric === 'energy') return 'W';
-  else if (metric === 'temperature') return '°C';
-  throw new Error(`unrecognized metric ${metric}`);
-};
 
 const showerFilterToLength = function (filter) {
   if (filter === 'ten') return 10;
   else if (filter === 'twenty') return 20;
   else if (filter === 'fifty') return 50;
   else if (filter === 'all') return 5000;
-  throw new Error(`unrecognized filter ${filter}`);
+  else if (!isNaN(filter)) return filter;
+  return null;
 };
 
 const getShowersPagingIndex = function (length, index) {
   return Math.floor((length * Math.abs(index)) / SHOWERS_PAGE);
-};
-
-const getAmphiroCacheKey = function (member, length, index) {
-  const cacheIdx = -1 * getShowersPagingIndex(length, index);
-  return `AMPHIRO,${member},${SHOWERS_PAGE},${cacheIdx}`;
-};
-
-const getMeterCacheKey = function (time) {
-  return `METER,${time.startDate},${time.endDate}`;
-};
-
-const getCacheKey = function (deviceType, ...rest) {
-  if (deviceType === 'AMPHIRO') {
-    if (rest.length < 2) {
-      throw new Error('cant get amphiro cache key without members, length, index');
-    }
-    return getAmphiroCacheKey(...rest);
-  } else if (deviceType === 'METER') {
-    return getMeterCacheKey(...rest);
-  }
-  throw new Error(`deviceType ${deviceType} not supported`);
-};
-
-//TODO: user rest parameters to filter specific cache items instead of all 
-const filterCacheItems = function (cache, deviceType, ...rest) {
-  return Object.keys(cache)
-  .filter(key => !key.startsWith(deviceType))
-  .reduce((p, c) => {
-    const n = { ...p };
-    n[c] = cache[c];
-    return n;
-  }, {});
 };
 
 const uploadFile = function (file, successCb, failureCb) {
@@ -244,16 +198,148 @@ const validatePassword = function (password, confirmPassword) {
   return Promise.resolve();
 };
 
+const normalizeMetric = function (metric) {
+  if (!Array.isArray(metric)) {
+    return [metric, null];
+  }
+  return metric;
+};
+
+const displayMetric = function (value) {
+  const normalized = normalizeMetric(value);
+  return normalized.join(' ');
+};
+
+const displayMetricCSV = function (value) {
+  const normalized = normalizeMetric(value);
+  return normalized[0];
+};
+
+const formatMetric = function (value, metric, unit, maxValue) {
+  switch (metric) {
+    case 'volume':
+    case 'total':
+      switch (unit) {
+        case 'IMPERIAL': 
+          return [Math.round(value * 0.264172 * 10) / 10, 'gal'];
+        default:
+          if (maxValue > 1000) {
+            return [Math.round((value / 1000) * 1000) / 1000, '\u33A5'];
+          }
+          return [Math.round(value * 100) / 100, 'lt'];
+      }
+    case 'energy':
+      if (maxValue > 1000) {
+        return [Math.round((value / 1000) * 100) / 100, 'KWh'];
+      }
+      return [Math.round(value), 'Wh'];
+    case 'temperature':
+      switch (unit) {
+        case 'IMPERIAL':
+          return [Math.round((value * 1.8) + 32), '°F'];
+        default:
+          return [Math.round(value * 10) / 10, '°C'];
+      }
+    case 'duration':
+      return [getFriendlyDuration(value), ''];
+    case 'cost': 
+      return [Math.round(value * 100) / 100, '\u20AC'];
+    default:
+      return [null, null];
+  }
+};
+
+const tableToCSV = function (schema, data) {
+  const fields = schema.filter(field => field.csv !== false);
+  return data.map(row => fields.map(field => displayMetricCSV(row[field.id])).join('%2C'))
+  .reduce((p, c) => [p, c].join('%0A'), fields.map(field => field.id).join(', '));
+};
+
+// Estimates how many bottles/buckets/pools the given volume corresponds to
+// The remaining is provided in quarters
+const volumeToPictures = function (volume) {
+  const div = c => Math.floor(volume / c);
+  const rem = c => Math.floor((4 * (volume % c)) / c) / 4;
+  if (volume < VOLUME_BUCKET) {
+    return {
+      display: 'bottle',
+      items: div(VOLUME_BOTTLE),
+      remaining: rem(VOLUME_BOTTLE),
+    }; 
+  } else if (volume < VOLUME_POOL) {
+    return {
+      display: 'bucket',
+      items: div(VOLUME_BUCKET),
+      remaining: rem(VOLUME_BUCKET),
+    };
+  } 
+  return {
+    display: 'pool',
+    items: div(VOLUME_POOL),
+    remaining: 0,
+  };
+};
+
+const energyToPictures = function (energy) {
+  const div = c => Math.floor(energy / c);
+
+  if (energy < ENERGY_HOUSE) {
+    return {
+      display: 'light-bulb',
+      items: div(ENERGY_BULB),
+    };
+  } else if (energy < ENERGY_CITY) {
+    return {
+      display: 'home-energy',
+      items: div(ENERGY_HOUSE),
+    };
+  }
+  return {
+    display: 'city',
+    items: div(ENERGY_CITY),
+  };
+};
+const getAllMembers = function (members) {
+  if (!Array.isArray(members)) return [];
+  return members
+  .filter(member => member.active || member.index === 0)
+  .sort((a, b) => a.index - b.index);
+};
+
+const memberFilterToMembers = function (filter) {
+  if (filter === 'all') {
+    return [];
+  } else if (!isNaN(filter)) {
+    return [filter];
+  } 
+  return [];
+};
+
+const waterIQToNumeral = function (waterIQ) {
+  return 5 - (String(waterIQ).charCodeAt(0) - 65);
+};
+
+const numeralToWaterIQ = function (num) {
+  if (num < 0 || num > 5) return ' ';
+  return String.fromCharCode((5 - num) + 65);
+};
+
+// http://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript
+const formatBytes = function (bytes, decimals) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1000;
+  const dm = decimals + 1 || 3;
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / (k ** i)).toFixed(dm)) + ' ' + sizes[i];
+};
+
 module.exports = {
   validateEmail,
   flattenMessages,
   getFriendlyDuration,
   getEnergyClass,
-  getMetricMu,
-  getShowerMetricMu,
   showerFilterToLength,
-  getCacheKey,
-  filterCacheItems,
   getShowersPagingIndex,
   debounce,
   uploadFile,
@@ -262,4 +348,15 @@ module.exports = {
   throwServerError,
   formatMessage,
   validatePassword,
+  tableToCSV,
+  energyToPictures,
+  volumeToPictures, 
+  getAllMembers,
+  memberFilterToMembers,
+  waterIQToNumeral,
+  numeralToWaterIQ,
+  formatBytes,
+  formatMetric,
+  normalizeMetric,
+  displayMetric,
 };

@@ -22,6 +22,7 @@ const callAPI = function (url, data = {}, method = 'POST') {
         .then(json => ({ ...json, csrf: response.headers.get('X-CSRF-TOKEN') }))
         .catch((error) => { 
           console.error('Error parsing response:', error, url); 
+          throw error;
         })
   );
 };

@@ -2,6 +2,7 @@ const types = require('../constants/ActionTypes');
 
 const initialState = {
   allCommons: [],
+  favorite: null,
   synced: false,
   pagingIndex: 0,
   searchFilter: '',
@@ -44,6 +45,12 @@ const commons = function (state = initialState, action) {
       return {
         ...state,
         count: action.count,
+      };
+
+    case types.COMMONS_SET_FAVORITE:
+      return {
+        ...state,
+        favorite: action.key,
       };
 
     case types.USER_RECEIVED_LOGOUT:

@@ -1,13 +1,11 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
-const { Link } = require('react-router');
 
 const MainSection = require('../../../layout/MainSection');
 const FormFields = require('./FormFields');
-const LocaleSwitcher = require('../../../LocaleSwitcher');
 
-const { PNG_IMAGES } = require('../../../../constants/HomeConstants');
+const { PNG_IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 
 function EditMembers(props) {
@@ -39,7 +37,7 @@ function EditMembers(props) {
                         marginRight: 10,
                         border: '1px #2D3580 solid',
                       }} 
-                      src={`data:image/png;base64,${member.photo}`} 
+                      src={`${BASE64}${member.photo}`} 
                       alt="member" 
                     />
                     :
@@ -54,7 +52,7 @@ function EditMembers(props) {
                       alt="member" 
                     />
                     }
-                    {member.name || 'No name'}
+                    {member.name || _t('forms.noname')}
                   </h3> 
                 }
               >
@@ -77,20 +75,29 @@ function EditMembers(props) {
                   />
             
                   <div>
-                    <bs.ButtonInput 
+                    <button
                       type="submit" 
+                      className="btn"
                       style={{ float: 'right', marginRight: 10 }} 
-                      value={_t('forms.submit')} 
-                    />
-                    <bs.Button 
-                      style={{ float: 'right', marginRight: 10 }} 
-                      bsStyle="danger"
-                      onClick={() => { 
-                        confirmDeleteMember(memberForm);
-                      }}
                     >
-                      Delete
-                    </bs.Button>
+                      <FormattedMessage id="forms.update" />
+                    </button>
+                    {
+                      member.index !== 0 ?
+                        <button 
+                          style={{ float: 'right', marginRight: 10 }} 
+                          className="btn"
+                          bsStyle="danger"
+                          onClick={(e) => { 
+                            e.preventDefault();
+                            confirmDeleteMember(memberForm);
+                          }}
+                        >
+                          <FormattedMessage id="forms.delete" />
+                        </button>
+                        :
+                          <span />
+                   }
                   </div>
               </form>
             </div>

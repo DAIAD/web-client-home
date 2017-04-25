@@ -1,62 +1,93 @@
 const React = require('react');
-const { FormattedDate } = require('react-intl');
+const { FormattedDate, FormattedMessage } = require('react-intl');
+const DisplayMetric = require('../components/helpers/DisplayMetric');
+
 const { IMAGES } = require('../constants/HomeConstants');
 
 const meter = [
   {
-    id: 'difference',
-    name: 'Volume',
-    value: (value, row) => 
-      <span style={{ fontSize: '2.5em' }}>
-        {value}
-        <span style={{ fontSize: '0.6em' }}> lt</span>
-      </span>,
+    id: 'volume',
+    name: <FormattedMessage id="history.volume" />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   {
     id: 'comparison',
     name: '',
+    csv: false,
     value: (value, row) => {
-      const { min, max } = row;
       if (row.percentDiff == null) {
         return (
           <span>
             <i className="dash" />
-            &nbsp;
-            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
-            { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
           </span>
         );
       } else if (row.percentDiff < 0) {
         return (
           <span>
-            <i className="fa fa-arrow-down green" />
-            &nbsp;
-            { min ? <span style={{ fontWeight: 'bold', color: '#7AD3AB' }}>min</span> : <i /> }
+            <img 
+              src={`${IMAGES}/better.svg`} 
+              style={{ height: 25 }}
+              alt="better" 
+            />
           </span>
         );
       }
       return (
         <span>
-          <i className="fa fa-arrow-up red" />
-          &nbsp;
-          { max ? <span style={{ fontWeight: 'bold', color: '#CD4D3E' }}>max</span> : <i /> }
+          <img 
+            src={`${IMAGES}/worse.svg`} 
+            style={{ height: 25 }}
+            alt="worse" 
+          />
         </span>
       );
     },
   },
   {
-    id: 'member',
-    name: 'User',
-    icon: 'user',
+    id: 'min-max',
+    name: '', 
+    csv: false,
+    value: (value, row) => {
+      const { min, max } = row;
+      if (min) {
+        return (
+          <span>
+            <i className="fa fa-check green " />&nbsp;&nbsp;
+            <FormattedMessage 
+              id="history.consumption-min-short" 
+              values={{ period: row.period }} 
+            />
+          </span>
+        );
+      } else if (max) {
+        return (
+          <span>
+            <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
+            <FormattedMessage 
+              id="history.consumption-max-short" 
+              values={{ period: row.period }} 
+            />
+          </span>
+        );
+      }
+      return <span />;
+    },
   },
   {
     id: 'date',
-    name: 'Date',
+    name: <FormattedMessage id="common.date" />,
+    csv: false,
     icon: 'calendar',
+  },
+  {
+    id: 'timestamp',
+    name: '',
+    value: () => null,
   },
   {
     id: 'showMore',
     name: '',
+    csv: false,
     value: () => 
       <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
 
@@ -66,78 +97,161 @@ const meter = [
 const amphiro = [
   {
     id: 'volume',
-    name: 'Volume',
-    value: (value, row) => 
-      <span style={{ fontSize: '2.5em' }}>
-        {value}
-        <span style={{ fontSize: '0.6em' }}> lt</span>
-      </span>,
+    name: <FormattedMessage id="history.volume" />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   {
     id: 'comparison',
     name: '',
+    csv: false,
     value: (value, row) => {
       if (row.percentDiff == null) {
         return <i className="dash" />;
       } else if (row.percentDiff < 0) {
-        return <i className="fa fa-arrow-down green" />;
+        return ( 
+          <img 
+            src={`${IMAGES}/better.svg`} 
+            style={{ height: 25 }}
+            alt="better" 
+          />
+        );
       }
-      return <i className="fa fa-arrow-up red" />;
+      return ( 
+          <img 
+            src={`${IMAGES}/worse.svg`} 
+            style={{ height: 25 }}
+            alt="worse" 
+          />
+        );
     },
   },
   {
     id: 'member',
-    name: 'User',
+    name: <FormattedMessage id="common.user" />,
     icon: 'user',
   },
   {
-    id: 'timestamp',
-    name: 'Date',
+    id: 'date',
+    name: <FormattedMessage id="common.date" />,
+    csv: false,
     icon: 'calendar',
-    value: value => <FormattedDate value={value} />,
   },
   {
-    id: 'devName',
-    name: 'Device',
+    id: 'timestamp',
+    name: '',
+    value: () => null,
   },
   {
-    id: 'friendlyDuration',
-    name: 'Dur',
+    id: 'deviceName',
+    name: <FormattedMessage id="history.device" />,
+  },
+  {
+    id: 'duration',
+    name: '',
     icon: 'clock-o',
+    value: value => <DisplayMetric value={value} />,
   },
   {
     id: 'energyClass',
-    name: 'En',
+    name: '',
     icon: 'flash',
   },
   {
     id: 'temperature',
-    name: 'Temp',
+    name: '',
     icon: 'temperature',
-    value: (value, row) => `${value} ºC`
+    value: value => <DisplayMetric value={value} />,
   },
   {
-    id: 'realtime',
-    name: 'Real',
-    value: (value, row) => row.history ? 
-      <i />
+    id: 'real',
+    name: <FormattedMessage id="history.real" />,
+    value: (value, row) => value ? 
+      <i className="fa fa-check" />
       :
-      <i className="fa fa-check" />,
+      <i />,
   },
   {
     id: 'id',
-    name: 'Id',
+    name: '#',
     //value: (value, row) => `${value}`,
   },
   {
     id: 'showMore',
     name: '',
+    csv: false,
     value: () => 
       <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
   }
 ];
 
+const breakdown = [
+  {
+    id: 'title',
+    name: <FormattedMessage id="history.breakdownUse" />,
+    value: (value, row) => (
+      <span style={{ fontSize: '1.5em' }}>
+        <img src={`${IMAGES}/${row.id}.svg`} alt={value} style={{ marginRight: 10 }} />
+        <span>{value}</span>
+      </span>
+    ),
+  },
+  {
+    id: 'volume',
+    name: <FormattedMessage id="history.volume" />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
+  },
+  {
+    id: 'date',
+    name: <FormattedMessage id="common.date" />,
+    icon: 'calendar',
+  },
+  {
+    id: 'showMore',
+    name: '',
+    csv: false,
+    value: () => 
+      <img src={`${IMAGES}/arrow-big-right.svg`} alt="details" />,
+  },
+];
+
+const forecast = [
+  {
+    id: 'forecast',
+    name: <FormattedMessage id="history.forecasted" />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
+  },
+  ...meter,
+];
+
+const wateriq = [
+  {
+    id: 'wateriq',
+    name: <FormattedMessage id="history.wateriq" />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
+  },
+  ...meter,
+];
+
+const pricing = [
+  {
+    id: 'cost',
+    name: <FormattedMessage id="history.cost" />,
+    icon: 'euro',
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
+  },
+  {
+    id: 'total',
+    name: <FormattedMessage id="history.total" />,
+    value: value => <DisplayMetric className="table-highlight" value={value} />,
+  },
+  ...meter,
+];
+
 module.exports = {
   meter,
   amphiro,
+  forecast,
+  breakdown,
+  wateriq,
+  pricing,
 };

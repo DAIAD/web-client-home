@@ -2,13 +2,15 @@ const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage } = require('react-intl');
 
+const Dropdown = require('../../../helpers/Dropdown');
+
 const { uploadFile } = require('../../../../utils/general');
-const { PNG_IMAGES } = require('../../../../constants/HomeConstants');
+const { PNG_IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 function MemberFormFields(props) {
   const { _t, errors, member, fetchProfile, updateMemberForm, setError, dismissError, goTo } = props;
   return (
-    <div> 
+    <div className="member-form-fields"> 
       { 
         member.photo ? 
           <img 
@@ -19,7 +21,7 @@ function MemberFormFields(props) {
               width: 100,
               border: '2px #2D3580 solid',
             }} 
-            src={`data:image/png;base64,${member.photo}`} 
+            src={`${BASE64}${member.photo}`} 
             alt="member" 
           />
           :
@@ -55,7 +57,7 @@ function MemberFormFields(props) {
       <bs.Input 
         type="text" 
         label={_t('member.name')}
-        placeholder="Member name"
+        placeholder={_t('member.placeholder-name')}
         onChange={(e) => { updateMemberForm({ name: e.target.value }); }}
         value={member.name}
       />
@@ -63,45 +65,22 @@ function MemberFormFields(props) {
       <bs.Input 
         type="number"
         min="0"
-        placeholder="Member age"
+        placeholder={_t('member.placeholder-age')}
         label={_t('member.age')}
         onChange={(e) => { updateMemberForm({ age: parseInt(e.target.value, 0) }); }}
         value={member.age}
       /> 
-
-
-      <div className="form-group">
-        <label 
-          className="control-label col-md-3" 
-          style={{ paddingLeft: 0 }} 
-          htmlFor="gender-switcher"
-        >
-          <span><FormattedMessage id="member.gender" /></span>
-        </label>
-
-        <bs.DropdownButton
-          title={member.gender ? 
-            _t(`member.${member.gender}`) 
-            : 
-            'Select gender'}
-          id="gender-switcher"
-          onSelect={(e, val) => { 
-            updateMemberForm({ gender: val });
-          }}
-        >
-          {
-            ['MALE', 'FEMALE'].map(gender => 
-              <bs.MenuItem 
-                key={gender} 
-                eventKey={gender} 
-                value={gender}
-              >
-                { _t(`member.${gender}`) }
-              </bs.MenuItem>
-              )
-          }	
-        </bs.DropdownButton>
-      </div>
+        
+      <Dropdown
+        _t={_t}
+        id={`member-gender-${member.index}`}
+        label="member.gender"
+        defaultValue="FEMALE"
+        titlePrefix="member"
+        value={member.gender}
+        update={val => updateMemberForm({ gender: val })}
+        options={['FEMALE', 'MALE']}
+      />
     </div>
   );
 }

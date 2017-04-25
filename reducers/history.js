@@ -1,11 +1,12 @@
 const types = require('../constants/ActionTypes');
 
 const { updateOrAppendToSession } = require('../utils/sessions');
-const { thisYear } = require('../utils/time');
+const { getMonth } = require('../utils/time');
 
 const initialState = {
-  filter: 'difference',
-  timeFilter: 'year',
+  filter: 'volume',
+  timeFilter: 'month',
+  time: getMonth(),
   sortFilter: 'timestamp',
   sortOrder: 'desc',
   activeDevice: [],
@@ -13,17 +14,20 @@ const initialState = {
   activeSessionFilter: 'volume',
   activeSession: null,
   synced: false,
-  comparison: null,
+  comparisons: [],
   data: [],
-  comparisonData: [],
-  time: thisYear(),
   showerIndex: 0,
   forecasting: false,
   pricing: false,
-  forecastData: [],
+  forecastData: {
+    sessions: []
+  },
   editShower: false,
   memberFilter: 'all',
   mode: 'stats',
+  priceBrackets: [],
+  waterBreakdown: [],
+  waterIQData: [],
 };
  
 const history = function (state = initialState, action) {
@@ -32,10 +36,30 @@ const history = function (state = initialState, action) {
       return Object.assign({}, state, {
         data: action.sessions
       });
-    
+
+    case types.HISTORY_SET_COMPARISONS:
+      return Object.assign({}, state, {
+        comparisons: action.comparisons
+      });
+
+    case types.HISTORY_CLEAR_COMPARISONS:
+      return Object.assign({}, state, {
+        comparisons: [], 
+      });
+
+    case types.HISTORY_ADD_COMPARISON: 
+      return Object.assign({}, state, {
+        comparisons: [...state.comparisons, { id: action.id, sessions: [] }],
+      });
+
+    case types.HISTORY_REMOVE_COMPARISON:
+      return Object.assign({}, state, {
+        comparisons: state.comparisons.filter(comparison => comparison.id !== action.id),
+      });
+  
     case types.HISTORY_SET_COMPARISON_SESSIONS:
       return Object.assign({}, state, {
-        comparisonData: action.sessions
+        comparisons: state.comparisons.map(comparison => comparison.id === action.id ? { ...comparison, sessions: action.sessions } : comparison),
       });
 
     case types.HISTORY_SET_SESSION: {
@@ -95,12 +119,7 @@ const history = function (state = initialState, action) {
       return Object.assign({}, state, {
         activeSession: null
       });
-
-    case types.HISTORY_SET_COMPARISON:
-      return Object.assign({}, state, {
-        comparison: action.comparison
-      });
-    
+   
     case types.HISTORY_SET_SORT_FILTER:
       return Object.assign({}, state, {
         sortFilter: action.filter
@@ -144,6 +163,21 @@ const history = function (state = initialState, action) {
     case types.HISTORY_SET_MODE:
       return Object.assign({}, state, {
         mode: action.mode,
+      });
+
+    case types.HISTORY_SET_PRICE_BRACKETS:
+      return Object.assign({}, state, {
+        priceBrackets: action.brackets,
+      });
+
+    case types.HISTORY_SET_BREAKDOWN_LABELS:
+      return Object.assign({}, state, {
+        waterBreakdown: action.labels,
+      });
+
+    case types.HISTORY_SET_WATERIQ_SESSIONS:
+      return Object.assign({}, state, {
+        waterIQData: action.sessions,
       });
 
     case types.USER_RECEIVED_LOGOUT:

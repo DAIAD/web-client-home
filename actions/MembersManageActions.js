@@ -58,9 +58,10 @@ const editMember = function (data) {
     const { index } = data;
     const { members } = getState().user.profile.household;
 
-    if (!index || index === -1) {
+    if (index == null || index === -1) {
       return dispatch(addMember(data));
     }
+
     const newMembers = members.map(m => m.index === index ? { ...m, ...data, active: true } : m);
 
     return dispatch(saveMembers(newMembers));
@@ -82,9 +83,9 @@ const clickConfirmMember = function () {
     const { item, mode } = getState().forms.confirm;
 
     if (mode === 'create') {
+      dispatch(push('/settings/members'));
       dispatch(addMember(item))
-      .then(() => dispatch(fetchProfile()))
-      .then(() => dispatch(push('/settings/members')));
+      .then(() => dispatch(fetchProfile()));
     } else if (mode === 'update') {
       dispatch(editMember(item))
       .then(() => dispatch(fetchProfile()));

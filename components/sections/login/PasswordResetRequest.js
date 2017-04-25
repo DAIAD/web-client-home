@@ -26,7 +26,7 @@ const PasswordResetRequestForm = React.createClass({
             type="text" 
             defaultValue={username}
             onChange={(e) => { this.username = e.target.value; }}
-            placeholder={_t('loginForm.placehoder.username')} 
+            placeholder={_t('loginForm.placeholder.username')} 
             className="form-control" 
           />
         </div>
@@ -37,7 +37,12 @@ const PasswordResetRequestForm = React.createClass({
           <FormattedMessage id="loginForm.button.reset-request" />
         </button> 
         <div className="link-reset"> 
-          <a onClick={goToLogin}>Back</a>
+          <button
+            className="btn-a" 
+            onClick={goToLogin}
+          >
+            <FormattedMessage id="forms.back" />
+          </button>
         </div>
       </form>
     );

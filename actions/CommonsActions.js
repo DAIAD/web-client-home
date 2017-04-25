@@ -27,6 +27,13 @@ const setSessions = function (sessions) {
   };
 };
 
+const appendSessions = function (sessions) {
+  return {
+    type: types.COMMONS_APPEND_SESSIONS,
+    sessions,
+  };
+};
+
 const setDataSynced = function () {
   return {
     type: types.COMMONS_SET_DATA_SYNCED,
@@ -87,22 +94,9 @@ const setTime = function (time) {
  * @param {Array} deviceType - Active device type. One of AMPHIRO, METER  
  */
 const setActiveDeviceType = function (deviceType) {
-  return function (dispatch, getState) {
-    dispatch({
-      type: types.COMMONS_SET_ACTIVE_DEVICE_TYPE,
-      deviceType,
-    });
-    const devices = getDeviceKeysByType(getState().user.profile.devices, deviceType);
-    
-    // set default options when switching
-    if (deviceType === 'AMPHIRO') {
-      dispatch(setMetricFilter('volume'));
-      dispatch(setTimeFilter('ten'));
-    } else if (deviceType === 'METER') {
-      dispatch(setMetricFilter('difference'));
-      dispatch(setTimeFilter('year'));
-      dispatch(setTime(getTimeByPeriod('year')));
-    }
+  return {
+    type: types.COMMONS_SET_ACTIVE_DEVICE_TYPE,
+    deviceType,
   };
 };
 
@@ -131,7 +125,6 @@ const setSelectedMembers = function (members) {
     members,
   };
 };
-
 
 const setActive = function (key) {
   return {
@@ -261,7 +254,8 @@ const fetchData = function () {
 
     const { selected: selectedMembers } = members;
     const active = myCommons.find(common => common.key === activeKey);
-    
+
+    const devType = activeDeviceType === 'AMPHIRO' ? 'AMPHIRO_TIME' : activeDeviceType;
     if (!active) return;
 
     const common = {
@@ -272,7 +266,7 @@ const fetchData = function () {
 
     const myself = {
       type: 'USER',
-      label: 'Me',
+      label: 'common.me',
       users: [getState().user.profile.key],
     };
 
@@ -282,33 +276,42 @@ const fetchData = function () {
       users: [user.key],
     }));
 
-    dispatch(QueryActions.queryData({ 
-      time,
-      source: activeDeviceType,
-      population: [
-        myself,
-        common,
-        ...selected,
-      ],
-      metrics: ['AVERAGE'],
-    }))
-    .then((dataRes) => { 
-      dispatch(setSessions(dataRes.meters));
-      dispatch(setDataSynced());
-    })
-    .catch((error) => { 
-      console.error('Caught error in commons data fetch', error); 
-      dispatch(setDataSynced());
+    const populations = [
+      myself,
+      common,
+      ...selected,
+    ];
+
+    dispatch(setSessions([]));
+    
+    // serialize query to take advantage of cache (?)
+    populations.forEach((population) => {
+      dispatch(QueryActions.queryDataAverage({ 
+        time,
+        source: activeDeviceType,
+        population: [population],
+      }))
+      .then((series) => { 
+        const sessions = series.map(s => ({ 
+          label: population.label,
+          sessions: s,
+        }));
+        dispatch(appendSessions(sessions));
+        dispatch(setDataSynced());
+      })
+      .catch((error) => { 
+        console.error('Caught error in commons data fetch', error); 
+        dispatch(setDataSynced());
+      });
     });
   };
 };
-
-const setDataQueryAndFetch = function (query) {
+const setQuery = function (query) {
   return function (dispatch, getState) {
     if (!query) return;
-    const { timeFilter, time, deviceType, active, members } = query;
+    const { period, time, deviceType, active, members } = query;
     
-    if (timeFilter != null) dispatch(setTimeFilter(timeFilter));
+    if (period != null) dispatch(setTimeFilter(period));
 
     if (time != null) dispatch(updateTime(time));
     if (deviceType != null) dispatch(setActiveDeviceType(deviceType));
@@ -320,8 +323,20 @@ const setDataQueryAndFetch = function (query) {
       dispatch(searchCommonMembers());
     }
     if (members != null) dispatch(setSelectedMembers(members));
+  };
+};
 
+const setDataQueryAndFetch = function (query) {
+  return function (dispatch, getState) {
+    dispatch(setQuery(query));
     dispatch(fetchData());
+  };
+};
+
+const linkToCommons = function (query) {
+  return function (dispatch, getState) {
+    dispatch(setQuery(query));
+    dispatch(push('commons'));
   };
 };
 
@@ -399,4 +414,5 @@ module.exports = {
   setDataQueryAndFetch,
   fetchData,
   getMyCommons,
+  linkToCommons,
 };

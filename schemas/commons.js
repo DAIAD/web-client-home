@@ -5,16 +5,16 @@ const { IMAGES } = require('../constants/HomeConstants');
 const commons = [
   {
     id: 'key',
-    name: 'Key',
+    //name: <FormattedMessage id="commons.key" />,
     //value: () => '',
   },
   {
     id: 'name',
-    name: 'Name',
+    name: <FormattedMessage id="commonsManage.name" />,
   },
   {
     id: 'membersCount',
-    name: '# members',
+    name: <FormattedMessage id="commonsManage.members" />,
   },
   {
     id: 'description',
@@ -42,15 +42,15 @@ const allCommons = [
   },
   {
     id: 'name',
-    name: 'Name',
+    name: <FormattedMessage id="commonsManage.name" />,
   },
   {
     id: 'size',
-    name: 'Members',
+    name: <FormattedMessage id="commonsManage.members" />,
   },
   {
     id: 'description',
-    name: 'Description',
+    name: <FormattedMessage id="commonsManage.description" />,
   },
   {
     id: 'createdOn',
@@ -72,20 +72,20 @@ const members = [
   },
   {
     id: 'ranking',
-    name: 'Ranking',
+    name: <FormattedMessage id="commons.ranking" />,
     //value: (value, row) => `#${value}`, 
   },
   {
     id: 'firstname',
-    name: 'First name',
+    name: <FormattedMessage id="profile.firstname" />,
   },
   {
     id: 'lastname',
-    name: 'Last name',
+    name: <FormattedMessage id="profile.lastname" />,
   },
   {
     id: 'joinedOn',
-    name: 'Member since',
+    name: <FormattedMessage id="commons.memberSince" />,
     value: value => (<FormattedDate value={value} />),
   },
   /*
@@ -97,7 +97,7 @@ const members = [
   */
   {
     id: 'selected',
-    name: 'Chart',
+    name: <FormattedMessage id="common.chart" />,
     value: value => value ? <div style={{ textAlign: 'left', fontSize: '0.9em' }}><i style={{ margin: 0 }} className="checkbox fa fa-check" /></div> : <i />,
   },
   /*

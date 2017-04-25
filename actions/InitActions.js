@@ -10,9 +10,11 @@ const LocaleActions = require('./LocaleActions');
 const DashboardActions = require('./DashboardActions');
 const HistoryActions = require('./HistoryActions');
 const CommonsActions = require('./CommonsActions');
+const CommonsManageActions = require('./CommonsManageActions');
 const FormActions = require('./FormActions');
 const { letTheRightOneIn } = require('./UserActions');
-const { fetchInitial: fetchAllMessages } = require('./MessageActions');
+const NotificationActions = require('./NotificationActions');
+
 const { getMeterCount } = require('../utils/device');
 const { filterObj } = require('../utils/general');
 
@@ -28,6 +30,21 @@ const setReady = function () {
   };
 };
 
+const linkToSection = function (section, options) {
+  return function (dispatch, getState) {
+    switch (section) {
+      case 'history':
+        return dispatch(HistoryActions.linkToHistory(options));
+      case 'notifications': 
+        return dispatch(NotificationActions.linkToNotification(options));
+      case 'commons':
+        return dispatch(CommonsActions.linkToCommons(options));
+      default:
+        return Promise.resolve();
+    }
+  };
+};
+
 
 /**
  * Call all necessary actions to initialize app with profile data 
@@ -35,9 +52,8 @@ const setReady = function () {
  * @param {Object} profile - profile object as returned from server
  */
 const initHome = function (profile) {
-  return function (dispatch, getState) {
-    dispatch(fetchAllMessages());
-
+  return function (dispatch, getState) { 
+    dispatch(NotificationActions.fetchInitial());
     if (profile.configuration) {
       const configuration = JSON.parse(profile.configuration);
       if (configuration.widgets) {
@@ -46,14 +62,16 @@ const initHome = function (profile) {
       if (configuration.layout) {
         dispatch(DashboardActions.updateLayout(configuration.layout, false));
       }
+      if (configuration.favoriteCommon) {
+        dispatch(CommonsManageActions.setFavorite(configuration.favoriteCommon));
+        dispatch(CommonsActions.setActive(configuration.favoriteCommon));
+      }
     }
-     
+
     if (getMeterCount(profile.devices) === 0) {
       dispatch(HistoryActions.switchActiveDeviceType('AMPHIRO'));
       dispatch(DashboardActions.setDeviceType('AMPHIRO'));
-    } else {
-      dispatch(HistoryActions.switchActiveDeviceType('METER'));
-    }
+    } 
 
     const profileForm = filterObj(profile, [
       'firstname', 
@@ -71,22 +89,23 @@ const initHome = function (profile) {
     
     dispatch(FormActions.setForm('profileForm', profileForm));
 
-    const fetchCommonsData = dispatch(CommonsActions.getMyCommons())
-    .then(commons => Array.isArray(commons) && commons.length > 0 ? 
-          dispatch(CommonsActions.setActive(commons[0].key)) 
-          : null);
-
-    const fetchWidgetsData = dispatch(DashboardActions.fetchAllWidgetsData());
-
-    return Promise.all([fetchCommonsData, fetchWidgetsData])
-    .then(() => {
+    if (profile.locale) {
       dispatch(LocaleActions.setLocale(profile.locale));
-      return Promise.resolve({ success: true, profile });
-    });
+    }
+
+    // need to perform following actions sequentially 
+    return [
+      HistoryActions.initPriceBrackets(),
+      HistoryActions.initWaterBreakdown(),
+      CommonsActions.getMyCommons(),
+      DashboardActions.fetchAllWidgetsData(),
+    ]
+    .reduce((prev, curr) => prev.then(() => dispatch(curr)), Promise.resolve());
   };
 };
 
 module.exports = {
   initHome,
   setReady,
+  linkToSection,
 };

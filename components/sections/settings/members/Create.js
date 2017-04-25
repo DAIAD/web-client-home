@@ -1,4 +1,5 @@
 const React = require('react');
+const { FormattedMessage } = require('react-intl');
 const bs = require('react-bootstrap');
 const MemberFormFields = require('./FormFields');
 
@@ -33,7 +34,7 @@ const AddMember = React.createClass({
           onClick={this.submit}
           style={{ float: 'right' }} 
         >
-          Create
+          <FormattedMessage id="forms.create" />
         </bs.Button>
       </form>
     );

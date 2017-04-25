@@ -1,79 +1,30 @@
 const moment = require('moment');
-const { convertGranularityToPeriod, getLowerGranularityPeriod, timeToBuckets } = require('./time');
-
-
-const getTimeLabelByGranularity = function (timestamp, granularity, intl) {
-  if (granularity === 4) {
-    return intl.formatMessage({ id: `months.${moment(timestamp).get('month')}` }) + 
-      ' ' +
-      moment(timestamp).format('YYYY'); 
-  } else if (granularity === 3) {
-    return intl.formatMessage({ id: 'periods.week' }) + 
-      ' ' +
-      moment(timestamp).get('isoweek') + 
-      ', ' +
-      intl.formatMessage({ id: `months.${moment(timestamp).get('month')}` }) + 
-      ' ' +
-      moment(timestamp).format('YYYY');
-  } else if (granularity === 2) {
-    return intl.formatMessage({ id: `weekdays.${moment(timestamp).get('day')}` }) + 
-      ' ' +
-      moment(timestamp).format(' DD / MM / YYYY');
-  }
-  return intl.formatMessage({ id: `weekdays.${moment(timestamp).get('day')}` }) + 
-    ' ' +
-    moment(timestamp).format('DD/ MM/ YYYY hh:mm a');
-};
-
-const getTimeLabelByGranularityShort = function (timestamp, granularity, intl) {
-  if (granularity === 4) {
-    return intl.formatMessage({ 
-      id: `months.${moment(timestamp).get('month')}`,
-    }); 
-  } else if (granularity === 3) {
-    return intl.formatMessage({ id: 'periods.week' }) + 
-      ' ' +
-      moment(timestamp).get('isoweek');
-  } else if (granularity === 2) {
-    return intl.formatMessage({ 
-      id: `weekdays.${moment(timestamp).get('day')}`,
-    });
-  } 
-  return moment(timestamp).format('hh:mm');
-};
+const { convertGranularityToPeriod, getLowerGranularityPeriod, getTimeLabelByGranularityShort, timeToBuckets } = require('./time');
+const { formatMetric, displayMetric, showerFilterToLength } = require('./general');
+const { BRACKET_COLORS } = require('../constants/HomeConstants');
 
 const getChartMeterCategories = function (time) {
   return timeToBuckets(time);
 };
 
-const getChartMeterCategoryLabels = function (xData, time, intl) {
-  if (!time || time.granularity == null || !intl) return [];
-  return xData.map(t => getTimeLabelByGranularityShort(t, time.granularity, intl));
+const getChartMeterCategoryLabels = function (xData, granularity, period, intl) {
+  return xData.map(t => getTimeLabelByGranularityShort(t, granularity, period, intl));
 };
 
 const getChartAmphiroCategories = function (period, last) {
-  let length = 0;
-  if (period === 'ten') {
-    length = 10;
-  } else if (period === 'twenty') {
-    length = 20;
-  } else if (period === 'fifty') {
-    length = 50;
-  } else if (period === 'all') {
+  let length = showerFilterToLength(period);
+  if (period === 'all') {
     length = last;
   } 
   return Array.from({ length }, (v, i) => `${i + 1}`);
 };
 
-// TODO: have to make sure data is ALWAYS fetched in order of ascending ids 
-// for amphiro, ascending timestamps for meters
-
-const getChartAmphiroData = function (sessions, categories) {
+const mapAmphiroDataToChart = function (sessions, categories, filter) {
   if (!Array.isArray(sessions) || !Array.isArray(categories)) {
     throw new Error('Cant\'t create chart. Check provided data and category', sessions, categories);
   }
   if (sessions.length === 0) return [sessions[0]];
-  //return categories.map((v, i) => sessions.find((s, idx, arr) => (s.id - arr[0].id) === i) || {});
+  
   const sessionsNormalized = [
     ...Array.from({ length: categories.length - sessions.length }), 
     ...sessions
@@ -81,7 +32,16 @@ const getChartAmphiroData = function (sessions, categories) {
   return categories.map((v, i) => sessionsNormalized[i]);
 };
 
-const getChartMeterData = function (sessions, categories, time) {
+// TODO: have to make sure data is ALWAYS fetched in order of ascending ids 
+// for amphiro, ascending timestamps for meters
+
+const getChartAmphiroData = function (sessions, categories, filter) {
+  return mapAmphiroDataToChart(sessions, categories, filter)
+  .map(x => x ? x[filter] : null)
+  .map(x => Math.round(100 * x) / 100);
+};
+
+const mapMeterDataToChart = function (sessions, categories, time) {
   const period = getLowerGranularityPeriod(convertGranularityToPeriod(time.granularity));
   return categories.map((t) => {
     const bucketSession = sessions.find((session) => {
@@ -106,12 +66,43 @@ const getChartMeterData = function (sessions, categories, time) {
   });
 };
 
+const getChartMeterData = function (sessions, categories, time, filter) {
+  return mapMeterDataToChart(sessions, categories, time)
+  .map(x => x && x[filter] !== null ? 
+         Math.round(100 * x[filter]) / 100 : null);
+};
+
+const getChartPriceBrackets = function (xCategories, brackets, unit, intl) {
+  const max = Math.max(...brackets.map(b => b.minVolume));
+  return Array.isArray(brackets) ? 
+    brackets
+    .filter(bracket => bracket.maxVolume != null)
+    .map((bracket, i) => ({
+      name: `${displayMetric(formatMetric(bracket.minVolume, 'volume', unit, max))} to ${displayMetric(formatMetric(bracket.maxVolume, 'volume', unit, max))}: ${displayMetric(formatMetric(bracket.price, 'cost', unit))}`,
+      data: xCategories.map(() => formatMetric(bracket.maxVolume, 'total', unit)[0]),
+      label: false,
+      lineType: 'dashed',
+      symbol: 'none',
+      color: BRACKET_COLORS[i],
+      fill: 0,
+    }))
+    : [];
+};
+
+const colorFormatterSingle = function (colors) {
+  return function (name, data, idx) {
+    return colors.find((c, i, arr) => (idx % arr.length) === i);
+  };
+};
+
 module.exports = {
+  mapMeterDataToChart,
+  mapAmphiroDataToChart,
   getChartAmphiroData,
   getChartMeterData,
   getChartMeterCategories,
   getChartMeterCategoryLabels,
   getChartAmphiroCategories,
-  getTimeLabelByGranularity,
-  getTimeLabelByGranularityShort,
+  getChartPriceBrackets,
+  colorFormatterSingle,
 };

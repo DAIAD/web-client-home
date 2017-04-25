@@ -4,12 +4,12 @@ const { FormattedMessage, FormattedDate } = require('react-intl');
 const Select = require('react-select');
 
 const { uploadFile } = require('../../../../utils/general');
-const { IMAGES } = require('../../../../constants/HomeConstants');
+const { IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
 
 function CommonForm(props) {
-  const { values, onChange, disabled, errors } = props;
+  const { _t, values, onChange, disabled, errors } = props;
   return (
-    <div>
+    <div className="commons-form-fields">
       { 
         values.image ? 
           <img 
@@ -20,7 +20,7 @@ function CommonForm(props) {
               width: 100,
               border: '2px #2D3580 solid',
             }} 
-            src={`data:image/png;base64,${values.image}`} 
+            src={`${BASE64}${values.image}`} 
             alt="commons" 
           />
           :
@@ -59,16 +59,16 @@ function CommonForm(props) {
       <hr />
       <bs.Input 
         type="text"
-        placeholder="Common name..."
-        label="Name"
+        placeholder={_t('commonsManage.placeholder-name')}
+        label={_t('commonsManage.name')}
         disabled={disabled}
         onChange={(e) => { onChange({ name: e.target.value }); }}
         value={values.name}
       />
       <bs.Input 
         type="textarea"
-        placeholder="Common description..."
-        label="Description"
+        placeholder={_t('commonsManage.placeholder-description')}
+        label={_t('commonsManage.description')}
         disabled={disabled}
         onChange={(e) => { onChange({ description: e.target.value }); }}
         value={values.description}

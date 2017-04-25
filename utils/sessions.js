@@ -1,64 +1,88 @@
-const { getFriendlyDuration, getEnergyClass, energyToPower } = require('./general');
+const { getFriendlyDuration, getEnergyClass, formatMetric } = require('./general');
 const { getDeviceTypeByKey, getDeviceNameByKey } = require('./device');
-const { getTimeLabelByGranularity } = require('./chart');
-const { VOLUME_BOTTLE, VOLUME_BUCKET, VOLUME_POOL, ENERGY_BULB, ENERGY_HOUSE, ENERGY_CITY, SHOWERS_PAGE } = require('../constants/HomeConstants');
+const { getTimeLabelByGranularity, getPeriodTimeLabel } = require('./time');
 
-// Returns sessions for AMPHIRO/METER given the DATA API response
-const getDataSessions = function (devices, data) {
-  if (!data) return [];
-  
-  const devType = getDeviceTypeByKey(devices, data.deviceKey);
-  
-  if (devType === 'AMPHIRO') {
-    return data.sessions;
-  } else if (devType === 'METER') {
-    return data.values;
-  }
-  return [];
+const { SHOWERS_PAGE } = require('../constants/HomeConstants');
+
+const getSessionsCount = function (data) {
+  return data.map(dev => dev.sessions.length).reduce((p, c) => p + c, 0);
 };
 
-const getSessionsCount = function (devices, data) {
-  return data.map(dev => getDataSessions(devices, dev).length).reduce((p, c) => p + c, 0);
+
+const calculateIndexes = function (sessions) { 
+  return sessions.map((session, idx, array) => ({
+    ...session, 
+    prev: array[idx + 1] ? 
+    [
+      array[idx + 1].device, 
+      array[idx + 1].id, 
+      array[idx + 1].timestamp,
+    ]
+    : null,
+    next: array[idx - 1] ? 
+    [
+      array[idx - 1].device, 
+      array[idx - 1].id, 
+      array[idx - 1].timestamp,
+    ]
+    : null,
+  }));
+};
+
+const sortSessions = function (psessions, by = 'timestamp', order = 'desc') {
+  const sessions = [...psessions];
+  const sorted = order === 'asc' ? 
+    sessions.sort((a, b) => a[by] - b[by]) 
+    : 
+    sessions.sort((a, b) => b[by] - a[by]);
+  return calculateIndexes(sorted);
 };
 
 // reduces array of devices with multiple sessions arrays
 // to single array of sessions 
 // and prepare for table presentation
-const prepareSessionsForTable = function (devices, data, members, user, granularity, intl) {
-  if (!devices || !data) return [];
-  const sessions = data.map(device => getDataSessions(devices, device)
-                  .map((session, idx, array) => {
-                    const devType = getDeviceTypeByKey(devices, device.deviceKey);
-                    const vol = devType === 'METER' ? 'difference' : 'volume'; 
-                    const diff = array[idx - 1] != null ? (array[idx][vol] - array[idx - 1][vol]) : null;
-                    const member = session.member && session.member.index && Array.isArray(members) ? members.find(m => session.member.index === m.index) : null;
-                    return {
-                      ...session,
-                      index: idx, 
-                      devType,
-                      vol: session[vol],
-                      device: device.deviceKey,
-                      devName: getDeviceNameByKey(devices, device.deviceKey),
-                      duration: session.duration ? Math.floor(session.duration / 60) : null,
-                      friendlyDuration: getFriendlyDuration(session.duration), 
-                      temperature: session.temperature ? 
-                        Math.round(session.temperature * 10) / 10 
-                        : null,
-                      energy: session.energy ? Math.round(session.energy * 10) / 10 : null,
-                      energyClass: getEnergyClass(session.energy), 
-                      percentDiff: (diff != null && array[idx - 1][vol] !== 0) ? 
-                        Math.round(10000 * (diff / array[idx - 1][vol])) / 100 
-                        : null,
-                      hasChartData: Array.isArray(session.measurements) && 
-                        session.measurements.length > 0,
-                      member: member ? member.name : user,
-                      date: getTimeLabelByGranularity(session.timestamp, 
-                                                      granularity, 
-                                                      intl
-                                                     ),
-                    };
-                  }))
-                .reduce((p, c) => [...p, ...c], []);
+const prepareSessionsForTable = function (devices, data, members, user, granularity, unit, intl) {
+  if (!data) return [];
+  const sessions = data.map((device) => { 
+    const devType = getDeviceTypeByKey(devices, device.deviceKey);
+    const sortBy = devType === 'AMPHIRO' ? 'id' : 'timestamp';
+    return sortSessions(device.sessions, sortBy, 'asc')
+    .map((session, idx, array) => {
+      const diff = array[idx - 1] != null ? (array[idx].volume - array[idx - 1].volume) : null;
+      const member = session.member && session.member.index && Array.isArray(members) ? members.find(m => session.member.index === m.index) : null;
+      return {
+        ...session,
+        real: !session.history,
+        index: idx, 
+        devType,
+        device: device.deviceKey,
+        deviceName: getDeviceNameByKey(devices, device.deviceKey) || intl.formatMessage({ id: 'devices.meter' }), 
+        volume: formatMetric(session.volume, 'volume', unit),
+        duration: formatMetric(session.duration, 'duration', unit),
+        temperature: formatMetric(session.temperature, 'temperature', unit),
+        energy: formatMetric(session.energy, 'energy', unit),
+        energyClass: getEnergyClass(session.energy), 
+        percentDiff: (diff != null && array[idx - 1].volume !== 0) ? 
+          Math.round(10000 * (diff / array[idx - 1].volume)) / 100 
+          : null,
+        hasChartData: Array.isArray(session.measurements) && 
+          session.measurements.length > 0,
+        member: member ? member.name : user,
+        date: devType === 'AMPHIRO' ? 
+          intl.formatDate(new Date(session.timestamp), { 
+            weekday: 'short', 
+            day: 'numeric', 
+            month: 'numeric', 
+            year: 'numeric' 
+          })
+          : getTimeLabelByGranularity(session.timestamp, 
+                                      granularity, 
+                                      intl
+                                     ),
+      };
+    }); 
+  })
+  .reduce((p, c) => [...p, ...c], []);
                 
   if (sessions.length === 0) { return []; }
   
@@ -100,66 +124,26 @@ const updateOrAppendToSession = function (devices, data) {
   return updated;
 };
 
-const getShowerMeasurementsById = function (data, id) {
+const getShowerById = function (data, id) {
   if (!data || !Array.isArray(data.sessions)) {
-    return [];
+    return null;
   }
-  const sessions = data.sessions;
-
-  const found = sessions.find(session => session.id === id);
-  return found ? found.measurements : [];
+  return data.sessions.find(session => session.id === id);
 };
 
-const reduceMetric = function (devices, data, metric) {
-  if (!devices || !data || !metric) return null;
-  const sessions = getSessionsCount(devices, data);
+const reduceMetric = function (data, metric, average = false) {
+  if (!data || !metric) return 0;
+  const sessions = getSessionsCount(data);
 
-  let reducedMetric = data
-  .map(d => getDataSessions(devices, d)
+  const reducedMetric = data
+  .map(d => d.sessions 
        .map(it => it[metric] ? it[metric] : 0)
        .reduce(((p, c) => p + c), 0)
   )
   .reduce(((p, c) => p + c), 0);
-
-  if (metric === 'temperature') {
-    reducedMetric /= sessions;
-  } else if (metric === 'duration') {
-    reducedMetric = (reducedMetric / sessions) / 60;
-  } else if (metric === 'energy') {
-    reducedMetric /= 1000;
-  }
-
-  reducedMetric = !isNaN(reducedMetric) ? (Math.round(reducedMetric * 10) / 10) : 0;
+  
+  if (average) return reducedMetric / sessions;
   return reducedMetric;
-};
-
-
-const calculateIndexes = function (sessions) { 
-  return sessions.map((session, idx, array) => ({
-    ...session, 
-    prev: array[idx + 1] ? 
-    [
-      array[idx + 1].device, 
-      array[idx + 1].id, 
-      array[idx + 1].timestamp,
-    ]
-    : null,
-    next: array[idx - 1] ? 
-    [
-      array[idx - 1].device, 
-      array[idx - 1].id, 
-      array[idx - 1].timestamp,
-    ]
-    : null,
-  }));
-};
-
-const sortSessions = function (sessions, by = 'timestamp', order = 'desc') {
-  const sorted = order === 'asc' ? 
-    sessions.sort((a, b) => a[by] - b[by]) 
-    : 
-    sessions.sort((a, b) => b[by] - a[by]);
-  return calculateIndexes(sorted);
 };
 
 const getSessionById = function (sessions, id) {
@@ -167,33 +151,6 @@ const getSessionById = function (sessions, id) {
     return null;
   }
   return sessions.find(x => (x.id).toString() === id.toString());
-};
-
-const meterSessionsToCSV = function (sessions) {
-  return sessions.map(session => [
-    session.devName, 
-    session.volume, 
-    session.difference, 
-    session.timestamp, 
-  ].join('%2C'))
-  .reduce((prev, curr) => [prev, curr].join('%0A'), 
-          'Device, Volume%A0total, Volume%A0 difference, Timestamp');
-};
-
-const deviceSessionsToCSV = function (sessions) {
-  return sessions.map(session => [
-    session.devName,
-    session.id,
-    session.history,
-    session.volume, 
-    session.energy,
-    session.energyClass,
-    session.temperature,
-    session.duration, 
-    session.timestamp,
-  ].join('%2C'))
-  .reduce((prev, curr) => [prev, curr].join('%0A'), 
-          'Device, Id, Historic, Volume, Energy, Energy%A0Class, Temperature, Duration, Timestamp');
 };
 
 const getShowerRange = function (sessions) {
@@ -244,83 +201,87 @@ const hasShowersBefore = function (data) {
   return data.reduce((p, c) => c.range.first !== 1 && c.range.first != null ? c.range.first : p, null) != null;
 };
 
-
-// Estimates how many bottles/buckets/pools the given volume corresponds to
-// The remaining is provided in quarters
-const volumeToPictures = function (volume) {
-  const div = c => Math.floor(volume / c);
-  const rem = c => Math.floor((4 * (volume % c)) / c) / 4;
-  if (volume < VOLUME_BUCKET) {
+const prepareBreakdownSessions = function (data, metric, breakdown, user, time, timeFilter, intl) {
+  const total = reduceMetric(data, metric);
+  return breakdown.map((item) => {
+    const id = String(item.label).toLowerCase().replace(' ', '-');
+    const title = intl.formatMessage({ id: `breakdown.${id}` });
     return {
-      display: 'bottle',
-      items: div(VOLUME_BOTTLE),
-      remaining: rem(VOLUME_BOTTLE),
-    }; 
-  } else if (volume < VOLUME_POOL) {
-    return {
-      display: 'bucket',
-      items: div(VOLUME_BUCKET),
-      remaining: rem(VOLUME_BUCKET),
+      id,
+      devType: title,
+      title,
+      volume: Math.round(total * (item.percent / 100)),
+      member: user,
+      date: getPeriodTimeLabel(time, 
+                               timeFilter,
+                               intl
+                              ),
     };
-  } 
-  return {
-    display: 'pool',
-    items: div(VOLUME_POOL),
-    remaining: 0,
-  };
+  });
 };
 
-const energyToPictures = function (energy) {
-  const div = c => Math.floor(energy / c);
+const getAugmental = function (array) {
+  return array.map((x, i, arr) => x !== null ? 
+                      arr.filter((y, j) => j <= i)
+                      .reduce((p, c) => p + c, 0) 
+                        : null
+                     );
+};
 
-  if (energy < ENERGY_HOUSE) {
+// TODO: take into consideration days that are between price brackets
+const getCurrentMeasurementCost = function (volume, pTotal, brackets) {
+  const curr = brackets.find(bracket => (pTotal / 1000) >= bracket.minVolume && (bracket.maxVolume === null || (pTotal / 1000) < bracket.maxVolume));
+  return curr ? Math.round(curr.price * (volume / 1000) * 1000) / 1000 : 0;
+};
+
+const preparePricingSessions = function (sessions, brackets, granularity, user, intl) {
+  return sortSessions(sessions, 'timestamp', 'asc')
+  .map((session, i, arr) => {
+    const totalVolume = arr
+    .filter((x, j) => j <= i)
+    .map(x => x.volume)
+    .reduce((p, c) => p + c, 0);
+    
+    const diff = arr[i - 1] != null ? (arr[i].volume - arr[i - 1].volume) : null;
     return {
-      display: 'light-bulb',
-      items: div(ENERGY_BULB),
+      ...session,
+      total: totalVolume,
+      percentDiff: (diff != null && arr[i - 1].volume !== 0) ? 
+                        Math.round(10000 * (diff / arr[i - 1].volume)) / 100 
+                        : null,
+      cost: getCurrentMeasurementCost(session.volume, totalVolume, brackets),
+      date: getTimeLabelByGranularity(session.timestamp, 
+                                      granularity, 
+                                      intl
+                                     ),
     };
-  } else if (energy < ENERGY_CITY) {
-    return {
-      display: 'home-energy',
-      items: div(ENERGY_HOUSE),
-    };
-  }
-  return {
-    display: 'city',
-    items: div(ENERGY_CITY),
-  };
+  });
 };
 const getAllMembers = function (members, firstname) {
   return members.filter(member => member.active || member.index === 0);
 };
 
-const memberFilterToMembers = function (filter) {
-  if (filter === 'all') {
-    return [];
-  } else if (filter === 'default') {
-    return [0];
-  } else if (!isNaN(filter)) {
-    return [filter];
-  } 
-  return [];
+const filterDataByDeviceKeys = function (data, deviceKeys) {
+  if (deviceKeys == null) return data;
+  return data.filter(x => deviceKeys.findIndex(k => k === x.deviceKey) > -1);
 };
+
 
 module.exports = {
   getSessionById,
   updateOrAppendToSession,
-  getDataSessions,
   prepareSessionsForTable,
   sortSessions,
   reduceMetric,
   getSessionsCount,
-  getShowerMeasurementsById,
-  meterSessionsToCSV,
-  deviceSessionsToCSV,
+  getShowerById,
   getShowerRange,
   filterShowers,
   getLastShowerIdFromMultiple,
   hasShowersBefore,
   hasShowersAfter,
-  volumeToPictures,
-  energyToPictures,
-  memberFilterToMembers,
+  getAugmental,
+  prepareBreakdownSessions,
+  preparePricingSessions,
+  filterDataByDeviceKeys,
 };
