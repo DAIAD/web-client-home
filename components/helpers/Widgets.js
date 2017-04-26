@@ -206,7 +206,7 @@ function RankingWidget(props) {
           { 
             line.image ? 
               <img
-                style={{ maxHeight: 30, maxWidth: 30 }} 
+                className="ranking-medal"
                 src={line.image}
                 alt={line.id} 
               /> 
