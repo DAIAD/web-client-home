@@ -9,16 +9,13 @@ const verticalBarTheme = require('../chart/themes/vertical-bar');
 function StatWidget(props) {
   const { highlight, info = [], period, mu, imgPrefix } = props;
   return (
-    <div style={{ padding: 10 }}>
-      <div style={{ float: 'left', width: '30%' }}>
+    <div className={`stat ${props.type}`}>
+      <div className="stat-left">
         <div>
           { highlight && highlight.image ? 
             <img 
-              style={{ 
-                height: props.height || 50, 
-                maxHeight: 50, 
-                float: 'left', 
-              }} 
+              className="stat-highlight" 
+              style={{ height: props.height || 50 }}
               src={highlight.image}
               alt={highlight.image} 
             /> 
@@ -30,14 +27,24 @@ function StatWidget(props) {
           </h2>
         </div>
       </div>
-      <div style={{ float: 'left', width: '70%' }}>
+      <div className="stat-right">
         <div>
           { 
             info.map((line, idx) => (
-              <div key={idx}>
+              <div 
+                key={idx} 
+                className="stat-line"
+              >
                 <i className={`fa fa-${line.icon}`} />
-                { line.image ? <img style={{ height: '100%', width: '100%', maxHeight: 25, maxWidth: 30 }} src={line.image} alt={line.id} /> : <i /> }
-                &nbsp;
+                { 
+                  line.image ? 
+                    <img 
+                      className="stat-line-img"
+                      src={line.image} 
+                      alt={line.id} 
+                    /> 
+                      : <i /> 
+                }
                 <span>{line.text}</span>
               </div>
               ))
@@ -141,7 +148,7 @@ function HorizontalBarChartWidget(props) {
 function ChartWidget(props) {
   const { chartType, ...rest } = props;
   return (
-    <div>
+    <div className="chart">
       { 
         (() => {
           if (chartType === 'bar' || chartType === 'vertical-bar') {
@@ -180,7 +187,7 @@ function DefaultWidgetByDisplay(props) {
 
 function RankingWidget(props) {
   return (
-    <div>
+    <div className="ranking">
       <ChartWidget 
         {...props} 
         height={props.height ? props.height - 40 : 220}
@@ -216,7 +223,7 @@ function RankingWidget(props) {
 }
 function LastShowerWidget(props) {
   return (
-    <div>
+    <div className="last">
       <ChartWidget
         {...props}
         height={props.height - 50}
@@ -261,13 +268,10 @@ function LastShowerWidget(props) {
 function TipWidget(props) {
   const { highlight, info = [], period, mu, imgPrefix } = props;
   return (
-    <div>
-      <div style={{ float: 'left', width: '30%', marginRight: 10 }}>
+    <div className="tip">
+      <div className="tip-left">
           { highlight && highlight.image ? 
             <img 
-              style={{ 
-                maxWidth: '100%',
-              }} 
               src={highlight.image}
               alt={highlight.image} 
             /> 
@@ -275,14 +279,11 @@ function TipWidget(props) {
             <i />
           }
         </div>
-      <div style={{ float: 'left', width: '65%' }}>
+      <div className="tip-left">
         <div>
           { 
             info.map((line, idx) => (
-              <div key={idx}>
-                <i className={`fa fa-${line.icon}`} />
-                { line.image ? <img style={{ height: '100%', width: '100%', maxHeight: 25, maxWidth: 30 }} src={line.image} alt={line.id} /> : <i /> }
-                &nbsp;
+              <div key={idx} className="tip-right">
                 <span>{line.text}</span>
               </div>
               ))
