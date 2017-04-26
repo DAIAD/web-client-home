@@ -46,6 +46,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     [{
       id: 'all',
       title: _t('history.member-filter'),
+      image: `${PNG_IMAGES}/daiad-consumer.png`,
     },
     ...members.map(member => ({
       id: member.index,
