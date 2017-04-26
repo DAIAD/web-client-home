@@ -5,8 +5,10 @@
  * 
  * @module DashboardActions
  */
+const moment = require('moment');
 
 const types = require('../constants/ActionTypes');
+
 const { getTimeByPeriod, getPreviousPeriodSoFar } = require('../utils/time');
 const { getDeviceKeysByType } = require('../utils/device');
 const QueryActions = require('./QueryActions');
@@ -175,18 +177,22 @@ const updateWidget = function (id, update) {
 const fetchWidgetData = function (id) {
   return function (dispatch, getState) {
     const widget = getState().section.dashboard.widgets.find(i => i.id === id);
+    if (!widget) return Promise.reject('noWidget');
 
     const userKey = getState().user.profile.key;
     const members = getState().user.profile.household.members;
     const common = getState().section.commons.myCommons.find(c => c.key === getState().section.settings.commons.favorite);
 
+    // if december request data for next year to include january forecast
+    const periodIndex = widget.type === 'forecast' && moment().month() === 11 ? 1 : widget.periodIndex;
     return dispatch(QueryActions.fetchWidgetData({ 
       ...widget, 
+      periodIndex,
       userKey, 
       members,
       common,
     }))
-    .then(res => dispatch(setWidgetData(id, res)))
+    .then(res => dispatch(setWidgetData(id, { ...res, periodIndex })))
     .catch((error) => { 
       console.error('Caught error in widget data fetch:', error); 
       dispatch(setWidgetData(id, { data: [], error: 'Oops sth went wrong, please refresh the page.' })); 
