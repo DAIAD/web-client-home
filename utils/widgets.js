@@ -40,7 +40,7 @@ const tip = function (widget, intl) {
 };
 
 const amphiroLastShower = function (widget, intl) {
-  const { data = [], devices, device, showerId, metric, timestamp, unit } = widget;
+  const { data = [], devices, device, showerId, metric = 'volume', timestamp, unit } = widget;
 
   const lastSession = getShowerById(data.find(d => d.deviceKey === device), showerId);
   const measurements = lastSession ? lastSession.measurements : [];
@@ -82,7 +82,7 @@ const amphiroLastShower = function (widget, intl) {
 };
 
 const amphiroMembersRanking = function (widget, intl) {
-  const { devices, device, metric, data = [], unit } = widget;
+  const { devices, device, metric = 'volume', data = [], unit } = widget;
   
   const periods = PERIODS.AMPHIRO;
   const membersData = data.map(m => ({ 
@@ -127,7 +127,7 @@ const amphiroMembersRanking = function (widget, intl) {
 
 // TODO: split into two functions for amphiro / swm
 const amphiroOrMeterTotal = function (widget, intl) {
-  const { data = [], period, devices, deviceType, metric, previous, unit } = widget;
+  const { data = [], period, devices, deviceType, metric = 'volume', previous, unit } = widget;
   
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const device = getDeviceKeysByType(devices, deviceType);
@@ -211,13 +211,13 @@ const amphiroOrMeterTotal = function (widget, intl) {
 };
 
 const amphiroEnergyEfficiency = function (widget, intl) {
-  const { data = [], period, devices, deviceType, metric, previous } = widget;
+  const { data = [], period, devices, deviceType, previous } = widget;
 
-  if (metric !== 'energy') {
-    console.error('only energy efficiency supported');
-  } else if (deviceType !== 'AMPHIRO') {
+  if (deviceType !== 'AMPHIRO') {
     console.error('only amphiro energy efficiency supported');
   }
+  const metric = 'energy';
+
   const device = getDeviceKeysByType(devices, deviceType);
   const periods = PERIODS.AMPHIRO.filter(p => p.id !== 'all');
 
@@ -264,7 +264,7 @@ const amphiroEnergyEfficiency = function (widget, intl) {
 };
 
 const meterForecast = function (widget, intl) {
-  const { data = [], forecastData, period, periodIndex, deviceType, metric, previous, unit } = widget;
+  const { data = [], forecastData, period, periodIndex, deviceType, metric = 'volume', previous, unit } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter forecast supported');
@@ -316,13 +316,14 @@ const meterForecast = function (widget, intl) {
 };
 
 const meterPricing = function (widget, intl) {
-  const { data = [], period, deviceType, metric, brackets, unit } = widget;
+  const { data = [], period, deviceType, brackets, unit } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter pricing supported');
   } else if (period !== 'month') {
     console.error('only monthly pricing supported');
   }
+  const metric = 'total';
   const time = widget.time ? widget.time : getTimeByPeriod(period);
   const periods = [];
 
@@ -366,7 +367,7 @@ const meterPricing = function (widget, intl) {
 };
 
 const meterBreakdown = function (widget, intl) {
-  const { data = [], period, devices, deviceType, metric, breakdown = [], unit } = widget;
+  const { data = [], period, devices, deviceType, metric = 'volume', breakdown = [], unit } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter breakdown makes sense');
@@ -413,7 +414,7 @@ const meterBreakdown = function (widget, intl) {
 };
 
 const meterComparison = function (widget, intl) {
-  const { data, period, periodIndex, deviceType, metric, comparisons, unit } = widget;
+  const { data, period, periodIndex, deviceType, metric = 'volume', comparisons, unit } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter comparison supported');
@@ -455,7 +456,7 @@ const meterComparison = function (widget, intl) {
 };
 
 const waterIQ = function (widget, intl) {
-  const { data, period, periodIndex, deviceType, metric } = widget;
+  const { data, period, periodIndex, deviceType, metric = 'volume' } = widget;
   
   if (deviceType !== 'METER') {
     console.error('only meter supported for water iq');
@@ -578,7 +579,7 @@ const budget = function (widget, intl) {
 };
 
 const meterCommon = function (widget, intl) {
-  const { data = [], period, devices, deviceType, metric, common, commonData, unit } = widget;
+  const { data = [], period, devices, deviceType, metric = 'volume', common, commonData, unit } = widget;
   
   if (!common) {
     return {
