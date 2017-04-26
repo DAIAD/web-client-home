@@ -621,7 +621,7 @@ const meterCommon = function (widget, intl) {
 
   return {
     ...widget,
-    icon: `${BASE64}${common.image}`,
+    icon: common.image ? `${BASE64}${common.image}` : null,
     more: intl.formatMessage({ id: 'widget.explore-common' }),
     chartType: 'line',
     time,

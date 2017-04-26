@@ -168,6 +168,7 @@ const dashboard = function (state = initialState, action) {
       const newWidgets = state.widgets
       .map(w => w.type === action.widgetType ? ({ 
         ...w, 
+        error: null,
         synced: false, 
       }) 
       : w);

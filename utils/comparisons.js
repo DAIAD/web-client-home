@@ -7,7 +7,7 @@ const getMeterComparisonDetails = function (comparison, start, period, favCommon
   if (comparison === 'last') {
     extra = getComparisonPeriod(start, period, intl);
     image = `${IMAGES}/challenge-daily.svg`;
-  } else if (comparison === 'common') {
+  } else if (comparison === 'common' && favCommon) {
     extra = favCommon.name;
     image = favCommon.image ? `${BASE64}${favCommon.image}` : null;
   } else if (comparison === 'all') {

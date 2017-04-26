@@ -411,6 +411,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
           } else if (type === 'breakdown') {
             return res;
           } else if (type === 'commons') {
+            if (!common) return Promise.resolve({ ...res, common: null });
             return dispatch(queryDataAverage({
               time,
               source: 'METER',

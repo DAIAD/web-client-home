@@ -5,6 +5,7 @@ const { push } = require('react-router-redux');
 
 //const CommonsActions = require('../actions/CommonsActions');
 const { setDataUnsynced: setHistoryDataUnsynced } = require('../actions/HistoryActions');
+const { setWidgetTypeUnsynced } = require('../actions/DashboardActions');
 const CommonsManageActions = require('../actions/CommonsManageActions');
 const MembersManageActions = require('../actions/MembersManageActions');
 const { setLocale } = require('../actions/LocaleActions');
@@ -58,6 +59,7 @@ function mapDispatchToProps(dispatch) {
       setHistoryDataUnsynced,
       goTo: route => push(route),
       updateDevice,
+      setWidgetTypeUnsynced,
     }, dispatch);
 }
 
@@ -96,6 +98,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
         dispatchProps.setFavorite(key);
         dispatchProps.saveConfiguration({ favoriteCommon: key });
         dispatchProps.setHistoryDataUnsynced();
+        dispatchProps.setWidgetTypeUnsynced('commons');
       },
     },
     ...ownProps,
