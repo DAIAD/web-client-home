@@ -24,14 +24,14 @@ const tip = function (widget, intl) {
     };
   }
   const description = String(stripTags(currTip).description);
-  const text = description.substring(0, String(description).indexOf('.', 120));
+  const text = description;
   return {
     ...widget,
     highlight: {
       image: `${BASE64}${currTip.imageEncoded}`,
     },
     info: [{
-      text: `${text}...`,
+      text,
     }],
     notificationType: 'RECOMMENDATION_STATIC',
     notificationId: currTip.id,

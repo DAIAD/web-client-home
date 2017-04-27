@@ -279,11 +279,11 @@ function TipWidget(props) {
             <i />
           }
         </div>
-      <div className="tip-left">
+      <div className="tip-right">
         <div>
           { 
             info.map((line, idx) => (
-              <div key={idx} className="tip-right">
+              <div key={idx}>
                 <span>{line.text}</span>
               </div>
               ))
