@@ -99,7 +99,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
                       unit: stateProps.unit,
                       breakdown: stateProps.breakdown,
                       brackets: stateProps.brackets,
-                      tips: stateProps.tips,
+                      tip: Array.isArray(stateProps.tips) && stateProps.tips.length > 0 && stateProps.tips[0],
                     },
                     ownProps.intl)),   
     deviceCount: getDeviceCount(stateProps.devices),
