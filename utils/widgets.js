@@ -269,20 +269,22 @@ const meterForecast = function (widget, intl) {
   if (deviceType !== 'METER') {
     console.error('only meter forecast supported');
   }
-  const time = widget.time ? widget.time : getTimeByPeriod(period, periodIndex);
+  const time = widget.time || getTimeByPeriod(period, periodIndex);
+  const forecastTime = widget.forecastTime || time;
+
   const periods = []; 
 
   const chartColors = ['#2d3480', '#abaecc', '#7AD3AB', '#CD4D3E'];
 
-  const xCategories = getChartMeterCategories(time);
-  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, time.granularity, period, intl);
+  const xCategories = getChartMeterCategories(forecastTime);
+  const xCategoryLabels = getChartMeterCategoryLabels(xCategories, forecastTime.granularity, period, intl);
   
   const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
   const chartData = data.map(devData => ({ 
       name: intl.formatMessage({ id: 'widget.consumption' }), 
       data: getChartMeterData(devData.sessions, 
                               xCategories,
-                              time,
+                              forecastTime,
                               metric
                              ),
     }));
@@ -291,7 +293,7 @@ const meterForecast = function (widget, intl) {
     name: intl.formatMessage({ id: 'history.forecast' }),
     data: getChartMeterData(forecastData,
                             xCategories, 
-                            time,
+                            forecastTime,
                             metric
                            ),
     lineType: 'dashed',

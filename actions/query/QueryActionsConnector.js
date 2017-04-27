@@ -362,7 +362,8 @@ const connectActionsToQueryBackend = function (QueryBackend) {
       if (!userKey) {
         return Promise.resolve(); 
       }
-      const time = options.time ? options.time : timeUtils.getTimeByPeriod(period, periodIndex);
+      const time = options.time || timeUtils.getTimeByPeriod(period, periodIndex);
+      const forecastTime = options.forecastTime || time;
 
       if (type === 'tip') {
         return Promise.resolve(); 
@@ -388,7 +389,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
           } else if (type === 'forecast') {
             return dispatch(queryMeterForecast({ 
               userKey, 
-              time, 
+              time: forecastTime, 
             }))
             .then(forecastData => ({ ...res, forecastData }));
           } else if (type === 'comparison') {
