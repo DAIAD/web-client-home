@@ -15,7 +15,7 @@ function StatWidget(props) {
           { highlight && highlight.image ? 
             <img 
               className="stat-highlight" 
-              style={{ height: props.height || 50 }}
+              style={{ height: props.height }}
               src={highlight.image}
               alt={highlight.image} 
             /> 
@@ -118,7 +118,7 @@ function HorizontalBarChartWidget(props) {
   const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
   return (
     <BarChart
-      height={height || 240}
+      height={height || 220}
       width={width}
       id={id}
       renderAsImage={renderAsImage}
@@ -190,7 +190,7 @@ function RankingWidget(props) {
     <div className="ranking">
       <ChartWidget 
         {...props} 
-        height={props.height ? props.height - 40 : 220}
+        height={props.height ? props.height - 40 : 200}
       />
       <div style={{ padding: '0 10px' }}>
       {
@@ -198,7 +198,7 @@ function RankingWidget(props) {
           <div 
             key={idx} 
             style={{
-              float: 'left', 
+              display: 'inline-block', 
               width: `${100 / props.info.length}%`, 
               textAlign: 'center' 
             }}
