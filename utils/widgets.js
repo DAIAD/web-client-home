@@ -490,7 +490,7 @@ const waterIQ = function (widget, intl) {
   }];
   return {
     ...widget,
-    icon: `${IMAGES}/stats-side.svg`,
+    icon: `${IMAGES}/default-ranking.svg`,
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
     //time,
     periods,

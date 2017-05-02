@@ -31,18 +31,18 @@ const WidgetItem = React.createClass({
       >
         <div className="widget-header">
           <div className="header-left">
-            <h4>
+            <h5>
               { icon ? 
                 <img 
-                  style={{ marginRight: 10, maxHeight: 25 }} 
+                  className="widget-header-icon"
                   src={icon} 
                   alt="icon" 
                 />
                 :
                   <i />
               }
-              { _t(`widget.titles.${widgetId}`) }
-            </h4>
+              { widget.title || _t(`widget.titles.${widgetId}`) }
+            </h5>
           </div>
 
           <div className="header-right">
@@ -59,16 +59,13 @@ const WidgetItem = React.createClass({
                   </button>
                   ))
               }
-            </div> 
-            {
               <button
                 className="btn-a widget-x" 
-                style={{ float: 'right', marginLeft: 5, marginRight: 5 }} 
                 onClick={() => removeWidget(widget.id)}
               >
                 <i className="fa fa-times" />
               </button>
-            }
+            </div> 
           </div>
         </div>
         
