@@ -277,9 +277,11 @@ const connectActionsToQueryBackend = function (QueryBackend) {
         if (c === null) {
           return [];
         } else if (granularity === 2) {
-          return c.dailyConsumtpion;
+          // future compatibility with API response typo fix
+          return c.dailyConsumption || c.dailyConsumtpion;
         } else if (granularity === 4) {
-          return c.monthlyConsumtpion;
+          // future compatibility with API response typo fix
+          return c.monthlyConsumption || c.monthlyConsumtpion;
         }
         return [];
       }))
