@@ -77,7 +77,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     metrics,
     data,
     chartFormatter,
-    members: getAllMembers(stateProps.members, stateProps.user.firstname),
+    members: getAllMembers(stateProps.members, stateProps.user.photo),
     chartCategories,
     chartData,
     showModal: stateProps.activeSession != null,

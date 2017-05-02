@@ -37,7 +37,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const amphiros = getAvailableDevices(stateProps.devices); 
 
   const devType = stateProps.activeDeviceType;  
-  const members = getAllMembers(stateProps.members); 
+  const members = getAllMembers(stateProps.members, stateProps.user.photo); 
   const favoriteCommon = stateProps.favoriteCommon ? stateProps.myCommons.find(c => c.key === stateProps.favoriteCommon) : null;
  
   const deviceTypes = getAvailableDeviceTypes(stateProps.devices);

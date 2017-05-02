@@ -299,10 +299,11 @@ const energyToPictures = function (energy) {
     items: div(ENERGY_CITY),
   };
 };
-const getAllMembers = function (members) {
+const getAllMembers = function (members, defaultPhoto) {
   if (!Array.isArray(members)) return [];
   return members
   .filter(member => member.active || member.index === 0)
+  .map(member => member.index === 0 ? ({ ...member, photo: defaultPhoto }) : member)
   .sort((a, b) => a.index - b.index);
 };
 

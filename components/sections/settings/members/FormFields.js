@@ -37,27 +37,31 @@ function MemberFormFields(props) {
             alt="member" 
           />
       }
-      <input
-        id="file-uploader"
-        type="file"
-        onChange={(e) => {
-          const file = e.target.files[0];
-          uploadFile(file,
-                     (value) => {
-                       if (errors) { dismissError(); }
-                       updateMemberForm({ photo: value });
-                     },
-                     (error) => {
-                       setError(error);
-                     });
-        }}
-      />
+      { member.index !== 0 ?
+        <input
+          id="file-uploader"
+          type="file"
+          onChange={(e) => {
+            const file = e.target.files[0];
+            uploadFile(file,
+                       (value) => {
+                         if (errors) { dismissError(); }
+                         updateMemberForm({ photo: value });
+                       },
+                       (error) => {
+                         setError(error);
+                       });
+          }}
+        />
+        : <span />
+      }
       <hr />
   
       <bs.Input 
         type="text" 
         label={_t('member.name')}
         placeholder={_t('member.placeholder-name')}
+        readOnly={member.index === 0}
         onChange={(e) => { updateMemberForm({ name: e.target.value }); }}
         value={member.name}
       />

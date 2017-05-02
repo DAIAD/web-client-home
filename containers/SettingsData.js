@@ -25,8 +25,7 @@ function mapStateToProps(state) {
   return {
     errors: state.query.errors,
     locale: state.locale.locale,
-    devices: state.user.profile.devices,
-    members: state.user.profile.household.members,
+    profile: state.user.profile,
     profileForm: state.forms.profileForm,
     memberForm: state.forms.memberForm,
     deviceForm: state.forms.deviceForm,
@@ -74,6 +73,15 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
         dispatchProps.resetChangePassword();
         dispatchProps.setForm('profileForm', { password: null, confirmPassword: null });
       },
+      saveToProfile: () => dispatchProps.saveToProfile(stateProps.profileForm)
+      .then((profile) => {
+        if (stateProps.profileForm.firstname) {
+          dispatchProps.setWidgetTypeUnsynced('ranking');
+          return dispatchProps.editMember({ index: 0, name: stateProps.profileForm.firstname });
+        }
+        return Promise.resolve(profile);
+      })
+      .then(() => dispatchProps.fetchProfile()),
       //members
       updateMemberForm: data => dispatchProps.setForm('memberForm', data),
       clearMemberForm: () => dispatchProps.resetForm('memberForm'),
@@ -102,7 +110,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       },
     },
     ...ownProps,
-    members: getAllMembers(stateProps.members),
+    devices: stateProps.profile.devices,
+    members: getAllMembers(stateProps.profile.household.members, stateProps.profile.photo),
     pagingIndex: stateProps.pagingIndex + 1, // 1-based
     _t: formatMessage(ownProps.intl),
   };
