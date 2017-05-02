@@ -3,7 +3,10 @@ const types = require('../constants/ActionTypes');
 const initialState = {
   widgetToAdd: {},
   profileForm: {},
-  commonForm: {},
+  commonForm: {
+    name: '',
+    description: '',
+  },
   memberForm: {},
   deviceForm: {
     unit: 'METRIC',
