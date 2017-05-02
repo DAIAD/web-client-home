@@ -16,7 +16,6 @@ const { letTheRightOneIn } = require('./UserActions');
 const NotificationActions = require('./NotificationActions');
 
 const { getMeterCount } = require('../utils/device');
-const { filterObj } = require('../utils/general');
 
 /**
  * Action dispatched when application has been initialized 
@@ -71,23 +70,7 @@ const initHome = function (profile) {
       dispatch(HistoryActions.switchActiveDeviceType('AMPHIRO'));
       dispatch(DashboardActions.setDeviceType('AMPHIRO'));
     } 
-
-    const profileForm = filterObj(profile, [
-      'firstname', 
-      'lastname', 
-      'photo',
-      'email', 
-      'username', 
-      'locale', 
-      'address', 
-      'zip', 
-      'country', 
-      'timezone', 
-      'unit',
-    ]);
-    
-    dispatch(FormActions.setForm('profileForm', profileForm));
-
+  
     if (profile.locale) {
       dispatch(LocaleActions.setLocale(profile.locale));
     }
