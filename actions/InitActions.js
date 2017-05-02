@@ -53,7 +53,6 @@ const linkToSection = function (section, options) {
  */
 const initHome = function (profile) {
   return function (dispatch, getState) { 
-    dispatch(NotificationActions.fetchInitial());
     if (profile.configuration) {
       const configuration = JSON.parse(profile.configuration);
       if (configuration.widgets) {
@@ -98,6 +97,7 @@ const initHome = function (profile) {
       HistoryActions.initPriceBrackets(),
       HistoryActions.initWaterBreakdown(),
       CommonsActions.getMyCommons(),
+      NotificationActions.fetchInitial(),
       DashboardActions.fetchAllWidgetsData(),
     ]
     .reduce((prev, curr) => prev.then(() => dispatch(curr)), Promise.resolve());
