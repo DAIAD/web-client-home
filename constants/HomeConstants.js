@@ -570,7 +570,7 @@ module.exports = {
         type: 'number',
         min: 0,
         max: 100,
-        step: 1,
+        step: 0.1,
       },
     },
     {
@@ -580,7 +580,7 @@ module.exports = {
         type: 'number',
         min: 0,
         max: 100,
-        step: 1,
+        step: 0.1,
       },
     },
     {
@@ -590,7 +590,7 @@ module.exports = {
         type: 'number',
         min: 0,
         max: 100,
-        step: 1,
+        step: 0.1,
       },
     },
     {
