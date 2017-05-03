@@ -363,10 +363,6 @@ module.exports = {
   },
   COMMONS_USER_SORT: [
     {
-      id: 'RANKING',
-      title: 'commons.ranking',
-    },
-    {
       id: 'FIRSTNAME',
       title: 'profile.firstname',
     },
