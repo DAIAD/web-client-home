@@ -10,7 +10,7 @@ const deviceAPI = require('../api/device');
 const types = require('../constants/ActionTypes');
 
 const InitActions = require('./InitActions');
-const { resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo } = require('./QueryActions');
+const { setSuccess, resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo } = require('./QueryActions');
 const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
 const { filterObj, throwServerError } = require('../utils/general');
 
@@ -214,12 +214,14 @@ const saveToProfile = function (profile) {
 
     return userAPI.saveToProfile(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-
       if (!response || !response.success) {
         throwServerError(response);  
       }
+
+      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
       return response;
     }) 
     .catch((errors) => {
@@ -258,13 +260,13 @@ const updateDevice = function (update) {
     return deviceAPI.updateDevice(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      if (response.success) {
-        setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-      }
 
       if (!response || !response.success) {
         throwServerError(response);  
       }
+
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       return response;
     }) 
     .catch((errors) => {
@@ -288,15 +290,14 @@ const requestPasswordReset = function (username) {
     return userAPI.requestPasswordReset(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      if (response.success) {
-        dispatch(resetSuccess());
-        dispatch(dismissError());
-        dispatch(setInfo('passwordMailSent'));
-      }
-
+        
       if (!response || !response.success) {
         throwServerError(response);  
       }
+      
+      dispatch(dismissError());
+      dispatch(setInfo('passwordMailSent'));
+
       return response;
     }) 
     .catch((errors) => {
@@ -327,6 +328,7 @@ const resetPassword = function (password, token, captcha) {
       }
       
       dispatch(dismissError()); 
+      dispatch(setSuccess());
       return new Promise((resolve, reject) => setTimeout(() => { 
           dispatch(resetSuccess()); 
           return resolve(response);
@@ -358,6 +360,7 @@ const changePassword = function (password, captcha) {
         throwServerError(response);  
       }
 
+      dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       return response;
     }) 

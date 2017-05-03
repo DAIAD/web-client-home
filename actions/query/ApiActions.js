@@ -23,12 +23,6 @@ const receivedQuery = function (success, errors) {
   };
 };
 
-const resetSuccess = function () {
-  return {
-    type: types.QUERY_RESET_SUCCESS,
-  };
-};
-
 const queryData = function (options) {
   return function (dispatch, getState) {
     const { time, population, source, metrics } = options;
@@ -46,7 +40,6 @@ const queryData = function (options) {
     return dataAPI.query(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
       
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
@@ -92,7 +85,6 @@ const queryDeviceSessions = function (options) {
     return deviceAPI.querySessions(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors, response.devices));
-      dispatch(resetSuccess());
 
       if (!response || !response.success || !response.devices) {
         genUtils.throwServerError(response);  
@@ -127,7 +119,6 @@ const fetchDeviceSession = function (options) {
     return deviceAPI.getSession(data)
       .then((response) => {
         dispatch(receivedQuery(response.success, response.errors, response.session));
-        dispatch(resetSuccess());
         
         if (!response || !response.success) {
           genUtils.throwServerError(response);  
@@ -155,7 +146,6 @@ const queryMeterForecast = function (options) {
     return dataAPI.getForecast(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
       
       if (!response || !response.success || !Array.isArray(response.meters) || 
           !response.meters[0] || !response.meters[0].points) {
@@ -185,7 +175,6 @@ const queryUserComparisons = function (options) {
     return dataAPI.getComparisons(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
       
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
@@ -212,7 +201,6 @@ const fetchWaterBreakdown = function () {
     return dataAPI.getWaterBreakdown(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
@@ -238,7 +226,6 @@ const fetchPriceBrackets = function () {
     return dataAPI.getPriceBrackets(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
       if (!response || !response.success) {
         genUtils.throwServerError(response);  

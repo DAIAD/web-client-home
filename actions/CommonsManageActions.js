@@ -1,7 +1,7 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
-const { requestedQuery, receivedQuery, resetSuccess } = require('./QueryActions');
+const { requestedQuery, receivedQuery, setSuccess, resetSuccess } = require('./QueryActions');
 const commonsAPI = require('../api/commons');
 
 const { getDeviceKeysByType } = require('../utils/device');
@@ -13,7 +13,7 @@ const { setConfirm, resetConfirm } = require('./FormActions');
 const QueryActions = require('./QueryActions');
 const CommonsActions = require('./CommonsActions');
 
-const { COMMONS_SEARCH_PAGE } = require('../constants/HomeConstants');
+const { COMMONS_SEARCH_PAGE, SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
 
 const setSearchFilter = function (filter) {
   return {
@@ -85,7 +85,6 @@ const searchCommons = function () {
       }
 
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })
@@ -133,8 +132,10 @@ const createCommon = function (common) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
+
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })
@@ -164,8 +165,9 @@ const updateCommon = function (common) {
         throwServerError(response);  
       }
 
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })
@@ -195,8 +197,9 @@ const deleteCommon = function (key) {
         throwServerError(response);  
       }
 
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })
@@ -226,8 +229,9 @@ const joinCommon = function (key) {
         throwServerError(response);  
       }
 
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })
@@ -257,8 +261,9 @@ const leaveCommon = function (key) {
         throwServerError(response);  
       }
 
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })

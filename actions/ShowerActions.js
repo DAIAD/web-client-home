@@ -1,5 +1,5 @@
 const types = require('../constants/ActionTypes');
-const { requestedQuery, receivedQuery, resetSuccess } = require('./QueryActions');
+const { requestedQuery, receivedQuery, setSuccess, resetSuccess } = require('./QueryActions');
 const { clearCacheItems } = require('./CacheActions');
 
 const showersAPI = require('../api/showers');
@@ -26,12 +26,14 @@ const assignToMember = function (options) {
 
     return showersAPI.assignToMember(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
       if (!response || !response.success) {
         throwServerError(response);  
       }
+
+      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
       dispatch(clearCacheItems(getState().query.cache, 'AMPHIRO', deviceKey, sessionId));
 
@@ -62,12 +64,14 @@ const ignoreShower = function (options) {
     return showersAPI.ignoreShower(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      
+
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
       dispatch(clearCacheItems(getState().query.cache, 'AMPHIRO', deviceKey, sessionId));
 
       return response;
@@ -94,13 +98,13 @@ const setShowerReal = function (options) {
 
     return showersAPI.setShowerReal(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      
+
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
       dispatch(clearCacheItems(getState().query.cache, 'AMPHIRO', deviceKey, sessionId));
 
       return response;

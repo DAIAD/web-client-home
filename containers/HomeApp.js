@@ -18,7 +18,7 @@ function mapStateToProps(state) {
     ready: state.user.ready,
     locale: state.locale,
     errors: state.query.errors,
-    success: state.query.success,
+    success: state.query.success > 0,
     loading: state.query.isLoading > 0,
     alerts: state.section.messages.alerts,
     announcements: state.section.messages.announcements,

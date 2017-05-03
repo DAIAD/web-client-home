@@ -29,6 +29,13 @@ const connectActionsToQueryBackend = function (QueryBackend) {
       errors,
     };
   };
+  
+  
+  const setSuccess = function () {
+    return {
+      type: types.QUERY_SET_SUCCESS,
+    };
+  };
 
   const resetSuccess = function () {
     return {
@@ -473,6 +480,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
     ...QueryBackend,
     requestedQuery,
     receivedQuery,
+    setSuccess,
     resetSuccess,
     setError,
     dismissError,

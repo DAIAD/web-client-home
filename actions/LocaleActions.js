@@ -8,7 +8,7 @@
 const localeAPI = require('../api/locales');
 const types = require('../constants/ActionTypes');
 
-const { requestedQuery, receivedQuery, resetSuccess } = require('./QueryActions');
+const { requestedQuery, receivedQuery } = require('./QueryActions');
 
 const { flattenMessages } = require('../utils/general');
 
@@ -47,7 +47,6 @@ const fetchLocaleMessages = function (locale) {
       if (csrf) { dispatch(setCsrf(csrf)); }
 
       dispatch(receivedQuery(true, null));
-      dispatch(resetSuccess());
 
       dispatch(receivedMessages(locale, flattenMessages(messages)));
       return messages;

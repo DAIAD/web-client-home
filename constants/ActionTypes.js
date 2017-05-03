@@ -25,6 +25,7 @@ module.exports = keyMirror({
   QUERY_CACHE_ITEM_REQUESTED: null,
   QUERY_SET_CACHE: null,
   QUERY_SET_ERROR: null,
+  QUERY_SET_SUCCESS: null,
   QUERY_RESET_SUCCESS: null,
   QUERY_SET_INFO: null,
   QUERY_DISMISS_INFO: null,

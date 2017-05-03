@@ -10,7 +10,7 @@ const { showerFilterToLength, throwServerError } = require('../utils/general');
 const { flattenCommonsGroups } = require('../utils/commons');
 
 const { setConfirm, resetConfirm } = require('./FormActions');
-const { resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo } = require('./QueryActions');
+const { setSuccess, resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo } = require('./QueryActions');
 const { fetchProfile } = require('./UserActions');
 
 const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
@@ -27,11 +27,14 @@ const saveMembers = function (members) {
     return userAPI.saveMembers(data)
     .then((response) => {
       dispatch(receivedQuery(response.success, response.errors));
-      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-
+      
       if (!response || !response.success) {
         throwServerError(response);  
       }
+      
+      dispatch(setSuccess());
+      setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
+
       return response;
     }) 
     .catch((errors) => {

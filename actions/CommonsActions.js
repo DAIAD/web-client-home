@@ -8,7 +8,7 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
-const { requestedQuery, receivedQuery, resetSuccess } = require('./QueryActions');
+const { requestedQuery, receivedQuery } = require('./QueryActions');
 const commonsAPI = require('../api/commons');
 
 const { getDeviceKeysByType } = require('../utils/device');
@@ -215,7 +215,6 @@ const searchCommonMembers = function () {
         throwServerError(response);  
       }
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })
@@ -378,7 +377,6 @@ const getMyCommons = function () {
         throwServerError(response);  
       }
       dispatch(receivedQuery(response.success, response.errors));
-      dispatch(resetSuccess());
 
       return response;
     })

@@ -92,7 +92,6 @@ const acknowledge = function (id, category, timestamp) {
       }
       
       dispatch(QueryActions.receivedQuery(response.success, response.errors));
-      dispatch(QueryActions.resetSuccess());
 
       dispatch(setMessageRead(id, category, timestamp));
       
@@ -216,7 +215,6 @@ const fetch = function (options) {
         throwServerError(response);  
       }
       dispatch(QueryActions.receivedQuery(response.success, null));
-      dispatch(QueryActions.resetSuccess());
 
       // make sure announcements have description field like other message types
       const announcements = response.announcements.map(m => ({
