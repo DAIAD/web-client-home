@@ -9,7 +9,8 @@ const { setWidgetTypeUnsynced } = require('../actions/DashboardActions');
 const CommonsManageActions = require('../actions/CommonsManageActions');
 const MembersManageActions = require('../actions/MembersManageActions');
 const { setLocale } = require('../actions/LocaleActions');
-const { saveToProfile, saveConfiguration, fetchProfile, changePassword, setChangePassword, resetChangePassword, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
+const { saveToProfile, saveConfiguration, fetchProfile, changePassword, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
+const { setChangePassword, resetChangePassword } = require('../actions/ProfileActions'); 
 const { setForm, resetForm, setConfirm, resetConfirm } = require('../actions/FormActions');
 const { setError, dismissError } = require('../actions/QueryActions');
 

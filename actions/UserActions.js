@@ -35,19 +35,6 @@ const setCsrf = function (csrf) {
   };
 };
 
-const setChangePassword = function () {
-  return {
-    type: types.SETTINGS_SET_CHANGE_PASSWORD,
-    enable: true,
-  };
-};
-
-const resetChangePassword = function () {
-  return {
-    type: types.SETTINGS_SET_CHANGE_PASSWORD,
-    enable: false,
-  };
-};
 
 /**
  * Action that is dispatched after authentication success
@@ -384,6 +371,4 @@ module.exports = {
   requestPasswordReset,
   resetPassword,
   changePassword,
-  setChangePassword,
-  resetChangePassword,
 };
