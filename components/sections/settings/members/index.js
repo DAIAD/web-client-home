@@ -54,7 +54,12 @@ function MembersSettings(props) {
       <Confirm
         show={confirm.item !== null && confirm.mode !== null}
         confirmation={confirm}
-        message={confirm.item && confirm.mode ? `Are you sure you want to ${confirm.mode} member ${confirm.item.name}?` : ''}
+        message={confirm.item && confirm.mode ? 
+          _t('forms.confirm', { 
+            action: String(_t(`forms.${confirm.mode}`)).toLowerCase(), 
+            item: confirm.item.name,
+          })
+          : ''}
         onConfirm={clickConfirm}
         onClose={resetConfirm}
       />

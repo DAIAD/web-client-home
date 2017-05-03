@@ -34,11 +34,7 @@ function AddWidgetForm(props) {
                 widgetTypes.map((t, idx) =>
                   <li  
                     key={idx} 
-                    className={`
-                      add-widget-type 
-                      ${t.display} 
-                      ${t.id === id ? 'selected' : ''}
-                      `}
+                    className={`add-widget-type ${t.display} ${t.id === id ? 'selected' : ''}`}
                   >
                     <button
                       className="btn-a"

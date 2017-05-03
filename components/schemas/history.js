@@ -217,7 +217,7 @@ const breakdown = [
 const forecast = [
   {
     id: 'forecast',
-    name: <FormattedMessage id="history.forecasted" />,
+    name: <FormattedMessage id="history.forecast" />,
     value: value => <DisplayMetric className="table-highlight" value={value} />,
   },
   ...meter,

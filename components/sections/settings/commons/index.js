@@ -56,7 +56,7 @@ function CommonsSettings(props) {
         confirmation={confirm}
         message={confirm.item && confirm.mode ? 
           _t('forms.confirm', { 
-            action: confirm.mode, 
+            action: String(_t(`forms.${confirm.mode}`)).toLowerCase(), 
             item: confirm.item.name,
           })
           : ''}
