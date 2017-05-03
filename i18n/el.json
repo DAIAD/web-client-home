@@ -15,69 +15,166 @@
     "Europe/Athens": "Αθήνα",
     "Europe/Madrid": "Μαδρίτη"
   },
-  "weekdays": {
-    "0": "Κυριακή",
-    "1": "Δευτέρα",
-    "2": "Τρίτη",
-    "3": "Τετάρτη",
-    "4": "Πέμπτη",
-    "5": "Παρασκευή",
-    "6": "Σάββατο"
+   "errors": {
+     "SharedErrorCode": {
+      "UNKNOWN": "Άγνωστο σφάλμα. Παρακαλώ ανανεώστε την σελίδα αλλιώς επικοινωνήστε μαζί μας", 
+      "PARSE_ERROR": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
+      "AUTHENTICATION": "Ο λογαριασμός ή/και ο κωδικός πρόσβασης είναι λάθος. Η σύνδεση απέτυχε."
+     },
+    "unknownError": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
+    "Not Found": "API call not found.",
+    "Internal Server Error": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
+    "Forbidden": "You have been idle for a long time. Please refresh the page",
+    "fileWrongType": "Wrong file type. Only png, jpeg supported",
+    "fileExceedSize": "File size too large. Up to 2MB allowed",
+    "fileUploadError": "File upload error.",
+    "noPassword": "No password provided.",
+    "passwordMismatch": "Password mismatch. Please make sure you entered the same password twice",
+    "passwordTooShort": "The password is too short. At least 8 characters required",
+    "CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Captcha verification failed. Please confirm you are a human being",
+    "PasswordErrorCode.WEAK_PASSWORD": "The password you provided is weak. At least 8 characters required"
   },
-  "months": {
-    "0": "Ιανουάριος",
-    "1": "Φεβρουάριος",
-    "2": "Μάρτιος",
-    "3": "Απρίλιος",
-    "4": "Μάιος",
-    "5": "Ιούνιος",
-    "6": "Ιούλιος",
-    "7": "Αύγουστος",
-    "8": "Σεπτέμβριος",
-    "9": "Οκτώβριος",
-    "10": "Νοέμβριος",
-    "11": "Δεκέμβριος"
-  },
-  "errors": {
-    "Error: SharedErrorCode.UNKNOWN": "Άγνωστο σφάλμα. Παρακαλώ ανανεώστε την σελίδα", 
-    "SharedErrorCode.AUTHENTICATION": "Ο λογαριασμός ή/και ο κωδικός πρόσβασης είναι λάθος. Η σύνδεση απέτυχε.",
-    "SharedErrorCode.UNKNOWN": "Αντιμετωπίζουμε κάποιο πρόβλημα. Παρακαλώ ξαναδοκιμάστε σε λίγο"
+  "info": {
+    "passwordMailSent": "An email has been sent to the address you provided. Please check your inbox"
   },
   "forms": {
-    "submit": "Ενημέρωση"
+    "create": "Create",
+    "update": "Update",
+    "delete": "Delete",
+    "leave": "Leave",
+    "join": "Join",
+    "cancel": "Cancel",
+    "add": "Add",
+    "set": "Set",
+    "yes": "Yes",
+    "no": "No",
+    "back": "Back",
+    "noname": "No name",
+    "select": "Select",
+    "confirm-title": "Confirmation",
+    "confirm": "Are you sure you want to {action} {item}?",
+    "previous": "Previous",
+    "next": "Next",
+    "clear": "Clear",
+    "download": "Download",
+    "saved": "Saved"
   },
-  "loginForm" : {
-    "login" : {
-      "failure" : "Ο λογαριασμός ή/και ο κωδικός πρόσβασης είναι λάθος. Η σύνδεση απέτυχε."
+  "loginForm": {
+    "login": {
+      "failure": "Authentication has failed. Please try again."
     },
     "button": {
-      "signin": "Σύνδεση",
-      "signout": "Έξοδος"
+      "signin": "Sign in",
+      "signout": "Sign out",
+      "reset-request": "Reset",
+      "reset-submit": "Submit"
     },
-    "placehoder": {
-      "username":"Όνομα χρήστη",
-      "password":"Κωδικός πρόσβασης"
-    }
+    "placeholder": {
+      "username": "Username",
+      "password": "Password",
+      "password-confirm": "Confirm password"
+    },
+    "forgotPassword": "Forgot your password?"
   },
   "section": {
     "dashboard": "Περίληψη",
     "history":"Στατιστικά",
+    "explore":"Explore",
+    "forecast":"Forecast",
     "shower": "Ντους",
+    "shower-aggregated": "Total data",
     "commons": "Κοινά",
     "notifications": "Ενημερώσεις",
-    "search": "Αναζήτηση",
+    "reports" : "Reports",
     "alerts": "Alerts",
+    "recommendations": "Insights",
     "tips": "Συμβουλές",
-    "insights": "Insights",
     "settings": "Ρυθμίσεις",
     "profile": "Προφίλ",
+    "members": "Members",
     "devices": "Συσκευές",
-    "reporting": "Reporting",
-    "export": "Export",
-    "login": "Σύνδεση"
+    "commonsManage": {
+      "edit": "Manage",
+      "new": "Create new",
+      "join": "Join" 
+    },
+    "membersManage": {
+      "edit": "Manage",
+      "create": "Create new"
+    },
+    "login": "Σύνδεση",
+    "reset": "Password reset"
+  },
+  "common": {
+    "sortby": "Sort by",
+    "found": "Found",
+    "chart": "Chart",
+    "user": "User",
+    "date": "Date",
+    "time": "Time",
+    "me": "Me"
   },
   "dashboard": {
-    "hello": "Γειά σου {name}!"
+    "hello": "Γειά σου {name}!",
+     "add": "Add widget",
+    "add-widget-placeholder": "Enter title...",
+    "save": "Save changes?"
+  },
+  "widget": {
+    "shower-average": "Average shower",
+    "consumption": "Consumption",
+    "no-tips": "Sorry, no tips available",
+    "explore": "See more",
+    "explore-showers": "Explore all showers",
+    "explore-last-shower": "See details",
+    "explore-swm": "See more",
+    "explore-comparisons": "See comparisons",
+    "explore-common": "Explore community",
+    "empty-or-no-fav-common": "No communities joined yet or no favorite community set",
+    "titles": {
+      "totalVolumeStatAmphiro": "Shower Volume (metric)",
+      "totalVolumeChartAmphiro": "Shower Volume (progress)",
+      "totalVolumeStatSWM": "Water (metric)",
+      "totalVolumeChartSWM": "Water (progress)",
+      "totalEnergyStat": "Shower Energy (metric)",
+      "totalEnergyChart": "Shower Energy (progress)",
+      "totalTemperatureStat": "Shower Temperature (metric)",
+      "totalTemperatureChart": "Shower Temperature (progress)",
+      "last": "Last shower",
+      "efficiencyEnergy": "Energy efficiency",
+      "ranking": "Shower ranking",
+      "breakdown": "Water breakdown",
+      "forecast": "Forecast - next month",
+      "pricing": "Pricing - this month",
+      "comparison": "Comparison - last month",
+      "budget": "Monthly budget",
+      "wateriqStat": "Water IQ - last month",
+      "wateriqChart": "Water IQ Comparison - last month",
+      "commons": "Community comparison",
+      "tip": "Latest tip"
+    },
+    "descriptions": {
+      "totalVolumeStatAmphiro": "A stat widget displaying the total consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
+      "totalVolumeChartAmphiro": "A chart widget presenting the consumption for your last 10 showers for all installed devices. You can later change this to show the last 20 or 50 showers.",
+      "totalVolumeStatSWM": "A widget displaying your household's total water consumption for the last month. You can later change it to daily, weekly or yearly consumption.",
+      "totalVolumeChartSWM": "A chart widget displaying your household's total water consumption progress in the last month. You can later change it to daily, weekly or yearly consumption.",
+      "totalEnergyStat": "A stat widget displaying the total energy consumption for your last 10 showers. You can later change this to show the last 20 or 50 showers.", 
+      "totalEnergyChart": "A chart widget displaying the total energy progress for your last 10 showers. You can later change this to show the last 20 or 50 showers.", 
+      "totalTemperatureStat": "A widget displaying the average temperature for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
+      "totalTemperatureChart": "A widget displaying the average temperature variation for your last 10 showers. You can later change this to show the last 20 or 50 showers.",
+      "last": "A widget displaying the last shower recorded for all your devices.",
+      "efficiencyEnergy": "A widget displaying your shower energy score for the last 10 showers. You can later change this to see the energy efficiency for the last 20 or 50 showers.",
+      "ranking": "A widget displaying the household members ranking based on average shower water consumption.",
+      "breakdown": "A chart widget displaying your computed water use per household appliance.", 
+      "forecast": "A chart widget depicting our estimations for your water use for the next month based on your use so far!",
+      "pricing": "A chart widget showing your monthly consumption within the price ranges",
+      "comparison": "A widget showing your consumption in comparison to others, like your neighbors or your city average for the previous month.",
+      "budget": "A widget showing your consumption based on your daily budget.",
+      "wateriqStat": "A widget showing your Water IQ for the previous month.",
+      "wateriqChart": "A chart widget showing your Water IQ for the previous month against your city, neighbors and similar users.",
+      "commons": "A chart widget showing your consumption against your favorite community for the current month. You can later change this to weekly, or monthly period. You can select your favorite community in the settings section.",
+      "tip": "A widget displaying a tip to help you reduce consumption"
+    }
   },
   "shower": {
     "details": "Λεπτομέρειες ντους"
@@ -86,18 +183,46 @@
     "showers": "Ντους",
     "duration": "Διάρκεια",
     "volume": "Νερό",
+    "total": "Άθροισμα",
     "temperature": "Θερμοκρασία",
     "energy": "Ενέργεια",
     "count": "Αθροισμένα ντους",
     "limitedData": "Ωπ, περιορισμένα δεδομένα...",
-    "always": "Από την αρχή του χρόνου",
-    "year": "Χρόνος",
-    "month": "Μήνας",
-    "week": "Εβδομάδα",
-    "day": "Ημέρα"
+    "device": "Device",
+    "id": "ID",
+    "real": "Real",
+    "statistics": "Stats",
+    "wateriq": "Water IQ",
+    "cost": "Cost",
+    "breakdown": "Water breakdown",
+    "forecast": "Forecast",
+    "breakdownUse": "Use",
+    "member-filter": "Everyone",
+    "compare-against": "Compare against",
+    "consumption-min": "Minimum consumption this {period}. Well done!",
+    "consumption-min-short": "Minimum consumption",
+    "consumption-max": "Maximum consumption this {period}",
+    "consumption-max-short": "Maximum consumption",
+    "in-detail": "In detail",
+    "volumeDetails": "Total water used for this shower",
+    "temperatureDetails": "Average water temperature",
+    "energyDetails": "Estimated energy used for hot water",
+    "countDetails": "The total number of aggregated showers",
+    "forecastDetails": "Forecasting estimates...",
+    "durationDetails": "The duration of the shower",
+    "wateriqDetails": "Water IQ is a...",
+    "totalDetails": "Total volume...",
+    "costDetails": "Cost is calculated...",
+    "inPicturesHover": "Approximately {number} times the {metric} of a {scale}!",
+    "bottle": "bottle",
+    "bucket": "bucket",
+    "pool": "pool",
+    "light-bulb": "light bulb",
+    "home-energy": "home",
+    "city": "city",
+    "shower-delete": "Delete shower"
   },
   "periods": {
-    "always": "Since the beginning of time",
     "custom": "Προσαρμοσμένο",
     "year": "Χρόνος",
     "month": "Μήνας",
@@ -105,11 +230,38 @@
     "day": "Ημέρα",
     "ten": "Τελ. 10",
     "twenty": "Τελ. 20",
-    "fifty": "Τελ. 50"
+    "fifty": "Τελ. 50",
+    "all": "All"
   },
-
+  "comparisons": {
+    "all": "City",
+    "nearest": "Neighbors",
+    "similar": "Similar",
+    "user": "You",
+    "last": "{comparison}",
+    "common": "{comparison}",
+    "member": "{comparison}",
+    "better-AMPHIRO": "{percent}% better than previous {period}",
+    "worse-AMPHIRO": "{percent}% worse than previous {period}",
+    "better-METER": "{percent}% better than last {period}", 
+    "worse-METER": "{percent}% worse than last {period}",
+    "no-data": "No comparison data",
+    "wateriq-best": "{month} is the best ({value}) of the last six months",
+    "wateriq-worst": "{month} is the worst ({value}) of the last six months",
+    "wateriq-no-data": "Water IQ not computed yet"
+  },
+  "breakdown": {
+    "shower": "Shower",
+    "bath": "Bath",
+    "washing-machine": "Washing machine",
+    "other": "Other"
+  },
   "notifications": {
-    "showAll": "Προβολή όλων"
+    "showAll": "Προβολή όλων",
+    "alerts": "Alerts",
+    "announcements": "Announcements",
+    "recommendations": "Recommendations",
+    "tips": "Tips"
   },
   "profile": {
     "locale": "Γλώσσα",
@@ -121,16 +273,114 @@
     "zip": "Τ.Κ.",
     "country": "Χώρα",
     "timezone": "Ζώνη ώρας",
-    "submit": "Ενημέρωση"
+    "changePassword": "Change password",
+    "unit": {
+      "label": "System unit",
+      "default": "Select system unit",
+      "METRIC": "Metric",
+      "IMPERIAL": "Imperial"
+    }
+  },
+  "member": {
+    "name": "Name",
+    "age": "Age",
+    "gender": "Gender",
+    "placeholder-name": "Member name",
+    "placeholder-age": "Member age",
+    "placeholder-gender": "Member gender",
+    "MALE": "Male",
+    "FEMALE": "Female"
   },
   "devices": {
-    "name": "Όνομα συσκευής",
-    "key": "Κλειδί συσκευής",
-    "mac": "Διεύθυνση Mac",
-    "macaddress": "Διεύθυνση Mac",
-    "properties": "Ιδιότητες",
-    "model": "Μοντέλο",
-    "manufacturer": "Κατασκευαστής",
-    "serial": "Σειριακός αριθμός"
+    "amphiro": "Shower device",
+    "amphiros": "Shower devices",
+    "meter": "Water Meter",
+    "meters": "Water Meters",
+    "properties": "Properties",
+    "no-properties": "No properties",
+    "name": {
+      "label": "Device name"
+    },
+    "key": {
+      "label": "Device key"
+    },
+    "mac": {
+      "label": "Mac address"
+    },
+    "model": {
+      "label": "Model"
+    },
+    "manufacturer": {
+      "label": "Manufacturer"
+    },
+    "serial": {
+      "label": "Serial"
+    },
+    "registeredOn": {
+      "label": "Registered on"
+    },
+    "heating-system": {
+      "label": "Heating system",
+      "default": "Select heating system",
+      "0": "Electricity",
+      "1": "Oil",
+      "2": "Gas"
+    },
+    "heating-efficiency": {
+      "label": "Heating efficiency",
+      "help": "Heating efficiency percentage of device"
+    },
+    "cost-energy": {
+      "label": "Energy cost",
+      "help": "The cost per KWh in euros"
+    },
+    "cost-water": {
+      "label": "Water cost",
+      "help": "The cost per cubic liter in euros"
+    },
+    "share-of-solar": {
+      "label": "Share of solar",
+      "help": " "
+    }
+  },
+  "commonsManage": {
+    "name": "Name",
+    "members": "Members",
+    "description": "Description",
+    "placeholder-name": "Community name",
+    "placeholder-description": "Community description",
+    "setFavorite": "Set favorite community",
+    "resetFavorite": "Reset favorite community",
+    "empty": "No communities found"
+  },
+  "commons": {
+    "list": "My commons",
+    "details": "Details",
+    "members": "Members",
+    "created": "Created",
+    "updated": "Last updated",
+    "empty": "No communities joined yet",
+    "noCommons": "Not a member of any commmunities yet",
+    "myCommons": "My Communities",
+    "ranking": "Ranking",
+    "date-joined": "Date joined",
+    "placeholder-search-members": "Search members...",
+    "select-info": "Click on up to 3 members to compare against",
+    "memberSince": "Member since"
+  },
+  "reports": {
+    "report": "Report",
+    "period": "Period",
+    "empty": "No reports for this year",
+    "created": "Created",
+    "size": "Size"
+  },
+  "404": {
+    "title": "reasons you shouldn't be here",
+    "link": "Go back"
+  },
+  "footer": {
+    "contact": "Contact",
+    "terms": "Terms of service"
   }
 }

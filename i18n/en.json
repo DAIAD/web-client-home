@@ -16,20 +16,23 @@
     "Europe/Madrid": "Madrid"
   },
   "errors": {
-    "Error: SharedErrorCode.AUTHENTICATION": "You are not authorized to perform this action. Try refreshing the page",
-    "Error: unknownError": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
-    "Error: Not Found": "API call not found. Your developer should be fired.",
-    "Error: SharedErrorCode.UNKNOWN": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.", 
-    "Error: Internal Server Error": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
-    "Error: Forbidden": "You have been idle for a long time. Please refresh the page",
+    "SharedErrorCode": {
+      "AUTHENTICATION": "You are not authorized to perform this action. Try refreshing the page",
+      "UNKNOWN": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.", 
+      "PARSE_ERROR": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring."
+    },
+    "unknownError": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
+    "Not Found": "API call not found.",
+    "Internal Server Error": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
+    "Forbidden": "You have been idle for a long time. Please refresh the page",
     "fileWrongType": "Wrong file type. Only png, jpeg supported",
     "fileExceedSize": "File size too large. Up to 2MB allowed",
     "fileUploadError": "File upload error.",
     "noPassword": "No password provided.",
     "passwordMismatch": "Password mismatch. Please make sure you entered the same password twice",
     "passwordTooShort": "The password is too short. At least 8 characters required",
-    "Error: CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Captcha verification failed. Please confirm you are a human being",
-    "Error: PasswordErrorCode.WEAK_PASSWORD": "The password you provided is weak. At least 8 characters required"
+    "CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Captcha verification failed. Please confirm you are a human being",
+    "PasswordErrorCode.WEAK_PASSWORD": "The password you provided is weak. At least 8 characters required"
   },
   "info": {
     "passwordMailSent": "An email has been sent to the address you provided. Please check your inbox"
@@ -53,7 +56,8 @@
     "previous": "Previous",
     "next": "Next",
     "clear": "Clear",
-    "download": "Download"
+    "download": "Download",
+    "saved": "Saved"
   },
   "loginForm": {
     "login": {
@@ -82,11 +86,9 @@
     "commons": "Communities",
     "notifications": "Messages",
     "reports" : "Reports",
-    "search": "Search",
     "alerts": "Alerts",
     "recommendations": "Insights",
     "tips": "Tips",
-    "insights": "Insights",
     "settings": "Settings",
     "profile": "Profile",
     "members": "Members",
@@ -184,7 +186,6 @@
     "total": "Total volume",
     "temperature": "Temperature",
     "energy": "Energy",
-    "forecasted": "Forecasted",
     "count": "Total Showers",
     "device": "Device",
     "id": "ID",
@@ -222,7 +223,6 @@
     "shower-delete": "Delete shower"
   },
   "periods": {
-    "always": "Since the beginning of time",
     "custom": "Custom",
     "year": "Year",
     "month": "Month",
@@ -268,7 +268,6 @@
     "locale": "Language",
     "username": "Username",
     "email": "Email",
-    "fullname": "Full name",
     "firstname": "First name",
     "lastname": "Last name",
     "address": "Address",
@@ -342,7 +341,7 @@
     },
     "share-of-solar": {
       "label": "Share of solar",
-      "help": "..."
+      "help": " "
     }
   },
   "commonsManage": {
