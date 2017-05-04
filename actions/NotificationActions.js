@@ -87,19 +87,19 @@ const acknowledge = function (id, category, timestamp) {
 
     return messageAPI.acknowledge(data)
     .then((response) => {
+      dispatch(QueryActions.receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
       
-      dispatch(QueryActions.receivedQuery(response.success, response.errors));
-
       dispatch(setMessageRead(id, category, timestamp));
       
       return response;
     })
     .catch((error) => {
-      dispatch(QueryActions.receivedQuery(false, error));
-      throw error;
+      dispatch(QueryActions.setError(error));
+      return error;
     });
   };
 };
@@ -211,10 +211,11 @@ const fetch = function (options) {
 
     return messageAPI.fetch(data)
     .then((response) => {
+      dispatch(QueryActions.receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      dispatch(QueryActions.receivedQuery(response.success, null));
 
       // make sure announcements have description field like other message types
       const announcements = response.announcements.map(m => ({
@@ -229,7 +230,7 @@ const fetch = function (options) {
     })
     .catch((error) => {
       console.error('Caught error in messages fetch:', error); 
-      dispatch(QueryActions.receivedQuery(false, error));
+      dispatch(QueryActions.setError(error));
     });
   };
 };

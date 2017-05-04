@@ -130,7 +130,11 @@ const fetchComparison = function (id, query) {
     return dispatch(QueryActions.queryDataAverage(query))
     .then(populations => Array.isArray(populations) && populations.length > 0 ? 
           populations[0] : [])
-    .then(common => dispatch(setComparisonSessions(id, common)));
+    .then(common => dispatch(setComparisonSessions(id, common)))
+    .catch((error) => {
+      console.error('caught error in fetch comparison', id, error);
+      dispatch(QueryActions.setError(error));
+    });
   };
 };
 
@@ -176,14 +180,22 @@ const fetchComparisonData = function () {
           time,
           userKey: getState().user.profile.key,
         }))
-        .then(nearest => dispatch(setComparisonSessions('nearest', nearest)));
+        .then(nearest => dispatch(setComparisonSessions('nearest', nearest)))
+        .catch((error) => {
+          console.error('caught error in fetch nearest user comparison', error);
+          dispatch(QueryActions.setError(error));
+        });
       } else if (comparison.id === 'similar') {
         return dispatch(QueryActions.fetchUserComparison({
           comparison: 'similar',
           time,
           userKey: getState().user.profile.key,
         }))
-        .then(nearest => dispatch(setComparisonSessions('similar', nearest)));
+        .then(nearest => dispatch(setComparisonSessions('similar', nearest)))
+        .catch((error) => {
+          console.error('caught error in fetch similar user comparison', error);
+          dispatch(QueryActions.setError(error));
+        });
       } else if (activeDeviceType === 'AMPHIRO' && !isNaN(comparison.id)) {
         return dispatch(QueryActions.queryDeviceSessions({ 
           deviceKey: activeDevice, 
@@ -193,7 +205,11 @@ const fetchComparisonData = function () {
         }))
         .then((sessions) => {
           dispatch(setComparisonSessions(comparison.id, sessions));
-        });
+        })
+        .catch((error) => {
+          console.error('caught error in query comparison device sessions', comparison.id, error);
+          dispatch(QueryActions.setError(error));
+        }); 
       }
       return Promise.resolve();
     }));
@@ -217,6 +233,7 @@ const fetchForecastData = function () {
     })
     .catch((error) => {
       dispatch(setForecastData({}));
+      dispatch(QueryActions.setError(error));
       console.error('Caught error in history forecast query:', error);
     });
   };
@@ -234,6 +251,7 @@ const fetchWaterIQData = function () {
     })
     .catch((error) => {
       dispatch(setWaterIQSessions([]));
+      dispatch(QueryActions.setError(error));
       console.error('Caught error in history water iq query:', error);
     });
   };
@@ -265,6 +283,7 @@ const fetchData = function () {
       .then(() => dispatch(setDataSynced()))
       .catch((error) => { 
         console.error('Caught error in history device query:', error); 
+        dispatch(QueryActions.setError(error));
         dispatch(setSessions([]));
         dispatch(setDataSynced());
       });
@@ -280,6 +299,7 @@ const fetchData = function () {
         })
         .catch((error) => { 
           console.error('Caught error in history meter query:', error); 
+        dispatch(QueryActions.setError(error));
           dispatch(setSessions([]));
           dispatch(setDataSynced());
         })
@@ -559,6 +579,7 @@ const fetchDeviceSession = function (id, deviceKey) {
     })
     .catch((error) => {
       console.error('error fetching sesssion', error);
+      dispatch(QueryActions.setError(error));
     });
   };
 };
@@ -743,7 +764,11 @@ const initPriceBrackets = function () {
       minVolume: bracket.minVolume * 1000,
       maxVolume: bracket.maxVolume * 1000,
     })) : [])
-    .then(brackets => dispatch(setPriceBrackets(brackets)));
+    .then(brackets => dispatch(setPriceBrackets(brackets)))
+    .catch((error) => {
+      console.error('caught error in init price brackets', error);
+      dispatch(QueryActions.setError(error));
+    });
   };
 };
 
@@ -758,7 +783,11 @@ const initWaterBreakdown = function () {
   return function (dispatch, getState) {
     dispatch(QueryActions.fetchWaterBreakdown())
     .then(labels => Array.isArray(labels) ? labels.reverse() : [])
-    .then(labels => dispatch(setBreakdownLabels(labels)));
+    .then(labels => dispatch(setBreakdownLabels(labels)))
+    .catch((error) => {
+      console.error('caught error in init water breakdown', error);
+      dispatch(QueryActions.setError(error));
+    });
   };
 };
 

@@ -1,5 +1,5 @@
 const types = require('../constants/ActionTypes');
-const { requestedQuery, receivedQuery, setSuccess, resetSuccess } = require('./QueryActions');
+const { requestedQuery, receivedQuery, setSuccess, resetSuccess, setError } = require('./QueryActions');
 const { clearCacheItems } = require('./CacheActions');
 
 const showersAPI = require('../api/showers');
@@ -26,12 +26,12 @@ const assignToMember = function (options) {
 
     return showersAPI.assignToMember(data)
     .then((response) => {
+      dispatch(receivedQuery());
 
       if (!response || !response.success) {
         throwServerError(response);  
       }
 
-      dispatch(receivedQuery(response.success, response.errors));
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
@@ -41,7 +41,7 @@ const assignToMember = function (options) {
     })
     .catch((errors) => {
       console.error('Error caught on assign shower to member:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };
@@ -63,7 +63,7 @@ const ignoreShower = function (options) {
 
     return showersAPI.ignoreShower(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
 
       if (!response || !response.success) {
         throwServerError(response);  
@@ -78,7 +78,7 @@ const ignoreShower = function (options) {
     }) 
     .catch((errors) => {
       console.error('Error caught on ignore shower:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };
@@ -98,6 +98,8 @@ const setShowerReal = function (options) {
 
     return showersAPI.setShowerReal(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
@@ -111,7 +113,7 @@ const setShowerReal = function (options) {
     }) 
     .catch((errors) => {
       console.error('Error caught on set shower real:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };

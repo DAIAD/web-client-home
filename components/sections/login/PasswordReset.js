@@ -21,14 +21,16 @@ const PasswordResetForm = React.createClass({
         className="form-login" 
         onSubmit={(e) => {
           e.preventDefault();
-          validatePassword(this.password, this.confirmPassword)
-          .then(() => {
-            this.props.resetPassword(this.password, this.token, this.captcha)
-            .then(goToLogin);
-          })
-          .catch((error) => {
+
+          try {
+            validatePassword(this.password, this.confirmPassword)
+            .then(() => {
+              this.props.resetPassword(this.password, this.token, this.captcha)
+              .then(goToLogin);
+            });
+          } catch (error) {
             setError(error);
-          });
+          }
         }}
       >
         <h3><FormattedMessage id="section.reset" /></h3>

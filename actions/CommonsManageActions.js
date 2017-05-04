@@ -1,7 +1,7 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
-const { requestedQuery, receivedQuery, setSuccess, resetSuccess } = require('./QueryActions');
+const { requestedQuery, receivedQuery, setError, setSuccess, resetSuccess } = require('./QueryActions');
 const commonsAPI = require('../api/commons');
 
 const { getDeviceKeysByType } = require('../utils/device');
@@ -78,13 +78,14 @@ const searchCommons = function () {
     };
 
     dispatch(requestedQuery());
+
     return commonsAPI.searchCommons(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
-
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -96,8 +97,7 @@ const searchCommons = function () {
     })
     .catch((error) => {
       console.error('caught error in search commons: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };
@@ -129,13 +129,14 @@ const createCommon = function (common) {
 
     return commonsAPI.createCommon(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -144,8 +145,7 @@ const createCommon = function (common) {
     })
     .catch((error) => {
       console.error('caught error in create common: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };
@@ -161,13 +161,14 @@ const updateCommon = function (common) {
 
     return commonsAPI.updateCommon(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -176,8 +177,7 @@ const updateCommon = function (common) {
     })
     .catch((error) => {
       console.error('caught error in update common: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };
@@ -193,13 +193,14 @@ const deleteCommon = function (key) {
 
     return commonsAPI.deleteCommon(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -208,8 +209,7 @@ const deleteCommon = function (key) {
     })
     .catch((error) => {
       console.error('caught error in delete common: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };
@@ -225,13 +225,14 @@ const joinCommon = function (key) {
 
     return commonsAPI.joinCommon(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -240,8 +241,7 @@ const joinCommon = function (key) {
     })
     .catch((error) => {
       console.error('caught error in join common: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };
@@ -257,13 +257,14 @@ const leaveCommon = function (key) {
 
     return commonsAPI.leaveCommon(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -272,8 +273,7 @@ const leaveCommon = function (key) {
     })
     .catch((error) => {
       console.error('caught error in leave common: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };

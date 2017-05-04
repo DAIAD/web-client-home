@@ -39,7 +39,7 @@ const queryData = function (options) {
 
     return dataAPI.query(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
       
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
@@ -55,7 +55,6 @@ const queryData = function (options) {
     })
     .catch((error) => {
       console.error('caught error in data query: ', error);
-      dispatch(receivedQuery(false, error));
       throw error;
     });
   };
@@ -84,7 +83,7 @@ const queryDeviceSessions = function (options) {
 
     return deviceAPI.querySessions(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors, response.devices));
+      dispatch(receivedQuery());
 
       if (!response || !response.success || !response.devices) {
         genUtils.throwServerError(response);  
@@ -93,7 +92,7 @@ const queryDeviceSessions = function (options) {
       return response.devices;
     })
     .catch((error) => {
-      dispatch(receivedQuery(false, error));
+      console.error('caught error in query device sessions', error);
       throw error;
     });
   };
@@ -118,16 +117,16 @@ const fetchDeviceSession = function (options) {
 
     return deviceAPI.getSession(data)
       .then((response) => {
-        dispatch(receivedQuery(response.success, response.errors, response.session));
+        dispatch(receivedQuery());
         
         if (!response || !response.success) {
           genUtils.throwServerError(response);  
         }
         return response.session;
       })
-      .catch((errors) => {
-        dispatch(receivedQuery(false, errors));
-        throw errors;
+      .catch((error) => {
+        console.error('caught error in fetch device sessions', error);
+        throw error;
       });
   };
 };
@@ -145,7 +144,7 @@ const queryMeterForecast = function (options) {
     dispatch(requestedQuery());
     return dataAPI.getForecast(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
       
       if (!response || !response.success || !Array.isArray(response.meters) || 
           !response.meters[0] || !response.meters[0].points) {
@@ -155,7 +154,6 @@ const queryMeterForecast = function (options) {
     })
     .catch((error) => {
       console.error('caught error in query meter forecast: ', error);
-      dispatch(receivedQuery(false, error));
       throw error;
     });
   };
@@ -174,7 +172,7 @@ const queryUserComparisons = function (options) {
 
     return dataAPI.getComparisons(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
       
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
@@ -184,7 +182,6 @@ const queryUserComparisons = function (options) {
     })
     .catch((error) => {
       console.error('caught error in fetch user comparisons: ', error);
-      dispatch(receivedQuery(false, error));
       throw error;
     });
   };
@@ -200,17 +197,16 @@ const fetchWaterBreakdown = function () {
 
     return dataAPI.getWaterBreakdown(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
 
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
       }
       return response.labels;
     }) 
-    .catch((errors) => {
-      console.error('Error caught on fetch water breakdown:', errors);
-      dispatch(receivedQuery(false, errors));
-      return errors;
+    .catch((error) => {
+      console.error('Error caught on fetch water breakdown:', error);
+      throw error;
     });
   };
 };
@@ -225,17 +221,16 @@ const fetchPriceBrackets = function () {
 
     return dataAPI.getPriceBrackets(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
 
       if (!response || !response.success) {
         genUtils.throwServerError(response);  
       }
       return response.brackets;
     }) 
-    .catch((errors) => {
-      console.error('Error caught on get price brackets:', errors);
-      dispatch(receivedQuery(false, errors));
-      return errors;
+    .catch((error) => {
+      console.error('Error caught on get price brackets:', error);
+      throw error;
     });
   };
 };

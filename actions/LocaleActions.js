@@ -8,7 +8,7 @@
 const localeAPI = require('../api/locales');
 const types = require('../constants/ActionTypes');
 
-const { requestedQuery, receivedQuery } = require('./QueryActions');
+const { requestedQuery, receivedQuery, setError } = require('./QueryActions');
 
 const { flattenMessages } = require('../utils/general');
 
@@ -40,20 +40,20 @@ const fetchLocaleMessages = function (locale) {
 
     return localeAPI.fetchLocaleMessages({ locale })
     .then((response) => {
+      dispatch(receivedQuery());
+
       const messages = { ...response };
       const { csrf } = messages;
       delete messages.csrf;
       
       if (csrf) { dispatch(setCsrf(csrf)); }
 
-      dispatch(receivedQuery(true, null));
-
       dispatch(receivedMessages(locale, flattenMessages(messages)));
       return messages;
     })
     .catch((errors) => {
-      dispatch(receivedQuery(false, errors));
-      return errors;
+      console.error('caught error on locale fetch', errors);
+      dispatch(setError(errors));
     });
   };
 };

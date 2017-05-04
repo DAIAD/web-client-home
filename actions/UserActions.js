@@ -10,7 +10,7 @@ const deviceAPI = require('../api/device');
 const types = require('../constants/ActionTypes');
 
 const InitActions = require('./InitActions');
-const { setSuccess, resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo } = require('./QueryActions');
+const { setSuccess, resetSuccess, requestedQuery, receivedQuery, dismissError, setInfo, setError } = require('./QueryActions');
 const { SUCCESS_SHOW_TIMEOUT } = require('../constants/HomeConstants');
 const { filterObj, throwServerError } = require('../utils/general');
 
@@ -84,34 +84,34 @@ const login = function (username, password) {
 
     return userAPI.login(username, password)
     .then((response) => {
-      const { csrf, success, errors, profile } = response;
+      dispatch(receivedQuery());
 
-      if (csrf) { dispatch(setCsrf(csrf)); }
-
-      dispatch(receivedQuery(success, errors.length ? errors[0].code : null));
-
-      // Actions that need to be dispatched on login
-      if (success) {
-        dispatch(dismissError());
-        dispatch(receivedLogin(profile));
-        return dispatch(InitActions.initHome(profile))
-        .then(() => {
-          dispatch(InitActions.setReady());
-          dispatch(letTheRightOneIn());
-
-          const transitionState = getState().routing.locationBeforeTransitions.state;
-          if (transitionState) {
-            // go to saved pathname
-            dispatch(push(transitionState.nextPathname));
-          } else {
-            // go to routing root 
-            dispatch(push('/'));
-          }
-        });
+      if (!response || !response.success) {
+        throwServerError(response);  
       }
-      return Promise.reject(response);
+      const { csrf, success, errors, profile } = response;
+      if (csrf) { dispatch(setCsrf(csrf)); }
+      
+      // Actions that need to be dispatched on login
+      dispatch(dismissError());
+      dispatch(receivedLogin(profile));
+      return dispatch(InitActions.initHome(profile))
+      .then(() => {
+        dispatch(InitActions.setReady());
+        dispatch(letTheRightOneIn());
+
+        const transitionState = getState().routing.locationBeforeTransitions.state;
+        if (transitionState) {
+          // go to saved pathname
+          dispatch(push(transitionState.nextPathname));
+        } else {
+          // go to routing root 
+          dispatch(push('/'));
+        }
+      });
     })
     .catch((errors) => {
+      dispatch(setError(errors));
       console.error('Error caught on user login:', errors);
     });
   };
@@ -130,16 +130,17 @@ const logout = function () {
 
     return userAPI.logout({ csrf })
     .then((response) => {
+      dispatch(receivedQuery());
+
       const { success, errors } = response;
     
       dispatch(push('/login'));
-      dispatch(receivedQuery(success, errors.length ? errors[0].code : null));
       dispatch(receivedLogout());
 
       return response;
     })
     .catch((errors) => {
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       //dispatch(receivedLogout());
       console.error('Error caught on logout:', errors);
       return errors;
@@ -154,28 +155,28 @@ const logout = function () {
  */
 const refreshProfile = function () {
   return function (dispatch, getState) {
-    dispatch(fetchProfile())
+    return dispatch(fetchProfile())
     .then((response) => {
-      const { success, profile } = response;
-
-      if (success) {
-        // if refresh successful initialize
-        dispatch(InitActions.initHome(profile))
-        .then(() => {
-          dispatch(InitActions.setReady());
-          dispatch(letTheRightOneIn());
-
-          // make sure pathname does not remain /login
-          if (getState().routing.locationBeforeTransitions.pathname === 'login') {
-            dispatch(push('/'));
-          }
-        });
-      } else {
-        // else enable login
-        dispatch(InitActions.setReady());
+      if (!response || !response.success) {
+        throwServerError(response);  
       }
+
+      const { success, profile } = response;
+      
+      // if refresh successful initialize
+      return dispatch(InitActions.initHome(profile))
+      .then(() => {
+        dispatch(InitActions.setReady());
+        dispatch(letTheRightOneIn());
+
+        // make sure pathname does not remain /login
+        if (getState().routing.locationBeforeTransitions.pathname === 'login') {
+          dispatch(push('/'));
+        }
+      });
     })
     .catch((errors) => {
+      dispatch(setError(errors));
       console.error('Error caught on profile refresh:', errors);
     });
   };
@@ -201,11 +202,12 @@ const saveToProfile = function (profile) {
 
     return userAPI.saveToProfile(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
 
-      dispatch(receivedQuery(response.success, response.errors));
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
@@ -213,7 +215,7 @@ const saveToProfile = function (profile) {
     }) 
     .catch((errors) => {
       console.error('Error caught on saveToProfile:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };
@@ -246,7 +248,7 @@ const updateDevice = function (update) {
 
     return deviceAPI.updateDevice(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
 
       if (!response || !response.success) {
         throwServerError(response);  
@@ -258,7 +260,7 @@ const updateDevice = function (update) {
     }) 
     .catch((errors) => {
       console.error('Error caught on updateDevice:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };
@@ -276,7 +278,7 @@ const requestPasswordReset = function (username) {
 
     return userAPI.requestPasswordReset(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
         
       if (!response || !response.success) {
         throwServerError(response);  
@@ -289,7 +291,7 @@ const requestPasswordReset = function (username) {
     }) 
     .catch((errors) => {
       console.error('Error caught on requestPasswordReset:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };
@@ -308,8 +310,8 @@ const resetPassword = function (password, token, captcha) {
 
     return userAPI.resetPassword(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
-
+      dispatch(receivedQuery());
+      
       if (!response || !response.success) {
         throwServerError(response);  
       }
@@ -323,7 +325,7 @@ const resetPassword = function (password, token, captcha) {
     }) 
     .catch((errors) => {
       console.error('Error caught on resetPassword:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };
@@ -341,7 +343,7 @@ const changePassword = function (password, captcha) {
 
     return userAPI.changePassword(data)
     .then((response) => {
-      dispatch(receivedQuery(response.success, response.errors));
+      dispatch(receivedQuery());
       
       if (!response || !response.success) {
         throwServerError(response);  
@@ -353,7 +355,7 @@ const changePassword = function (password, captcha) {
     }) 
     .catch((errors) => {
       console.error('Error caught on changePassword:', errors);
-      dispatch(receivedQuery(false, errors));
+      dispatch(setError(errors));
       return errors;
     });
   };

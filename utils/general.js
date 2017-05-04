@@ -189,11 +189,11 @@ const formatMessage = function (intl) {
 
 const validatePassword = function (password, confirmPassword) {
   if (!password) {
-    return Promise.reject('noPassword');
+    throw new Error('noPassword');
   } else if (password !== confirmPassword) {
-     return Promise.reject('passwordMismatch');
+     throw new Error('passwordMismatch');
   } else if (password.length < 8) {
-     return Promise.reject('passwordTooShort');
+     throw new Error('passwordTooShort');
   } 
   return Promise.resolve();
 };
