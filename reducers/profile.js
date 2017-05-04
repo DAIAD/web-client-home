@@ -4,7 +4,7 @@ const initialState = {
   showChangePassword: false,
 };
  
-const commons = function (state = initialState, action) {
+const profile = function (state = initialState, action) {
   switch (action.type) {
     case types.SETTINGS_SET_CHANGE_PASSWORD:
       return {
@@ -17,5 +17,5 @@ const commons = function (state = initialState, action) {
   }
 };
 
-module.exports = commons;
+module.exports = profile;
 
