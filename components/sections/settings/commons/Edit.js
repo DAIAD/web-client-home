@@ -55,14 +55,6 @@ function UpdateCommons(props) {
               </h3>
               }
           >
-            <form 
-              id={`form-common-update-${common.key}`}
-              style={{ width: '100%' }}
-              onSubmit={(e) => { 
-                e.preventDefault();
-                confirmUpdateCommon();
-              }}
-            >
             { favorite === common.key ?
               <button
                 className="btn-a" 
@@ -88,6 +80,14 @@ function UpdateCommons(props) {
                 <i style={{ float: 'right' }} className="fa fa-star-o" />
               </button>
              }
+            <form 
+              id={`form-common-update-${common.key}`}
+              style={{ width: '100%' }}
+              onSubmit={(e) => { 
+                e.preventDefault();
+                confirmUpdateCommon();
+              }}
+            >
               <CommonFormFields
                 _t={_t}
                 values={commonForm}
@@ -124,7 +124,8 @@ function UpdateCommons(props) {
                   <bs.Button 
                     style={{ float: 'right', marginRight: 10 }} 
                     bsStyle="danger"
-                    onClick={() => { 
+                    onClick={(e) => { 
+                      e.preventDefault();
                       confirmDeleteCommon();
                     }}
                   >
@@ -136,7 +137,8 @@ function UpdateCommons(props) {
                   <bs.Button 
                     style={{ float: 'right', marginRight: 10 }} 
                     bsStyle="warning"
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
                       confirmLeaveCommon();
                     }}
                   >
