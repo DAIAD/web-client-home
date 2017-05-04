@@ -21,15 +21,15 @@ function ChangePasswordModal(props) {
         id="form-change-password"
         onSubmit={(e) => {
           e.preventDefault();
-          
-          validatePassword(password, confirmPassword)
-          .then(() => {
-            changePassword(password, captcha)
-            .then(resetChangePassword);
-          })
-          .catch((error) => {
+          try {
+            validatePassword(password, confirmPassword)
+            .then(() => {
+              changePassword(password, captcha)
+              .then(resetChangePassword);
+            });
+          } catch (error) {
             setError(error);
-          });
+          }
         }}
       >
         <bs.Modal.Header closeButton>

@@ -7,6 +7,7 @@ const { IMAGES } = require('../../../constants/HomeConstants');
 const Login = React.createClass({
   render: function () {
     const { _t, intl, errors, info, children } = this.props;
+    const errorMessage = errors && errors.message;
     return (
       <MainSection id="section.login">
         <div className="form-login-container">
@@ -25,7 +26,7 @@ const Login = React.createClass({
             errors ?
               <span>
                 <img src={`${IMAGES}/warning.svg`} alt="error" />
-                <FormattedMessage id={`errors.${errors}`} />
+                <FormattedMessage id={`errors.${errorMessage}`} />
               </span>
               :
               <div />

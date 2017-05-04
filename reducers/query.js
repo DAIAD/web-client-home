@@ -16,21 +16,9 @@ const query = function (state = initialState, action) {
       });
 
     case types.QUERY_REQUEST_END:
-      switch (action.success) {
-        case true:
-          return Object.assign({}, state, {
-            isLoading: state.isLoading - 1,
-          });
-
-        case false:
-          return Object.assign({}, state, {
-            isLoading: state.isLoading - 1,
-            errors: action.errors
-          });
-        
-        default:
-          return state;
-      }
+      return Object.assign({}, state, {
+        isLoading: state.isLoading - 1,
+      });
 
     case types.QUERY_SET_SUCCESS:
       return Object.assign({}, state, {

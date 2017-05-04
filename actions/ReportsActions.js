@@ -64,7 +64,7 @@ const getReportsStatus = function () {
     dispatch(QueryActions.requestedQuery());
     return reportsAPI.status(data)
     .then((response) => {
-      dispatch(QueryActions.receivedQuery(response.success));
+      dispatch(QueryActions.receivedQuery());
 
       if (!response || !response.success) {
         throwServerError(response);  
@@ -74,6 +74,7 @@ const getReportsStatus = function () {
     })
     .then(reports => dispatch(setReports(reports)))
     .catch((error) => {
+      dispatch(QueryActions.setError(error));
       console.error('caught error on get reports status', error);
     });
   };

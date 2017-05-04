@@ -8,7 +8,7 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
-const { requestedQuery, receivedQuery } = require('./QueryActions');
+const { requestedQuery, receivedQuery, setError } = require('./QueryActions');
 const commonsAPI = require('../api/commons');
 
 const { getDeviceKeysByType } = require('../utils/device');
@@ -211,10 +211,11 @@ const searchCommonMembers = function () {
 
     return commonsAPI.getCommonMembers(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -224,8 +225,7 @@ const searchCommonMembers = function () {
     })
     .catch((error) => {
       console.error('caught error in search commons members: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };
@@ -300,6 +300,7 @@ const fetchData = function () {
       })
       .catch((error) => { 
         console.error('Caught error in commons data fetch', error); 
+        dispatch(setError(error));
         dispatch(setDataSynced());
       });
     });
@@ -373,10 +374,11 @@ const getMyCommons = function () {
 
     return commonsAPI.getCommons(data)
     .then((response) => {
+      dispatch(receivedQuery());
+
       if (!response || !response.success) {
         throwServerError(response);  
       }
-      dispatch(receivedQuery(response.success, response.errors));
 
       return response;
     })
@@ -387,8 +389,7 @@ const getMyCommons = function () {
     })
     .catch((error) => {
       console.error('caught error in get commons: ', error);
-      dispatch(receivedQuery(false, error));
-      throw error;
+      dispatch(setError(error));
     });
   };
 };
