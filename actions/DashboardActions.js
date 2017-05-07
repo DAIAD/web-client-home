@@ -6,6 +6,7 @@
  * @module DashboardActions
  */
 const moment = require('moment');
+const ReactGA = require('react-ga');
 
 const types = require('../constants/ActionTypes');
 
@@ -71,6 +72,9 @@ const resetDirty = function () {
  * 
  */
 const switchMode = function (mode) {
+  if (mode === 'add') {
+    ReactGA.modalview(`dashboard/add-widget`);
+  }
   return {
     type: types.DASHBOARD_SWITCH_MODE,
     mode,
@@ -83,6 +87,10 @@ const switchMode = function (mode) {
  * 
  */
 const updateLayout = function (layout, dirty = true) {
+  ReactGA.event({
+    category: 'dashboard',
+    action: 'update layout'
+  });
   return function (dispatch, getState) {
     if (dirty) {
       dispatch(setDirty());
@@ -167,6 +175,10 @@ const setWidgetTypeUnsynced = function (widgetType) {
  * 
  */
 const updateWidget = function (id, update) {
+  ReactGA.event({
+    category: 'dashboard',
+    action: 'update widget',
+  });
   return {
     type: types.DASHBOARD_UPDATE_WIDGET,
     id,
@@ -217,6 +229,11 @@ const updateWidgetAndFetch = function (id, update) {
  */
 const addWidget = function (options) {
   return function (dispatch, getState) {
+    ReactGA.event({
+      category: 'dashboard',
+      action: 'add widget',
+      label: options.widgetId,
+    });
     const widgets = getState().section.dashboard.widgets;
 
     // find last id and increase by one
@@ -252,6 +269,11 @@ const addWidget = function (options) {
  */
 const removeWidget = function (id) {
   return function (dispatch, getState) {
+    ReactGA.event({
+      category: 'dashboard',
+      action: 'remove widget',
+    });
+
     dispatch(setDirty());
     dispatch({
       type: types.DASHBOARD_REMOVE_WIDGET,

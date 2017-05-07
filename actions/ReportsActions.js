@@ -7,6 +7,7 @@
 
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
+const ReactGA = require('react-ga');
 
 const QueryActions = require('./QueryActions');
 
@@ -27,6 +28,18 @@ const setTimeFilter = function (filter) {
   };
 };
 
+const onDownloadReport = function (month) {
+  ReactGA.event({
+    category: 'reports',
+    action: 'download report',
+    label: month.toString(),
+  });
+  return {
+    type: types.REPORTS_DOWNLOAD,
+    month,
+  };
+};
+
 /**
  * Sets active time window in history section
  *
@@ -39,7 +52,12 @@ const setTimeFilter = function (filter) {
  */
 
 const setTime = function (time) {
-  return {
+  ReactGA.event({
+    category: 'reports',
+    action: 'change-time',
+    label: `${time.startDate}-${time.endDate}`
+  });
+return {
     type: types.REPORTS_SET_TIME,
     time,
   };
@@ -101,4 +119,5 @@ module.exports = {
   setTimeFilter,
   setQueryAndFetch,
   getReportsStatus,
+  onDownloadReport,
 };

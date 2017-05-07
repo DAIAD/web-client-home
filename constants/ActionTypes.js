@@ -63,6 +63,7 @@ module.exports = keyMirror({
   HISTORY_SET_WATERIQ_SESSIONS: null,
   HISTORY_SET_PRICE_BRACKETS: null,
   HISTORY_SET_BREAKDOWN_LABELS: null,
+  HISTORY_EXPORT_DATA: null,
 
   DASHBOARD_SWITCH_MODE: null,
   DASHBOARD_SET_DIRTY: null,
@@ -121,5 +122,6 @@ module.exports = keyMirror({
   REPORTS_SET: null,
   REPORTS_SET_TIME: null,
   REPORTS_SET_TIME_FILTER: null,
+  REPORTS_DOWNLOAD: null,
 });
 

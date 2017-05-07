@@ -25,8 +25,8 @@ const reports = [
   {
     id: 'url',
     name: '',
-    value: value => 
-      <a href={value}>
+    value: (value, row) => 
+    <a href={value} onClick={() => row.onDownloadReport(row.period)}>
         <i className="fa fa-download navy" style={{ marginRight: 10 }} />
         <FormattedMessage id="forms.download" />
       </a>,

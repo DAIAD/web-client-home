@@ -1,5 +1,6 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
+const ReactGA = require('react-ga');
 const { setForm, resetForm } = require('./FormActions');
 const { requestedQuery, receivedQuery, setError, setSuccess, resetSuccess } = require('./QueryActions');
 const commonsAPI = require('../api/commons');
@@ -134,6 +135,11 @@ const createCommon = function (common) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
+      ReactGA.event({
+        category: 'commons',
+        action: 'created',
+        label: common.name,
+      });
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
@@ -167,6 +173,10 @@ const updateCommon = function (common) {
         throwServerError(response);  
       }
 
+      ReactGA.event({
+        category: 'commons',
+        action: 'updated',
+      });
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
@@ -198,6 +208,10 @@ const deleteCommon = function (key) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
+      ReactGA.event({
+        category: 'commons',
+        action: 'deleted',
+      });
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
@@ -231,6 +245,10 @@ const joinCommon = function (key) {
         throwServerError(response);  
       }
 
+      ReactGA.event({
+        category: 'commons',
+        action: 'joined',
+      });
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
@@ -263,6 +281,10 @@ const leaveCommon = function (key) {
         throwServerError(response);  
       }
 
+      ReactGA.event({
+        category: 'commons',
+        action: 'left',
+      });
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 

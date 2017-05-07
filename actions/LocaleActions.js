@@ -5,6 +5,7 @@
  * @module LocaleActions
  */
 
+const ReactGA = require('react-ga');
 const localeAPI = require('../api/locales');
 const types = require('../constants/ActionTypes');
 
@@ -70,6 +71,11 @@ const setLocale = function (locale) {
     if (getState().locale.locale === locale) {
       return Promise.resolve(true);
     }
+    ReactGA.event({
+      category: 'locale',
+      action: 'changed',
+      label: locale.toString(),
+    });
     return dispatch(fetchLocaleMessages(locale));
   };
 };
