@@ -86,6 +86,7 @@ module.exports = keyMirror({
   MESSAGES_INCREASE_ACTIVE_INDEX: null,
   MESSAGE_SET_READ: null,
   MESSAGE_SET_EXTRA: null,
+  MESSAGES_TWEET: null,
 
   FORM_SET: null,
   FORM_RESET: null,

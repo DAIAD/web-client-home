@@ -142,6 +142,18 @@ const setActiveMessageId = function (id) {
   };
 };
 
+const tweetMessage = function (id) {
+  ReactGA.event({
+    category: 'notifications',
+    action: 'tweet',
+    label: id.toString(),
+  });
+  return {
+    type: types.MESSAGES_TWEET,
+    id,
+  };
+};
+
 /**
  * Set active message id and acknowledge
  * Important! the message category must have been set otherwise
@@ -339,4 +351,5 @@ module.exports = {
   setActiveTab,
   setActiveMessage,
   appendMessages,
+  tweetMessage,
 };

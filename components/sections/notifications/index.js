@@ -10,7 +10,7 @@ const Notifications = React.createClass({
   render: function () {
     const { _t, categories, messages: notifications, activeMessageId, 
       previousMessageId, nextMessageId, activeMessage: notification, activeTab, 
-      setActiveMessage, setActiveTab, widget, fetchMoreActive, totalInCategory, loading } = this.props;
+      setActiveMessage, setActiveTab, widget, fetchMoreActive, totalInCategory, tweetMessage, loading } = this.props;
     return (
       <MainSection id="section.notifications">
         <div className="notifications">
@@ -53,6 +53,7 @@ const Notifications = React.createClass({
                 previousMessageId, 
                 nextMessageId, 
                 widget,
+                tweetMessage,
               }} 
             />
           </div>
