@@ -27,7 +27,7 @@ const tip = function (widget, intl) {
   return {
     ...widget,
     highlight: {
-      image: `${BASE64}${currTip.imageEncoded}`,
+      image: currTip.imageEncoded ? `${BASE64}${currTip.imageEncoded}` : null,
     },
     info: [{
       text,
