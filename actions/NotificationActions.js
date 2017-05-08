@@ -185,8 +185,8 @@ const setActiveMessage = function (id, type) {
     if (category === 'alerts') {
       const widget = getWidgetByAlertType(activeMessage.alertType, activeMessage.createdOn);
       if (!widget) return;
-
-      dispatch(QueryActions.fetchWidgetData(widget)) 
+      const userKey = getState().user.profile.key;
+      dispatch(QueryActions.fetchWidgetData({ ...widget, userKey })) 
       .then(data => dispatch(setMessageExtra(id, category, { ...widget, ...data })))
       .catch((error) => {
         console.error('Oops, sth went wrong in setting message extra data', error);
