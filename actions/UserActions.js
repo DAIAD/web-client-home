@@ -223,14 +223,11 @@ const saveToProfile = function (profile) {
         throwServerError(response);  
       }
 
-<<<<<<< HEAD
-=======
       ReactGA.event({
         category: 'profile',
         action: 'saved',
       });
 
->>>>>>> f564f3a29d697eb6b999504e2f6103a8717abf0c
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
 
