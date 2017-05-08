@@ -73,7 +73,7 @@ const resetDirty = function () {
  */
 const switchMode = function (mode) {
   if (mode === 'add') {
-    ReactGA.modalview(`dashboard/add-widget`);
+    ReactGA.modalview('dashboard/add-widget');
   }
   return {
     type: types.DASHBOARD_SWITCH_MODE,
