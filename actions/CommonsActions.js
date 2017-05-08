@@ -5,7 +5,9 @@
  * @module CommonsActions
  */
 
+const ReactGA = require('react-ga');
 const types = require('../constants/ActionTypes');
+const moment = require('moment');
 const { push } = require('react-router-redux');
 const { setForm, resetForm } = require('./FormActions');
 const { requestedQuery, receivedQuery, setError } = require('./QueryActions');
@@ -235,10 +237,41 @@ const setMemberQueryAndFetch = function (query) {
     if (!query) return;
     const { name, index, sortBy, sortOrder } = query;
     
-    if (name != null) dispatch(setMemberSearchFilter(name));
-    if (index != null) dispatch(setMemberPagingIndex(index));
-    if (sortBy != null) dispatch(setMemberSortFilter(sortBy));
-    if (sortOrder != null) dispatch(setMemberSortOrder(sortOrder));
+    if (name != null) {
+      ReactGA.event({
+        category: 'commons',
+        action: 'set member search filter',
+        label: name.toString(),
+      });
+
+      dispatch(setMemberSearchFilter(name));
+    }
+    if (index != null) {
+      ReactGA.event({
+        category: 'commons',
+        action: 'set member page',
+        label: index.toString(),
+      });
+
+      dispatch(setMemberPagingIndex(index));
+    }
+    if (sortBy != null) {
+      ReactGA.event({
+        category: 'commons',
+        action: 'set member sort filter',
+        label: sortBy.toString(),
+      });
+      dispatch(setMemberSortFilter(sortBy));
+    }
+    if (sortOrder != null) {
+      ReactGA.event({
+        category: 'commons',
+        action: 'set member sort order',
+        label: sortOrder.toString(),
+      });
+
+      dispatch(setMemberSortOrder(sortOrder));
+    }
 
     dispatch(searchCommonMembers());
   };
@@ -306,16 +339,44 @@ const fetchData = function () {
     });
   };
 };
+
 const setQuery = function (query) {
   return function (dispatch, getState) {
     if (!query) return;
     const { period, time, deviceType, active, members } = query;
     
-    if (period != null) dispatch(setTimeFilter(period));
+    if (period != null) {
+      ReactGA.event({
+        category: 'commons',
+        action: 'set time filter',
+        label: period,
+      });
 
-    if (time != null) dispatch(updateTime(time));
-    if (deviceType != null) dispatch(setActiveDeviceType(deviceType));
+      dispatch(setTimeFilter(period));
+    }
+
+    if (time != null) {
+      const timeFilter = period || getState().section.commons.timeFilter;
+        ReactGA.event({
+          category: 'commons',
+          action: 'time change',
+          label: `${timeFilter}: ${moment(time.startDate).format('DD/MM/YYYY')}-${moment(time.endDate).format('DD/MM/YYYY')}`,
+        });
+      dispatch(updateTime(time));
+    }
+    if (deviceType != null) {
+      ReactGA.event({
+        category: 'commons',
+        action: 'set device type',
+        label: deviceType,
+      });
+      dispatch(setActiveDeviceType(deviceType));
+    }
     if (active != null) {
+      ReactGA.event({
+        category: 'commons',
+        action: 'set active common',
+      });
       dispatch(setSelectedMembers([]));
       dispatch(setSessions([]));
       dispatch(setActive(active));
@@ -342,6 +403,11 @@ const linkToCommons = function (query) {
 
 const addMemberToChart = function (member) {
   return function (dispatch, getState) {
+    ReactGA.event({
+      category: 'commons',
+      action: 'added member to chart',
+      label: member.name
+    });
     const members = [...getState().section.commons.members.selected, member];
     dispatch(setDataQueryAndFetch({ members }));
   };
@@ -349,6 +415,11 @@ const addMemberToChart = function (member) {
 
 const removeMemberFromChart = function (member) {
   return function (dispatch, getState) {
+    ReactGA.event({
+      category: 'commons',
+      action: 'removed member from chart',
+      label: member.name
+    });
     const members = getState().section.commons.members.selected
     .filter(m => m.key !== member.key);
 

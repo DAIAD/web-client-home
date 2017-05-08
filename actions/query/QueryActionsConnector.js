@@ -6,7 +6,7 @@
  * 
  * @module QueryActions
  */
-
+const ReactGA = require('react-ga');
 const moment = require('moment');
 
 const types = require('../../constants/ActionTypes');
@@ -44,6 +44,10 @@ const connectActionsToQueryBackend = function (QueryBackend) {
   };
 
   const setError = function (error) {
+    ReactGA.event({
+      category: 'error',
+      action: `${error && error.message}`
+    });
     return {
       type: types.QUERY_SET_ERROR,
       error,

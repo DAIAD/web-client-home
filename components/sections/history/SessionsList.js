@@ -6,7 +6,7 @@ const Table = require('../../helpers/Table');
 
 function SessionsList(props) {
   const { _t, sortOptions, sortFilter, sortOrder, handleSortSelect, activeDeviceType, 
-    csvData, time, sessionFields, sessions, setActiveSession, setSortOrder, setSortFilter, onSessionClick } = props;
+    csvData, time, sessionFields, sessions, setActiveSession, setSortOrder, setSortFilter, onSessionClick, onExportData } = props;
   return (
     <div className="history-list-area">
       <div className="history-list-header">
@@ -18,6 +18,7 @@ function SessionsList(props) {
               className="btn" 
               href={`data:application/csv;charset=utf-8, ${csvData}`}
               download="Data.csv"
+              onClick={onExportData}
             >
               <FormattedMessage id="forms.download" />
             </a>

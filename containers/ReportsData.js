@@ -37,6 +37,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
       ...report,
       period: ownProps.intl.formatDate(moment({ month: report.month - 1, year: report.year }).valueOf(), { month: 'long', year: 'numeric' }),
       size: formatBytes(report.size, 0),
+      onDownloadReport: dispatchProps.onDownloadReport,
     })), 
     previousPeriod: timeUtil.getPreviousPeriod(stateProps.timeFilter, stateProps.time.endDate),
     nextPeriod: timeUtil.getNextPeriod(stateProps.timeFilter, stateProps.time.endDate),
