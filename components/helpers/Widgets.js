@@ -11,45 +11,41 @@ function StatWidget(props) {
   return (
     <div className={`stat ${props.type}`}>
       <div className="stat-left">
-        <div>
-          { highlight && highlight.image ? 
-            <img 
-              className="stat-highlight" 
-              style={{ height: props.height }}
-              src={highlight.image}
-              alt={highlight.image} 
-            /> 
-            :
-            <i />
-          }
-          <h2>
-            <DisplayMetric value={highlight.text} />
-          </h2>
-        </div>
+        { highlight && highlight.image ? 
+          <img 
+            className="stat-highlight" 
+            style={{ height: props.height - 18 || '100%' }}
+            src={highlight.image}
+            alt={highlight.image} 
+          /> 
+          :
+          <i />
+        }
+        <h2>
+          <DisplayMetric value={highlight.text} />
+        </h2>
       </div>
       <div className="stat-right">
-        <div>
-          { 
-            info.map((line, idx) => (
-              <div 
-                key={idx} 
-                className="stat-line"
-              >
-                <i className={`fa fa-${line.icon}`} />
-                { 
-                  line.image ? 
-                    <img 
-                      className="stat-line-img"
-                      src={line.image} 
-                      alt={line.id} 
-                    /> 
-                      : <i /> 
-                }
-                <span>{line.text}</span>
-              </div>
-              ))
-          }
-        </div>
+        { 
+          info.map((line, idx) => (
+            <div 
+              key={idx} 
+              className="stat-line"
+            >
+              <i className={`fa fa-${line.icon}`} />
+              { 
+                line.image ? 
+                  <img 
+                    className="stat-line-img"
+                    src={line.image} 
+                    alt={line.id} 
+                  /> 
+                    : <i /> 
+              }
+              <span>{line.text}</span>
+            </div>
+            ))
+        }
       </div>
     </div>
   );
@@ -280,16 +276,12 @@ function TipWidget(props) {
           }
         </div>
       <div className="tip-right">
-        <div>
-          { 
-            info.map((line, idx) => (
-              <div key={idx}>
-                <span>{line.text}</span>
-              </div>
-              ))
-          }
+        { 
+          info.map((line, idx) => (
+            <span key={idx}>{line.text}</span>
+            ))
+        }
         </div>
-      </div>
     </div>
   );
 }
