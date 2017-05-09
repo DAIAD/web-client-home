@@ -9,8 +9,8 @@ const theme = require('../../chart/themes/session');
 const { IMAGES } = require('../../../constants/HomeConstants'); 
 
 function BetterOrWorse(props) {
-  const { better, percentDifference, period, _t } = props;
-  const betterStr = better ? 'better' : 'worse';
+  const { better, percentDifference, period, deviceType, _t } = props;
+  const betterStr = better ? `better-${deviceType}` : `worse-${deviceType}`;
   if (better === null) {
     return (
       <div>
@@ -73,6 +73,7 @@ function Session(props) {
             <h3><FormattedMessage id="history.limitedData" /></h3>
             <h5>
               <BetterOrWorse 
+                deviceType={activeDeviceType}
                 better={better} 
                 percentDifference={percentDifference}
                 period={_t('section.shower').toLowerCase()}
@@ -140,33 +141,37 @@ function Session(props) {
           <h4>
             <div> 
             {
-              min ? 
-                <h5>
-                  <i className="fa fa-check green " />&nbsp;&nbsp;
-                  <FormattedMessage 
-                    id="history.consumption-min" 
-                    values={{ period: _t(`periods.${period}`).toLowerCase() }} 
-                  />
-                </h5>
-                :
-                <span />
-             }
-             {
-               max ?
-                <h5>
-                  <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
-                  <FormattedMessage 
-                    id="history.consumption-max" 
-                    values={{ period: _t(`periods.${period}`).toLowerCase() }} 
-                  />
-                </h5>
-                :
-                <span />
+              (() => {
+                if (min) {
+                 return ( 
+                    <h5>
+                      <i className="fa fa-check green " />&nbsp;&nbsp;
+                      <FormattedMessage 
+                        id="history.consumption-min" 
+                        values={{ period: _t(`periods.${period}`).toLowerCase() }} 
+                      />
+                    </h5>
+                    );
+                } else if (max) {
+                  return (
+                    <h5>
+                      <img src={`${IMAGES}/warning.svg`} alt="warn" />&nbsp;&nbsp;
+                      <FormattedMessage 
+                        id="history.consumption-max" 
+                        values={{ period: _t(`periods.${period}`).toLowerCase() }} 
+                      />
+                    </h5>
+                    );
+                }
+                return <span />;
+            }
+              )()
             }
             </div>
             <br />
             
             <BetterOrWorse 
+              deviceType={activeDeviceType}
               better={better} 
               percentDifference={percentDifference}
               period={period}
