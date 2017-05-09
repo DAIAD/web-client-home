@@ -297,7 +297,7 @@ const meterForecast = function (widget, intl) {
                            ),
     lineType: 'dashed',
     color: '#2d3480',
-    fill: 0.1,
+    fill: 0,
     symbol: 'emptyRectangle',
   }]
   : [];
@@ -615,7 +615,7 @@ const meterCommon = function (widget, intl) {
                             time,
                             metric
                            ),
-    fill: 0.1,
+    fill: 0,
     symbol: 'emptyRectangle',
   }]
   : [];

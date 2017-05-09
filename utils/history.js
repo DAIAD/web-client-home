@@ -88,7 +88,7 @@ const getStatsMeterData = function (props) {
                       props.time, 
                       props.filter
                      ),
-      fill: 0.1,
+      fill: 0,
     });
   }); 
 
@@ -162,7 +162,7 @@ const getStatsAmphiroData = function (props) {
                                  props.intl
                                 ).title + ' (' + dev.name + ')',
      data: getChartAmphiroData(dev.sessions, xCategories, props.filter),
-     fill: 0.1,
+     fill: 0,
     }))).reduce((p, c) => [...p, ...c], []);
 
   return {
@@ -217,7 +217,7 @@ const getForecastData = function (props) {
     },
       lineType: 'dashed',
       color: '#2d3480',
-      fill: 0.1,
+      fill: 0,
       symbol: 'emptyRectangle',
     }]
     : [];
@@ -314,7 +314,7 @@ const getPricingData = function (props) {
                         props.time, 
                         props.filter
                        ),
-        fill: 0.1,
+        fill: 0,
       });
   }); 
   return {
