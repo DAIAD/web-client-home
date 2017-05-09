@@ -171,15 +171,13 @@ const getLastPeriod = function (period, timestamp) {
 const getComparisonPeriod = function (timestamp, period, intl) {
   const last = getLastPeriod(period, timestamp);
   if (period === 'year') {
-    return moment(last).get('year').toString();
+    return intl.formatDate(last, { year: 'numeric' });
   } else if (period === 'month') {
-    //return _t(`months.${moment(last).get('month')}`); 
-    return intl.formatDate(new Date(timestamp), { month: 'long' }); 
+    return intl.formatDate(last, { month: 'long' }); 
   } else if (period === 'week') {
     return `${intl.formatMessage({ id: 'periods.week' })} ${moment(last).get('isoweek')}`;
   } else if (period === 'day') {
-    //return _t(`weekdays.${moment(last).get('day')}`);
-    return intl.formatDate(new Date(timestamp), { weekday: 'long' }); 
+    return intl.formatDate(last, { weekday: 'long' }); 
   }
   return null;
 };
