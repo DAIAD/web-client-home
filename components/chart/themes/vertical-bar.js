@@ -39,7 +39,7 @@ module.exports = {
   grid: {
     x: 10,
     x2: 10,
-    y: 0,
+    y: 10,
     y2: 30,
   },
   
