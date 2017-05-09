@@ -83,10 +83,10 @@ const prepareSessionsForTable = function (devices, data, members, user, granular
   if (sessions.length === 0) { return []; }
   
   if (granularity !== 0) {
-    const minIdx = sessions.reduce((imin, c, i, arr) => c.vol <= arr[imin].vol && c.vol !== 0 ? i : imin, 0);
+    const minIdx = sessions.reduce((imin, c, i, arr) => c.volume <= arr[imin].volume && c.volume !== 0 ? i : imin, 0);
     sessions[minIdx].min = true;
   }
-  const maxIdx = sessions.reduce((imax, c, i, arr) => c.vol >= arr[imax].vol ? i : imax, 0);
+  const maxIdx = sessions.reduce((imax, c, i, arr) => c.volume >= arr[imax].volume ? i : imax, 0);
   sessions[maxIdx].max = true;
   return sessions;
 };
