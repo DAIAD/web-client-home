@@ -28,41 +28,39 @@ function AddWidgetForm(props) {
       </bs.Tabs>
       <div className="add-widget">
         <div className="add-widget-left">
-          <div>
-            <ul className="add-widget-types">
-              {
-                widgetTypes.map((t, idx) =>
-                  <li  
-                    key={idx} 
-                    className={`add-widget-type ${t.display} ${t.id === id ? 'selected' : ''}`}
+          <ul className="add-widget-types">
+            {
+              widgetTypes.map((t, idx) =>
+                <li  
+                  key={idx} 
+                  className={`add-widget-type ${t.display} ${t.id === id ? 'selected' : ''}`}
+                >
+                  <button
+                    className="btn-a"
+                    onClick={() => setWidgetToAdd(t)} 
+                    value={t.id}
+                    title={t.description}
                   >
-                    <button
-                      className="btn-a"
-                      onClick={() => setWidgetToAdd(t)} 
-                      value={t.id}
-                      title={t.description}
-                    >
-                    { t.image ? 
+                  { t.image ? 
+                    <div className="wrapper"> 
+                      <img
+                        src={`${PNG_IMAGES}/${t.image}`} 
+                        alt={t.id}
+                      />
+                      <span className="mask" />
+                      <h6 className="title">{t.title}</h6>
+                  </div>
+                    :
                       <div className="wrapper"> 
-                        <img
-                          src={`${PNG_IMAGES}/${t.image}`} 
-                          alt={t.id}
-                        />
                         <span className="mask" />
                         <h6 className="title">{t.title}</h6>
-                    </div>
-                      :
-                        <div className="wrapper"> 
-                          <span className="mask" />
-                          <h6 className="title">{t.title}</h6>
-                        </div>
-                      }
-                    </button>
-                  </li>
-                )
-              }
-            </ul>
-          </div>
+                      </div>
+                    }
+                  </button>
+                </li>
+              )
+            }
+          </ul>
         </div>
         <div className="add-widget-right">
           <div>

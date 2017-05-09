@@ -14,7 +14,7 @@ function WidgetPanel(props) {
       layouts={{ lg: layout, md: layout, sm: layout }}
       breakpoints={{ lg: 1200, md: 800, sm: 200 }}
       cols={{ lg: 6, md: 4, sm: 2 }}
-      rowHeight={165}
+      rowHeight={170}
       measureBeforeMount
       draggableHandle=".widget-header"
       resizable
