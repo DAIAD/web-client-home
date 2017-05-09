@@ -66,11 +66,11 @@ function Notification(props) {
                 tweetMessage(notification.id);
               }}
             >
-              <i className={classNames('fa', 'fa-md', 'navy', 'fa-twitter')} />
+              <i className={classNames('fa', 'fa-lg', 'navy', 'fa-twitter')} />
             </a>
           </div>
           :
-          <span style={{ width: 16 }} />
+          <span style={{ width: 17 }} />
         }
         {
           nextMessageId != null ? 
