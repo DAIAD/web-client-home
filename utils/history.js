@@ -458,7 +458,7 @@ const getWaterIQData = function (props) {
     sessionFields: schemas.wateriq,
     highlight: '',
     chartData,
-    chartYMax: 6,
+    chartYMax: 7,
     chartFormatter,
     chartType: 'bar',
   };

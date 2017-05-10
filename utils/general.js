@@ -317,12 +317,12 @@ const memberFilterToMembers = function (filter) {
 };
 
 const waterIQToNumeral = function (waterIQ) {
-  return 5 - (String(waterIQ).charCodeAt(0) - 65);
+  return 6 - (String(waterIQ).charCodeAt(0) - 65);
 };
 
 const numeralToWaterIQ = function (num) {
-  if (num < 0 || num > 5) return ' ';
-  return String.fromCharCode((5 - num) + 65);
+  if (num < 1 || num > 6) return ' ';
+  return String.fromCharCode((6 - num) + 65);
 };
 
 // http://stackoverflow.com/questions/15900485/correct-way-to-convert-size-in-bytes-to-kb-mb-gb-in-javascript

@@ -487,13 +487,14 @@ const waterIQ = function (widget, intl) {
   const chartData = [{ 
     name: intl.formatMessage({ id: 'history.wateriq' }), 
     data: Array.isArray(comparisons) ? 
-      comparisons.map(comparison => current ? waterIQToNumeral(current[comparison]) : 0) 
+      comparisons.map(comparison => current ? waterIQToNumeral(current[comparison]) : null) 
       : [],
   }];
   return {
     ...widget,
     icon: `${IMAGES}/default-ranking.svg`,
     timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
+    display: hasWaterIQ ? widget.display : 'stat',
     //time,
     periods,
     info: [
