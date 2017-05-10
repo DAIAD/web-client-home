@@ -269,6 +269,7 @@
     "email": "Ηλεκτρονική διεύθυνση",
     "firstname": "Όνομα",
     "lastname": "Επώνυμο",
+    "fullname": "Full name",
     "address": "Διεύθυνση",
     "zip": "Τ.Κ.",
     "country": "Χώρα",

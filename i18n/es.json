@@ -269,6 +269,7 @@
     "email": "Correo electronico",
     "firstname": "Nombre",
     "lastname": "Apellido",
+    "fullname": "Nombre",
     "address": "Direccion",
     "zip": "Codigo postal",
     "country": "País",

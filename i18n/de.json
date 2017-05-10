@@ -267,6 +267,7 @@
     "email": "Email",
     "firstname": "First name",
     "lastname": "Last name",
+    "fullname": "Full name",
     "address": "Address",
     "zip": "Postal code",
     "country": "Country",
