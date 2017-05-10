@@ -17,7 +17,7 @@
   },
   "errors": {
     "SharedErrorCode": {
-      "AUTHENTICATION": "You are not authorized to perform this action. Try refreshing the page",
+      "AUTHENTICATION": "Authentication has failed. Please try again",
       "UNKNOWN": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.", 
       "PARSE_ERROR": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring."
     },

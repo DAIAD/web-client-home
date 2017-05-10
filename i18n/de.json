@@ -16,7 +16,7 @@
     "Europe/Madrid": "Madrid"
   },
   "errors": {
-    "SharedErrorCode.AUTHENTICATION": "You are not authorized to perform this action. Try refreshing the page",
+    "AUTHENTICATION": "Authentication has failed. Please try again",
     "unknownError": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
     "Not Found": "API call not found.",
     "SharedErrorCode.UNKNOWN": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.", 

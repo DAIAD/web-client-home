@@ -17,7 +17,7 @@
   },
    "errors": {
      "SharedErrorCode": {
-      "UNKNOWN": "Άγνωστο σφάλμα. Παρακαλώ ανανεώστε την σελίδα αλλιώς επικοινωνήστε μαζί μας", 
+      "AUTHENTICATION": "Authentication has failed. Please try again",
       "PARSE_ERROR": "Oops, an unknown error occurred. Please refresh the page or contact us if this error keeps recurring.",
       "AUTHENTICATION": "Ο λογαριασμός ή/και ο κωδικός πρόσβασης είναι λάθος. Η σύνδεση απέτυχε."
      },
