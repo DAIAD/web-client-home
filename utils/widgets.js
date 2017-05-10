@@ -389,15 +389,17 @@ const meterBreakdown = function (widget, intl) {
                                             intl
                                            );
 
-  const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
-  const chartColorFormatter = colorFormatterSingle(chartColors);
-
-  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
-  const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.id}` }).split(' ').join('\n'));
   const chartData = [{
     name: intl.formatMessage({ id: `history.${metric}` }),
     data: sessions.map(x => x[metric]),
   }];
+
+  const chartColors = ['#abaecc', '#8185b2', '#575d99', '#2d3480'];
+  const chartColorFormatter = colorFormatterSingle(chartColors);
+
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit, Math.max(...((chartData.length > 0 && chartData[0].data) || []))));
+
+  const chartCategories = sessions.map(x => intl.formatMessage({ id: `breakdown.${x.id}` }).split(' ').join('\n'));
   
   return {
     ...widget,
@@ -438,7 +440,7 @@ const meterComparison = function (widget, intl) {
       : [],
   }];
 
-  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit));
+  const chartFormatter = y => displayMetric(formatMetric(y, metric, unit, Math.max(...((chartData.length > 0 && chartData[0].data) || []))));
  
   return {
     ...widget,
