@@ -4,7 +4,7 @@ const { FormattedMessage } = require('react-intl');
 /* Be Polite, greet user */
 function SayHello(props) {
   return (
-    <div style={{ margin: '40px 30px 20px 30px' }}>
+    <div className="say-hello">
       <h3>
         <FormattedMessage 
           id="dashboard.hello" 
