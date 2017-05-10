@@ -112,7 +112,9 @@
     "user": "User",
     "date": "Date",
     "time": "Time",
-    "me": "Me"
+    "me": "Me",
+    "average": "AVG",
+    "total": "TOTAL"
   },
   "dashboard": {
     "hello": "Welcome {name}!",
@@ -132,13 +134,13 @@
     "explore-common": "Explore community",
     "empty-or-no-fav-common": "No communities joined yet or no favorite community set",
     "titles": {
-      "totalVolumeStatAmphiro": "Shower Volume (metric)",
+      "totalVolumeStatAmphiro": "Shower Volume (total)",
       "totalVolumeChartAmphiro": "Shower Volume (progress)",
-      "totalVolumeStatSWM": "Water (metric)",
+      "totalVolumeStatSWM": "Water (total)",
       "totalVolumeChartSWM": "Water (progress)",
-      "totalEnergyStat": "Shower Energy (metric)",
+      "totalEnergyStat": "Shower Energy (total)",
       "totalEnergyChart": "Shower Energy (progress)",
-      "totalTemperatureStat": "Shower Temperature (metric)",
+      "totalTemperatureStat": "Shower Temperature (avg)",
       "totalTemperatureChart": "Shower Temperature (progress)",
       "last": "Last shower",
       "efficiencyEnergy": "Energy efficiency",

@@ -95,6 +95,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     sessions,
     sessionFields,
     reducedMetric,
+    reducedType,
     highlight,
     chartType,
     chartData,
@@ -133,6 +134,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     deviceTypes,
     csvData,
     reducedMetric,
+    reducedType,
     mu,
     isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
     chart: {

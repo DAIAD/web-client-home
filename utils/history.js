@@ -45,6 +45,7 @@ const getStatsMeterData = function (props) {
                 
     
   const reducedMetric = reduceMetric(props.data, props.filter);
+  const reducedType = props.intl.formatMessage({ id: 'common.total' });
     
   // CHART
 
@@ -100,6 +101,7 @@ const getStatsMeterData = function (props) {
     })),
     sessionFields: schemas.meter,
     reducedMetric: formatMetric(reducedMetric, props.filter, props.unit, reducedMetric),
+    reducedType,
     //Chart
     xCategories,
     chartType: 'line',
@@ -128,6 +130,7 @@ const getStatsAmphiroData = function (props) {
                 
   const average = props.filter === 'temperature' || props.filter === 'duration';
   const reducedMetric = reduceMetric(props.data, props.filter, average);
+  const reducedType = props.intl.formatMessage({ id: average ? 'common.average' : 'common.total' });
   
   // CHART
 
@@ -176,6 +179,7 @@ const getStatsAmphiroData = function (props) {
     })),
     sessionFields: schemas.amphiro,
     reducedMetric: formatMetric(reducedMetric, props.filter, props.unit, reducedMetric),
+    reducedType,
     //Chart
     xCategories,
     chartType: 'line',
@@ -261,6 +265,7 @@ const getPricingData = function (props) {
                                );
   
   const reducedMetric = reduceMetric([{ sessions }], 'cost');
+  const reducedType = props.intl.formatMessage({ id: 'common.total' });
 
   // CHART
 
@@ -326,6 +331,7 @@ const getPricingData = function (props) {
     })),
     sessionFields: schemas.pricing,
     reducedMetric: formatMetric(reducedMetric, 'cost', props.unit),
+    reducedType,
     chartCategories,
     chartFormatter,
     chartData: [

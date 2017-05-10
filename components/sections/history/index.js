@@ -228,6 +228,8 @@ const History = React.createClass({
             <div className="history-chart-area">
               <h3 style={{ textAlign: 'center', margin: '10px 0 0 0' }}>
                 <DisplayMetric value={this.props.reducedMetric} />
+                &nbsp;
+                <span style={{ fontSize: '0.5em' }}>{ this.props.reducedType }</span>
               </h3>
               { 
                 (() => {
