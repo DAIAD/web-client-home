@@ -42,9 +42,9 @@ module.exports = {
 
   grid: {
     x: 80,
-    x2: 30,
+    x2: 40,
     y: -30,
-    y2: 5,
+    y2: 10,
   },
 
   tooltip: {

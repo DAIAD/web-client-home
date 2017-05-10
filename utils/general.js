@@ -224,7 +224,7 @@ const formatMetric = function (value, metric, unit, maxValue) {
           return [Math.round(value * 0.264172 * 10) / 10, 'gal'];
         default:
           if (maxValue > 1000) {
-            return [Math.round((value / 1000) * 1000) / 1000, '\u33A5'];
+            return [Math.round((value / 1000) * 100) / 100, '\u33A5'];
           }
           return [Math.round(value * 100) / 100, 'lt'];
       }
