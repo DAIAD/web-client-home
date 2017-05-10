@@ -114,7 +114,7 @@ function HorizontalBarChartWidget(props) {
   const { id, chartData, chartCategories, chartFormatter, chartColorFormatter, mu, width, height, legend, renderAsImage = false } = props;
   return (
     <BarChart
-      height={height || 220}
+      height={height || 240}
       width={width}
       id={id}
       renderAsImage={renderAsImage}
