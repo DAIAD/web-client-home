@@ -1,8 +1,8 @@
 module.exports = {
   color: [
-    '#2D3580', '#a3d4f4', '#7AD3AB', '#CD4D3E', '#ABAECC', '#EBB7B1', '#2D3580', '#ABAECC', '#7AD3AB'
+    '#2D3580', '#a3d4f4', '#7AD3AB', '#CD4D3E', '#EBB7B1', '#ab77cf', '#ed7c30', '#ABAECC',
   ],
-  symbol: ['emptyCircle', 'emptyRectangle', 'emptyTriangle', 'emptyDiamond', 'circle'], 
+  symbol: ['emptyCircle', 'emptyRectangle', 'emptyTriangle', 'emptyDiamond', 'circle', 'rectangle', 'triangle', 'diamond'], 
   
   backgroundColor: '#fff',
 
