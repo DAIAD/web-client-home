@@ -178,7 +178,7 @@ const connectActionsToQueryBackend = function (QueryBackend) {
 
         // find last between devices
         const lastSession = reduced.reduce((curr, prev) => 
-          ((curr.id > prev.id) ? curr : prev), {}); 
+          ((curr.timestamp > prev.timestamp) ? curr : prev), {}); 
 
         const { device, id, index, timestamp } = lastSession;
 
