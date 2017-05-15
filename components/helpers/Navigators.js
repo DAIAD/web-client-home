@@ -104,7 +104,7 @@ function ShowerNavigator(props) {
               - 
               <span>{range.last}</span>
         &nbsp;
-              <span>{`(${range.name})`}</span>
+              <span>{range && range.name ? `(${range.name})` : ''}</span>
             </div>
             ))
         }
