@@ -18,12 +18,12 @@ function WidgetErrorDisplay(props) {
 const WidgetItem = React.createClass({
   getInitialState: function () {
     return {
-      el: null 
+      el: null, 
     };
   },
   render: function () {
-    const { widget, updateWidgetAndFetch, removeWidget, _t, linkToSection, width } = this.props;
-    const { id, widgetId, icon, error, period, type, display, periods, time, timeDisplay, linkTo = 'history' } = widget;
+    const { widget, updateWidgetAndFetch, removeWidget, _t, linkToSection } = this.props;
+    const { id, element, widgetId, icon, error, period, type, display, periods, time, timeDisplay, linkTo = 'history' } = widget;
     return (
       <div 
         className="widget"
@@ -78,7 +78,7 @@ const WidgetItem = React.createClass({
                 {...widget} 
                 imgPrefix={IMAGES}
                 width={this.state.el ? this.state.el.clientWidth : '100%'}
-                height={this.state.el ? this.state.el.clientHeight - 90 : null}
+                height={this.state.el ? this.state.el.clientHeight - 90 : '100%'}
               />    
           }
         </div>

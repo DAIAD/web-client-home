@@ -24,6 +24,7 @@ function mapStateToProps(state) {
     myCommons: state.section.commons.myCommons,
     favoriteCommon: state.section.settings.commons.favorite,
     members: state.user.profile.household.members,
+    width: state.viewport.width,
     ...state.section.history,
   };
 }
@@ -139,7 +140,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
     chart: {
       //chart width = viewport width - main menu - sidebar left - sidebar right - padding
-      width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 550),
+      width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 500),
       chartType,
       chartData,
       chartCategories,

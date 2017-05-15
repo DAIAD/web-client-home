@@ -268,11 +268,9 @@ const History = React.createClass({
                   return <div />;
                 })()
               }
-              <div className="history-chart">
-                <HistoryChart 
-                  {...{ ...chart }}
-                />
-              </div>
+              <HistoryChart 
+                {...chart}
+              />
               
             </div>        
             <br />

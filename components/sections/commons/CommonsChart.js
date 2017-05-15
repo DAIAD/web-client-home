@@ -6,7 +6,7 @@ const { TimeNavigator, CustomTimeNavigator } = require('../../helpers/Navigators
 const theme = require('../../chart/themes/history');
 
 function CommonsChart(props) {
-  const { _t, isAfterToday, handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, chartFormatter, actions } = props;
+  const { _t, isAfterToday, handlePrevious, handleNext, time, timeFilter, chartData, chartCategories, chartFormatter, width, actions } = props;
   const { setDataQueryAndFetch } = actions;
   return (
     <div className="history-chart-area">
@@ -27,7 +27,7 @@ function CommonsChart(props) {
           />
       }
       <LineChart 
-        width="100%"
+        width={width}
         height={380}
         theme={theme}
         xAxis={{

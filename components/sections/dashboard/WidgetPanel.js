@@ -7,7 +7,7 @@ const ResponsiveGridLayout = WidthProvider(Responsive);
 
 function WidgetPanel(props) {
   const { _t, mode, layout, widgets, updateLayout, updateWidgetAndFetch, removeWidget, 
-    periods, linkToSection, width } = props;
+    setWidgetData, periods, linkToSection, width } = props;
   return (
     <ResponsiveGridLayout 
       className="layout"
@@ -34,6 +34,7 @@ function WidgetPanel(props) {
                mode, 
                periods, 
                widget, 
+               setWidgetData,
                updateWidgetAndFetch, 
                removeWidget, 
                _t,

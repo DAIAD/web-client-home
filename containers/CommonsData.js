@@ -20,6 +20,7 @@ function mapStateToProps(state) {
     devices: state.user.profile.devices,
     unit: state.user.profile.unit,
     favorite: state.section.settings.commons.favorite,
+    width: state.viewport.width,
     ...state.section.commons,
   };
 }
@@ -67,6 +68,8 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     deviceTypes,
     periods,
     isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
+    //chart width = viewport width - main menu - sidebar right - padding
+    width: Math.max(stateProps.width - 130 - 160 - 20, 660),
     members: {
       ...stateProps.members,
       active: stateProps.members.active.map(m => stateProps.members.selected.map(s => s.key).includes(m.key) ? ({ ...m, selected: true }) : m),
