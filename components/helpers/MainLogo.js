@@ -4,13 +4,15 @@ const { Link } = require('react-router');
 function MainLogo(props) {
   const { imgPrefix, link = '/' } = props;
   return (
-    <Link to={link} className="logo" activeClassName="selected">
-      <img 
-        src={`${imgPrefix}/daiad-logo-navy.svg`} 
-        alt="DAIAD"
-        title="DAIAD"
-      />
-    </Link>
+    <div className="logo">
+      <Link to={link} activeClassName="selected">
+        <img 
+          src={`${imgPrefix}/daiad-logo-navy.svg`} 
+          alt="DAIAD"
+          title="DAIAD"
+        />
+      </Link>
+    </div>
   );
 }
 

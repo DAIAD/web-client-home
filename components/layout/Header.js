@@ -21,57 +21,53 @@ function Header(props) {
 
   const _t = formatMessage(intl);
   return (
-    <header className="site-header">
-      {
-        isAuthenticated ? 
-          <div>
-            <ErrorDisplay
-              _t={_t}
-              dismissError={dismissError}
-              errors={errors} 
-              imgPrefix={IMAGES}
-            />
-            <MainLogo imgPrefix={IMAGES} />
-            <div className="top-header-right">
-              <NotificationsMenuItem
-                _t={_t}
-                deviceCount={deviceCount}
-                notifications={notifications} 
-                unreadNotifications={unreadNotifications}
-                totalNotifications={totalNotifications}
-                loading={loading}
-                fetchMoreAll={fetchMoreAll}
-                linkToNotification={linkToNotification}
-                goTo={goTo}
-              />
-              <UserMenuItem
-                _t={_t}
-                photo={photo}
-                firstname={firstname}
-                imgPrefix={PNG_IMAGES}
-                base64Prefix={BASE64}
-              />
-              <Logout
-                _t={_t}
-                isAuthenticated={isAuthenticated}
-                logout={logout}
-                className="navbar logout"
-              />
-            </div>
-          </div>
-          : 
-          <div>
-            <MainLogo imgPrefix={IMAGES} />
-            <div className="top-header-right">
-              <LocaleSwitcher
-                _t={_t}
-                setLocale={setLocale}
-                locale={locale}
-              /> 
-            </div>
-          </div>
-     }
-    </header>
+    isAuthenticated ? 
+      <header className="site-header">
+        <ErrorDisplay
+          _t={_t}
+          dismissError={dismissError}
+          errors={errors} 
+          imgPrefix={IMAGES}
+        />
+        <MainLogo imgPrefix={IMAGES} />
+        <div className="top-header-right">
+          <NotificationsMenuItem
+            _t={_t}
+            deviceCount={deviceCount}
+            notifications={notifications} 
+            unreadNotifications={unreadNotifications}
+            totalNotifications={totalNotifications}
+            loading={loading}
+            fetchMoreAll={fetchMoreAll}
+            linkToNotification={linkToNotification}
+            goTo={goTo}
+          />
+          <UserMenuItem
+            _t={_t}
+            photo={photo}
+            firstname={firstname}
+            imgPrefix={PNG_IMAGES}
+            base64Prefix={BASE64}
+          />
+          <Logout
+            _t={_t}
+            isAuthenticated={isAuthenticated}
+            logout={logout}
+            className="navbar logout"
+          />
+        </div>
+      </header>
+      : 
+      <header>
+        <MainLogo imgPrefix={IMAGES} />
+        <div className="top-header-right">
+          <LocaleSwitcher
+            _t={_t}
+            setLocale={setLocale}
+            locale={locale}
+          /> 
+        </div>
+     </header>
   );
 }
 
