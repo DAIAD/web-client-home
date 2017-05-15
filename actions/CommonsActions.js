@@ -190,12 +190,12 @@ const setMemberCount = function (count) {
 };
 
 const searchCommonMembers = function () {
-  return function (dispatch, getState) {
+  const thunk = function (dispatch, getState) {
     const { myCommons, activeKey, members } = getState().section.commons;
     const { pagingIndex: pageIndex, sortFilter: sortBy, sortOrder, searchFilter: name } = members;
     const active = activeKey && myCommons.length > 0 ? 
       myCommons.find(common => common.key === activeKey) : null;
-      
+
     if (!active) return Promise.resolve();
 
     const data = {
@@ -230,6 +230,13 @@ const searchCommonMembers = function () {
       dispatch(setError(error));
     });
   };
+  thunk.meta = {
+    debounce: {
+      time: 300,
+      key: 'COMMONS_MEMBER_SEARCH',
+    },
+  };
+  return thunk;
 };
 
 const setMemberQueryAndFetch = function (query) {
@@ -273,6 +280,10 @@ const setMemberQueryAndFetch = function (query) {
       dispatch(setMemberSortOrder(sortOrder));
     }
 
+    if ((name != null || sortBy != null || sortOrder != null) && 
+        getState().section.commons.members.pagingIndex !== 0) {
+      dispatch(setMemberPagingIndex(0));
+    }
     dispatch(searchCommonMembers());
   };
 };
@@ -281,7 +292,7 @@ const setMemberQueryAndFetch = function (query) {
  * Performs query based on selected commons section filters and saves data
  */
 const fetchData = function () {
-  return function (dispatch, getState) {
+  const thunk = function (dispatch, getState) {
     const { myCommons, activeKey, time, activeDeviceType, members } = getState().section.commons;
 
     const { selected: selectedMembers } = members;
@@ -338,6 +349,14 @@ const fetchData = function () {
       });
     });
   };
+  
+  thunk.meta = {
+    debounce: {
+      time: 500,
+      key: 'COMMONS_FETCH_DATA',
+    },
+  };
+  return thunk;
 };
 
 const setQuery = function (query) {

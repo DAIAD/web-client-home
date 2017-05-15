@@ -271,8 +271,9 @@ const fetchWaterIQData = function () {
 /**
  * Performs query based on selected history section filters and saves data
  */
+
 const fetchData = function () {
-  return function (dispatch, getState) {
+  const thunk = function (dispatch, getState) {
       const { showerIndex, activeDeviceType, activeDevice, timeFilter, time, data, memberFilter, synced } = getState().section.history;
     // AMPHIRO
     if (activeDeviceType === 'AMPHIRO') {
@@ -321,6 +322,14 @@ const fetchData = function () {
     }
     return Promise.resolve();
   };
+
+  thunk.meta = {
+    debounce: {
+      time: 500,
+      key: 'HISTORY_FETCH_DATA',
+    },
+  };
+  return thunk;
 };
 
 const enableForecasting = function () {
@@ -835,6 +844,7 @@ const setQuery = function (query) {
     */
   };
 };
+
 const setQueryAndFetch = function (query) {
   return function (dispatch, getState) {
     dispatch(setQuery(query));

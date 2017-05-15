@@ -64,7 +64,7 @@ const setFavorite = function (key) {
 };
 
 const searchCommons = function () {
-  return function (dispatch, getState) {
+  const thunk = function (dispatch, getState) {
     const { pagingIndex: pageIndex, searchFilter: name } = getState().section.settings.commons;
 
     const data = {
@@ -101,6 +101,13 @@ const searchCommons = function () {
       dispatch(setError(error));
     });
   };
+  thunk.meta = {
+    debounce: {
+      time: 300,
+      key: 'COMMONS_SEARCH',
+    },
+  };
+  return thunk;
 };
 
 const setCommonsQueryAndFetch = function (query) {
@@ -108,8 +115,15 @@ const setCommonsQueryAndFetch = function (query) {
     if (!query) return;
     const { name, index, sortBy, sortOrder } = query;
     
-    if (name != null) dispatch(setSearchFilter(name));
     if (index != null) dispatch(setSearchPagingIndex(index));
+
+    if (name != null) {
+      dispatch(setSearchFilter(name));
+      // if not first page make sure it is reset
+      if (getState().section.settings.commons.pagingIndex !== 0) {
+        dispatch(setSearchPagingIndex(0));
+      }
+    }
     //if (sortBy != null) dispatch(setMemberSortFilter(sortBy));
     //if (sortOrder != null) dispatch(setMemberSortOrder(sortOrder));
 

@@ -6,6 +6,11 @@ const ViewportActions = {
       type: types.VIEWPORT_SET_SIZE,
       width,
       height,
+      meta: {
+        debounce: {
+          time: 200,
+        },
+      }, 
     };
   },
 };

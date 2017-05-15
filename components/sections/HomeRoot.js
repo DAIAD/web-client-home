@@ -6,7 +6,6 @@ const Footer = require('../layout/Footer');
 const MainSidebar = require('../layout/MainSidebar');
 const Loader = require('../helpers/Loader');
 const QuerySuccess = require('../helpers/QuerySuccess');
-const { debounce } = require('../../utils/general');
 
 const { IMAGES, PNG_IMAGES, MAIN_MENU } = require('../../constants/HomeConstants');
 
@@ -16,11 +15,10 @@ const HomeRoot = React.createClass({
     this.props.init();
   },
   componentDidMount: function () {
-    this.viewportListener = debounce(this.setViewport, 100, { maxWait: 1000 });
-    window.addEventListener('resize', this.viewportListener);
+    window.addEventListener('resize', this.setViewport);
   },
   componentWillUnmount: function () {
-    window.removeEventListener('resize', this.viewportListener);
+    window.removeEventListener('resize', this.setViewport);
   },
   setViewport: function () {
     this.props.resize(

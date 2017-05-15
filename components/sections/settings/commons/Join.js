@@ -6,8 +6,6 @@ const Table = require('../../../helpers/Table');
 
 const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSchema } = require('../../../schemas/commons');
 
-const { debounce } = require('../../../../utils/general');
-
 const { COMMONS_SEARCH_PAGE } = require('../../../../constants/HomeConstants');
 
 const JoinCommons = React.createClass({
@@ -25,17 +23,15 @@ const JoinCommons = React.createClass({
           className="search-field commons-join-search"
           onSubmit={(e) => { 
             e.preventDefault(); 
-            setCommonsQueryAndFetch({ index: 0 }); 
+            searchCommons();
           }}
         >
           <input 
             type="text"
             placeholder="Search..."
             onChange={(e) => { 
-              setSearchFilter(e.target.value);
-              debounce(() => { 
-                setCommonsQueryAndFetch({ index: 0 });
-              }, 300)();
+              //setSearchFilter(e.target.value);
+              setCommonsQueryAndFetch({ name: e.target.value });
             }}
             value={searchFilter}
           />
@@ -43,7 +39,7 @@ const JoinCommons = React.createClass({
             className="clear-button" 
             type="reset" 
             onClick={(e) => { 
-              setCommonsQueryAndFetch({ index: 0, name: '' }); 
+              setCommonsQueryAndFetch({ name: '' }); 
             }} 
           />
         </form>

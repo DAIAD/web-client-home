@@ -6,8 +6,6 @@ const Table = require('../../helpers/Table');
 
 const { commons: commonsSchema, allCommons: allCommonsSchema, members: membersSchema } = require('../../schemas/commons');
 
-const { debounce } = require('../../../utils/general');
-
 const { COMMONS_MEMBERS_PAGE, COMMONS_USER_SORT } = require('../../../constants/HomeConstants'); 
 
 function MembersArea(props) {
@@ -29,24 +27,21 @@ function MembersArea(props) {
           className="search-field" 
           onSubmit={(e) => { 
             e.preventDefault(); 
-            setMemberQueryAndFetch({ index: 0 }); 
+            searchCommonMembers();
           }}
         >
           <input 
             type="text"
             placeholder={_t('commons.placeholder-search-members')}
             onChange={(e) => { 
-              setMemberSearchFilter(e.target.value);
-              debounce(() => { 
-                setMemberQueryAndFetch({ index: 0 }); 
-              }, 300)();
+              setMemberQueryAndFetch({ name: e.target.value }); 
             }}
             value={searchFilter}
           />
           <button 
             className="clear-button" 
             type="reset" 
-            onClick={(e) => { setMemberQueryAndFetch({ index: 0, name: '' }); }} 
+            onClick={(e) => { setMemberQueryAndFetch({ name: '' }); }} 
           />
         </form>
       </div>
