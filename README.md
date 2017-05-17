@@ -3,8 +3,6 @@ DAIAD home-web
 
 A Single Page Application for [DAIAD](http://daiad.eu) EU project based on [React JS](https://facebook.github.io/react/) and [Redux](http://redux.js.org/).
 
-A detailed documentation of the action creator modules is provided. For more details, please check the github page: {@link https://github.com/DAIAD/home-web/tree/master/src/main/resources/public/assets/js/src/home}
-
 
 Installation and Usage
 ----------------------
