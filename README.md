@@ -1,7 +1,7 @@
 DAIAD home-web
 =======
 
-A Single Page Application for {@link http://daiad.eu|DAIAD} EU project based on {@link https://facebook.github.io/react/|React js} and {@link https://github.com/reactjs/redux|Redux}.
+A Single Page Application for [DAIAD](http://daiad.eu) EU project based on [React JS](https://facebook.github.io/react/) and [Redux](http://redux.js.org/).
 
 A detailed documentation of the action creator modules is provided. For more details, please check the github page: {@link https://github.com/DAIAD/home-web/tree/master/src/main/resources/public/assets/js/src/home}
 
@@ -9,8 +9,8 @@ A detailed documentation of the action creator modules is provided. For more det
 Installation and Usage
 ----------------------
 
-The DAIAD home-web application is currently bundled with utility-web application and their common backend.
-In order to install the bundled DAIAD app, please follow the instructions {@link https://github.com/DAIAD/home-web}
+The DAIAD home web client application is currently bundled with the DAIAD Project web application and can not be installed standalone.
+In order to install the bundled DAIAD app, please follow the instructions https://github.com/DAIAD/home-web
 
 
 Sections
@@ -21,6 +21,8 @@ The Home application is divided into three main sections:
 + Dashboard
 + History
 + Messages
++ Commons
++ Settings
 
 Dashboard
 ----------------------
@@ -38,4 +40,16 @@ The data can be seen in a chart, or in a detailed list of events, or downloaded 
 Messages
 ----------------------
 
-The section where the user can view different types of messages.  
+The section where the user can explore the different types of messages he/she receives.  
+
+
+Commons
+----------------------
+
+In this section the user can explore his consumption data against the average of any community groups he/she has joined and its individual members.
+
+
+Settings
+----------------------
+
+In the settings section the user can change his/her profile information, the application language, add or edit household members, view and modify installed shower devices, and manage his active communities, create new or join existing communities created by other users.
