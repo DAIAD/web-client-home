@@ -69,7 +69,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     periods,
     isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
     //chart width = viewport width - main menu - sidebar right - padding
-    width: Math.max(stateProps.width - 130 - 160 - 20, 660),
+    width: Math.max(stateProps.width - 130 - 160 - 40, 660),
     members: {
       ...stateProps.members,
       active: stateProps.members.active.map(m => stateProps.members.selected.map(s => s.key).includes(m.key) ? ({ ...m, selected: true }) : m),

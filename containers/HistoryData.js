@@ -140,7 +140,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
     isAfterToday: stateProps.time.endDate > new Date().valueOf(),  
     chart: {
       //chart width = viewport width - main menu - sidebar left - sidebar right - padding
-      width: Math.max(stateProps.width - 130 - 160 - 160 - 20, 500),
+      width: Math.max(stateProps.width - 130 - 160 - 160 - 40, 500),
       chartType,
       chartData,
       chartCategories,
