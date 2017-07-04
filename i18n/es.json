@@ -38,25 +38,25 @@
     "passwordMailSent": "An email has been sent to the address you provided. Please check your inbox"
   },
   "forms": {
-    "create": "Create",
-    "update": "Update",
-    "delete": "Delete",
-    "leave": "Leave",
-    "join": "Join",
-    "cancel": "Cancel",
-    "add": "Add",
+    "create": "Crear",
+    "update": "Actualizar",
+    "delete": "Borrar",
+    "leave": "Salir",
+    "join": "Unirse",
+    "cancel": "Cancelar",
+    "add": "Añadir",
     "set": "Set",
-    "yes": "Yes",
+    "yes": "Sí",
     "no": "No",
-    "back": "Back",
-    "noname": "No name",
-    "select": "Select",
-    "confirm-title": "Confirmation",
-    "confirm": "Are you sure you want to {action} {item}?",
-    "previous": "Previous",
-    "next": "Next",
-    "clear": "Clear",
-    "download": "Download",
+    "back": "Atrás",
+    "noname": "Sin nombre",
+    "select": "Seleccionar",
+    "confirm-title": "Confirmación",
+    "confirm": "Estás seguro que quieres {action} {item}?",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "clear": "Limpiar",
+    "download": "Descargar",
     "saved": "Saved"
   },
   "loginForm": {
@@ -90,9 +90,9 @@
     "recommendations": "Insights",
     "tips": "Tips",
     "settings": "Settings",
-    "profile": "Profile",
-    "members": "Members",
-    "devices": "Devices",
+    "profile": "Perfil",
+    "members": "Miembros",
+    "devices": "Dispositivos",
     "commonsManage": {
       "edit": "Manage",
       "new": "Create new",
@@ -112,7 +112,9 @@
     "user": "User",
     "date": "Date",
     "time": "Time",
-    "me": "Me"
+    "me": "Yo",
+    "average": "AVG",
+    "total": "TOTAL"
   },
   "dashboard": {
     "hello": "¡Hola {name}!",
@@ -182,27 +184,27 @@
   "history": {
     "showers": "Showers",
     "duration": "Duration",
-    "volume": "Volume",
-    "total": "Total volume",
-    "temperature": "Temperature",
-    "energy": "Energy",
-    "count": "Total Showers",
-    "device": "Device",
+    "volume": "Volumen",
+    "total": "Volumen total",
+    "temperature": "Temperatura",
+    "energy": "Energía",
+    "count": "Duchas totales",
+    "device": "Dispositivo",
     "id": "ID",
     "real": "Real",
     "statistics": "Stats",
     "wateriq": "Water IQ",
-    "cost": "Cost",
+    "cost": "Costo",
     "breakdown": "Water breakdown",
-    "forecast": "Forecast",
-    "breakdownUse": "Use",
-    "member-filter": "Everyone",
-    "compare-against": "Compare against",
-    "consumption-min": "Minimum consumption this {period}. Well done!",
-    "consumption-min-short": "Minimum consumption",
-    "consumption-max": "Maximum consumption this {period}",
-    "consumption-max-short": "Maximum consumption",
-    "in-detail": "In detail",
+    "forecast": "Predicción",
+    "breakdownUse": "Uso",
+    "member-filter": "Todos",
+    "compare-against": "Comparar contra",
+    "consumption-min": "Minimo consumo este {period}. Bien hecho!",
+    "consumption-min-short": "Minimo consumpo",
+    "consumption-max": "Maximo consumo este {period}",
+    "consumption-max-short": "Maximo consumo",
+    "in-detail": "En detalle",
     "volumeDetails": "Total water used for this shower",
     "temperatureDetails": "Average water temperature",
     "energyDetails": "Estimated energy used for hot water",
@@ -220,7 +222,7 @@
     "light-bulb": "light bulb",
     "home-energy": "home",
     "city": "city",
-    "shower-delete": "Delete shower"
+    "shower-delete": "Borrar ducha"
   },
   "periods": {
     "custom": "Personalizado",
@@ -234,34 +236,33 @@
     "all": "Todas"
   },
   "comparisons": {
-    "all": "City",
-    "nearest": "Neighbors",
+    "all": "Ciudad",
+    "nearest": "Vecinos",
     "similar": "Similar",
-    "user": "You",
+    "user": "Tu",
     "last": "{comparison}",
     "common": "{comparison}",
     "member": "{comparison}",
-    "better-AMPHIRO": "{percent}% better than previous {period}",
-    "worse-AMPHIRO": "{percent}% worse than previous {period}",
-    "better-METER": "{percent}% better than last {period}", 
-    "worse-METER": "{percent}% worse than last {period}",
+    "better-AMPHIRO": "{percent}% mejor que el {period} pasado",
+    "worse-AMPHIRO": "{percent}% peor que el {period} pasado",
+    "better-METER": "{percent}% mejor que anterior {period}", 
+    "worse-METER": "{percent}% peor que anterior {period}",
     "no-data": "No comparison data",
-    "wateriq-best": "{month} is the best ({value}) of the last six months",
-    "wateriq-worst": "{month} is the worst ({value}) of the last six months",
+    "wateriq-best": "{month} es el mejor ({value}) de los ultimos seis meses",
+    "wateriq-worst": "{month} es el peor ({value}) de los ultimos seis meses",
     "wateriq-no-data": "Water IQ not computed yet"
   },
   "breakdown": {
-    "shower": "Shower",
-    "bath": "Bath",
-    "washing-machine": "Washer",
-    "other": "Other"
+    "shower": "Ducha",
+    "bath": "Baño",
+    "washing-machine": "Lavadora",
+    "other": "Otro"
   },
   "notifications": {
-    "showAll": "Show all",
-    "alerts": "Alerts",
-    "announcements": "Announcements",
-    "recommendations": "Recommendations",
-    "tips": "Tips"
+    "showAll": "Ver todos",
+    "alerts": "Alertas",
+    "recommendations": "Reflexiones",
+    "tips": "Consejos"
   },
   "profile": {
     "locale": "Idioma",
@@ -274,100 +275,100 @@
     "zip": "Codigo postal",
     "country": "País",
     "timezone": "Zona de hora",
-    "changePassword": "Change password",
+    "changePassword": "Cambiar contraseña",
     "unit": {
-      "label": "System unit",
-      "default": "Select system unit",
+      "label": "Unidad de mediciones",
+      "default": "Seleccione unidad de mediciones",
       "METRIC": "Metric",
       "IMPERIAL": "Imperial"
     }
   },
   "member": {
-    "name": "Name",
-    "age": "Age",
-    "gender": "Gender",
-    "placeholder-name": "Member name",
-    "placeholder-age": "Member age",
-    "placeholder-gender": "Member gender",
+    "name": "Nombre",
+    "age": "Edad",
+    "gender": "Sexo",
+    "placeholder-name": "Nombre de miembro",
+    "placeholder-age": "Edad de miembro",
+    "placeholder-gender": "Sexo de miembro",
     "MALE": "Male",
     "FEMALE": "Female"
   },
   "devices": {
-    "amphiro": "Shower device",
-    "amphiros": "Shower devices",
-    "meter": "Water Meter",
-    "meters": "Water Meters",
-    "properties": "Properties",
-    "no-properties": "No properties",
+    "amphiro": "Dispositivo de ducha",
+    "amphiros": "Dispositivos de ducha",
+    "meter": "Telelectura",
+    "meters": "Telelecturas",
+    "properties": "Propiedades",
+    "no-properties": "No propiedades",
     "name": {
-      "label": "Device name"
+      "label": "Nombre del Dispositivo"
     },
     "key": {
-      "label": "Device key"
+      "label": "Clave del Dispositivo"
     },
     "mac": {
-      "label": "Mac address"
+      "label": "Dirección Mac"
     },
     "model": {
-      "label": "Model"
+      "label": "Modelo"
     },
     "manufacturer": {
-      "label": "Manufacturer"
+      "label": "Fabricante"
     },
     "serial": {
       "label": "Serial"
     },
     "registeredOn": {
-      "label": "Registered on"
+      "label": "Registrado"
     },
     "heating-system": {
-      "label": "Heating system",
-      "default": "Select heating system",
-      "0": "Electricity",
-      "1": "Oil",
+      "label": "Sistema de calefacción",
+      "default": "Seleccione sistema de calefacción",
+      "0": "Electricidad",
+      "1": "Gasoil",
       "2": "Gas"
     },
     "heating-efficiency": {
-      "label": "Heating efficiency",
-      "help": "Heating efficiency percentage of device"
+      "label": "Eficiencia de calefacción",
+      "help": "Porcentaje de eficiencia de calefaccón"
     },
     "cost-energy": {
-      "label": "Energy cost",
+      "label": "Coste energético",
       "help": "The cost per KWh in euros"
     },
     "cost-water": {
-      "label": "Water cost",
+      "label": "Coste de agua",
       "help": "The cost per cubic liter in euros"
     },
     "share-of-solar": {
-      "label": "Share of solar",
+      "label": "Cuota de la energía solar",
       "help": " "
     }
   },
    "commonsManage": {
-    "name": "Name",
-    "members": "Members",
-    "description": "Description",
-    "placeholder-name": "Community name",
-    "placeholder-description": "Community description",
+    "name": "Nombre",
+    "members": "Miembros",
+    "description": "Descripción",
+    "placeholder-name": "Nombre de comunidad",
+    "placeholder-description": "Descripción de comunidad",
     "setFavorite": "Set favorite community",
     "resetFavorite": "Reset favorite community",
     "empty": "No communities found"
   },
   "commons": {
-    "list": "My commons",
-    "details": "Details",
-    "members": "Members",
-    "created": "Created",
-    "updated": "Last updated",
+    "list": "Mis communidades",
+    "details": "Detalles",
+    "members": "Miembros",
+    "created": "Creado",
+    "updated": "Última actualización",
     "empty": "No communities joined yet",
     "noCommons": "Not a member of any commmunities yet",
-    "myCommons": "My Communities",
+    "myCommons": "Mis Communidades",
     "ranking": "Ranking",
     "date-joined": "Date joined",
-    "placeholder-search-members": "Search members...",
+    "placeholder-search-members": "Buscar miembros...",
     "select-info": "Click on up to 3 members to compare against",
-    "memberSince": "Member since"
+    "memberSince": "Miembro desde"
   },
   "reports": {
     "report": "Report",
@@ -378,7 +379,7 @@
   },
   "404": {
     "title": "reasons you shouldn't be here",
-    "link": "Go back"
+    "link": "Volver"
   },
   "footer": {
     "contact": "Contact",
