@@ -8,10 +8,9 @@ function Picture(props) {
     <img 
       src={`${IMAGES}/${display}${iconSuffix}.svg`} 
       className={['picture', display].join(' ')}
-      title={_t('history.inPicturesHover',
+      title={_t(`history.inPicturesHover-${metric}`,
         {
           number: items, 
-          metric: _t(`history.${metric}`).toLowerCase(),
           scale: _t(`history.${display}`),
         })
       }

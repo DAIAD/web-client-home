@@ -2,7 +2,7 @@ const moment = require('moment');
 
 const { STATIC_RECOMMENDATIONS, STATBOX_DISPLAYS, PERIODS, BASE64, IMAGES } = require('../constants/HomeConstants');
 
-const { getFriendlyDuration, getEnergyClass, waterIQToNumeral, numeralToWaterIQ, displayMetric, formatMetric } = require('./general');
+const { getFriendlyDuration, getEnergyClass, waterIQToNumeral, numeralToWaterIQ, displayMetric, formatMetric, showerFilterToLength } = require('./general');
 const { getChartMeterData, getChartAmphiroData, getChartMeterCategories, getChartMeterCategoryLabels, getChartAmphiroCategories, getChartPriceBrackets, colorFormatterSingle } = require('./chart');
 const { getTimeByPeriod } = require('./time');
 const { getDeviceTypeByKey, getDeviceNameByKey, getDeviceKeysByType } = require('./device');
@@ -192,7 +192,7 @@ const amphiroOrMeterTotal = function (widget, intl) {
           id: `comparisons.${str}-${deviceType}`, 
         }, {
           percent: comparePercentage, 
-          period, 
+          period: deviceType === 'AMPHIRO' ? showerFilterToLength(period) : intl.formatMessage({ id: `comparisons.${period}` }), 
         }),
         display: hasComparison,
       },
@@ -248,7 +248,7 @@ const amphiroEnergyEfficiency = function (widget, intl) {
           id: `comparisons.${str}-${deviceType}`,
         }, { 
           percent: comparePercentage, 
-          period, 
+          period: showerFilterToLength(period), 
         }),
         display: hasComparison,
       },

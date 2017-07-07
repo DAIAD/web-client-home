@@ -10,7 +10,8 @@ const { IMAGES } = require('../../../constants/HomeConstants');
 
 function BetterOrWorse(props) {
   const { better, percentDifference, period, deviceType, _t } = props;
-  const betterStr = better ? `better-${deviceType}` : `worse-${deviceType}`;
+  const devStr = deviceType === 'AMPHIRO' ? 'last-AMPHIRO' : deviceType;
+  const betterStr = better ? `better-${devStr}` : `worse-${devStr}`;
   if (better === null) {
     return (
       <div>
@@ -76,7 +77,6 @@ function Session(props) {
                 deviceType={activeDeviceType}
                 better={better} 
                 percentDifference={percentDifference}
-                period={_t('section.shower').toLowerCase()}
                 _t={_t}
               />
             </h5>
@@ -174,7 +174,7 @@ function Session(props) {
               deviceType={activeDeviceType}
               better={better} 
               percentDifference={percentDifference}
-              period={period}
+              period={_t(`comparisons.${period}`)}
               _t={_t}
             />
           </h4>

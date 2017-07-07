@@ -140,7 +140,7 @@ const getStatsAmphiroData = function (props) {
   const chartFormatter = y => displayMetric(formatMetric(y, props.filter, props.unit));
      
   const chartData = props.data.map((devData) => {  
-    const memberName = props.memberFilter === 'all' ? 'All' : props.members.find(m => props.memberFilter === m.index).name;
+    const memberName = props.memberFilter === 'all' ? props.intl.formatMessage({ id: 'history.member-filter' }) : props.members.find(m => props.memberFilter === m.index).name;
     const devName = getDeviceNameByKey(props.devices, devData.deviceKey);
     return {
       name: memberName + ' (' + devName + ')', 
