@@ -38,87 +38,89 @@
     "passwordMailSent": "An email has been sent to the address you provided. Please check your inbox"
   },
   "forms": {
-    "create": "Create",
-    "update": "Update",
-    "delete": "Delete",
+    "create": "Δημιουργία",
+    "update": "Ενημέρωση",
+    "delete": "Διαγραφή",
     "leave": "Leave",
     "join": "Join",
-    "cancel": "Cancel",
-    "add": "Add",
-    "set": "Set",
-    "yes": "Yes",
-    "no": "No",
-    "back": "Back",
-    "noname": "No name",
-    "select": "Select",
-    "confirm-title": "Confirmation",
-    "confirm": "Are you sure you want to {action} {item}?",
-    "previous": "Previous",
-    "next": "Next",
-    "clear": "Clear",
-    "download": "Download",
-    "saved": "Saved"
+    "cancel": "Άκυρο",
+    "add": "Προσθήκη",
+    "set": "Ορισμός",
+    "yes": "Ναί",
+    "no": "Όχι",
+    "back": "Πίσω",
+    "noname": "Χωρίς όνομα",
+    "select": "Επιλογή",
+    "confirm-title": "Επιβεβαίωση",
+    "confirm": "Είστε σίγουρος/η ότι επιθυμείτε την {action} του {item};",
+    "previous": "Προηγούμενο",
+    "next": "Επόμενο",
+    "clear": "Καθαρισμός",
+    "download": "Κατέβασμα",
+    "saved": "Σώθηκε"
   },
   "loginForm": {
     "login": {
       "failure": "Authentication has failed. Please try again."
     },
     "button": {
-      "signin": "Sign in",
-      "signout": "Sign out",
-      "reset-request": "Reset",
-      "reset-submit": "Submit"
+      "signin": "Σύνδεση",
+      "signout": "Αποσύνδεση",
+      "reset-request": "Επαναφορά",
+      "reset-submit": "Υποβολή"
     },
     "placeholder": {
-      "username": "Username",
-      "password": "Password",
-      "password-confirm": "Confirm password"
+      "username": "Όνομα χρήστη",
+      "password": "Κωδικός πρόσβασης",
+      "password-confirm": "Επιβεβαίωση κωδικού πρόσβασης"
     },
-    "forgotPassword": "Forgot your password?"
+    "forgotPassword": "Ξεχάσατε τον κωδικό σας;"
   },
   "section": {
     "dashboard": "Περίληψη",
     "history":"Στατιστικά",
-    "explore":"Explore",
-    "forecast":"Forecast",
+    "explore":"Εξερεύνηση",
+    "forecast":"Πρόβλεψη",
     "shower": "Ντους",
-    "shower-aggregated": "Total data",
-    "commons": "Κοινά",
+    "shower-aggregated": "Συνολικά δεδομένα",
+    "commons": "Κοινότητες",
     "notifications": "Ενημερώσεις",
-    "reports" : "Reports",
+    "reports" : "Αναφορές",
     "alerts": "Alerts",
-    "recommendations": "Insights",
+    "recommendations": "Recommendations",
     "tips": "Συμβουλές",
     "settings": "Ρυθμίσεις",
     "profile": "Προφίλ",
-    "members": "Members",
+    "members": "Μέλη",
     "devices": "Συσκευές",
     "commonsManage": {
-      "edit": "Manage",
-      "new": "Create new",
-      "join": "Join" 
+      "edit": "Διαχείριση",
+      "new": "Δημιουργία νέου",
+      "join": "Συμμετοχή" 
     },
     "membersManage": {
-      "edit": "Manage",
-      "create": "Create new"
+      "edit": "Διαχείριση",
+      "create": "Δημιουργία νέου"
     },
     "login": "Σύνδεση",
-    "reset": "Password reset"
+    "reset": "Επαναφορά κωδικού"
   },
   "common": {
-    "sortby": "Sort by",
-    "found": "Found",
-    "chart": "Chart",
-    "user": "User",
-    "date": "Date",
-    "time": "Time",
-    "me": "Me"
+    "sortby": "Ταξινόμηση",
+    "found": "Βρέθηκαν",
+    "chart": "Γράφημα",
+    "user": "Χρήστης",
+    "date": "Ημερομηνία",
+    "time": "Ώρα",
+    "me": "Εγώ",
+    "average": "M.O.",
+    "total": "ΣΥΝΟΛΙΚΟ"
   },
   "dashboard": {
     "hello": "Γειά σου {name}!",
-     "add": "Add widget",
-    "add-widget-placeholder": "Enter title...",
-    "save": "Save changes?"
+     "add": "Προσθήκη widget",
+    "add-widget-placeholder": "Τίτλος...",
+    "save": "Αποθήκευση αλλαγών;"
   },
   "widget": {
     "shower-average": "Average shower",
@@ -188,22 +190,22 @@
     "energy": "Ενέργεια",
     "count": "Αθροισμένα ντους",
     "limitedData": "Ωπ, περιορισμένα δεδομένα...",
-    "device": "Device",
+    "device": "Συσκευή",
     "id": "ID",
-    "real": "Real",
-    "statistics": "Stats",
+    "real": "Πραγμ.",
+    "statistics": "Στατιστικά",
     "wateriq": "Water IQ",
-    "cost": "Cost",
-    "breakdown": "Water breakdown",
-    "forecast": "Forecast",
-    "breakdownUse": "Use",
-    "member-filter": "Everyone",
-    "compare-against": "Compare against",
-    "consumption-min": "Minimum consumption this {period}. Well done!",
-    "consumption-min-short": "Minimum consumption",
-    "consumption-max": "Maximum consumption this {period}",
-    "consumption-max-short": "Maximum consumption",
-    "in-detail": "In detail",
+    "cost": "Κόστος",
+    "breakdown": "Κατανομή νερού",
+    "forecast": "Πρόβλεψη",
+    "breakdownUse": "Χρήση",
+    "member-filter": "Όλοι",
+    "compare-against": "Σύγκριση με",
+    "consumption-min": "Ελάχιστη κατανάλωση. Συγχαρητήρια!",
+    "consumption-min-short": "Ελάχιστη κατανάλωση",
+    "consumption-max": "Μέγιστη κατανάλωση",
+    "consumption-max-short": "Μέγιστη κατανάλωση",
+    "in-detail": "Λεπτομέρειες",
     "volumeDetails": "Total water used for this shower",
     "temperatureDetails": "Average water temperature",
     "energyDetails": "Estimated energy used for hot water",
@@ -213,14 +215,15 @@
     "wateriqDetails": "Water IQ is a...",
     "totalDetails": "Total volume...",
     "costDetails": "Cost is calculated...",
-    "inPicturesHover": "Approximately {number} times the {metric} of a {scale}!",
-    "bottle": "bottle",
-    "bucket": "bucket",
-    "pool": "pool",
-    "light-bulb": "light bulb",
-    "home-energy": "home",
-    "city": "city",
-    "shower-delete": "Delete shower"
+    "inPicturesHover-volume": "Σχεδόν {number} φορές ο όγκος {scale}!",
+    "inPicturesHover-energy": "Σχεδόν {number} φορές η ενέργεια {scale}!",
+    "bottle": "ενός μπουκαλιού",
+    "bucket": "ενός κουβά",
+    "pool": "μίας πισίνας",
+    "light-bulb": "μίας λάμπας",
+    "home-energy": "ενός σπιτιού",
+    "city": "μίας πόλης",
+    "shower-delete": "Διαγραφή ντους"
   },
   "periods": {
     "custom": "Προσαρμοσμένο",
@@ -228,33 +231,41 @@
     "month": "Μήνας",
     "week": "Εβδομάδα",
     "day": "Ημέρα",
+    "hour": "Ώρα",
     "ten": "Τελ. 10",
     "twenty": "Τελ. 20",
     "fifty": "Τελ. 50",
-    "all": "All"
+    "all": "Όλα"
   },
   "comparisons": {
-    "all": "City",
-    "nearest": "Neighbors",
-    "similar": "Similar",
-    "user": "You",
+    "all": "Πόλη",
+    "nearest": "Γείτονες",
+    "similar": "Παρόμοιοι χρήστες",
+    "user": "Εσείς",
     "last": "{comparison}",
     "common": "{comparison}",
     "member": "{comparison}",
-    "better-AMPHIRO": "{percent}% better than previous {period}",
-    "worse-AMPHIRO": "{percent}% worse than previous {period}",
-    "better-METER": "{percent}% better than last {period}", 
-    "worse-METER": "{percent}% worse than last {period}",
-    "no-data": "No comparison data",
-    "wateriq-best": "{month} is the best ({value}) of the last six months",
-    "wateriq-worst": "{month} is the worst ({value}) of the last six months",
-    "wateriq-no-data": "Water IQ not computed yet"
+    "better-AMPHIRO": "{percent}% καλύτερα από τα προηγούμενα {period} ντους",
+    "worse-AMPHIRO": "{percent}% χειρότερα από τα τελευταία {period} ντους",
+    "better-last-AMPHIRO": "{percent}% καλύτερα από το προηγούμενο ντους",
+    "worse-last-AMPHIRO": "{percent}% χειρότερα από το προηγούμενο ντους",
+    "better-METER": "{percent}% καλύτερα από {period}", 
+    "worse-METER": "{percent}% χειρότερα από {period} ",
+	 	"year": "τον προηγούμενο χρόνο",
+		"month": "τον προηγούμενο μήνα",
+		"week": "την προηγούμενη εβδομάδα",
+		"day": "την προηγούμενη ημέρα",
+		"hora": "την προηγούμενη ώρα",
+    "no-data": "Δεν υπάρχουν δεδομένα για σύγκριση",
+    "wateriq-best": "Ο {month} είναι ο καλύτερος ({value}) από τους τελευταίους έξι μήνες",
+    "wateriq-worst": "Ο {month} είναι ο χειρότερος ({value}) από τους τελευταίους έξι μήνες",
+    "wateriq-no-data": "Το water IQ δεν έχει υπολογιστεί ακόμα"
   },
   "breakdown": {
-    "shower": "Shower",
-    "bath": "Bath",
-    "washing-machine": "Washer",
-    "other": "Other"
+    "shower": "Ντους",
+    "bath": "Μπανιέρα",
+    "washing-machine": "Πλυντήριο",
+    "other": "Άλλο"
   },
   "notifications": {
     "showAll": "Προβολή όλων",
@@ -269,75 +280,75 @@
     "email": "Ηλεκτρονική διεύθυνση",
     "firstname": "Όνομα",
     "lastname": "Επώνυμο",
-    "fullname": "Full name",
+    "fullname": "Πλήρες όνομα",
     "address": "Διεύθυνση",
     "zip": "Τ.Κ.",
     "country": "Χώρα",
     "timezone": "Ζώνη ώρας",
-    "changePassword": "Change password",
+    "changePassword": "Αλλαγή κωδικού",
     "unit": {
-      "label": "System unit",
-      "default": "Select system unit",
+      "label": "Σύστημα μέτρησης",
+      "default": "Επιλέξτε σύστημα μέτρησης",
       "METRIC": "Metric",
       "IMPERIAL": "Imperial"
     }
   },
   "member": {
-    "name": "Name",
-    "age": "Age",
-    "gender": "Gender",
-    "placeholder-name": "Member name",
-    "placeholder-age": "Member age",
-    "placeholder-gender": "Member gender",
-    "MALE": "Male",
-    "FEMALE": "Female"
+    "name": "Όνομα",
+    "age": "Έτος",
+    "gender": "Φύλο",
+    "placeholder-name": "Όνομα μέλους",
+    "placeholder-age": "Έτος μέλους",
+    "placeholder-gender": "Φύλο μέλους",
+    "MALE": "Άνδρας",
+    "FEMALE": "Γυναίκα"
   },
   "devices": {
-    "amphiro": "Shower device",
-    "amphiros": "Shower devices",
-    "meter": "Water Meter",
-    "meters": "Water Meters",
-    "properties": "Properties",
-    "no-properties": "No properties",
+    "amphiro": "Συσκευή ντους",
+    "amphiros": "Συσκευές ντους",
+    "meter": "Μετρητής νερού",
+    "meters": "Μετρητές νερού",
+    "properties": "Ιδιότητες",
+    "no-properties": "Δεν υπάρχουν ιδιότητες",
     "name": {
-      "label": "Device name"
+      "label": "Όνομα συσκευής"
     },
     "key": {
-      "label": "Device key"
+      "label": "Κλειδί συσκευής"
     },
     "mac": {
-      "label": "Mac address"
+      "label": "Διεύθυνση MAC"
     },
     "model": {
-      "label": "Model"
+      "label": "Μοντέλο"
     },
     "manufacturer": {
-      "label": "Manufacturer"
+      "label": "Κατασκευαστής"
     },
     "serial": {
-      "label": "Serial"
+      "label": "Σειριακός αριθμός"
     },
     "registeredOn": {
-      "label": "Registered on"
+      "label": "Καταχώρηση"
     },
     "heating-system": {
-      "label": "Heating system",
-      "default": "Select heating system",
-      "0": "Electricity",
-      "1": "Oil",
-      "2": "Gas"
+      "label": "Σύστημα θέρμανσης",
+      "default": "Επιλέξτε σύστημα θέρμανσης",
+      "0": "Ηλεκτρικό",
+      "1": "Πετρέλαιο",
+      "2": "Γκάζι"
     },
     "heating-efficiency": {
-      "label": "Heating efficiency",
-      "help": "Heating efficiency percentage of device"
+      "label": "Επίδοση θέρμανσης",
+      "help": "Επί τοις εκατό επίδοση θέρμανσης"
     },
     "cost-energy": {
-      "label": "Energy cost",
-      "help": "The cost per KWh in euros"
+      "label": "Κόστος ενέργειας",
+      "help": "Το κόστος ανά KWh σε ευρώ"
     },
     "cost-water": {
-      "label": "Water cost",
-      "help": "The cost per cubic liter in euros"
+      "label": "Κόστος νερού",
+      "help": "Το κόστος ανα κυβικό λίτρο σε ευρώ"
     },
     "share-of-solar": {
       "label": "Share of solar",
@@ -345,43 +356,43 @@
     }
   },
   "commonsManage": {
-    "name": "Name",
-    "members": "Members",
-    "description": "Description",
-    "placeholder-name": "Community name",
-    "placeholder-description": "Community description",
-    "setFavorite": "Set favorite community",
-    "resetFavorite": "Reset favorite community",
-    "empty": "No communities found"
+    "name": "Όνομα",
+    "members": "Μέλη",
+    "description": "Περιγραφή",
+    "placeholder-name": "Όνομα κοινότητας",
+    "placeholder-description": "Περιγραφή κοινότητας",
+    "setFavorite": "Επιλέξτε αγαπημένη κοινότητα",
+    "resetFavorite": "Επαναφορά αγαπημένης κοινότητας",
+    "empty": "Δεν βρέθηκε καμμία κοινότητα"
   },
   "commons": {
-    "list": "My commons",
-    "details": "Details",
-    "members": "Members",
-    "created": "Created",
-    "updated": "Last updated",
-    "empty": "No communities joined yet",
-    "noCommons": "Not a member of any commmunities yet",
-    "myCommons": "My Communities",
-    "ranking": "Ranking",
-    "date-joined": "Date joined",
-    "placeholder-search-members": "Search members...",
-    "select-info": "Click on up to 3 members to compare against",
-    "memberSince": "Member since"
+    "list": "Οι κοινότητές μου",
+    "details": "Λεπτομέρειες",
+    "members": "Μέλη",
+    "created": "Δημιουργία",
+    "updated": "Τελευταία ενημέρωση",
+    "empty": "Δεν είστε μέλος καμμίας κοινότητας",
+    "noCommons": "Δεν είστε μέλος καμμίας κοινότητας",
+    "myCommons": "Οι κοινότητές μου",
+    "ranking": "Κατάταξη",
+    "date-joined": "Ημερομηνία ένταξης",
+    "placeholder-search-members": "Αναζητήστε μέλη...",
+    "select-info": "Διαλέξτε μέχρι 3 μέλη για σύγκριση",
+    "memberSince": "Μέλος από"
   },
   "reports": {
-    "report": "Report",
-    "period": "Period",
-    "empty": "No reports for this year",
-    "created": "Created",
-    "size": "Size"
+    "report": "Αναφορά",
+    "period": "Περίοδος",
+    "empty": "Δεν υπάρχουν αναφορές για αυτόν τον χρόνο",
+    "created": "Δημιουργία",
+    "size": "Μέγεθος"
   },
   "404": {
-    "title": "reasons you shouldn't be here",
-    "link": "Go back"
+    "title": "λόγοι γιατί δεν πρέπει να βρίσκεστε εδώ",
+    "link": "Πίσω"
   },
   "footer": {
-    "contact": "Contact",
-    "terms": "Terms of service"
+    "contact": "Επικοινωνία",
+    "terms": "Όροι χρήσης"
   }
 }
