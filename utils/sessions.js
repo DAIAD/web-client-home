@@ -224,10 +224,16 @@ const getAugmental = function (array) {
                      );
 };
 
-// TODO: take into consideration days that are between price brackets
 const getCurrentMeasurementCost = function (volume, pTotal, brackets) {
-  const curr = brackets.find(bracket => (pTotal / 1000) >= bracket.minVolume && (bracket.maxVolume === null || (pTotal / 1000) < bracket.maxVolume));
-  return curr ? Math.round(curr.price * (volume / 1000) * 1000) / 1000 : 0;
+  const currIdx = brackets.findIndex(bracket => pTotal >= bracket.minVolume && (bracket.maxVolume === null || pTotal < bracket.maxVolume));
+  const curr = brackets[currIdx];
+  const prev = currIdx > 0 ? brackets[currIdx - 1] : null;
+  if (curr && prev && pTotal - volume < curr.minVolume) {
+    const upper = pTotal - curr.minVolume;
+    const lower = volume - upper;
+    return Math.round((curr.price * upper) + (prev.price * lower)) / 1000;
+  }
+  return curr ? Math.round(curr.price * volume) / 1000 : 0;
 };
 
 const preparePricingSessions = function (sessions, brackets, granularity, user, intl) {
