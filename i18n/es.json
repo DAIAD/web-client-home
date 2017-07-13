@@ -18,24 +18,24 @@
    "errors": {
     "SharedErrorCode": {
       "AUTHENTICATION": "La autentificación ha fallad. Inténtalo de nuevo",
-      "PARSE_ERROR": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste.",
-    "UNKNOWN": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste."
+      "PARSE_ERROR": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste",
+    "UNKNOWN": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste"
     }, 
-    "unknownError": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste.",
-    "Not Found": "API call not found.",
-    "Internal Server Error": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste.",
+    "unknownError": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste",
+    "Not Found": "API no encontrado",
+    "Internal Server Error": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste",
     "Forbidden": "Llevas mucho tiempo inactivo. Refresca la página",
     "fileWrongType": "Error en el formato de archivo. Sólo admite .png o .jpeg",
     "fileExceedSize": "Archivo demasiado grande. Tamaño máximo 2MB",
-    "fileUploadError": "Error en la carga del archivo.",
-    "noPassword": "Falta contraseña.",
-    "passwordMismatch": "Contraseña diferente. Asegúrate de haber introducido la misma contraseña.",
-    "passwordTooShort": "Contraseña demasiado corta. Mínimo 8 caracteres.",
-    "CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Error en el Captcha. Por favour, confirma que no eres un robot.",
-    "PasswordErrorCode.WEAK_PASSWORD": "Tu contraseña es corta. Mínimo 8 caracteres."
+    "fileUploadError": "Error en la carga del archivo",
+    "noPassword": "Falta contraseña",
+    "passwordMismatch": "Contraseña diferente. Asegúrate de haber introducido la misma contraseña",
+    "passwordTooShort": "Contraseña demasiado corta. Mínimo 8 caracteres",
+    "CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Error en el Captcha. Por favour, confirma que no eres un robot",
+    "PasswordErrorCode.WEAK_PASSWORD": "Tu contraseña es corta. Mínimo 8 caracteres"
   },
   "info": {
-    "passwordMailSent": "Acabamos de enviarte un email a tu correo."
+    "passwordMailSent": "Acabamos de enviarte un email a tu correo"
   },
   "forms": {
     "create": "Crear",
@@ -77,7 +77,7 @@
     "forgotPassword": "¿Has olvidado tu contraseña?"
   },
   "section": {
-    "dashboard": "Panel de Control",
+    "dashboard": "Inicio",
     "history":"Estadísticas",
     "explore":"Explora",
     "forecast":"Previsión",
@@ -120,7 +120,7 @@
     "hello": "¡Hola {name}!",
     "add": "Añadir widget",
     "add-widget-placeholder": "Introduce título...",
-    "save": "Guardar cambios"
+    "save": "¿Guardar cambios?"
   },
   "widget": {
     "shower-average": "Ducha promedio",
@@ -134,12 +134,12 @@
     "explore-common": "Explorar comunidad",
     "empty-or-no-fav-common": "No te has unido a ninguna comunidad aún",
     "titles": {
-      "totalVolumeStatAmphiro": "Agua consumida en la ducha (medida)",
-      "totalVolumeChartAmphiro": "Agua consumida (progreso)",
+      "totalVolumeStatAmphiro": "Consumo en la ducha (medida)",
+      "totalVolumeChartAmphiro": "Consumo en la ducha (progreso)",
       "totalVolumeStatSWM": "Agua (medida)",
       "totalVolumeChartSWM": "Agua (progreso)",
-      "totalEnergyStat": "Consumo energético (medida)",
-      "totalEnergyChart": " Consumo energético (progreso)",
+      "totalEnergyStat": "Energía (medida)",
+      "totalEnergyChart": " Energía (progreso)",
       "totalTemperatureStat": "Temperatura (Medida)",
       "totalTemperatureChart": " Temperatura (Progreso)",
       "last": "Última ducha",
@@ -156,26 +156,26 @@
       "tip": "Nuevo Consejo"
     },
     "descriptions": {
-      "totalVolumeStatAmphiro": "Se ha generado por defecto un widget con el consumo total durante tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
-      "totalVolumeChartAmphiro": "Se ha generado por defecto un widget con el consumo de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
-      "totalVolumeStatSWM": " Se ha generado por defecto un widget con el consumo total por miembro del hogar para el último mes. Puedes modificarlo para verlo de forma diaria, semanal o anual.",
-      "totalVolumeChartSWM": " Se ha generado por defecto un widget con el progreso por miembro del hogar para el último mes. Puedes modificarlo para verlo de forma diaria, semanal o anual.",
-      "totalEnergyStat": " Se ha generado por defecto un widget con el consumo energético total durante tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
-      "totalEnergyChart": "Se ha generado por defecto un widget con el consumo energético de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
-      "totalTemperatureStat": "Se ha generado por defecto un widget con la temperatura de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
-      "totalTemperatureChart": "Se ha generado por defecto un widget con la variación de temperatura de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",      
-      "last": "Se ha generado un widget con la última ducha de todos tus dispositivos.",
-      "efficiencyEnergy": " Se ha generado por defecto un widget con eficiencia energética en tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
-      "ranking": " Se ha generado por defecto un widget con un ranking de los miembros basado en su consumo medio de agua.",
-      "breakdown": "Se ha generado un gráfico con vuestros consumes de agua por miembro.", 
-      "forecast": "Se ha generado un widget con la estimación de tu consume de agua para el próximo mes.",
-      "pricing": "Se ha generado un gráfico con tu consumo mensual incluyendo bloques de precio.",
-      "comparison": "Se ha generado un widget comparando tu consume con el del resto, como tus vecinos o tu ciudad durante el mes pasado.",
-      "budget": "Este widget muestra tu consume basado en tu presupuesto diario.",
-      "wateriqStat": "Este widget muestra tu calificación del mes pasado.",
-      "wateriqChart": "Esta gráfica muestra tu calificación del pasado mes con respect a la ciudad, tus vecinos y a los usuarios similares a ti.",
-      "commons": "Esta gráfica muestra tus consumos en relación con tu comunidad favorita durante este mes. Puedes modificarlo para ver los datos por semanas o meses. Puedes seleccionar tu comunidad favorita en Opciones.",
-      "tip": "Este widget tiene un consejo para ayudarte a reducir tu consumo."
+      "totalVolumeStatAmphiro": "Un widget con el consumo total durante tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
+      "totalVolumeChartAmphiro": "Un widget con el consumo de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
+      "totalVolumeStatSWM": "Un widget con el consumo total por miembro del hogar para el último mes. Puedes modificarlo para verlo de forma diaria, semanal o anual.",
+      "totalVolumeChartSWM": "Un widget con el progreso por miembro del hogar para el último mes. Puedes modificarlo para verlo de forma diaria, semanal o anual.",
+      "totalEnergyStat": "Un widget con el consumo energético total durante tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
+      "totalEnergyChart": "Un widget con el consumo energético de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
+      "totalTemperatureStat": "Un widget con la temperatura de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
+      "totalTemperatureChart": "Un widget con la variación de temperatura de tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",      
+      "last": "Un widget con la última ducha de todos tus dispositivos.",
+      "efficiencyEnergy": "Un widget con eficiencia energética en tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
+      "ranking": "Un widget con un ranking de los miembros basado en su consumo medio de agua.",
+      "breakdown": "Un widget con vuestros consumes de agua por miembro.", 
+      "forecast": "Un widget con la estimación de tu consume de agua para el próximo mes.",
+      "pricing": "Un widget con tu consumo mensual incluyendo bloques de precio.",
+      "comparison": "Un widget comparando tu consume con el del resto, como tus vecinos o tu ciudad durante el mes pasado.",
+      "budget": "Un widget que muestra tu consume basado en tu presupuesto diario.",
+      "wateriqStat": "Un widget que muestra tu calificación del mes pasado.",
+      "wateriqChart": "Un widget que muestra tu calificación del pasado mes con respect a la ciudad, tus vecinos y a los usuarios similares a ti.",
+      "commons": "Un widget que muestra tus consumos en relación con tu comunidad favorita durante este mes. Puedes modificarlo para ver los datos por semanas o meses. Puedes seleccionar tu comunidad favorita en Opciones.",
+      "tip": "Un widget que tiene un consejo para ayudarte a reducir tu consumo."
     }
   },
   "shower": {
@@ -232,9 +232,9 @@
     "week": "Semana",
     "day": "Día",
     "hour": "Hora",
-    "ten": "Últimas 10",
-    "twenty": "Últimas 20",
-    "fifty": "Últimas 50",
+    "ten": "Últ. 10",
+    "twenty": "Últ. 20",
+    "fifty": "Últ. 50",
     "all": "Todas"
   },
   "comparisons": {
@@ -250,12 +250,12 @@
     "better-last-AMPHIRO": "{percent}% mejor que la ducha anterior",
     "worse-last-AMPHIRO": "{percent}% peor que la ducha anterior",
     "better-METER": "{percent}% mejor que {period}", 
-    "worse-METER": "{percent}% peor que {period}",
+    "worse-METER": "{percent}% peor que {period} ", 
     "year": "el año pasado",
     "month": "el mes pasado",
     "week": "la semana pasada",
-    "day": "el día pasado",
-    "hour": "la hora pasada",
+    "day": "el día anterior",
+    "hour": "la hora anterior",
     "no-data": "No hay datos para comparar",
     "wateriq-best": "{month} es el mejor ({value}) de los últimos seis meses",
     "wateriq-worst": "{month} es el peor ({value}) de los últimos seis meses",
@@ -304,7 +304,7 @@
   },
   "devices": {
     "amphiro": "Dispositivo de ducha",
-    "amphiros": "Dispositivos de ducha",
+    "amphiros": "Amphiros",
     "meter": "Telelectura",
     "meters": "Contadores de telelectura",
     "properties": "Propiedades",
@@ -395,4 +395,3 @@
     "terms": "Términos del servicio"
   }
 }
-
