@@ -59,7 +59,7 @@ function Header(props) {
       </header>
       : 
       <header className="site-header">
-        <MainLogo imgPrefix={IMAGES} />
+        <MainLogo imgPrefix={IMAGES} link="login" />
         <div className="top-header-right">
           <LocaleSwitcher
             _t={_t}
