@@ -117,6 +117,7 @@ const Dashboard = React.createClass({
               {
                 dirty ? 
                   <div className="dashboard-save">
+                    <img src={`${IMAGES}/info.svg`} alt="info" style={{ float: 'left', width: 22 }} />
                     <h6><FormattedMessage id="dashboard.save" /></h6>
                     <div className="dashboard-save-prompt">
                       <button 
