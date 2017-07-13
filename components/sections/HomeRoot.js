@@ -38,7 +38,7 @@ const HomeRoot = React.createClass({
         locale={locale.locale}
         messages={locale.messages} 
       >
-        <div className="site-container">
+        <div className="site-container" lang={locale.locale}>
           {
             loading ? <Loader imgPrefix={PNG_IMAGES} /> : <div /> 
           }
