@@ -57,7 +57,7 @@
     "next": "Επόμενο",
     "clear": "Καθαρισμός",
     "download": "Κατέβασμα",
-    "saved": "Σώθηκε"
+    "saved": "Αποθηκεύτηκε"
   },
   "loginForm": {
     "login": {
@@ -305,8 +305,8 @@
   },
   "devices": {
     "amphiro": "Συσκευή ντους",
-    "amphiros": "Συσκευές ντους",
-    "meter": "Μετρητής νερού",
+    "amphiros": "Amphiros",
+    "meter": "Μετρητής",
     "meters": "Μετρητές νερού",
     "properties": "Ιδιότητες",
     "no-properties": "Δεν υπάρχουν ιδιότητες",
