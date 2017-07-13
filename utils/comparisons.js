@@ -9,11 +9,11 @@ const getMeterComparisonDetails = function (comparison, start, period, favCommon
     image = `${IMAGES}/challenge-daily.svg`;
   } else if (comparison === 'common' && favCommon) {
     extra = favCommon.name.length > 10 ? `${favCommon.name.substring(0, 7).trim()}...` : favCommon.name;
-    image = favCommon.image ? `${BASE64}${favCommon.image}` : null;
+    image = favCommon.image ? `${BASE64}${favCommon.image}` : `${IMAGES}/family-mode.svg`;
   } else if (comparison === 'all') {
     image = `${IMAGES}/city.svg`;
   } else if (comparison === 'nearest') {
-    image = `${IMAGES}/family-mode.svg`;
+    image = `${IMAGES}/neighbors.svg`;
   } else if (comparison === 'similar') {
     image = `${IMAGES}/account.svg`;
   }
