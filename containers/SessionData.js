@@ -6,10 +6,10 @@ const moment = require('moment');
 //const { getChartTimeData } = require('../utils/chart');
 
 const Session = require('../components/sections/history/SessionModal');
-const HistoryActions = require('../actions/HistoryActions');
-const { setWidgetTypeUnsynced } = require('../actions/DashboardActions');
-const { ignoreShower, assignToMember, setShowerReal } = require('../actions/ShowerActions');
-const { setForm } = require('../actions/FormActions');
+const HistoryActions = require('../actions-ga/HistoryActions');
+const { setWidgetTypeUnsynced } = require('../actions-ga/DashboardActions');
+const { ignoreShower, assignToMember, setShowerReal } = require('../actions-ga/ShowerActions');
+const { setForm } = require('../actions-ga/FormActions');
 
 const { getChartAmphiroData } = require('../utils/chart');
 const { getAllMembers, formatMessage, formatMetric, displayMetric } = require('../utils/general');

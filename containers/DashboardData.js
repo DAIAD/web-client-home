@@ -2,10 +2,10 @@ const { injectIntl } = require('react-intl');
 const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 
-const DashboardActions = require('../actions/DashboardActions');
-const { saveConfiguration } = require('../actions/UserActions');
-const { setForm, resetForm } = require('../actions/FormActions');
-const { linkToSection } = require('../actions/InitActions');
+const DashboardActions = require('../actions-ga/DashboardActions');
+const { saveConfiguration } = require('../actions-ga/UserActions');
+const { setForm, resetForm } = require('../actions-ga/FormActions');
+const { linkToSection } = require('../actions-ga/InitActions');
 
 const Dashboard = require('../components/sections/dashboard/');
 

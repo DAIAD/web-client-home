@@ -7,7 +7,7 @@ const moment = require('moment');
 
 const Reports = require('../components/sections/reports/');
 
-const ReportsActions = require('../actions/ReportsActions');
+const ReportsActions = require('../actions-ga/ReportsActions');
 
 const { formatMessage, formatBytes } = require('../utils/general');
 const timeUtil = require('../utils/time');

@@ -4,12 +4,13 @@ const { push } = require('react-router-redux');
 
 const HomeRoot = require('../components/sections/HomeRoot');
 
-const { login, logout, refreshProfile, requestPasswordReset } = require('../actions/UserActions');
-const { setReady } = require('../actions/InitActions');
-const { setLocale } = require('../actions/LocaleActions');
-const { linkToNotification, fetchMoreAll } = require('../actions/NotificationActions');
-const { dismissError } = require('../actions/QueryActions');
-const { resize } = require('../actions/ViewportActions');
+const { login, logout, refreshProfile, requestPasswordReset } = require('../actions-ga/UserActions');
+const { setReady } = require('../actions-ga/InitActions');
+const { setLocale } = require('../actions-ga/LocaleActions');
+const { linkToNotification, fetchMoreAll } = require('../actions-ga/NotificationActions');
+const { dismissError } = require('../actions-ga/QueryActions');
+const { resize } = require('../actions-ga/ViewportActions');
+
 const { combineMessages } = require('../utils/messages');
 
 function mapStateToProps(state) {

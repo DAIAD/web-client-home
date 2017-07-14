@@ -1,6 +1,5 @@
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
-const ReactGA = require('react-ga');
 
 const { setForm, resetForm } = require('./FormActions');
 const userAPI = require('../api/user');
@@ -54,10 +53,6 @@ const addMember = function (data) {
 
     const lastIndex = Array.isArray(members) && members.length > 0 ? members.map(m => m.index).reduce((p, c) => c > p ? c : p, 0) : 1;
     const newMembers = [...members, { ...data, active: true, index: lastIndex + 1 }];
-    ReactGA.event({
-      category: 'profile',
-      action: 'created member',
-    });
     return dispatch(saveMembers(newMembers));
   };
 };
@@ -73,10 +68,6 @@ const editMember = function (data) {
 
     const newMembers = members.map(m => m.index === index ? { ...m, ...data, active: true } : m);
 
-    ReactGA.event({
-      category: 'profile',
-      action: 'updated member',
-    });
     return dispatch(saveMembers(newMembers));
   };
 };
@@ -88,10 +79,6 @@ const removeMember = function (data) {
 
     const newMembers = members.filter(m => m.index !== index);
 
-    ReactGA.event({
-      category: 'profile',
-      action: 'deleted member',
-    });
     return dispatch(saveMembers(newMembers));
   };
 };

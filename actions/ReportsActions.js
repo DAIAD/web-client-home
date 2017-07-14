@@ -7,7 +7,6 @@
 
 const types = require('../constants/ActionTypes');
 const { push } = require('react-router-redux');
-const ReactGA = require('react-ga');
 
 const QueryActions = require('./QueryActions');
 
@@ -29,11 +28,6 @@ const setTimeFilter = function (filter) {
 };
 
 const onDownloadReport = function (month) {
-  ReactGA.event({
-    category: 'reports',
-    action: 'download report',
-    label: month.toString(),
-  });
   return {
     type: types.REPORTS_DOWNLOAD,
     month,
@@ -52,12 +46,7 @@ const onDownloadReport = function (month) {
  */
 
 const setTime = function (time) {
-  ReactGA.event({
-    category: 'reports',
-    action: 'change-time',
-    label: `${time.startDate}-${time.endDate}`
-  });
-return {
+  return {
     type: types.REPORTS_SET_TIME,
     time,
   };

@@ -8,7 +8,6 @@
 const types = require('../constants/ActionTypes');
 const moment = require('moment');
 const { push } = require('react-router-redux');
-const ReactGA = require('react-ga');
 const { setForm } = require('./FormActions');
 
 const { getDeviceKeysByType, getDeviceTypeByKey } = require('../utils/device');
@@ -68,10 +67,6 @@ const disableEditShower = function () {
 };
 
 const onExportData = function () {
-  ReactGA.event({
-    category: 'history',
-    action: 'download data',
-  });
   return {
     type: types.HISTORY_EXPORT_DATA,
   };
@@ -433,11 +428,6 @@ const setSessionFilter = function (filter) {
  * @param {String} filter - session list sort filter 
  */
 const setSortFilter = function (filter) {
-  ReactGA.event({
-    category: 'history',
-    action: 'set sort filter',
-    label: filter.toString(),
-  });
   return {
     type: types.HISTORY_SET_SORT_FILTER,
     filter,
@@ -451,11 +441,6 @@ const setSortFilter = function (filter) {
  */
 const setSortOrder = function (order) {
   if (order !== 'asc' && order !== 'desc') throw new Error('order must be asc or desc');
-  ReactGA.event({
-    category: 'history',
-    action: 'set sort order',
-    label: order
-  });
   return {
     type: types.HISTORY_SET_SORT_ORDER,
     order,
@@ -511,9 +496,9 @@ const switchMode = function (mode) {
       dispatch(setSortOrder('asc'));
       dispatch(setSortFilter('timestamp'));
       dispatch(setMetricFilter('total'));
-      if (getState().section.history.timeFilter !== 'month') {
-        dispatch(setTimeFilter('month'));
-        dispatch(setTime(getTimeByPeriod('month')));
+      if (getState().section.history.timeFilter !== 'trimester') {
+        dispatch(setTimeFilter('trimester'));
+        dispatch(setTime(getTimeByPeriod('trimester')));
       }
     } else if (mode === 'forecasting') {
       dispatch(setSortOrder('desc'));
@@ -710,118 +695,52 @@ const setQuery = function (query) {
     dispatch(setDataUnsynced());
 
     if (mode) {
-      ReactGA.modalview(mode);
       dispatch(switchMode(mode));
     }
     if (deviceType) {
-      ReactGA.event({
-        category: 'history',
-        action: 'set device type',
-        label: deviceType.toString(),
-      });
       dispatch(switchActiveDeviceType(deviceType));
     }
     if (device) {
-      ReactGA.event({
-        category: 'history',
-        action: 'set device',
-      });
       dispatch(setActiveDevice(device));
     }
     if (metric) {
-      ReactGA.event({
-        category: 'history',
-        action: 'set metric filter',
-        label: metric.toString(),
-      });
       dispatch(setMetricFilter(metric));
     }
     if (sessionMetric) {
-      ReactGA.event({
-        category: 'history',
-        action: 'set session filter',
-        label: sessionMetric.toString(),
-      });
       dispatch(setSessionFilter(sessionMetric));
     }
     if (period) {
-      ReactGA.event({
-        category: 'history',
-        action: 'set time filter',
-        label: period.toString(),
-      });
       dispatch(setTimeFilter(period));
     }
     if (time) {
-      const timeFilter = period || getState().section.history.timeFilter;
-      ReactGA.event({
-        category: 'history',
-        action: 'time change',
-        label: `${timeFilter}: ${moment(time.startDate).format('DD/MM/YYYY')}-${moment(time.endDate).format('DD/MM/YYYY')}`,
-      });
       dispatch(updateTime(time));
     }
     if (increaseIndex === true) {
-      ReactGA.event({
-        category: 'history',
-        action: 'increase shower index',
-      });
       dispatch(increaseShowerIndex());
     }
     if (decreaseIndex === true) {
-      ReactGA.event({
-        category: 'history',
-        action: 'decrease shower index',
-      });
       dispatch(decreaseShowerIndex());
     }
 
     if (memberFilter != null) {
-      ReactGA.event({
-        category: 'history',
-        action: 'member filter',
-        label: memberFilter.toString(),
-      });
       dispatch(switchMemberFilter(memberFilter));
     }
 
     if (Array.isArray(comparisons)) {
       comparisons.forEach((comparison) => {
         if (getState().section.history.comparisons.find(c => c.id === comparison)) {
-          ReactGA.event({
-            category: 'history',
-            action: 'remove comparison',
-            label: comparison.toString(),
-          });
-
           dispatch(removeComparison(comparison));
         } else if (comparison != null) {
-          ReactGA.event({
-            category: 'history',
-            action: 'add comparison',
-            label: comparison.toString(),
-          });
-
           dispatch(addComparison(comparison));
         }
       });
     } else if (clearComparisons) {
-      ReactGA.event({
-        category: 'history',
-        action: 'reset comparisons',
-      });
       dispatch(resetComparisons());
     }
 
     
     if (Array.isArray(active) && active.length === 2 && active[0] != null && active[1] != null) { 
       //dispatch(setActiveSession(Array.isArray(device) ? device[0] : device, showerId)); 
-      
-      ReactGA.modalview(getState().section.history.activeDeviceType === 'AMPHIRO' ? 'shower' : 'meter-agg');
-      ReactGA.event({
-        category: 'history',
-        action: 'set active session',
-      });
       dispatch(setActiveSession(active[0], active[1])); 
     } else if (active === null) {
       dispatch(resetActiveSession());
@@ -935,6 +854,7 @@ module.exports = {
   disableForecasting,
   enablePricing,
   disablePricing,
+  setQuery,
   setQueryAndFetch,
   fetchAndSetQuery,
   enableEditShower,

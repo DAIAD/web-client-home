@@ -2,7 +2,7 @@ const { bindActionCreators } = require('redux');
 const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
 
-const HistoryActions = require('../actions/HistoryActions');
+const HistoryActions = require('../actions-ga/HistoryActions');
 
 const History = require('../components/sections/history/');
 

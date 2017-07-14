@@ -4,7 +4,7 @@ const { connect } = require('react-redux');
 
 const Notifications = require('../components/sections/notifications/');
 
-const NotificationActions = require('../actions/NotificationActions');
+const NotificationActions = require('../actions-ga/NotificationActions');
 
 const prepareWidget = require('../utils/widgets');
 const { stripTags } = require('../utils/messages');

@@ -3,16 +3,15 @@ const { connect } = require('react-redux');
 const { injectIntl } = require('react-intl');
 const { push } = require('react-router-redux');
 
-//const CommonsActions = require('../actions/CommonsActions');
-const { setDataUnsynced: setHistoryDataUnsynced } = require('../actions/HistoryActions');
-const { setWidgetTypeUnsynced } = require('../actions/DashboardActions');
-const CommonsManageActions = require('../actions/CommonsManageActions');
-const MembersManageActions = require('../actions/MembersManageActions');
-const { setLocale } = require('../actions/LocaleActions');
-const { saveToProfile, saveConfiguration, fetchProfile, changePassword, updateDevice, addMember, editMember, removeMember } = require('../actions/UserActions');
-const { setChangePassword, resetChangePassword } = require('../actions/ProfileActions'); 
-const { setForm, resetForm, setConfirm, resetConfirm } = require('../actions/FormActions');
-const { setError, dismissError } = require('../actions/QueryActions');
+const { setDataUnsynced: setHistoryDataUnsynced } = require('../actions-ga/HistoryActions');
+const { setWidgetTypeUnsynced } = require('../actions-ga/DashboardActions');
+const CommonsManageActions = require('../actions-ga/CommonsManageActions');
+const MembersManageActions = require('../actions-ga/MembersManageActions');
+const { setLocale } = require('../actions-ga/LocaleActions');
+const { saveToProfile, saveConfiguration, fetchProfile, changePassword, updateDevice, addMember, editMember, removeMember } = require('../actions-ga/UserActions');
+const { setChangePassword, resetChangePassword } = require('../actions-ga/ProfileActions'); 
+const { setForm, resetForm, setConfirm, resetConfirm } = require('../actions-ga/FormActions');
+const { setError, dismissError } = require('../actions-ga/QueryActions');
 
 const Settings = require('../components/sections/settings/');
 

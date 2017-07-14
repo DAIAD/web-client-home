@@ -5,7 +5,6 @@
  * @module UserActions
  */
 const { push } = require('react-router-redux');
-const ReactGA = require('react-ga');
 
 const userAPI = require('../api/user');
 const deviceAPI = require('../api/device');
@@ -94,11 +93,6 @@ const login = function (username, password) {
       const { csrf, success, errors, profile } = response;
       if (csrf) { dispatch(setCsrf(csrf)); }
 
-      ReactGA.event({
-        category: 'profile',
-        action: 'login',
-      });
-
       // Actions that need to be dispatched on login
       dispatch(dismissError());
       dispatch(receivedLogin(profile));
@@ -141,10 +135,6 @@ const logout = function () {
 
       const { success, errors } = response;
 
-      ReactGA.event({
-        category: 'profile',
-        action: 'logout',
-      });
       dispatch(push('/login'));
       dispatch(receivedLogout());
 
@@ -174,10 +164,6 @@ const refreshProfile = function () {
 
       const { success, profile } = response;
 
-      ReactGA.event({
-        category: 'profile',
-        action: 'refreshed',
-      });
       // if refresh successful initialize
       return dispatch(InitActions.initHome(profile))
       .then(() => {
@@ -222,11 +208,6 @@ const saveToProfile = function (profile) {
       if (!response || !response.success) {
         throwServerError(response);  
       }
-
-      ReactGA.event({
-        category: 'profile',
-        action: 'saved',
-      });
 
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
@@ -274,11 +255,6 @@ const updateDevice = function (update) {
         throwServerError(response);  
       }
       
-      ReactGA.event({
-        category: 'profile',
-        action: 'saved devices',
-      });
-
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       return response;
@@ -309,11 +285,6 @@ const requestPasswordReset = function (username) {
         throwServerError(response);  
       }
       
-      ReactGA.event({
-        category: 'profile',
-        action: 'request password reset',
-      });
-
       dispatch(dismissError());
       dispatch(setInfo('passwordMailSent'));
 
@@ -346,11 +317,6 @@ const resetPassword = function (password, token, captcha) {
         throwServerError(response);  
       }
       
-      ReactGA.event({
-        category: 'profile',
-        action: 'reset password',
-      });
-
       dispatch(dismissError()); 
       dispatch(setSuccess());
       return new Promise((resolve, reject) => setTimeout(() => { 
@@ -384,11 +350,6 @@ const changePassword = function (password, captcha) {
         throwServerError(response);  
       }
       
-      ReactGA.event({
-        category: 'profile',
-        action: 'changed password',
-      });
-
       dispatch(setSuccess());
       setTimeout(() => { dispatch(resetSuccess()); }, SUCCESS_SHOW_TIMEOUT);
       return response;

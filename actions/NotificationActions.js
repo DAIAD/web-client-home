@@ -6,7 +6,6 @@
  */
 
 const { push } = require('react-router-redux');
-const ReactGA = require('react-ga');
 
 const QueryActions = require('./QueryActions');
 
@@ -128,7 +127,6 @@ const setActiveTab = function (category) {
                     'Provided ' + category);
   }
   const tab = category === 'announcements' ? 'alerts' : category; 
-  ReactGA.modalview(`notification/${category}`);
   return {
     type: types.MESSAGES_SET_ACTIVE_TAB,
     category: tab,
@@ -143,11 +141,6 @@ const setActiveMessageId = function (id) {
 };
 
 const tweetMessage = function (id) {
-  ReactGA.event({
-    category: 'notifications',
-    action: 'tweet',
-    label: id.toString(),
-  });
   return {
     type: types.MESSAGES_TWEET,
     id,
@@ -168,12 +161,6 @@ const setActiveMessage = function (id, type) {
     }
     const category = getCategoryByType(type);
 
-    ReactGA.event({
-      category: 'notifications',
-      action: 'read',
-      label: `${category}/${id}`
-    });
-    
     dispatch(setActiveTab(category));
     dispatch(setActiveMessageId(id));
 

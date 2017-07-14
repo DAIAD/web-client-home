@@ -6,7 +6,7 @@ const { push } = require('react-router-redux');
 
 const Commons = require('../components/sections/commons/');
 
-const CommonsActions = require('../actions/CommonsActions');
+const CommonsActions = require('../actions-ga/CommonsActions');
 const timeUtil = require('../utils/time');
 const { getLastShowerIdFromMultiple } = require('../utils/sessions');
 const { getAvailableDeviceTypes, getDeviceCount, getMeterCount } = require('../utils/device');
