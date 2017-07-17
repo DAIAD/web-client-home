@@ -17,7 +17,7 @@
   },
    "errors": {
     "SharedErrorCode": {
-      "AUTHENTICATION": "La autentificación ha fallad. Inténtalo de nuevo",
+      "AUTHENTICATION": "La autentificación ha fallado. Inténtalo de nuevo",
       "PARSE_ERROR": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste",
     "UNKNOWN": "Ups, ha ocurrido un error. Reinicia la página o contáctanos si el error persiste"
     }, 
@@ -31,7 +31,7 @@
     "noPassword": "Falta contraseña",
     "passwordMismatch": "Contraseña diferente. Asegúrate de haber introducido la misma contraseña",
     "passwordTooShort": "Contraseña demasiado corta. Mínimo 8 caracteres",
-    "CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Error en el Captcha. Por favour, confirma que no eres un robot",
+    "CaptchaErrorCode.CAPTCHA_VERIFICATION_ERROR": "Error en el Captcha. Por favor, confirma que no eres un robot",
     "PasswordErrorCode.WEAK_PASSWORD": "Tu contraseña es corta. Mínimo 8 caracteres"
   },
   "info": {
@@ -146,12 +146,12 @@
       "efficiencyEnergy": "Eficiencia energética",
       "ranking": "Ranking de duchas",
       "breakdown": "Desglose de la ducha",
-      "forecast": "Previsión - próximo mes",
-      "pricing": "Coste - este mes",
+      "forecast": "Previsión - Próximo mes",
+      "pricing": "Coste - Este mes",
       "comparison": "Comparación – Mes anterior",
       "budget": "Presupuesto Mensual",
-      "wateriqStat": "Calificación de agua – mes anterior",
-      "wateriqChart": "Comparación calificación de agua – mes anterior",
+      "wateriqStat": "Calificación – Mes anterior",
+      "wateriqChart": "Comparación de calificación – Mes anterior",
       "commons": "Comparación con la comunidad",
       "tip": "Nuevo Consejo"
     },
@@ -167,13 +167,13 @@
       "last": "Un widget con la última ducha de todos tus dispositivos.",
       "efficiencyEnergy": "Un widget con eficiencia energética en tus últimas 10 duchas. Puedes modificarlo para ver 20 o 50.",
       "ranking": "Un widget con un ranking de los miembros basado en su consumo medio de agua.",
-      "breakdown": "Un widget con vuestros consumes de agua por miembro.", 
-      "forecast": "Un widget con la estimación de tu consume de agua para el próximo mes.",
+      "breakdown": "Un widget con vuestros consumos de agua por miembro.", 
+      "forecast": "Un widget con la estimación de tu consumo de agua para el próximo mes.",
       "pricing": "Un widget con tu consumo mensual incluyendo bloques de precio.",
-      "comparison": "Un widget comparando tu consume con el del resto, como tus vecinos o tu ciudad durante el mes pasado.",
-      "budget": "Un widget que muestra tu consume basado en tu presupuesto diario.",
+      "comparison": "Un widget comparando tu consumo con el del resto, como tus vecinos o tu ciudad durante el mes pasado.",
+      "budget": "Un widget que muestra tu consumo basado en tu presupuesto diario.",
       "wateriqStat": "Un widget que muestra tu calificación del mes pasado.",
-      "wateriqChart": "Un widget que muestra tu calificación del pasado mes con respect a la ciudad, tus vecinos y a los usuarios similares a ti.",
+      "wateriqChart": "Un widget que muestra tu calificación del pasado mes con respecto a la ciudad, tus vecinos y a los usuarios similares a ti.",
       "commons": "Un widget que muestra tus consumos en relación con tu comunidad favorita durante este mes. Puedes modificarlo para ver los datos por semanas o meses. Puedes seleccionar tu comunidad favorita en Opciones.",
       "tip": "Un widget que tiene un consejo para ayudarte a reducir tu consumo."
     }
@@ -183,7 +183,7 @@
   },
   "history": {
     "showers": "Duchas",
-    "duration": "Duracion",
+    "duration": "Duración",
     "volume": "Volumen",
     "total": "Volumen total",
     "temperature": "Temperatura",
@@ -196,7 +196,7 @@
     "wateriq": "Calificación",
     "cost": "Coste",
     "breakdown": "Desglose del consumo ",
-    "forecast": "Predicción",
+    "forecast": "Previsión",
     "breakdownUse": "Uso",
     "member-filter": "Todos",
     "compare-against": "Comparar con",
@@ -226,7 +226,7 @@
     "shower-delete": "Borrar ducha"
   },
   "periods": {
-    "custom": "Personalizado",
+    "custom": "Personalizar",
     "year": "Año",
     "month": "Mes",
     "week": "Semana",
@@ -240,7 +240,7 @@
   "comparisons": {
     "all": "Ciudad",
     "nearest": "Vecinos",
-    "similar": "Similar",
+    "similar": "Similares",
     "user": "Tú",
     "last": "{comparison}",
     "common": "{comparison}",
@@ -265,7 +265,7 @@
     "shower": "Ducha",
     "bath": "Baño",
     "washing-machine": "Lavadora",
-    "other": "Otro"
+    "other": "Otros"
   },
   "notifications": {
     "showAll": "Ver todas",
@@ -276,14 +276,14 @@
   "profile": {
     "locale": "Idioma",
     "username": "Nombre de usuario" ,
-    "email": "Correo electronico",
+    "email": "Correo electrónico",
     "firstname": "Nombre",
     "lastname": "Apellido",
     "fullname": "Nombre",
     "address": "Direccion",
-    "zip": "Codigo postal",
+    "zip": "Código postal",
     "country": "País",
-    "timezone": "Zona de hora",
+    "timezone": "Zona horaria",
     "changePassword": "Cambiar contraseña",
     "unit": {
       "label": "Unidad de medida",
@@ -339,7 +339,7 @@
     },
     "heating-efficiency": {
       "label": "Eficiencia de calefacción",
-      "help": "Porcentaje de eficiencia de calefaccón"
+      "help": "Porcentaje de eficiencia de calefacción"
     },
     "cost-energy": {
       "label": "Coste energético",
