@@ -495,6 +495,7 @@ const switchMode = function (mode) {
       dispatch(enablePricing());
       dispatch(setSortOrder('asc'));
       dispatch(setSortFilter('timestamp'));
+
       dispatch(setMetricFilter('total'));
       if (getState().section.history.timeFilter !== 'trimester') {
         dispatch(setTimeFilter('trimester'));
@@ -504,6 +505,11 @@ const switchMode = function (mode) {
       dispatch(setSortOrder('desc'));
       dispatch(enableForecasting());
       dispatch(setMetricFilter('volume'));
+      
+      if (getState().section.history.timeFilter === 'trimester') {
+        dispatch(setTimeFilter('month'));
+        dispatch(setTime(getTimeByPeriod('month')));
+      }
     } else if (mode === 'breakdown') {
       dispatch(setSortOrder('desc'));
       dispatch(setMetricFilter('volume'));
@@ -526,6 +532,11 @@ const switchMode = function (mode) {
     } else if (mode === 'stats') {
       dispatch(setSortOrder('desc'));
       dispatch(setMetricFilter('volume'));
+      
+      if (getState().section.history.timeFilter === 'trimester') {
+        dispatch(setTimeFilter('month'));
+        dispatch(setTime(getTimeByPeriod('month')));
+      }
     }
   };
 };

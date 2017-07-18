@@ -147,17 +147,19 @@ module.exports = {
         id: 'stats', 
         title: 'history.volume',
         image: 'volume.svg',
+        periods: ['day', 'week', 'month', 'year', 'custom'],
       },
       {
         id: 'forecasting',
         title: 'history.forecast',
         image: 'stats.svg',
+        periods: ['day', 'week', 'month', 'year', 'custom'],
       },
       {
         id: 'pricing',
         title: 'history.cost',
         image: 'money-navy.svg',
-        periods: ['month'],
+        periods: ['trimester'],
       },
       /*
       {
@@ -258,6 +260,10 @@ module.exports = {
       {
         id: 'month', 
         title: 'periods.month',
+      },
+      {
+        id: 'trimester',
+        title: 'periods.trimester',
       },
       {
         id: 'year', 
@@ -524,7 +530,7 @@ module.exports = {
         type: 'pricing', 
         metric: 'total', 
         display: 'chart',
-        period: 'month',
+        period: 'trimester',
         image: 'pricing.png',
       },
       {

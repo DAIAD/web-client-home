@@ -147,7 +147,7 @@
       "ranking": "Shower ranking",
       "breakdown": "Water breakdown",
       "forecast": "Forecast - next month",
-      "pricing": "Pricing - this month",
+      "pricing": "Pricing - this trimester",
       "comparison": "Comparison - last month",
       "budget": "Monthly budget",
       "wateriqStat": "Water IQ - last month",
@@ -228,6 +228,7 @@
   "periods": {
     "custom": "Custom",
     "year": "Year",
+    "trimester": "Trimester",
     "month": "Month",
     "week": "Week",
     "day": "Day",

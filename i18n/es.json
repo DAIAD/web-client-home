@@ -147,7 +147,7 @@
       "ranking": "Ranking de duchas",
       "breakdown": "Desglose de la ducha",
       "forecast": "Previsión - Próximo mes",
-      "pricing": "Coste - Este mes",
+      "pricing": "Coste - Este trimestre",
       "comparison": "Comparación – Mes anterior",
       "budget": "Presupuesto Mensual",
       "wateriqStat": "Calificación – Mes anterior",
@@ -228,6 +228,7 @@
   "periods": {
     "custom": "Personalizar",
     "year": "Año",
+    "trimester": "Trimestre",
     "month": "Mes",
     "week": "Semana",
     "day": "Día",

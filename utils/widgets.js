@@ -133,7 +133,7 @@ const amphiroOrMeterTotal = function (widget, intl) {
   const periods = deviceType === 'AMPHIRO' ? 
     PERIODS.AMPHIRO.filter(p => p.id !== 'all') 
     : 
-    PERIODS.METER.filter(p => p.id !== 'custom');
+    PERIODS.METER.filter(p => p.id !== 'custom' && p.id !== 'trimester');
 
   const average = deviceType === 'AMPHIRO' && (metric === 'temperature' || metric === 'duration');
   const reduced = reduceMetric(data, metric, average);
@@ -321,8 +321,6 @@ const meterPricing = function (widget, intl) {
   
   if (deviceType !== 'METER') {
     console.error('only meter pricing supported');
-  } else if (period !== 'month') {
-    console.error('only monthly pricing supported');
   }
   const metric = 'total';
   const time = widget.time ? widget.time : getTimeByPeriod(period);
@@ -356,7 +354,7 @@ const meterPricing = function (widget, intl) {
     ...widget,
     icon: `${IMAGES}/money-navy.svg`,
     chartType: 'line',
-    timeDisplay: intl.formatDate(time.startDate, { month: 'long' }),
+    timeDisplay: `${intl.formatDate(time.startDate, { month: 'long' })} - ${intl.formatDate(time.endDate, { month: 'long' })}`,
     time,
     periods,
     chartCategories: xCategoryLabels,
