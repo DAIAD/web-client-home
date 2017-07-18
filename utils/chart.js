@@ -78,7 +78,7 @@ const getChartPriceBrackets = function (xCategories, brackets, unit, intl) {
     brackets
     .filter(bracket => bracket.maxVolume != null)
     .map((bracket, i) => ({
-      name: `${displayMetric(formatMetric(bracket.minVolume, 'volume', unit, max))} to ${displayMetric(formatMetric(bracket.maxVolume, 'volume', unit, max))}: ${displayMetric(formatMetric(bracket.price, 'cost', unit))}`,
+      name: `${displayMetric(formatMetric(bracket.minVolume, 'volume', unit, max))} - ${displayMetric(formatMetric(bracket.maxVolume, 'volume', unit, max))}: ${displayMetric(formatMetric(bracket.price, 'cost', unit))}`,
       data: xCategories.map(() => formatMetric(bracket.maxVolume, 'total', unit)[0]),
       label: false,
       lineType: 'dashed',
