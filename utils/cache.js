@@ -14,7 +14,7 @@ const getAmphiroByTimeCacheKey = function (key, time) {
 };
 
 const getMeterCacheKey = function (key, time) {
-  return `METER,${key},${time.start},${time.end}`;
+  return `METER,${key},${time.start},${time.end},${time.granularity}`;
 };
 
 const getComparisonCacheKey = function (key, month, year) {
