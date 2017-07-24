@@ -14,7 +14,7 @@ In order to install the bundled DAIAD app, please follow the instructions https:
 Sections
 ----------------------
 
-The Home application is divided into three main sections: 
+The Home application is divided into five main sections: 
 
 + Dashboard
 + History
