@@ -38,7 +38,7 @@ function mergeProps(stateProps, dispatchProps, ownProps) {
   const deviceTypes = getAvailableDeviceTypes(stateProps.devices);
   
   const periods = PERIODS.METER
-  .filter(period => period.id !== 'day');
+  .filter(period => period.id !== 'day' && period.id !== 'trimester');
 
   const active = stateProps.myCommons.find(common => common.key === stateProps.activeKey);
 
