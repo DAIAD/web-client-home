@@ -514,7 +514,7 @@ const waterIQ = function (widget, intl) {
           value: worst.user,
           month: intl.formatDate(worst.timestamp, { month: 'long' }),
         }),
-        display: hasWaterIQ,
+        display: hasWaterIQ && worst.user !== best.user,
       },
       {
         text: intl.formatMessage({ id: 'comparisons.wateriq-no-data' }),
