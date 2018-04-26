@@ -2,7 +2,6 @@ const React = require('react');
 const bs = require('react-bootstrap');
 const moment = require('moment');
 const DatetimeInput = require('react-datetime');
-const Select = require('react-select');
 const { FormattedMessage, FormattedDate } = require('react-intl');
 const { Link } = require('react-router');
 

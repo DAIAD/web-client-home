@@ -1,7 +1,6 @@
 const React = require('react');
 const bs = require('react-bootstrap');
 const { FormattedMessage, FormattedDate } = require('react-intl');
-const Select = require('react-select');
 
 const { uploadFile } = require('../../../../utils/general');
 const { IMAGES, BASE64 } = require('../../../../constants/HomeConstants');
